@@ -72,3 +72,9 @@
 - Auditoría AC-01…AC-20 y límites en `docs/ACCEPTANCE.md`; instalación, ejecución, pruebas y despliegue en README.md y TESTING.md.
 - No hubo feedback pendiente al cierre. Se conservan ambos servicios para revisión del usuario y Git exclusivamente local.
 - Se marca el encargo verificado para evitar una reanudación innecesaria al reset. El monitor vuelve a vigilar si se retira el marcador para cambios posteriores autorizados.
+
+## 2026-11-19 · Remoto GitHub autorizado
+
+- El usuario solicitó commit y push a `https://github.com/pablopeu/pattern`.
+- Repositorio remoto comprobado vacío y rama de destino `main`; se conserva el historial local completo.
+- Actualizadas las instrucciones y la documentación para reflejar la autorización del remoto. Sin cambios funcionales en la aplicación.

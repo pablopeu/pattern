@@ -91,7 +91,7 @@ Lee únicamente los eventos `rate_limits` del hilo local identificado por `CODEX
 
 Con 10% o menos disponible en una ventana vigente, pide cerrar el incremento y guarda un timer. Después del reset real +60 segundos solicita reanudar **el mismo hilo** mediante `codex queue --resume`. Si limita la ventana semanal, espera ese reset posterior. No cambia límites ni inventa un cupo nuevo al vencer el reloj. El agente verifica la telemetría al continuar. La reanudación necesita que la máquina y el daemon local de Codex sigan disponibles; cualquier fallo queda registrado en `.runtime/monitor-events.jsonl`.
 
-El feedback del panel se guarda en `.runtime/feedback.jsonl` y se revisa entre incrementos. Para intervenir de inmediato, usar esta conversación. El archivo `.runtime/STOP` desactiva el ciclo del monitor; `.runtime/PROJECT_COMPLETE` indica que el PRD fue verificado y cancela reanudaciones pendientes. Los procesos LAN son locales; no se hizo push ni publicación externa.
+El feedback del panel se guarda en `.runtime/feedback.jsonl` y se revisa entre incrementos. Para intervenir de inmediato, usar esta conversación. El archivo `.runtime/STOP` desactiva el ciclo del monitor; `.runtime/PROJECT_COMPLETE` indica que el PRD fue verificado y cancela reanudaciones pendientes. Los procesos de revisión permanecen en LAN. Remoto de código autorizado: [pablopeu/pattern](https://github.com/pablopeu/pattern), rama `main`.
 
 ## Documentación técnica
 

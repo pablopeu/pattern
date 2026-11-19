@@ -13,7 +13,7 @@ PRD implementado y auditado conforme a `docs/ACCEPTANCE.md`. No quedan tareas de
 - CairoSVG, Pillow y ezdxf validaron SVG aplicado, PNG/JPEG con DPI físicos y polilíneas DXF 2D en mm.
 - Instalación aislada `npm ci` correcta desde el lockfile.
 - Capturas reales revisadas y benchmark documentado en TESTING.md.
-- Git local, sin push ni hosting externo. Consultar `git log` para el commit vigente.
+- Git local con remoto autorizado `https://github.com/pablopeu/pattern` y rama `main`. Consultar `git log` y el upstream para el estado de sincronización. La aplicación se mantiene servida por LAN.
 
 ## Acceso conservado para feedback
 

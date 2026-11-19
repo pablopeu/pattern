@@ -54,7 +54,7 @@ Fecha de implementación y revisión: 19 de noviembre de 2026. La evidencia se o
 
 - `dist/` contiene HTML/CSS/JS/assets locales y avisos de licencias. No necesita Node, Python, GPU ni API para procesar geometría en producción.
 - Servidor de desarrollo LAN y monitor permanecen para revisión del usuario; son herramientas separadas del build.
-- Git exclusivamente local, commits por avances. Documentación y monitor leen el estado real.
+- Historial Git con commits por avances y remoto de código autorizado en `pablopeu/pattern`. Documentación y monitor leen el estado real.
 - El timer usa el reset de telemetría, no una estimación fija desde el inicio. Se comprobaron sus decisiones con mocks; no se simula ni se afirma haber consumido un ciclo real completo.
 
 ## Límites comprobados
