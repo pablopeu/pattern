@@ -372,7 +372,17 @@ test('AC-29: cambios de preferencias no dejan una tanda de miniaturas incompleta
   const previous = await page
     .locator('[data-symmetry-id="none:none"]')
     .getAttribute('data-preview-revision');
-  await line(page, [25, 10], [30, 20]);
+  const a = await at(page, 25, 10),
+    b = await at(page, 30, 20);
+  await page.mouse.move(a.x, a.y);
+  await page.mouse.down();
+  await page.mouse.move(b.x, b.y);
+  await page.mouse.up();
+  await page.waitForFunction(() => {
+    const grid = document.querySelector('.dynamic-symmetry-grid'),
+      n = Number(grid?.getAttribute('data-preview-completed'));
+    return grid?.getAttribute('data-preview-pending') === 'true' && n > 0 && n < 27;
+  });
   await page.getByRole('button', { name: 'Mostrar grilla', exact: true }).click();
   await expect(page.locator('[data-symmetry-id="none:none"]')).not.toHaveAttribute(
     'data-preview-revision',

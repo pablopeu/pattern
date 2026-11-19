@@ -79,3 +79,19 @@ La importación utiliza la misma validación de patrones, conserva parámetros/s
 Se leen presets `presetVersion:1` mediante la misma migración y presets `presetVersion:2`. Al exportar un conjunto heredado se resuelve y congela su simetría efectiva en modo propio, para que el preset sea autónomo. Al importar se regeneran IDs de fuentes y grupos.
 
 Hover, miniaturas, identificadores de revisión, candidatos y matrices inversas de captura permanecen fuera del JSON. `preferences.sourceView` y `preferences.repetitionView` guardan únicamente las preferencias visuales. La versión de IndexedDB sigue siendo 1: no cambia su estructura de almacenes.
+
+## Ejemplo de cambio de versión
+
+Fragmento v1 de un conjunto periódico (el documento completo incluye fuente y generador):
+
+```json
+{"schemaVersion":1,"patterns":[{"id":"motivo-a","symmetry":{"family":"wallpaper","group":"p1","width":60,"height":60,"angle":90,"sectors":8,"center":{"x":0,"y":0}}}]}
+```
+
+El fragmento equivalente v2 conserva p1 propio y añade los campos del marco:
+
+```json
+{"schemaVersion":2,"patterns":[{"id":"motivo-a","symmetryMode":"own","visible":true,"placementTransform":[1,0,0,1,0,0],"symmetryProfiles":{},"symmetry":{"family":"wallpaper","group":"p1","width":60,"height":60,"angle":90,"sectors":8,"center":{"x":0,"y":0},"origin":{"x":0,"y":0},"orientation":0}}]}
+```
+
+Estos fragmentos muestran sólo los campos afectados, no son documentos autónomos. Los ocho documentos v1 completos están en [fixtures/v1-examples.json](src/tests/fixtures/v1-examples.json); la suite los migra y comprueba su round-trip v2.

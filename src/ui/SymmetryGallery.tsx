@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, memo } from 'react';
 import type { Studio } from '../app/useStudio';
 import type { Symmetry, Pattern } from '../app/model';
 import { generate } from '../generators';
@@ -40,7 +40,7 @@ export function previewSVG(
     '#f8faf5',
   );
 }
-function MathematicalIcon({ choice }: { choice: SymmetryChoice }) {
+const MathematicalIcon = memo(function MathematicalIcon({ choice }: { choice: SymmetryChoice }) {
   const matrices = useMemo(() => {
     if (choice.family === 'none') return [[1, 0, 0, 1, 0, 0] as const];
     const sym: Symmetry = {
@@ -74,11 +74,33 @@ function MathematicalIcon({ choice }: { choice: SymmetryChoice }) {
       ))}
     </svg>
   );
-}
+});
 export function SymmetryGallery({ studio: s }: { studio: Studio }) {
+  const [capturing, setCapturing] = useState(false);
+  const completedSignature = useRef('');
+  useEffect(() => {
+    const start = (e: PointerEvent) => {
+      if (
+        e.target instanceof Element &&
+        (e.target.closest('.studio-canvas') || e.target.matches('input[type=range]'))
+      )
+        setCapturing(true);
+    };
+    const end = () => setCapturing(false);
+    document.addEventListener('pointerdown', start, true);
+    document.addEventListener('pointerup', end, true);
+    document.addEventListener('pointercancel', end, true);
+    window.addEventListener('blur', end);
+    return () => {
+      document.removeEventListener('pointerdown', start, true);
+      document.removeEventListener('pointerup', end, true);
+      document.removeEventListener('pointercancel', end, true);
+      window.removeEventListener('blur', end);
+    };
+  }, []);
   const [family, setFamily] = useState('all'),
     [comparison, setComparison] = useState('physical'),
-    [previews, setPreviews] = useState<Record<string, { svg: string; revision: number }>>({}),
+    [previews, setPreviews] = useState<Record<string, { url: string; revision: number }>>({}),
     [metrics, setMetrics] = useState({ pending: false, completed: 0, totalMs: 0 });
   const buttons = useRef<(HTMLButtonElement | null)[]>([]),
     revision = useRef(0),
@@ -106,12 +128,14 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
     target === 'project' ? s.project.mainSymmetryProfiles : s.pattern.symmetryProfiles;
   const choices = symmetryCatalog.filter((c) => family === 'all' || c.family === family);
   useEffect(() => {
+    if (capturing || previewSignature === completedSignature.current) return;
     let cancelled = false,
       id: number | undefined;
     const idle = (fn: () => void) => {
       id = window.setTimeout(fn, 12);
     };
     const timer = window.setTimeout(() => {
+      completedSignature.current = '';
       const token = ++revision.current,
         start = performance.now();
       let prepared: ReturnType<typeof generate>;
@@ -138,7 +162,14 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
               ? frameBounds(resolved.symmetry)
               : { x: -60, y: -45, width: 120, height: 90 };
           const svg = previewSVG(resolved, frame, prepared);
-          if (!cancelled) setPreviews((old) => ({ ...old, [key]: { svg, revision: token } }));
+          if (!cancelled)
+            setPreviews((old) => ({
+              ...old,
+              [key]: {
+                url: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg),
+                revision: token,
+              },
+            }));
         } catch {
           /* Keep the last valid miniature if a complexity limit is reached. */
         }
@@ -149,6 +180,7 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
           totalMs: performance.now() - start,
         });
         if (index < symmetryCatalog.length) idle(next);
+        else completedSignature.current = previewSignature;
       };
       idle(next);
     }, 180);
@@ -157,7 +189,7 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
       clearTimeout(timer);
       if (id !== undefined) clearTimeout(id);
     };
-  }, [previewSignature]);
+  }, [previewSignature, capturing]);
   const hover = (choice: SymmetryChoice) =>
     s.setSymmetryPreview({ target, patternId: s.pattern.id, choice });
   const previewCurrent = s.symmetryPreview
@@ -237,7 +269,7 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
               choice.family === 'none'
                 ? 'Libre'
                 : choice.family === 'radial'
-                  ? choice.group[0] + confirmed.sectors
+                  ? choice.group[0] + candidateSymmetry(confirmed, profiles, choice).sectors
                   : choice.group;
           return (
             <button
@@ -285,10 +317,7 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
             >
               <div className="drawing-thumbnail">
                 {p ? (
-                  <img
-                    alt={`Dibujo con ${choice.family} ${label}`}
-                    src={'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(p.svg)}
-                  />
+                  <img alt={`Dibujo con ${choice.family} ${label}`} src={p.url} />
                 ) : (
                   <span>Sin trazos</span>
                 )}

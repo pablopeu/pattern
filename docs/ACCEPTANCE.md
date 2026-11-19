@@ -66,6 +66,43 @@ Fecha de implementación y revisión: 19 de noviembre de 2026. La evidencia se o
 - IndexedDB es por navegador/origen. Otra PC accede a la aplicación, pero intercambia proyectos mediante JSON.
 - El timer solicita continuar en el daemon local; necesita que la máquina y Codex permanezcan disponibles. No se puede comprobar desde esta máquina la conexión física del navegador de otra PC; sí se verifica escucha HTTP en interfaces LAN.
 
-## Resultado de la corrida de cierre
+## Resultado de la corrida de cierre v1
 
 `npm run check`: TypeScript y **57 pruebas correctas**. `npm run test:e2e`: **19 correctas**. `npm run test:monitor`: **4 correctas**. Dos pruebas adicionales del build estático correctas en raíz/subdirectorio. Build, instalación reproducible y validadores independientes correctos. Se conserva la aplicación servida por LAN para feedback posterior.
+
+
+## PRD v2 · Auditoría de aceptación
+
+Se conserva la matriz v1 anterior. La evolución reutiliza el motor, el historial, el renderer SVG y la persistencia; no crea otro formato geométrico ni materializa las copias.
+
+| Criterio | Evidencia |
+|---|---|
+| AC-21 · Inicio Libre | Proyecto nuevo none/none, identidad única, una representación SVG; p1 sigue periódico |
+| AC-22 · Cambio no destructivo | Fuente, IDs, estilo, transformaciones y generador permanecen exactos al cambiar familias; perfiles independientes |
+| AC-23 · Continuar dibujo | Cuatro trazos con Lápiz Libre→p4m→p6m→Libre, fuente persistente y estilo conservado |
+| AC-24 · Reflexión | Nueva línea desde una copia pm seleccionada; inversa correcta durante pointermove y al finalizar |
+| AC-25 · Rotación | Mismo flujo real en p4 y p6; nodos en coordenadas canónicas esperadas |
+| AC-26 · Cruzar celdas | Desplazamiento de 65 mm con celda de 60 mm; una fuente nueva y una acción de undo |
+| AC-27 · Trazo abierto | Pluma multipunto conserva anclas y captura al cambiar grupo/modo; cambio programático con pointer capturado conserva el gesto |
+| AC-28 · Sin deriva | 100 ciclos incompatibles y regreso exacto a la configuración inicial en prueba unitaria |
+| AC-29 · Miniaturas reales | Dibujos generados por buildScene/svgPath, actualización tras editar y tanda cancelable; preferencias no interrumpen una tanda útil |
+| AC-30 · Hover puro | Canvas cambia temporalmente; JSON/metadata/IndexedDB quedan iguales. Foco de teclado no confirma |
+| AC-31 · Historial | Confirmación por Enter/Espacio/toque; undo de grupo y fuente separados, redo y reparación del conjunto activo eliminado |
+| AC-32 · Herramientas | Línea, Lápiz, Pluma y Nodos conservan contexto; estilo persistente al recorrer grupos |
+| AC-33 · Editar copias | Regresión de nodos desde pm/p4 y creación desde pm/p4/p6; selección geométrica independiente del orden SVG |
+| AC-34 · Origen | Arrastre cambia sólo configuración matemática; fuentes exactas, orientación separada y perfiles guardados |
+| AC-35 · Guías | Operaciones/red comparten origen/orientación; dominio Dirichlet conserva área correcta. Friso muestra una dirección; Libre y Penrose sin celda ficticia |
+| AC-36 · Composición | Heredado p4m→p6m, D8 propio y Libre visibles; selección/edición de los tres, orden/visibilidad y exportación común conservadora |
+| AC-37 · Migrar | Ocho documentos reales v1, snapshot congelado, presets 1/2, mismos datos y grupos efectivos |
+| AC-38 · Exportar | Libre directo sin use, composición expandida y aplicación congelada inmutable; SVG/DXF/PNG/JPEG y agujeros de v1 conservados |
+| AC-39 · Medir | Benchmark reproducible de motor, frames de grupo, miniaturas, parámetros y nodos; resultados en TESTING.md |
+| AC-40 · Flujo continuo | Galería disponible con objetos seleccionados; recorrido completo en Diseño, cambio a Patrón sin reiniciar herramienta |
+| AC-41 · Estático | Producción en raíz y /pattern/, recursos externos bloqueados, dibujo y worker de exportación |
+| AC-42 · Regresión | Se mantienen los 57 tests unitarios y 19 flujos E2E de v1 |
+
+Las celdas comunes sólo se certifican para períodos rectangulares compatibles; una composición oblicua no certificada admite región finita. El preview de galería es transitorio y la exportación usa siempre el documento confirmado. Las miniaturas anteriores siguen visibles mientras se regenera la tanda; un límite de complejidad conserva la última miniatura válida.
+
+
+### Resultado de cierre v2
+
+TypeScript y **80 unitarias**, **31 E2E**, **4 tests del monitor**, build y dos verificaciones estáticas correctos. Validadores independientes de SVG, raster y DXF correctos. Se completaron las auditorías visual, matemática, persistencia, exportación y regresión; servicios LAN conservados para revisión. Las limitaciones de complejidad/importación de v1 y la certificación conservadora de celdas comunes permanecen documentadas.

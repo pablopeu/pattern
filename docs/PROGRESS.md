@@ -98,3 +98,15 @@
 - Composición visible/ordenada mediante patterns[] propios/heredados/libres; exportación compuesta con IDs locales independientes. Aplicaciones congeladas guardan la simetría efectiva propia.
 - Corrida integrada: **80 unitarias y 29 E2E correctas** (incluye los 19 de v1), TypeScript y build correctos; 4 tests del monitor y validadores CairoSVG/Pillow/ezdxf correctos. Estático en raíz y `/pattern/` funciona con Internet bloqueado.
 - Pendiente antes del cierre de v2: terminar auditoría visual a 1366/1440, pruebas adicionales de toque/teclado/estilo y recuperación del conjunto activo, repetir benchmark aislado y build tras últimas correcciones, consolidar matriz AC-21…AC-42. No se declara completo todavía.
+
+
+## PRD v2 · Cierre verificado
+
+- Última corrida posterior a todos los cambios: **80 unitarias y 31 E2E correctas**, TypeScript y build correctos. Se mantienen íntegros los 57 tests unitarios y 19 flujos de v1.
+- Build final servido en raíz y `/pattern/`: dos pruebas correctas con recursos externos bloqueados, dibujo y exportación desde worker.
+- Corregida la galería para suspender tareas durante gestos, cachear URLs SVG e iconos y terminar tandas pese a cambios de preferencias. Mejora del p95 de nodo de 303.9 a 77.3 ms; las mediciones incluyen protocolo y no se convierten en una garantía universal de FPS.
+- Primera fila de miniaturas visible y controles compactados a 1366×768; capturas también a 1440×900. Sin errores de consola ni desbordes.
+- Nuevas pruebas de teclado, Espacio, toque, conservación del estilo de Lápiz, edición independiente de los tres conjuntos y selección válida tras undo.
+- Formato nativo v2, fragmentos v1/v2 y fixtures completos, arquitectura de matrices/captura/preview, referencias y matriz AC-21…AC-42 documentados.
+- Benchmark aislado y limitaciones en TESTING.md. Escucha LAN 4173/4174 comprobada con HTTP 200; sin feedback pendiente.
+- Checkpoint funcional `b3113cd` ya subido. El cierre y la documentación se incorporan al mismo historial main autorizado. PRD v2 terminado; servicios de revisión se conservan.

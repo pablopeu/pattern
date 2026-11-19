@@ -84,3 +84,31 @@ Resultados confirmados: SVG aplicado expandido sin clipPath; PNG/JPEG de 1522×1
 Se capturan Diseño, Patrón y Aplicar a 1440×900 y Diseño a 1366×768; también se inspeccionan aplicación irregular, exportación y benchmark 1920×1080. Se comprueban desbordes y errores de consola. Son capturas de inspección real, no snapshots aprobados automáticamente de una referencia externa.
 
 Los resultados finales, fallos corregidos y relación con AC-01…AC-20 están en `docs/ACCEPTANCE.md` y `docs/PROGRESS.md`. No se interpreta un build correcto como evidencia suficiente de geometría o interacción.
+
+## PRD v2: regresión y evidencias nuevas
+
+Se conservan los 57 tests unitarios de v1 y sus 19 flujos de navegador. Las pruebas que requerían un documento periódico declaran ahora explícitamente wallpaper/p1; el inicio real del producto es Libre. Los fixtures de `src/tests/fixtures/v1-examples.json` proceden de los ocho documentos generados por el commit v1 `2aa0987`.
+
+V2 agrega migración 1→2, snapshots/presets, identidad Libre, perfiles sin deriva tras 100 cambios, herencia propia/libre, origen/orientación y área fundamental, inversas fijas pm/p4/p6, exportación compuesta y aplicaciones congeladas. `tests/v2.spec.ts` comprueba miniaturas/hover sin modificar IndexedDB, confirmación por teclado/toque, continuidad de herramienta/estilo, creación desde copias y cruce de celdas, Pluma abierta y pointer capturado al cambiar grupo, origen arrastrable, composición y undo del conjunto activo.
+
+Las comparaciones matemáticas puras conservan tolerancia de cálculo doble y las fuentes JSON se comparan exactamente. En coordenadas tomadas del puntero SVG se permite <0,00005 mm: DOMPoint/Chromium cuantizan coordenadas de pantalla con float32; esto no redondea los datos persistidos.
+
+El benchmark también informa ocho cambios confirmados de grupo hasta dos frames de presentación y la duración de la tanda de 27 miniaturas, incluidas las cesiones programadas. Se separa el área grande del motor del viewport habitual. Las mediciones son locales y no representan una garantía universal de FPS.
+
+### Medición v2 final · 19/11/2026 19:13 UTC
+
+Chromium headless 1920×1080, servidor de desarrollo, sin otra suite de navegador en paralelo. Informe local en `.runtime/benchmark.json`.
+
+| Operación | Mediana | p95 |
+|---|---:|---:|
+| Motor, 100 fuentes y 336 celdas / 2688 operaciones | 0,6 ms | 1,2 ms |
+| Parámetro y frame, 35 muestras | 16,7 ms | 47,3 ms |
+| Nodo con ida/vuelta Playwright y frame, 25 muestras | 50,0 ms | 77,3 ms |
+| Cambio confirmado de grupo hasta dos frames, 8 muestras | 68,6 ms | — |
+| Tanda completa de 27 miniaturas, con cesiones | 1558,2 ms total | — |
+
+El tiempo de grupo incluye preparación y presentación: los dos requestAnimationFrame dan una cota práctica de primera representación, no una medición de pintura de GPU. La tanda comienza tras el debounce de 180 ms; su tiempo no incluye ese debounce. La edición sigue mostrando las miniaturas anteriores y suspende la generación durante gestos de canvas/sliders. Se cachea la URL SVG y el icono matemático para no recodificar ni reconstruir esos elementos durante cada actualización.
+
+Una medición previa sin suspender gestos tuvo arrastre de nodo de 77,5 ms / p95 303,9 ms. La mejora reduce esos picos; siguen existiendo pausas en escenas densas. La mediana de parámetros cumple interacción habitual fluida, pero no se afirma 30 FPS para todo caso ni se convierte el tiempo de protocolo de nodos en FPS del renderer.
+
+Auditoría visual final: miniaturas reales del Jardín a 1440×900 y 1366×768, primera fila completa visible, sin desborde ni errores de consola. Capturas locales `.runtime/v2-gallery-1440.png` y `.runtime/v2-gallery-1366.png`.

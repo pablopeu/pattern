@@ -65,7 +65,7 @@ El orden es `G · P · Q · S`: operación/traslación de grupo, colocación ind
 
 `editor/capture.ts` produce candidatos ordenados por prioridad explícita, hit geométrico, distancia de referencia e ID estable. El contexto del gesto guarda patrón, herramienta, matriz C e inversa. Cada punto usa C⁻¹ hasta finalizar; cada nodo existente añade la inversa del objeto. El orden de nodos SVG no elige el contexto.
 
-`SymmetryGallery` agenda las 27 miniaturas después de 180 ms y cede el hilo entre opciones. Comparte una generación de motivo por tanda; cancela por firma de contenido y conserva las miniaturas anteriores. Las preferencias sin cambios geométricos no cancelan una tanda útil. Hover se aloja fuera de Project/History/IndexedDB y sólo afecta los patrones correspondientes al objetivo del preview.
+`SymmetryGallery` agenda las 27 miniaturas después de 180 ms y cede el hilo entre opciones. Comparte una generación de motivo por tanda; cancela por firma de contenido y conserva las miniaturas anteriores. Las preferencias sin cambios geométricos no cancelan una tanda útil. Durante gestos de canvas/sliders la generación se suspende; URLs SVG e iconos se cachean para evitar recodificación y reconstrucción por cada punto. Hover se aloja fuera de Project/History/IndexedDB y sólo afecta los patrones correspondientes al objetivo del preview.
 
 La composición reutiliza `patterns[]` como capas visibles ordenadas. Cada conjunto mantiene generador, modo y colocación; no se introduce un scene graph. El SVG compuesto asigna prefijos a las referencias locales de cada conjunto y los demás formatos reutilizan la misma geometría efectiva. Un friso, radial, Libre o Penrose no certifica una baldosa bidimensional común.
 

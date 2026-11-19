@@ -412,7 +412,8 @@ export default function App() {
                 Una celda
               </button>
               <span>
-                {s.symmetryPreview ? 'Previsualización temporal' : 'Simetría confirmada'} · {s.tool}
+                {s.symmetryPreview ? 'Previsualización temporal' : 'Simetría confirmada'} ·{' '}
+                {tools.find((t) => t.id === s.tool)?.label ?? s.tool}
               </span>
             </div>
           )}

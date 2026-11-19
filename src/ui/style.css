@@ -1622,7 +1622,7 @@ input[type='color']::-webkit-color-swatch {
 .symmetry-gallery {
   border-bottom: 1px solid var(--line);
   flex-shrink: 0;
-  max-height: 47%;
+  max-height: 52%;
   overflow: auto;
   scrollbar-width: thin;
 }
@@ -1648,12 +1648,14 @@ input[type='color']::-webkit-color-swatch {
 .gallery-controls {
   padding: 0 14px 12px;
   display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 9px;
 }
 .gallery-controls select {
   font-size: 12px;
 }
 .gallery-filters {
+  grid-column: 1 / -1;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 7px;
