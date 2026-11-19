@@ -1,3 +1,4 @@
+import type { FillRegion } from '../fill/model';
 import {
   defaultDrawingStyle,
   type DrawingStyle,
@@ -9,6 +10,7 @@ import type { Matrix, Point, Unit } from '../geometry/matrix';
 export type Node = Point & { in: Point; out: Point };
 export type ShapeKind = 'path' | 'rectangle' | 'ellipse' | 'polygon' | 'compound';
 export interface Geometry extends DrawingStyle {
+  fillRegion?: FillRegion;
   id: string;
   name: string;
   kind: ShapeKind;

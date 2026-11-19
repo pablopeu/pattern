@@ -1,3 +1,4 @@
+import { axesFingerprint } from '../fill/service';
 import {
   styleFields,
   drawingStyle,
@@ -33,6 +34,7 @@ export type Tool =
   | 'rectangle'
   | 'ellipse'
   | 'polygon'
+  | 'fill'
   | 'region'
   | 'pan';
 export function useStudio() {
@@ -54,6 +56,12 @@ export function useStudio() {
   const [instanceExplicit, setInstanceExplicit] = useState(false);
   const [styleOpen, setStyleOpen] = useState(false),
     [styleTarget, setStyleTarget] = useState<'selection' | 'current'>('selection');
+  useEffect(() => {
+    if (tool === 'fill') {
+      setStyleTarget('current');
+      if (ref.current.drawingStyle.fill === 'none') setStyleOpen(true);
+    }
+  }, [tool]);
   const [nodeIndex, setNodeIndex] = useState(0);
   const [selected, setSelected] = useState<string[]>([]),
     [instance, setInstance] = useState<Matrix>(IDENTITY),
@@ -72,6 +80,23 @@ export function useStudio() {
     (recipe: (p: Project) => void, transient = false) => {
       const next = structuredClone(ref.current);
       recipe(next);
+      for (const pat of next.patterns)
+        for (const g of pat.sourceGeometry) {
+          const old = ref.current.patterns
+            .find((p) => p.id === pat.id)
+            ?.sourceGeometry.find((x) => x.id === g.id);
+          if (
+            g.fillRegion?.linked &&
+            old &&
+            JSON.stringify([old.nodes, old.pathData, old.parameters, old.transform]) !==
+              JSON.stringify([g.nodes, g.pathData, g.parameters, g.transform])
+          ) {
+            g.fillRegion.linked = false;
+            g.fillRegion.status = 'fixed';
+            g.fillRegion.reason = 'Contorno editado manualmente; vínculo desactivado.';
+          }
+        }
+
       if (next.preferences.styleDefaultsFollowSelection) {
         const before = [
             ...ref.current.patterns.flatMap((p) => p.sourceGeometry),
@@ -206,6 +231,45 @@ export function useStudio() {
       commit();
     }
   };
+  const linkedCompleted = useRef('');
+  useEffect(() => {
+    if (
+      !loaded ||
+      !ref.current.patterns.some((p) => p.sourceGeometry.some((g) => g.fillRegion?.linked))
+    )
+      return;
+    const fingerprint = axesFingerprint(ref.current);
+    if (linkedCompleted.current === fingerprint) return;
+    const worker = new Worker(new URL('../fill/worker.ts', import.meta.url), { type: 'module' });
+    worker.onmessage = (e) => {
+      if (e.data.type !== 'links' || axesFingerprint(ref.current) !== fingerprint) return;
+      linkedCompleted.current = fingerprint;
+      const patches = new Map<string, Geometry>(e.data.patches);
+      const amend = (p: Project) => {
+        if (axesFingerprint(p) !== fingerprint) return p;
+        const out = structuredClone(p);
+        for (const pat of out.patterns)
+          for (const g of pat.sourceGeometry) {
+            const update = patches.get(g.id);
+            if (update)
+              Object.assign(g, {
+                nodes: update.nodes,
+                pathData: update.pathData,
+                kind: update.kind,
+                parameters: update.parameters,
+                closed: update.closed,
+                fillRegion: update.fillRegion,
+              });
+          }
+        return out;
+      };
+      history.current.mapStates(amend);
+      replace(amend(ref.current));
+      worker.terminate();
+    };
+    worker.postMessage({ type: 'links', project: ref.current });
+    return () => worker.terminate();
+  }, [revision, loaded, replace]);
   const undo = useCallback(() => {
     replace(history.current.undo());
     setSelected((ids) =>
@@ -483,6 +547,7 @@ export function useStudio() {
           r: 'rectangle',
           e: 'ellipse',
           h: 'pan',
+          f: 'fill',
         };
         if (shortcuts[e.key.toLowerCase()]) setTool(shortcuts[e.key.toLowerCase()]);
       }

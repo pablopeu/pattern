@@ -25,10 +25,20 @@ export function materializeTiling(
   for (const matrix of transforms)
     for (const source of inner.generated.geometry)
       geometry.push(...clipGeometry(source, region, matrix, outlineStrokes, tolerance));
+  const original = scene.fills.map(({ geometry: g, matrices }) => ({
+    ...g,
+    fillRegion: {
+      ...g.fillRegion!,
+      scope: 'orbit' as const,
+      orbitMatrices: matrices,
+      linked: false,
+      status: 'fixed' as const,
+    },
+  }));
   return {
     ...pattern,
     tiling: undefined,
-    sourceGeometry: geometry,
+    sourceGeometry: [...original, ...geometry],
     placementTransform: IDENTITY,
     symmetryMode: 'own',
     symmetry: { ...pattern.symmetry, family: 'none', group: 'none' },

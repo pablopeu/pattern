@@ -3,6 +3,7 @@ import logo from '../../icono.png';
 import { commonRectangularCell, resolvePattern } from '../symmetry/config';
 import { useState, useRef } from 'react';
 import {
+  PaintBucket,
   MousePointer2,
   PenTool,
   Pencil,
@@ -54,6 +55,7 @@ const tools: { id: Tool; label: string; shortcut?: string; icon: typeof MousePoi
   { id: 'rectangle', label: 'Rectángulo', shortcut: 'R', icon: Square },
   { id: 'ellipse', label: 'Elipse', shortcut: 'E', icon: Circle },
   { id: 'polygon', label: 'Polígono libre', icon: Hexagon },
+  { id: 'fill', label: 'Rellenar región', shortcut: 'F', icon: PaintBucket },
   { id: 'pan', label: 'Desplazar vista', shortcut: 'H', icon: Move },
 ];
 export default function App() {

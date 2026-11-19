@@ -1,3 +1,4 @@
+import { sceneLayers } from '../patterns/layers';
 import { strokeRegion } from '../geometry/stroke-outline';
 import {
   tileRectangularCell,
@@ -187,7 +188,9 @@ function preparePatternExport(
     name: 'Límite de exportación',
     geometry: [cropShape],
   };
-  const total = transforms.length * scene.generated.geometry.length;
+  const total =
+    transforms.length * scene.generated.geometry.length +
+    scene.fills.reduce((n, f) => n + f.matrices.length, 0);
   if (total > 150000)
     throw Error('La exportación excede 150.000 trazados. Aumentá la celda o reducí la región.');
   const warnings: string[] = [];
@@ -200,51 +203,85 @@ function preparePatternExport(
     warnings.push(
       'Región fundamental: requiere las operaciones del grupo para reconstruir el patrón; no es una baldosa rectangular de traslación.',
     );
+  const layers = sceneLayers(scene, pattern);
   if (expanded) {
     let count = 0;
-    for (const t of transforms)
-      for (const shape of scene.generated.geometry) {
-        const m = multiply(placement, t);
-        geometries.push(
-          ...clipGeometry(shape, cropRegion, m, options.outlineStrokes, options.tolerance),
-        );
-        if (++count % 100 === 0) onProgress?.(count / total);
-      }
+    for (const layer of layers) {
+      if (layer.kind === 'fill') {
+        for (const m of layer.matrices)
+          geometries.push(
+            ...clipGeometry(
+              layer.geometry,
+              cropRegion,
+              multiply(placement, m),
+              options.outlineStrokes,
+              options.tolerance,
+            ),
+          );
+      } else
+        for (const t of transforms)
+          for (const shape of layer.geometry) {
+            geometries.push(
+              ...clipGeometry(
+                shape,
+                cropRegion,
+                multiply(placement, t),
+                options.outlineStrokes,
+                options.tolerance,
+              ),
+            );
+            if (++count % 100 === 0) onProgress?.(count / total);
+          }
+    }
   }
   if (expanded && tiling && options.includeTileOutlines)
     for (const contour of tileContours(tiling, tileInstances(tiling, visible)))
       geometries.push(...clipGeometry(contour, cropRegion, placement, false, options.tolerance));
-  const mask = region ? regionData(region) : latticeMask;
-  const defs = `<defs><g id="motif">${scene.generated.geometry.map(renderPath).join('')}</g>${mask ? `<clipPath id="region"><path d="${escapeXML(mask)}" clip-rule="evenodd"/></clipPath>` : ''}</defs>`;
-  let content = expanded
-    ? geometries.map(renderPath).join('')
-    : scene.tiling
-      ? tiledMarkup(
-          scene,
-          renderPath,
-          'export-tile',
-          placement,
-          options.includeTileOutlines ?? false,
-          '',
-          true,
+  const mask = region ? regionData(region) : latticeMask,
+    motifDefs: string[] = [];
+  let decorated = false;
+  const renderLayer = (layer: (typeof layers)[number], index: number): string => {
+    if (layer.kind === 'fill')
+      return layer.matrices
+        .map((m) =>
+          renderPath({
+            ...layer.geometry,
+            transform: multiply(multiply(placement, m), layer.geometry.transform),
+          }),
         )
-      : pattern.symmetry.family === 'none'
-        ? transforms
-            .flatMap((t) =>
-              scene.generated.geometry.map((shape) =>
-                renderPath({
-                  ...shape,
-                  transform: multiply(multiply(placement, t), shape.transform),
-                }),
-              ),
-            )
-            .join('')
-        : transforms
-            .map(
-              (t) =>
-                `<use href="#motif" xlink:href="#motif" transform="${matrixString(multiply(placement, t))}"/>`,
-            )
-            .join('');
+        .join('');
+    const subset = { ...scene, generated: { ...scene.generated, geometry: layer.geometry } },
+      id = index === 0 ? 'motif' : 'motif-' + index,
+      decorations = !decorated;
+    decorated = true;
+    if (scene.tiling)
+      return tiledMarkup(
+        subset,
+        renderPath,
+        index === 0 ? 'export-tile' : 'export-tile-' + index,
+        placement,
+        decorations && (options.includeTileOutlines ?? false),
+        '',
+        true,
+      );
+    if (pattern.symmetry.family === 'none')
+      return transforms
+        .flatMap((t) =>
+          layer.geometry.map((shape) =>
+            renderPath({ ...shape, transform: multiply(multiply(placement, t), shape.transform) }),
+          ),
+        )
+        .join('');
+    motifDefs.push(`<g id="${id}">${layer.geometry.map(renderPath).join('')}</g>`);
+    return transforms
+      .map(
+        (t) =>
+          `<use href="#${id}" xlink:href="#${id}" transform="${matrixString(multiply(placement, t))}"/>`,
+      )
+      .join('');
+  };
+  let content = expanded ? geometries.map(renderPath).join('') : layers.map(renderLayer).join('');
+  const defs = `<defs>${motifDefs.join('')}${mask ? `<clipPath id="region"><path d="${escapeXML(mask)}" clip-rule="evenodd"/></clipPath>` : ''}</defs>`;
   // Expanded applications contain real intersections and no masks/definitions.
   if (options.target === 'tile' && !expanded && !scene.tiling) {
     content = `${defs}<defs><pattern id="tile" patternUnits="userSpaceOnUse" width="${bounds.width}" height="${bounds.height}">${content}</pattern></defs><rect width="${bounds.width}" height="${bounds.height}" fill="url(#tile)"/>`;

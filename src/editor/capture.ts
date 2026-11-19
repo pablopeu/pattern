@@ -47,7 +47,7 @@ function tilesUnderPointer(scene: Scene, p: Point) {
 export function captureCandidates(pattern: Pattern, scene: Scene, p: Point): CaptureInstance[] {
   const center = captureReference(pattern);
   const allowed = scene.tiling ? new Set(tilesUnderPointer(scene, p).map((t) => t.id)) : null;
-  return scene.instances
+  const standard = scene.instances
     .filter((i) => !allowed || (i.tileId && allowed.has(i.tileId)))
     .flatMap((i) =>
       scene.generated.placements.map((m, k) => {
@@ -64,6 +64,22 @@ export function captureCandidates(pattern: Pattern, scene: Scene, p: Point): Cap
       }),
     )
     .sort((a, b) => a.distance - b.distance || a.id.localeCompare(b.id));
+  return [
+    ...standard,
+    ...scene.fills.flatMap(({ geometry: g, matrices }) =>
+      g.locked
+        ? []
+        : matrices.map((matrix, index) => ({
+            id: `${pattern.id}/fill/${g.id}/${index}`,
+            patternId: pattern.id,
+            matrix,
+            inverse: inverse(matrix),
+            reference: apply(matrix, center),
+            distance: distance(apply(matrix, center), p),
+            shapeId: g.id,
+          })),
+    ),
+  ];
 }
 /** A generic orbit reference independent of existing source extents. */
 export function captureReference(pattern: Pattern): Point {
@@ -151,6 +167,12 @@ export function hitCandidates(
         tol = tolerance / scale;
       for (let i = shapes.length - 1; i >= 0; i--) {
         const { g, path } = shapes[i];
+        if (
+          candidate.shapeId
+            ? candidate.shapeId !== g.id
+            : g.fillRegion && g.fillRegion.scope !== 'source'
+        )
+          continue;
         if (!path.bounds.expand(tol * 2 + g.strokeWidth).contains(point)) continue;
         const nearest = path.getNearestPoint(point);
         if (

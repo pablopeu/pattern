@@ -1,3 +1,5 @@
+import { sceneLayers } from '../patterns/layers';
+import { useFill } from '../fill/useFill';
 import { TileEditor } from '../tiling/TileEditor';
 import { tiledMarkup } from '../tiling/render';
 import { tileBounds, tileBasis, tileFrame, tileWorldBounds } from '../tiling/tiles';
@@ -151,6 +153,12 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     () => s.visiblePatterns.map((pattern) => ({ pattern, ...safeScene(pattern, actualView) })),
     [s.visiblePatterns, actualView],
   );
+  const fill = useFill(
+    s,
+    patternLayers.filter((l) => !!l.scene),
+    actualView,
+    s.tool === 'fill' && !previewOnly && s.mode !== 'apply',
+  );
   const point = (event: { clientX: number; clientY: number }): Point => {
     const svg = svgRef.current;
     if (!svg) return { x: 0, y: 0 };
@@ -269,6 +277,22 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       if (e.code === 'Space') {
         space.current = true;
         e.preventDefault();
+      }
+      if (s.tool === 'fill' && !s.styleOpen) {
+        if (e.key === 'Escape') {
+          fill.cancel();
+          return;
+        }
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          fill.cycle();
+          return;
+        }
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          fill.confirm();
+          return;
+        }
       }
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -444,12 +468,19 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       setCaptureLabel('');
     }
   }, [s.project]);
+  const willConfirmFill = (event: RPointerEvent<SVGSVGElement>) =>
+    s.tool === 'fill' &&
+    !!fill.preview &&
+    !!fill.position &&
+    distance(point(event), fill.position) < 2 / scalePx &&
+    event.pointerType !== 'touch';
   const pointerDown = (event: RPointerEvent<SVGSVGElement>) => {
     if (event.button === 2) return;
     svgRef.current?.focus();
     s.setSymmetryPreview(null);
     const p = point(event);
-    if (s.styleOpen && !s.project.preferences.stylePanelPinned) s.setStyleOpen(false);
+    if (s.styleOpen && !s.project.preferences.stylePanelPinned && !willConfirmFill(event))
+      s.setStyleOpen(false);
     lastPointer.current = p;
     if (event.button === 1 || space.current || s.tool === 'pan') {
       event.preventDefault();
@@ -463,6 +494,21 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       return;
     }
     if (previewOnly) return;
+    if (s.tool === 'fill') {
+      if (s.mode === 'apply') {
+        s.setMessage('Fill trabaja sobre los conjuntos de Diseño.');
+        return;
+      }
+      if (
+        fill.preview &&
+        fill.position &&
+        distance(p, fill.position) < 2 / scalePx &&
+        event.pointerType !== 'touch'
+      )
+        fill.confirm();
+      else fill.query(p);
+      return;
+    }
     let q = snap(p);
     event.currentTarget.setPointerCapture(event.pointerId);
     if (s.tool === 'select' || s.tool === 'nodes') {
@@ -560,6 +606,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     drag.current = { type: 'draw', start: q, id: g.id, shape: g, capture };
   };
   const pointerMove = (event: RPointerEvent<SVGSVGElement>) => {
+    if (s.tool === 'fill' && !drag.current && !previewOnly) fill.query(point(event));
     const p = point(event);
     setCursor(p);
     lastPointer.current = p;
@@ -812,15 +859,17 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       shapes.forEach((x) => x.path.remove());
     }
   };
-  const renderPattern = (
+  const renderPatternBody = (
     sc: Scene,
     id: string,
     placement: Matrix = IDENTITY,
     interactive = true,
     pat = activePattern,
+    decorations = true,
   ) => {
     if (sc.tiling) {
       const underlay =
+        decorations &&
         s.project.preferences.structureVisible &&
         s.mode !== 'apply' &&
         !editorOnly &&
@@ -841,7 +890,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
               svgPath,
               id,
               placement,
-              sc.tiling.definition.showOutline,
+              decorations && sc.tiling.definition.showOutline,
               underlay,
             ),
           }}
@@ -874,6 +923,8 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         width: Math.max(...corners.map((p) => p.x)) - Math.min(...corners.map((p) => p.x)),
         height: Math.max(...corners.map((p) => p.y)) - Math.min(...corners.map((p) => p.y)),
       });
+      const ids = new Set(sc.generated.geometry.map((g) => g.id));
+      tile.generated.geometry = tile.generated.geometry.filter((g) => ids.has(g.id));
       return (
         <>
           <defs>
@@ -933,6 +984,49 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
             })}
           </g>
         ))}
+      </>
+    );
+  };
+  const renderPattern = (
+    sc: Scene,
+    id: string,
+    placement: Matrix = IDENTITY,
+    interactive = true,
+    pat = activePattern,
+  ) => {
+    let decorated = false;
+    return (
+      <>
+        {sceneLayers(sc, pat).map((layer, index) => {
+          if (layer.kind === 'fill')
+            return (
+              <g
+                key={layer.geometry.id}
+                data-fill-region={layer.geometry.id}
+                onPointerDown={interactive ? (e) => selectAcrossLayers(e) : undefined}
+              >
+                {layer.matrices.map((m, i) => (
+                  <g key={i} transform={matrixString(multiply(placement, m))}>
+                    {renderShape(layer.geometry)}
+                  </g>
+                ))}
+              </g>
+            );
+          const decorations = !decorated;
+          decorated = true;
+          return (
+            <g key={'motif-' + index}>
+              {renderPatternBody(
+                { ...sc, generated: { ...sc.generated, geometry: layer.geometry } },
+                index === 0 ? id : id + '-' + index,
+                placement,
+                interactive,
+                pat,
+                decorations,
+              )}
+            </g>
+          );
+        })}
       </>
     );
   };
@@ -1035,14 +1129,27 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
           <span>{editorOnly ? 'Editable' : 'Sincronizada'}</span>
         </div>
       )}
+      {s.tool === 'fill' && !previewOnly && (
+        <div className="fill-actions" role="status">
+          <span>{fill.status}</span>
+          <button disabled={!fill.preview || fill.busy} onClick={fill.confirm}>
+            Confirmar relleno
+          </button>
+          <button disabled={fill.count < 2} onClick={fill.cycle}>
+            Otra región ({fill.count ? fill.index + 1 : 0}/{fill.count})
+          </button>
+          <button onClick={fill.cancel}>Cancelar cálculo</button>
+        </div>
+      )}
       <svg
         ref={svgRef}
         className={`studio-canvas tool-${s.tool}`}
         tabIndex={0}
         viewBox={`${actualView.x} ${actualView.y} ${actualView.width} ${actualView.height}`}
         style={{ background: s.project.preferences.background }}
-        onPointerDownCapture={() => {
-          if (s.styleOpen && !s.project.preferences.stylePanelPinned) s.setStyleOpen(false);
+        onPointerDownCapture={(event) => {
+          if (s.styleOpen && !s.project.preferences.stylePanelPinned && !willConfirmFill(event))
+            s.setStyleOpen(false);
         }}
         onPointerDown={pointerDown}
         onPointerMove={pointerMove}
@@ -1087,6 +1194,9 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
           scene &&
           (editorOnly ? (
             <g onPointerDown={(e) => selectInstance(e, IDENTITY)}>
+              {s.objects
+                .filter((g) => g.fillRegion && g.fillRegion.scope !== 'source' && g.visible)
+                .map(renderShape)}
               {scene.generated.geometry.map(renderShape)}
             </g>
           ) : (
@@ -1505,6 +1615,19 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
             fill="#90ae6220"
             stroke="#6e8d50"
             strokeWidth={0.4}
+            pointerEvents="none"
+          />
+        )}
+        {s.tool === 'fill' && fill.preview && (
+          <path
+            data-fill-preview="true"
+            d={fill.preview.pathData}
+            fill={s.project.drawingStyle.fill === 'none' ? '#75a287' : s.project.drawingStyle.fill}
+            fillOpacity={0.35}
+            fillRule="evenodd"
+            stroke="#315f48"
+            strokeWidth={1.5 / scalePx}
+            strokeDasharray={`${4 / scalePx} ${3 / scalePx}`}
             pointerEvents="none"
           />
         )}

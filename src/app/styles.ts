@@ -121,7 +121,8 @@ export function styleIssue(style: DrawingStyle): string | null {
     (d.length && d.reduce((a, b) => a + b, 0) < 0.001)
   )
     return 'La secuencia necesita longitudes finitas no negativas y un período mayor a 0,001 mm.';
-  if (d.length && d.every((n, i) => i % 2 === 1 || n === 0) && style.strokeCap === 'butt')
+  const repeated = d.length % 2 ? [...d, ...d] : d;
+  if (d.length && repeated.every((n, i) => i % 2 === 1 || n === 0) && style.strokeCap === 'butt')
     return 'Los segmentos de longitud cero requieren extremos redondos o cuadrados.';
   if (!Number.isFinite(style.strokeDashOffset)) return 'La fase de guiones debe ser finita.';
   const p = style.strokeProfile.points;

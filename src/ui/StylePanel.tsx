@@ -533,6 +533,14 @@ export function StyleIndicator({ studio: s }: { studio: Studio }) {
               : v.fill,
         }}
       />
+      <span aria-label="Patrón de línea vigente">
+        {mixed.has('strokeDash')
+          ? '?'
+          : { solid: '—', dotted: '···', dashed: '– –', dashdot: '–·', long: '──', custom: '≋' }[
+              linePatternName(v.strokeDash)
+            ]}
+      </span>
+      {mixed.size > 0 && <small>Mixto</small>}
       <span className="indicator-detail">
         {mixed.size
           ? 'Mixto'
@@ -610,6 +618,67 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
           </p>
         )}
         <StyleControls studio={s} target={s.styleTarget} />
+        <hr />
+        <strong>Fill · caras vectoriales</strong>
+        <Toggle
+          label="Nuevos rellenos vinculados a sus límites"
+          checked={s.project.preferences.fillLinkedDefault}
+          onChange={(v) => s.updateViewPreferences({ fillLinkedDefault: v })}
+        />
+        <Field
+          label="Tolerancia de cierre de Fill"
+          unit="mm"
+          value={s.project.preferences.fillCloseTolerance}
+          min={0}
+          max={5}
+          step={0.01}
+          onChange={(v) => s.updateViewPreferences({ fillCloseTolerance: v })}
+        />
+        <small>
+          {s.project.preferences.fillCloseTolerance > 0
+            ? 'Cierre aproximado explícito. No modifica los límites originales.'
+            : 'Cierre exacto: tolerancia numérica de 0,000001 mm.'}
+        </small>
+        {s.styleSelection
+          .filter((g) => g.fillRegion)
+          .map((g) => (
+            <div className="style-note" key={g.id}>
+              <strong>{g.name}</strong>
+              <p>
+                {g.fillRegion!.scope === 'orbit'
+                  ? 'Órbita concreta'
+                  : g.fillRegion!.scope === 'tile'
+                    ? 'Interior de tesela'
+                    : 'Fuente canónica'}{' '}
+                ·{' '}
+                {g.fillRegion!.status === 'stale'
+                  ? 'Vínculo desactualizado'
+                  : g.fillRegion!.linked
+                    ? 'Vinculado'
+                    : 'Fijo'}
+              </p>
+              {g.fillRegion!.reason && <p>{g.fillRegion!.reason}</p>}
+              <Toggle
+                label={`Vincular ${g.name}`}
+                checked={g.fillRegion!.linked}
+                onChange={(linked) =>
+                  s.change((p) => {
+                    const shape = p.patterns
+                      .flatMap((p) => p.sourceGeometry)
+                      .find((x) => x.id === g.id);
+                    if (shape?.fillRegion) {
+                      shape.fillRegion.linked = linked;
+                      shape.fillRegion.status = linked ? 'linked' : 'fixed';
+                      shape.fillRegion.reason = linked
+                        ? undefined
+                        : 'Contorno fijado explícitamente.';
+                    }
+                  })
+                }
+              />
+            </div>
+          ))}
+
         <hr />
         <strong>Presets de estilo</strong>
         <Select

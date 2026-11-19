@@ -1874,3 +1874,6 @@ input[type='color']::-webkit-color-swatch {
 @keyframes style-enter { from {opacity:0;transform:translateX(12px)} to {opacity:1;transform:translateX(0)} }
 @media(max-width:1200px) { .style-panel { position:absolute; right:0; top:0; bottom:0; box-shadow:-6px 0 24px #233b2d24; max-width:85vw; } .workspace { position:relative; } .indicator-detail { display:none; } }
 @media(prefers-reduced-motion:reduce) { .style-panel { animation:none; } }
+.fill-actions { position:absolute; top:8px; left:12px; right:12px; z-index:15; display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:7px 10px; background:#f9fcf3ee; border:1px solid #dce3d8; border-radius:7px; font-size:11px; }
+.fill-actions span { flex:1; } .fill-actions button { padding:5px; border:1px solid #d3dec9; border-radius:4px; }
+.tool-fill { cursor:crosshair; }

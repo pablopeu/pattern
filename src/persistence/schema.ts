@@ -22,7 +22,43 @@ const strokeExtensions = {
   strokeDashOffset: n.min(-1000000).max(1000000).default(0),
   strokeProfile: strokeProfileSchema.default(defaultDrawingStyle().strokeProfile),
 };
+const boundaryRef = z.object({
+  inputId: z.string(),
+  patternId: z.string(),
+  shapeId: z.string(),
+  matrix,
+  curve: n.int().min(0),
+  part: n.int().min(0),
+  direction: z.union([z.literal(1), z.literal(-1)]),
+});
+const fillRegion = z.object({
+  version: z.literal(1),
+  kind: z.enum(['face', 'tile']),
+  scope: z.enum(['source', 'orbit', 'tile']),
+  linked: z.boolean(),
+  status: z.enum(['linked', 'fixed', 'stale']),
+  reason: z.string().max(2000).optional(),
+  faceKey: z.string().max(200000),
+  topologyKey: z.string().max(200000),
+  refs: z.array(boundaryRef).max(10000),
+  inputs: z
+    .array(
+      z.object({
+        id: z.string(),
+        patternId: z.string(),
+        shapeId: z.string(),
+        matrix,
+        tileMatrix: matrix.optional(),
+      }),
+    )
+    .max(1200),
+  context: z.string().max(1000000),
+  captureMatrix: matrix,
+  orbitMatrices: z.array(matrix).min(1).max(2048),
+  closeTolerance: n.min(0).max(5),
+});
 export const geometrySchema = z.object({
+  fillRegion: fillRegion.optional(),
   ...strokeExtensions,
   id: z.string().min(1),
   name: z.string(),
@@ -284,6 +320,15 @@ export function parseProject(text: string): Project {
     const issue = styleIssue(g);
     if (issue) throw Error(issue);
     checkMatrix(g.transform);
+    if (g.fillRegion) {
+      checkMatrix(g.fillRegion.captureMatrix);
+      for (const m of g.fillRegion.orbitMatrices) checkMatrix(m);
+      for (const input of g.fillRegion.inputs) {
+        checkMatrix(input.matrix);
+        if (input.tileMatrix) checkMatrix(input.tileMatrix);
+      }
+      for (const ref of g.fillRegion.refs) checkMatrix(ref.matrix);
+    }
     if (['rectangle', 'ellipse', 'polygon'].includes(g.kind) && !g.parameters)
       throw Error(`La forma «${g.name}» perdió sus parámetros.`);
     if (g.kind === 'compound' && (!g.pathData || !/^[\s]*[mM]/.test(g.pathData)))

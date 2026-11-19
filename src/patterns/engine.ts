@@ -11,8 +11,9 @@ import type { Pattern } from '../app/model';
 import { generate, type Generated } from '../generators';
 import { IDENTITY, multiply, apply, type Matrix } from '../geometry/matrix';
 import { visibleInstances, type Bounds, type Instance, type Periodicity } from '../symmetry/groups';
-import { geometryBounds } from '../application/clipping';
+import { geometryBounds, clipGeometry } from '../application/clipping';
 export interface Scene {
+  fills: { geometry: Geometry; matrices: Matrix[] }[];
   tiling?: {
     definition: TilingDefinition;
     boundary: Geometry;
@@ -28,7 +29,17 @@ export function buildScene(pattern: Pattern, bounds: Bounds, prepared?: Generate
   if (pattern.tiling && pattern.generator.kind !== 'penrose') {
     const definition = pattern.tiling,
       boundary = tileBoundary(definition),
-      inner = buildScene({ ...pattern, tiling: undefined }, tileBounds(definition), prepared),
+      inner = buildScene(
+        {
+          ...pattern,
+          tiling: undefined,
+          sourceGeometry: pattern.sourceGeometry.filter(
+            (g) => !g.fillRegion || g.fillRegion.scope === 'source',
+          ),
+        },
+        tileBounds(definition),
+        prepared,
+      ),
       tiles = tileInstances(definition, bounds);
     // Continue a stroke across paired boundaries without splitting its canonical source.
     const base = geometryBounds(inner.generated.geometry),
@@ -74,7 +85,40 @@ export function buildScene(pattern: Pattern, bounds: Bounds, prepared?: Generate
         matrix: multiply(tile.matrix, instance.matrix),
       })),
     );
+    const fillGeometry = (g: Geometry): Geometry => {
+      if (g.fillRegion!.scope !== 'tile') return g;
+      if (g.fillRegion!.linked && g.fillRegion!.status !== 'stale')
+        return {
+          ...g,
+          nodes: boundary.nodes,
+          kind: boundary.kind,
+          pathData: undefined,
+          parameters: undefined,
+          closed: true,
+        };
+      const parts = clipGeometry(
+        { ...g, stroke: 'none' },
+        { id: 'tile-fill-clip', name: 'Interior material', geometry: [boundary] },
+      );
+      return {
+        ...g,
+        kind: 'compound',
+        nodes: [],
+        parameters: undefined,
+        pathData: parts.map((p) => p.pathData ?? '').join(''),
+        closed: true,
+      };
+    };
     return {
+      fills: pattern.sourceGeometry
+        .filter((g) => g.visible && g.fillRegion && g.fillRegion.scope !== 'source')
+        .map((g) => ({
+          geometry: fillGeometry(g),
+          matrices:
+            g.fillRegion!.scope === 'tile'
+              ? tiles.map((t) => t.matrix)
+              : g.fillRegion!.orbitMatrices,
+        })),
       generated: inner.generated,
       instances,
       tiling: { definition, boundary, tiles, inner },
@@ -83,7 +127,24 @@ export function buildScene(pattern: Pattern, bounds: Bounds, prepared?: Generate
     };
   }
 
-  const generated = { ...(prepared ?? generate(pattern.generator, pattern.sourceGeometry)) };
+  const derived = pattern.sourceGeometry.filter((g) => g.fillRegion);
+  const generated = {
+    ...(prepared ??
+      generate(
+        pattern.generator,
+        pattern.sourceGeometry.filter((g) => !g.fillRegion),
+      )),
+  };
+  generated.geometry = [
+    ...derived.filter((g) => g.visible && g.fillRegion!.scope === 'source'),
+    ...generated.geometry,
+  ];
+  const order = new Map(pattern.sourceGeometry.map((g, i) => [g.id, i]));
+  generated.geometry.sort(
+    (a, b) =>
+      (order.get(a.id) ?? pattern.sourceGeometry.length) -
+      (order.get(b.id) ?? pattern.sourceGeometry.length),
+  );
   generated.placements = generated.placements.map((m) =>
     multiply(pattern.placementTransform ?? IDENTITY, m),
   );
@@ -112,6 +173,15 @@ export function buildScene(pattern: Pattern, bounds: Bounds, prepared?: Generate
     ? [{ id: 'finite', matrix: IDENTITY, cell: [0, 0] as [number, number] }]
     : visibleInstances(pattern.symmetry, bounds, motif);
   return {
+    fills: derived
+      .filter((g) => g.visible && g.fillRegion!.scope !== 'source')
+      .map((g) => ({
+        geometry: g,
+        matrices:
+          g.fillRegion!.scope === 'tile'
+            ? [g.fillRegion!.captureMatrix]
+            : g.fillRegion!.orbitMatrices,
+      })),
     generated,
     instances: repeating,
     status: free ? 'FREE_NONPERIODIC' : finite ? 'FINITE_NONPERIODIC' : 'PERIODIC_SEAMLESS',
