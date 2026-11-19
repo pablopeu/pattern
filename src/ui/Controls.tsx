@@ -1,7 +1,7 @@
 import {useState,useEffect,type ReactNode} from 'react';
-export function Field({label,value,onChange,min=-10000,max=10000,step=1,unit,slider=false}:{label:string;value:number;onChange:(n:number)=>void;min?:number;max?:number;step?:number;unit?:string;slider?:boolean}){
+export function Field({label,value,onChange,min=-10000,max=10000,step=1,unit,slider=false,integer=false}:{label:string;value:number;onChange:(n:number)=>void;min?:number;max?:number;step?:number;unit?:string;slider?:boolean;integer?:boolean}){
  const [text,setText]=useState(String(Math.round(value*10000)/10000));useEffect(()=>setText(String(Math.round(value*10000)/10000)),[value]);
- const accept=(v:string)=>{setText(v);const n=Number(v);if(v.trim()!==''&&Number.isFinite(n)&&n>=min&&n<=max)onChange(n);};
+ const accept=(v:string)=>{setText(v);const n=Number(v);if(v.trim()!==''&&Number.isFinite(n)&&n>=min&&n<=max&&(!integer||Number.isInteger(n)))onChange(n);};
  return <label className={`field ${slider?'slider-field':''}`}><span>{label}</span><div className="number-wrap"><input aria-label={label} type="number" value={text} min={min} max={max} step={step} onChange={e=>accept(e.target.value)} onBlur={()=>setText(String(Math.round(value*10000)/10000))}/>{unit&&<small>{unit}</small>}</div>{slider&&<input aria-label={`${label} deslizador`} type="range" min={min} max={max} step={step} value={value} onChange={e=>onChange(Number(e.target.value))}/>}</label>;
 }
 export function Section({title,children,defaultOpen=true}:{title:string;children:ReactNode;defaultOpen?:boolean}){return <details className="panel-section" open={defaultOpen}><summary>{title}<span>⌄</span></summary><div className="section-content">{children}</div></details>;}

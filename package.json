@@ -14,7 +14,13 @@
     "check": "tsc -b && vitest run",
     "notices": "node scripts/notices.mjs",
     "benchmark": "node scripts/benchmark.mjs",
-    "test:monitor": "python3 scripts/test_monitor.py"
+    "test:monitor": "python3 scripts/test_monitor.py",
+    "local:start": "python3 scripts/local-services.py start",
+    "local:status": "python3 scripts/local-services.py status",
+    "local:stop": "python3 scripts/local-services.py stop",
+    "serve:dist": "python3 -m http.server 4180 --bind 0.0.0.0 --directory dist",
+    "test:static": "TEST_STATIC=1 playwright test",
+    "validate:exports": "node scripts/validate-exports.mjs"
   },
   "dependencies": {
     "clipper-lib": "^6.4.2",

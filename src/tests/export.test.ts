@@ -23,9 +23,17 @@ describe('Recorte vectorial exacto',()=>{
   const p=newProject();p.patterns[0].symmetry.angle=90;p.patterns[0].symmetry.width=60;p.patterns[0].symmetry.height=60;p.patterns[0].sourceGeometry=[rect(55,10,20,20)];const result=prepareExport(p,{...options,target:'tile',patternId:p.patterns[0].id});expect(result.svg).not.toContain('clipPath');expect(result.svg).not.toContain('<use');for(const g of result.geometries){const b=geometryBounds([g]);expect(b.x).toBeGreaterThanOrEqual(-1e-6);expect(b.x+b.width).toBeLessThanOrEqual(60+1e-6);}expect(result.geometries.length).toBeGreaterThan(1);
  });
  it('red oblicua: rechaza baldosa rectangular; celda de red expandida sin máscaras',()=>{
-  const p=newProject();p.patterns[0].sourceGeometry=[rect(0,0,35,35)];expect(()=>prepareExport(p,{...options,target:'tile',patternId:p.patterns[0].id})).toThrow(/rectangular/);const out=prepareExport(p,{...options,target:'lattice',patternId:p.patterns[0].id});expect(out.svg).not.toContain('clipPath');expect(out.geometries.length).toBeGreaterThan(0);
+  const p=newProject();p.patterns[0].symmetry.angle=70;p.patterns[0].sourceGeometry=[rect(0,0,35,35)];expect(()=>prepareExport(p,{...options,target:'tile',patternId:p.patterns[0].id})).toThrow(/rectangular/);const out=prepareExport(p,{...options,target:'lattice',patternId:p.patterns[0].id});expect(out.svg).not.toContain('clipPath');expect(out.geometries.length).toBeGreaterThan(0);
  });
  it('aplicaciones congeladas conservan su fuente y el DXF su escala',()=>{
   const p=newProject(),g=rect(0,0,100,50);p.patterns[0].sourceGeometry=[g];p.patterns[0].symmetry.angle=90;p.patterns[0].symmetry.width=200;p.patterns[0].symmetry.height=200;const region={id:uid(),name:'R',geometry:[rect(0,0,100,50)]};p.regions.push(region);const app={id:uid(),name:'A',patternId:p.patterns[0].id,regionId:region.id,placementTransform:[1,0,0,1,0,0] as const,linked:false,frozenPattern:structuredClone(p.patterns[0]),showOutline:false};p.applications.push(app);p.patterns[0].sourceGeometry=[];const out=prepareExport(p,{...options,target:'application',patternId:p.patterns[0].id,applicationId:app.id});expect(out.svg).toContain('width="100mm" height="50mm"');expect(out.geometries.length).toBeGreaterThan(0);const dxf=exportDXF([g],.01);expect(dxf).toContain('$INSUNITS\n70\n4');expect(dxf).toContain('10\n100\n20\n-50');
  });
 });
+
+it('contornos de trazo: extremos butt/square y uniones bevel reales',()=>{
+ const line=geometry('path',[node(0,0),node(10,0),node(10,10)]);line.strokeWidth=2;line.strokeCap='butt';line.strokeJoin='bevel';let path=paperPath(strokeRegion(line));expect(path.contains(new scope.Point(10.6,-.6))).toBe(false);expect(path.contains(new scope.Point(10.2,-.2))).toBe(true);expect(path.contains(new scope.Point(-.5,0))).toBe(false);path.remove();line.strokeCap='square';path=paperPath(strokeRegion(line));expect(path.contains(new scope.Point(-.5,0))).toBe(true);path.remove();
+});
+
+it('las regiones submilimétricas conservan dimensiones físicas sin mínimos artificiales',()=>{const g=rect(0,0,.2,.3),b=geometryBounds([g]);expect(b.width).toBeCloseTo(.2,10);expect(b.height).toBeCloseTo(.3,10);});
+
+it('un perímetro autointersectado con área de paridad válida se admite',async()=>{const {hasClosedGeometry}=await import('../application/clipping');const g=geometry('path',[node(0,0),node(20,20),node(0,20),node(20,0)],true);expect(hasClosedGeometry(g)).toBe(true);});

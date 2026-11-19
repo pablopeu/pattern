@@ -18,7 +18,7 @@ test('AC-01: primera línea visible antes de soltar; undo y redo',async({page})=
 });
 test('AC-02/03: arrastrar nodo desde copia reflejada cambia la fuente',async({page})=>{
  await ready(page);await newProject(page);await uploadSVG(page,'<svg xmlns="http://www.w3.org/2000/svg" width="60mm" height="60mm" viewBox="0 0 60 60"><path d="M10 10L25 15L15 25Z" fill="#55765b"/></svg>');
- await page.getByRole('button',{name:'Simetría pm',exact:true}).click();await page.getByRole('button',{name:'Editar nodos',exact:true}).click();const hit=await modelPoint(page,16,-15);await page.mouse.click(hit.x,hit.y);await expect(page.getByLabel('Nodo 1',{exact:true})).toBeVisible();
+ await page.getByRole('tab',{name:'Patrón',exact:true}).click();await page.getByRole('button',{name:'Simetría pm',exact:true}).click();await page.getByRole('button',{name:'Editar nodos',exact:true}).click();const hit=await modelPoint(page,16,-15);await page.mouse.click(hit.x,hit.y);await expect(page.getByLabel('Nodo 1',{exact:true})).toBeVisible();
  const n=await page.getByLabel('Nodo 1',{exact:true}).boundingBox();expect(n).not.toBeNull();await page.mouse.move(n!.x+n!.width/2,n!.y+n!.height/2);await page.mouse.down();await page.mouse.move(n!.x+n!.width/2+15,n!.y+n!.height/2+15,{steps:4});await page.mouse.up();await expect.poll(async()=>((await model(page)) as any).patterns[0].sourceGeometry[0].nodes[0].y).toBeLessThan(10);
 });
 test('AC-12/13: rectángulo 100x50 mm, JSON portable y recuperación',async({page})=>{
@@ -51,7 +51,7 @@ test('pluma Bézier y polígono: tangentes, cierre, fuente editable y un undo po
  await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(page.locator('.empty-canvas')).toBeVisible();await page.getByRole('button',{name:'Rehacer',exact:true}).click();await expect(page.locator('.empty-canvas')).toHaveCount(0);
 });
 test('edición de un nodo desde una instancia rotada',async({page})=>{
- await ready(page);await newProject(page);await uploadSVG(page,'<svg xmlns="http://www.w3.org/2000/svg" width="60mm" height="60mm" viewBox="0 0 60 60"><path d="M10 10L25 15L15 25Z" fill="#55765b"/></svg>');await page.getByRole('button',{name:'Simetría p4',exact:true}).click();await page.getByRole('button',{name:'Editar nodos',exact:true}).click();const q=await modelPoint(page,-16,15);await page.mouse.click(q.x,q.y);const n=await page.getByLabel('Nodo 1',{exact:true}).boundingBox();expect(n).not.toBeNull();await page.mouse.move(n!.x+n!.width/2,n!.y+n!.height/2);await page.mouse.down();await page.mouse.move(n!.x+n!.width/2+18,n!.y+n!.height/2);await page.mouse.up();await expect.poll(async()=>((await model(page)) as any)?.patterns[0].sourceGeometry[0]?.nodes[0].y).toBeLessThan(10);
+ await ready(page);await newProject(page);await uploadSVG(page,'<svg xmlns="http://www.w3.org/2000/svg" width="60mm" height="60mm" viewBox="0 0 60 60"><path d="M10 10L25 15L15 25Z" fill="#55765b"/></svg>');await page.getByRole('tab',{name:'Patrón',exact:true}).click();await page.getByRole('button',{name:'Simetría p4',exact:true}).click();await page.getByRole('button',{name:'Editar nodos',exact:true}).click();const q=await modelPoint(page,-16,15);await page.mouse.click(q.x,q.y);const n=await page.getByLabel('Nodo 1',{exact:true}).boundingBox();expect(n).not.toBeNull();await page.mouse.move(n!.x+n!.width/2,n!.y+n!.height/2);await page.mouse.down();await page.mouse.move(n!.x+n!.width/2+18,n!.y+n!.height/2);await page.mouse.up();await expect.poll(async()=>((await model(page)) as any)?.patterns[0].sourceGeometry[0]?.nodes[0].y).toBeLessThan(10);
 });
 test('presets y biblioteca conservan proyectos al restaurar ejemplos',async({page})=>{
  await ready(page);await page.getByLabel('Nombre del proyecto',{exact:true}).fill('Mi proyecto conservado');await expect(page.locator('.save-indicator')).toHaveText(/Guardado local/);await menu(page,'Espejos · p4m');await menu(page,'Biblioteca de este navegador');const dialog=page.getByRole('dialog',{name:'Biblioteca de proyectos'});await dialog.getByRole('button',{name:/Mi proyecto conservado/}).click();await expect(page.getByLabel('Nombre del proyecto',{exact:true})).toHaveValue('Mi proyecto conservado');
@@ -78,4 +78,25 @@ test('la celda SVG teselada coincide con la escena grande, incluidos cruces de b
 test('crear perímetro, aplicar, transformar, congelar y undo/redo',async({page})=>{
  await ready(page);await page.getByRole('tab',{name:'Aplicar',exact:true}).click();await page.getByRole('button',{name:'Rectángulo',exact:true}).click();const a=await modelPoint(page,-30,-30),b=await modelPoint(page,70,40);await page.mouse.move(a.x,a.y);await page.mouse.down();await page.mouse.move(b.x,b.y);await page.mouse.up();await page.getByRole('button',{name:'Aplicar al perímetro',exact:true}).click();await expect.poll(async()=>((await model(page)) as any)?.applications.length).toBe(1);
  await page.getByLabel('Escala uniforme',{exact:true}).fill('1.5');await page.getByLabel('Rotación de aplicación',{exact:true}).fill('30');await page.getByRole('button',{name:'Vinculado · congelar copia',exact:true}).click();await expect.poll(async()=>((await model(page)) as any)?.applications[0]?.linked).toBe(false);await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(page.getByRole('button',{name:'Vinculado · congelar copia',exact:true})).toBeVisible();await page.getByRole('button',{name:'Rehacer',exact:true}).click();await expect(page.getByRole('button',{name:'Congelado · volver a vincular',exact:true})).toBeVisible();await page.screenshot({path:'test-results/applied-interaction.png'});
+});
+
+test('SVG: preserveAspectRatio, viewport físico y escalado no uniforme conservan las medidas',async({page})=>{
+ await ready(page);const cases=await page.evaluate(async()=>{
+  const {importSVG}=await import('/src/persistence/svg-import.ts');const {geometryBounds}=await import('/src/application/clipping.ts');
+  const read=(text)=>{const result=importSVG(text,100);return {bounds:geometryBounds(result.geometry),stroke:result.geometry[0].strokeWidth,matrix:result.geometry[0].transform};};
+  return [
+   read('<svg xmlns="http://www.w3.org/2000/svg" width="100mm" height="100mm" viewBox="0 0 200 100"><rect width="200" height="100"/></svg>'),
+   read('<svg xmlns="http://www.w3.org/2000/svg" width="100mm" height="100mm" viewBox="0 0 200 100" preserveAspectRatio="none"><rect width="200" height="100"/></svg>'),
+   read('<svg xmlns="http://www.w3.org/2000/svg" width="100mm" height="50mm"><rect width="96" height="96"/></svg>')
+  ];
+ });expect(cases[0].bounds.width).toBeCloseTo(100,6);expect(cases[0].bounds.height).toBeCloseTo(50,6);expect(cases[0].bounds.y).toBeCloseTo(25,6);expect(cases[1].bounds.height).toBeCloseTo(100,6);expect(cases[2].bounds.width).toBeCloseTo(25.4,6);
+});
+
+test('la exportación se puede cancelar y reintentar sin cambiar el documento',async({page})=>{
+ await ready(page);await page.getByRole('button',{name:'Exportar',exact:true}).click();await page.getByRole('button',{name:'Cancelar',exact:true}).click();await expect(page.getByRole('alert')).toContainText('cancelada');await page.getByLabel('Qué exportar',{exact:true}).selectOption('tile');await expect(page.getByRole('button',{name:'Descargar archivo',exact:true})).toBeEnabled();
+});
+
+test('duplicar patrón mantiene fuentes independientes',async({page})=>{
+ await ready(page);await page.getByRole('button',{name:'Duplicar patrón',exact:true}).click();await expect.poll(async()=>((await model(page)) as any)?.patterns.length).toBe(2);const p:any=await model(page);expect(p.patterns[0].sourceGeometry[0].id).not.toBe(p.patterns[1].sourceGeometry[0].id);
+ await page.getByRole('button',{name:/^Capas/}).click();await page.locator('.layer-name').last().click();await page.getByRole('button',{name:'Diseño',exact:true}).click();await page.getByLabel('Nombre del objeto',{exact:true}).fill('Sólo cambia la copia');await expect.poll(async()=>((await model(page)) as any)?.patterns[1].sourceGeometry[0].name).toBe('Sólo cambia la copia');expect(((await model(page)) as any).patterns[0].sourceGeometry[0].name).not.toBe('Sólo cambia la copia');
 });

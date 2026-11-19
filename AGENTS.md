@@ -8,3 +8,5 @@ Implementar `prd_v1.txt` completo. Trabajar con Git local; no push ni hosting ex
 - Commits pequeños por avances coherentes; actualizar documentación con verificaciones reales y pendientes explícitos. No declarar completo el PRD sin auditar sus criterios.
 - No copiar código de referencias sin licencia compatible. Motor independiente de React, fuente canónica y transformaciones de instancias.
 - Usar npm y package-lock.json; TypeScript estricto. Pruebas de geometría, persistencia y E2E reales.
+
+- Si el usuario solicita cambios después de un cierre verificado, retirar `.runtime/PROJECT_COMPLETE`: el monitor continúa vivo y retoma la vigilancia. No borrar este marcador como parte de una prueba.

@@ -8,7 +8,7 @@ import {paperPath,scope,smoothNodes} from '../geometry/paper';
 import {buildScene,type Scene} from '../patterns/engine';
 import {lattice,latticeVectors,fundamentalDomain,type Bounds} from '../symmetry/groups';
 import {symmetryGuides,verifyPeriodicity} from '../symmetry/guides';
-import {geometryBounds,regionData} from '../application/clipping';
+import {geometryBounds,regionData,hasClosedGeometry} from '../application/clipping';
 
 interface Props {studio:Studio;editorOnly?:boolean;previewOnly?:boolean;}
 interface Drag {type:'pan'|'move'|'node'|'draw'|'penhandle'|'marquee';start:Point;last?:Point;view?:Bounds;ids?:string[];transforms?:Map<string,Matrix>;matrix?:Matrix;id?:string;index?:number;handle?:'node'|'in'|'out';baseNode?:Node;shape?:Geometry;}
@@ -35,9 +35,15 @@ export function Canvas({studio:s,editorOnly=false,previewOnly=false}:Props){
   // Resolve region by shape ID as the first pointer event may precede a React render.
   s.change(p=>{const objects=[...p.patterns.flatMap(p=>p.sourceGeometry),...p.regions.flatMap(r=>r.geometry)];const g=objects.find(g=>g.id===id);if(g)recipe(g);},true);
  };
+ const discardInvalidRegion=(id:string)=>{
+  const region=s.projectRef.current.regions.find(r=>r.geometry.some(g=>g.id===id)),shape=region?.geometry.find(g=>g.id===id);
+  if(!shape||hasClosedGeometry(shape))return;
+  s.change(p=>{for(const r of p.regions)r.geometry=r.geometry.filter(g=>g.id!==id);p.regions=p.regions.filter(r=>r.geometry.length);p.applications=p.applications.filter(a=>p.regions.some(r=>r.id===a.regionId));},true);
+  if(region?.geometry.length===1)s.setRegionId('');s.setSelected([]);s.setMessage('El perímetro no encierra un área. Dibujá al menos tres puntos o una curva cerrada con área.');
+ };
  const finishPath=(closed=false)=>{
   const draft=pathDraft.current;if(!draft)return;
-  if(draft.anchors.length>=2){updateShape(draft.id,g=>{g.nodes=structuredClone(draft.anchors);g.closed=closed||draft.region;});s.setSelected([draft.id]);s.commit();}
+  if(draft.anchors.length>=2){updateShape(draft.id,g=>{g.nodes=structuredClone(draft.anchors);g.closed=closed||draft.region;});s.setSelected([draft.id]);if(draft.region)discardInvalidRegion(draft.id);s.commit();}
   else {s.change(p=>{for(const pat of p.patterns)pat.sourceGeometry=pat.sourceGeometry.filter(g=>g.id!==draft.id);for(const r of p.regions)r.geometry=r.geometry.filter(g=>g.id!==draft.id);p.regions=p.regions.filter(r=>r.geometry.length);},true);s.commit();}
   pathDraft.current=null;drag.current=null;
  };
@@ -66,7 +72,7 @@ export function Canvas({studio:s,editorOnly=false,previewOnly=false}:Props){
   drag.current={type:'move',start:apply(inverse(transform),point(event)),ids,transforms:new Map(objects.filter(g=>ids.includes(g.id)).map(g=>[g.id,g.transform])),matrix:transform};
  };
  const startNode=(event:RPointerEvent,id:string,index:number,handle:'node'|'in'|'out')=>{
-  if(previewOnly)return;event.stopPropagation();event.currentTarget.setPointerCapture(event.pointerId);const shape=s.objects.find(g=>g.id===id)!;
+  if(previewOnly)return;s.setNodeIndex(index);event.stopPropagation();event.currentTarget.setPointerCapture(event.pointerId);const shape=s.objects.find(g=>g.id===id)!;
   const matrix=multiply(s.instance,shape.transform);drag.current={type:'node',start:point(event),matrix,id,index,handle,baseNode:structuredClone(shape.nodes[index])};
  };
  const pointerDown=(event:RPointerEvent<SVGSVGElement>)=>{
@@ -117,6 +123,7 @@ export function Canvas({studio:s,editorOnly=false,previewOnly=false}:Props){
   const d=drag.current;if(!d)return;
   if(d.type==='draw'&&s.tool==='pencil')updateShape(d.id!,g=>{g.nodes=smoothNodes(simplifyPoints(g.nodes,.25).map(p=>node(p.x,p.y)),g.closed);});
   if(d.type==='marquee'&&marquee){const lo={x:Math.min(marquee.start.x,marquee.end.x),y:Math.min(marquee.start.y,marquee.end.y)},hi={x:Math.max(marquee.start.x,marquee.end.x),y:Math.max(marquee.start.y,marquee.end.y)};s.setSelected(s.objects.filter(g=>{if(g.locked)return false;const b=geometryBounds([g]);return b.x>=lo.x&&b.y>=lo.y&&b.x+b.width<=hi.x&&b.y+b.height<=hi.y;}).map(g=>g.id));setMarquee(null);}
+  if(d.type==='draw'&&s.mode==='apply')discardInvalidRegion(d.id!);
   if(d.type!=='penhandle'&&d.type!=='pan'&&d.type!=='marquee')s.commit();
   drag.current=null;
   if(event.currentTarget.hasPointerCapture(event.pointerId))event.currentTarget.releasePointerCapture(event.pointerId);
@@ -126,7 +133,7 @@ export function Canvas({studio:s,editorOnly=false,previewOnly=false}:Props){
   const svg=svgRef.current;if(!svg)return;const wheel=(e:WheelEvent)=>{e.preventDefault();if(e.ctrlKey||e.metaKey)zoom(Math.exp(e.deltaY*.002),point(e));else setView(v=>({...v,x:v.x+e.deltaX*v.width/size.width,y:v.y+e.deltaY*v.width/size.width}));};svg.addEventListener('wheel',wheel,{passive:false});return ()=>svg.removeEventListener('wheel',wheel);
  });
  const fit=()=>{let b:Bounds;if(s.mode==='apply'&&s.region)b=geometryBounds(s.region.geometry);else if(s.pattern.generator.kind==='penrose')b={x:-s.pattern.generator.radius,y:-s.pattern.generator.radius,width:s.pattern.generator.radius*2,height:s.pattern.generator.radius*2};else b=geometryBounds(s.objects);const width=Math.max(b.width+30,(b.height+30)*size.width/size.height);setView({x:b.x+b.width/2-width/2,y:b.y+b.height/2-width*size.height/size.width/2,width,height:width*size.height/size.width});};
- const renderShape=(g:Geometry)=> <path key={g.id} d={pathData(g)} transform={matrixString(g.transform)} fill={g.fill} stroke={g.stroke} strokeWidth={g.strokeWidth} opacity={g.opacity} fillOpacity={g.fillOpacity} strokeOpacity={g.strokeOpacity} strokeLinecap="round" strokeLinejoin="round" fillRule={g.fillRule}/>;
+ const renderShape=(g:Geometry)=> <path key={g.id} d={pathData(g)} transform={matrixString(g.transform)} fill={g.fill} stroke={g.stroke} strokeWidth={g.strokeWidth} opacity={g.opacity} fillOpacity={g.fillOpacity} strokeOpacity={g.strokeOpacity} strokeLinecap={g.strokeCap} strokeLinejoin={g.strokeJoin} strokeMiterlimit={g.miterLimit} fillRule={g.fillRule}/>;
  const selectCached=(e:RPointerEvent,sc:Scene,placement:Matrix)=>{
   if(previewOnly||!['select','nodes'].includes(s.tool)||space.current||e.button!==0)return;
   const p=point(e),shapes=[...s.objects].reverse().filter(g=>g.visible&&!g.locked).map(g=>({g,path:paperPath(g)}));
