@@ -21,6 +21,15 @@ export function sanitizeSVG(text:string):{root:SVGSVGElement;warnings:string[]}{
   }
  }
  const ids=new Set([...doc.querySelectorAll('[id]')].map(e=>e.id));
+ // Detect indirect cycles through referenced groups, not only use-to-use links.
+ const cycle=(element:Element,stack:Set<Element>,depth=0):boolean=>{
+  if(depth>50||stack.has(element))return true;
+  const next=new Set(stack);next.add(element);
+  if(element.localName==='use'){const target=doc.getElementById((element.getAttribute('href')||element.getAttribute('xlink:href')||'').slice(1));if(target&&cycle(target,next,depth+1))return true;}
+  return [...element.children].some(child=>cycle(child,next,depth+1));
+ };
+ for(const use of [...doc.querySelectorAll('use')])if(cycle(use,new Set())){use.remove();warnings.push('Referencia SVG recursiva eliminada.');}
+
  for(const use of [...doc.querySelectorAll('use')]){const ref=(use.getAttribute('href')||use.getAttribute('xlink:href')||'').slice(1);if(!ids.has(ref)||doc.getElementById(ref)?.localName==='use'){use.remove();warnings.push('Referencia SVG inválida o recursiva eliminada.');}}
  return {root:doc.documentElement as unknown as SVGSVGElement,warnings:[...new Set(warnings)]};
 }
@@ -46,7 +55,7 @@ export function importSVG(text:string,explicitWidthMM:number):ImportedSVG{
    else {g.pathData=copy.pathData;g.closed=copy.children.every(p=>(p as paper.Path).closed);}
    g.stroke=path.strokeColor?.toCSS(true)??'none';g.fill=path.fillColor?.toCSS(true)??'none';g.strokeWidth=(path.strokeWidth||1)*factor;
    if(!g.stroke.startsWith('#')&&g.stroke!=='none')g.stroke='#233b2d';if(!g.fill.startsWith('#')&&g.fill!=='none')g.fill='#233b2d';
-   g.transform=scale(1);g.name=entry.name||'SVG importado';copy.remove();out.push(g);
+   g.fillRule=path.fillRule as 'evenodd'|'nonzero';g.transform=scale(1);g.name=entry.name||'SVG importado';copy.remove();out.push(g);
   }else entry.children?.forEach(visit);
  };
  try{visit(item);}finally{item.remove();}

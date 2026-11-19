@@ -39,19 +39,19 @@ export function generate(g:Generator,source:Geometry[]):Generated{
     result.geometry=[...result.geometry,curve(points,closed,g.kind)];return result;
   }
   const placements:Matrix[]=[];
-  if(g.kind==='radial'||g.distribution==='circular'){
-    for(let i=0;i<g.count;i++){const a=i*360/g.count;placements.push(multiply(rotate(a+g.rotation),multiply(translate(g.radius,0),scale(g.scale*Math.pow(g.scaleRatio,i)))));}
+  if(g.kind==='radial'||(g.kind==='warp'&&g.distribution==='circular')){
+    for(let i=0;i<g.count;i++){const a=i*360/g.count,t=a*Math.PI/180;const radius=g.kind==='warp'?g.radius+g.amplitude*Math.sin(g.frequency*t+g.phase*Math.PI/180):g.radius;const factor=g.kind==='warp'?g.scale*(1+(g.scaleRatio-1)*Math.sin(g.frequency*t)):g.scale*Math.pow(g.scaleRatio,i);placements.push(multiply(translate(radius*Math.cos(t),radius*g.aspectRatio*Math.sin(t)),multiply(rotate(a+g.rotation),scale(factor))));}
   }else{
     for(let row=0;row<g.rows;row++)for(let col=0;col<g.columns;col++){
       let x=(col-(g.columns-1)/2)*g.spacing,y=(row-(g.rows-1)/2)*g.spacing;
-      if(g.kind==='grid')x+=(row%2)*g.offset*g.spacing;
+      if(g.kind==='grid'){if(g.staggerAxis==='rows')x+=(row%2)*g.offset*g.spacing;else y+=(col%2)*g.offset*g.spacing;}
       if(g.kind==='lattice'||g.kind==='tessellation'){x+=(row%2)*g.spacing/2;y*=Math.sqrt(3)/2;}
       if(g.kind==='warp'){
         const u=col/Math.max(1,g.columns-1),v=row/Math.max(1,g.rows-1);
         x+=g.amplitude*Math.sin(2*Math.PI*g.frequency*v+g.phase*Math.PI/180);
         y+=g.amplitude*Math.sin(2*Math.PI*g.frequency*u+g.phase*Math.PI/180);
       }
-      if(g.distribution==='freeform'){x+=(rand()-.5)*g.amplitude;y+=(rand()-.5)*g.amplitude;}
+      if(g.kind==='warp'&&g.distribution==='freeform'){x+=(rand()-.5)*g.amplitude;y+=(rand()-.5)*g.amplitude;}
       const s=g.kind==='warp'?g.scale*(1+(g.scaleRatio-1)*Math.sin((row+col)*Math.PI/Math.max(g.columns,g.rows))):g.scale;
       placements.push(multiply(translate(x,y),multiply(rotate(g.rotation+(g.kind==='tessellation'?(col+row)%2*180:0)),scale(s))));
     }
@@ -59,6 +59,6 @@ export function generate(g:Generator,source:Geometry[]):Generated{
   result.placements=placements;return result;
 }
 export const generatorParameters:Record<Generator['kind'],(keyof Generator)[]>={
-  motif:[],grid:['rows','columns','spacing','offset','scale','rotation'],warp:['distribution','rows','columns','spacing','scale','scaleRatio','amplitude','frequency','phase','seed'],radial:['count','radius','scale','scaleRatio','rotation'],rosette:['radius','amplitude','frequency','phase'],wave:['radius','amplitude','frequency','phase'],guilloche:['radius','amplitude','frequency','count','phase'],spirograph:['radius','ratio','amplitude','count','phase'],lattice:['rows','columns','spacing','scale','rotation'],tessellation:['rows','columns','spacing','scale','rotation'],freeform:[],penrose:['radius','frequency']
+  motif:[],grid:['rows','columns','spacing','staggerAxis','offset','scale','rotation'],warp:['distribution','rows','columns','spacing','scale','scaleRatio','amplitude','frequency','phase','seed'],radial:['count','radius','aspectRatio','scale','scaleRatio','rotation'],rosette:['radius','amplitude','frequency','phase'],wave:['radius','amplitude','frequency','phase'],guilloche:['radius','amplitude','frequency','count','phase'],spirograph:['radius','ratio','amplitude','count','phase'],lattice:['rows','columns','spacing','scale','rotation'],tessellation:['rows','columns','spacing','scale','rotation'],freeform:[],penrose:['radius','frequency']
 };
 export {defaultGenerator};

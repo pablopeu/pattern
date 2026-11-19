@@ -9,8 +9,8 @@ import {generatorLabels,generatorParameters,generate} from '../generators';
 import {wallpaperNames,friezeNames,groupDescriptions,cosets} from '../symmetry/groups';
 import {pathData} from '../geometry/paths';
 import {Field,Section,Select,Toggle} from './Controls';
-const paramLabels:Partial<Record<keyof Generator,string>>={rows:'Filas',columns:'Columnas',spacing:'Espaciado',offset:'Desfase de filas',rotation:'Rotación del motivo',scale:'Escala del motivo',scaleRatio:'Relación de escala',count:'Cantidad',amplitude:'Amplitud',frequency:'Frecuencia',phase:'Fase',radius:'Radio',ratio:'Relación de radios',seed:'Semilla'};
-const ranges:Partial<Record<keyof Generator,[number,number,number]>>={rows:[1,12,1],columns:[1,12,1],spacing:[2,100,.5],offset:[0,1,.05],rotation:[-180,180,1],scale:[.05,3,.05],scaleRatio:[.1,1.5,.05],count:[2,64,1],amplitude:[0,40,.5],frequency:[1,24,1],phase:[0,360,1],radius:[2,120,1],ratio:[.05,1,.01],seed:[0,2147483647,1]};
+const paramLabels:Partial<Record<keyof Generator,string>>={rows:'Filas',columns:'Columnas',spacing:'Espaciado',offset:'Desfase de filas',rotation:'Rotación del motivo',scale:'Escala del motivo',scaleRatio:'Relación de escala',count:'Cantidad',amplitude:'Amplitud',frequency:'Frecuencia',phase:'Fase',radius:'Radio',ratio:'Relación de radios',seed:'Semilla',aspectRatio:'Relación de ejes'};
+const ranges:Partial<Record<keyof Generator,[number,number,number]>>={rows:[1,12,1],columns:[1,12,1],spacing:[2,100,.5],offset:[0,1,.05],rotation:[-180,180,1],scale:[.05,3,.05],scaleRatio:[.1,1.5,.05],count:[2,64,1],amplitude:[0,40,.5],frequency:[1,24,1],phase:[0,360,1],radius:[2,120,1],ratio:[.05,1,.01],seed:[0,2147483647,1],aspectRatio:[.1,3,.05]};
 export function Panels({studio:s,onImport}:{studio:Studio;onImport:()=>void}){
  const [tab,setTab]=useState<'design'|'layers'>('design'),[nodeIndex,setNodeIndex]=useState(0);
  const u=s.project.documentUnits,selected=s.objects.filter(g=>s.selected.includes(g.id)),shape=selected[0];
@@ -47,7 +47,8 @@ export function Panels({studio:s,onImport}:{studio:Studio;onImport:()=>void}){
  {s.mode!=='apply'&&<>
  <Section title="GENERATOR">
   <Select label="Familia" value={s.pattern.generator.kind} onChange={kind=>updatePattern(p=>{p.generator.kind=kind as Generator['kind'];})} options={Object.entries(generatorLabels).map(([value,label])=>({value,label}))}/>
-  {s.pattern.generator.kind==='motif'?<div className="motif-preview"><svg viewBox="-5 -5 80 65">{s.pattern.sourceGeometry.filter(g=>g.visible).map(g=><path key={g.id} d={pathData(g)} transform={`matrix(${g.transform.join(' ')})`} fill={g.fill} stroke={g.stroke} strokeWidth={g.strokeWidth}/>)}</svg><span>Tu geometría, en todas sus formas.</span></div>:generatorParameters[s.pattern.generator.kind].map(key=>{
+  {s.pattern.generator.kind==='motif'?<div className="motif-preview"><svg viewBox="-5 -5 80 65">{s.pattern.sourceGeometry.filter(g=>g.visible).map(g=><path key={g.id} d={pathData(g)} transform={`matrix(${g.transform.join(' ')})`} fill={g.fill} stroke={g.stroke} strokeWidth={g.strokeWidth}/>)}</svg><span>Tu geometría, en todas sus formas.</span></div>:(s.pattern.generator.kind==='warp'&&s.pattern.generator.distribution==='circular'?['distribution','count','radius','aspectRatio','rotation','scale','scaleRatio','amplitude','frequency','phase'] as (keyof Generator)[]:generatorParameters[s.pattern.generator.kind]).map(key=>{
+   if(key==='staggerAxis')return <Select key={key} label="Escalonar" value={s.pattern.generator.staggerAxis} onChange={v=>updatePattern(p=>{p.generator.staggerAxis=v as Generator['staggerAxis'];})} options={[{value:'rows',label:'Filas'},{value:'columns',label:'Columnas'}]}/>;
    if(key==='distribution')return <Select key={key} label="Distribución" value={s.pattern.generator.distribution} onChange={v=>updatePattern(p=>{p.generator.distribution=v as Generator['distribution'];})} options={[{value:'rectangular',label:'Rectangular'},{value:'circular',label:'Circular'},{value:'freeform',label:'Freeform · semilla'}]}/>;
    const [min,max,step]=ranges[key]??[0,100,1];return <Field key={key} label={paramLabels[key]??key} value={s.pattern.generator[key] as number} min={min} max={s.pattern.generator.kind==='penrose'&&key==='frequency'?7:max} step={step} slider={key!=='seed'} onChange={v=>updatePattern(p=>{(p.generator as unknown as Record<string,unknown>)[key]=v;})}/>;
   })}
@@ -90,6 +91,10 @@ export function Panels({studio:s,onImport}:{studio:Studio;onImport:()=>void}){
  <Section title="VIEW" defaultOpen={false}>
   <Toggle label="Ajustar a grilla y nodos" checked={s.project.preferences.snap} onChange={v=>s.change(p=>{p.preferences.snap=v;})}/>
   <Toggle label="Guías de simetría" checked={s.project.preferences.guides} onChange={v=>s.change(p=>{p.preferences.guides=v;})}/>
+  <Toggle label="Región fundamental" checked={s.project.preferences.fundamental} onChange={v=>s.change(p=>{p.preferences.fundamental=v;})}/>
+  <Toggle label="Ejes de reflexión y deslizamiento" checked={s.project.preferences.axes} onChange={v=>s.change(p=>{p.preferences.axes=v;})}/>
+  <Toggle label="Centros de rotación" checked={s.project.preferences.centers} onChange={v=>s.change(p=>{p.preferences.centers=v;})}/>
+  <Toggle label="Inspeccionar uniones" checked={s.project.preferences.continuity} onChange={v=>s.change(p=>{p.preferences.continuity=v;p.preferences.guides=true;})}/>
   <Select label="Unidades" value={u} onChange={v=>s.change(p=>{p.documentUnits=v as typeof u;})} options={['mm','cm','in','px']}/>
   <label className="color-row">Fondo del lienzo<input aria-label="Fondo del lienzo" type="color" value={s.project.preferences.background} onChange={e=>s.change(p=>{p.preferences.background=e.target.value;})}/></label>
  </Section>

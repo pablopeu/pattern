@@ -1,13 +1,13 @@
 import {useState,useEffect,useRef} from 'react';
 import {X,Download,LoaderCircle,FileCode2} from 'lucide-react';
 import type {Studio} from '../app/useStudio';
-import {prepareExport,type ExportOptions,type ExportResult} from '../export/svg';
+import {type ExportOptions,type ExportResult} from '../export/svg';
 import {rasterize} from '../export/raster';
 import {download} from '../persistence/storage';
 import {rectangularCell} from '../symmetry/groups';
 import {Field,Select,Toggle} from './Controls';
 export function ExportDialog({studio:s,onClose}:{studio:Studio;onClose:()=>void}){
- const [options,setOptions]=useState<ExportOptions>({target:s.mode==='apply'&&s.application?'application':'view',format:'svg',representation:'editable',width:200,height:150,dpi:150,background:'#f8faf5',transparent:true,quality:.92,tolerance:.05,outlineStrokes:false,patternId:s.pattern.id,applicationId:s.applicationId});
+ const [options,setOptions]=useState<ExportOptions>({target:s.mode==='apply'&&s.application?'application':'view',format:'svg',representation:'editable',width:200,height:150,dpi:150,background:'#f8faf5',transparent:true,quality:.92,tolerance:.05,outlineStrokes:true,patternId:s.pattern.id,applicationId:s.applicationId});
  const [result,setResult]=useState<(ExportResult&{dxf?:string})|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(true),[progress,setProgress]=useState(0),[downloading,setDownloading]=useState(false),[cancelled,setCancelled]=useState(false);
  const worker=useRef<Worker|null>(null);
  const set=<K extends keyof ExportOptions>(key:K,value:ExportOptions[K])=>{setCancelled(false);setOptions(o=>({...o,[key]:value}));};
@@ -38,5 +38,4 @@ export function ExportDialog({studio:s,onClose}:{studio:Studio;onClose:()=>void}
  {options.format==='dxf'&&<p className="help-text">DXF 2D en milímetros. Bézier subdivididas con tolerancia física; coordenada Y hacia arriba. No transporta rellenos.</p>}
  </div><div className="export-preview"><div className="export-preview-image">{result?<img alt="Previsualización de exportación" src={'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(result.svg)}/>:<div className="export-placeholder"><FileCode2 size={36}/><span>{busy?'Preparando geometría…':'Sin previsualización'}</span></div>}{busy&&<div className="processing"><LoaderCircle className="spin" size={22}/>{Math.round(progress*100)}% <button onClick={cancel}>Cancelar</button></div>}</div><div className="export-summary">{result&&<><span>{result.bounds.width.toFixed(2)} × {result.bounds.height.toFixed(2)} mm</span><span>{options.format==='svg'||options.format==='dxf'?`${((options.format==='dxf'?result.dxf?.length:result.svg.length)??0)/1024|0} KB aprox.`:`${Math.round(result.bounds.width/25.4*options.dpi)} × ${Math.round(result.bounds.height/25.4*options.dpi)} px`}</span></>}</div>{result?.warnings.map(w=><p key={w} className="math-notice">{w}</p>)}{error&&<p className="error-message" role="alert">{error}</p>}</div></div><footer><span>Vector real. Sin recursos externos.</span><button className="primary-button" disabled={busy||!result||downloading} onClick={exportFile}><Download size={16}/>{downloading?'Generando imagen…':'Descargar archivo'}</button></footer></section></div>;
 }
-// Keep the synchronous engine import checked by TypeScript as well as its worker entry.
-void prepareExport;
+

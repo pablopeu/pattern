@@ -76,3 +76,41 @@ export function rectangularCell(s:Symmetry):{width:number;height:number}|null{
   return {width:s.width,height:/^p4/.test(s.group)?s.width:s.height};
 }
 export function latticeVectors(s:Symmetry):[Point,Point]{const b=lattice(s);return [{x:b[0],y:b[1]},{x:b[2],y:b[3]}];}
+/** Cull translations against the actual transformed motif extent, even far from the origin. */
+export function visibleInstances(s:Symmetry,bounds:Bounds,motif:Bounds):Instance[]{
+ const ops=cosets(s);if(s.family==='radial')return ops.map((matrix,i)=>({id:`radial-${i}`,matrix,cell:[0,0]}));
+ const basis=s.family==='frieze'?[s.width,0,0,s.height,0,0] as Matrix:lattice(s),inv=inverse(basis);
+ const corners=(r:Bounds)=>[{x:r.x,y:r.y},{x:r.x+r.width,y:r.y},{x:r.x,y:r.y+r.height},{x:r.x+r.width,y:r.y+r.height}];
+ const extent=(ps:Point[])=>({minX:Math.min(...ps.map(p=>p.x)),maxX:Math.max(...ps.map(p=>p.x)),minY:Math.min(...ps.map(p=>p.y)),maxY:Math.max(...ps.map(p=>p.y))});
+ const viewport=extent(corners(bounds).map(p=>apply(inv,p))),out:Instance[]=[];
+ for(let k=0;k<ops.length;k++){
+  const op=ops[k],content=extent(corners(motif).map(p=>apply(inv,apply(op,p))));
+  const x0=Math.ceil(viewport.minX-content.maxX)-1,x1=Math.floor(viewport.maxX-content.minX)+1;
+  const y0=s.family==='frieze'?0:Math.ceil(viewport.minY-content.maxY)-1,y1=s.family==='frieze'?0:Math.floor(viewport.maxY-content.minY)+1;
+  if(out.length+(x1-x0+1)*(y1-y0+1)>20000)throw Error('Demasiadas instancias. Aumentá la celda o acercá la vista.');
+  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const p=apply(basis,{x,y});out.push({id:`${x}:${y}:${k}`,matrix:multiply(translate(p.x,p.y),op),cell:[x,y]});}
+ }
+ return out;
+}
+/** Dirichlet fundamental domain of a generic orbit point, computed by half-plane clipping. */
+export function fundamentalDomain(s:Symmetry):Point[]{
+ if(s.family!=='wallpaper')return [];
+ const basis=lattice(s),seed=apply(basis,{x:.1732050807569,y:.2718281828459}),range=Math.max(s.width,s.height)*4;
+ let u={x:basis[0],y:basis[1]},v={x:basis[2],y:basis[3]};
+ for(let k=0;k<100;k++){if(u.x*u.x+u.y*u.y>v.x*v.x+v.y*v.y)[u,v]=[v,u];const mu=Math.round((u.x*v.x+u.y*v.y)/(u.x*u.x+u.y*u.y));if(mu===0)break;v={x:v.x-mu*u.x,y:v.y-mu*u.y};}
+ const reduced:Matrix=[u.x,u.y,v.x,v.y,0,0];
+ let polygon=[{x:seed.x-range,y:seed.y-range},{x:seed.x+range,y:seed.y-range},{x:seed.x+range,y:seed.y+range},{x:seed.x-range,y:seed.y+range}];
+ for(const op of cosets(s))for(let j=-3;j<=3;j++)for(let i=-3;i<=3;i++){
+  const shift=apply(reduced,{x:i,y:j}),q=apply(op,seed);q.x+=shift.x;q.y+=shift.y;
+  const dx=q.x-seed.x,dy=q.y-seed.y;if(Math.hypot(dx,dy)<1e-7)continue;
+  const limit=(q.x*q.x+q.y*q.y-seed.x*seed.x-seed.y*seed.y)/2;
+  const next:Point[]=[];
+  for(let k=0;k<polygon.length;k++){
+   const a=polygon[k],b=polygon[(k+1)%polygon.length],va=a.x*dx+a.y*dy-limit,vb=b.x*dx+b.y*dy-limit;
+   if(va<=1e-8)next.push(a);
+   if((va<0&&vb>0)||(va>0&&vb<0)){const t=va/(va-vb);next.push({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});}
+  }
+  polygon=next;
+ }
+ return polygon;
+}

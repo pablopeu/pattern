@@ -41,3 +41,8 @@ describe('Geometría real con Paper.js',()=>{
  it('convierte paramétricas a nodos conservando medidas',()=>{const s=example(0).patterns[0].sourceGeometry[2];expect(editablePaths(s)[0].nodes.length).toBe(4);expect(flattened(s,.01)[0].closed).toBe(true);});
  it('diferencia mantiene agujero como compound path',()=>{const s=example(0).patterns[0].sourceGeometry[2];const outer={...s,parameters:{...s.parameters!,x:0,y:0,width:100,height:100}},inner={...s,parameters:{...s.parameters!,x:25,y:25,width:50,height:50}};const out=booleanGeometry([outer,inner],'difference');expect((pathData(out).match(/M/g)||[]).length).toBe(2);});
 });
+
+describe('Región fundamental y clasificación',()=>{
+ it('tiene área de la celda dividida por el orden del grupo',async()=>{const {fundamentalDomain}=await import('../symmetry/groups');for(const name of wallpaperNames){const s={...newPattern().symmetry,group:name};const poly=fundamentalDomain(s),b=lattice(s);const area=Math.abs(poly.reduce((sum,p,i)=>{const q=poly[(i+1)%poly.length];return sum+p.x*q.y-p.y*q.x;},0))/2;expect(area).toBeCloseTo(Math.abs(b[0]*b[3]-b[1]*b[2])/cosets(s).length,5);}});
+ it('culling conserva motivos desplazados a muchas celdas del origen',async()=>{const {buildScene}=await import('../patterns/engine');const p=example(0).patterns[0];p.sourceGeometry[0].transform=[1,0,0,1,6000,6000];const scene=buildScene(p,{x:0,y:0,width:60,height:60});expect(scene.instances.some(i=>i.cell[0]<-90&&i.cell[1]<-90)).toBe(true);});
+});

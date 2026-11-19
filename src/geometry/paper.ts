@@ -7,14 +7,14 @@ const scope=new paper.PaperScope();scope.setup(new scope.Size(1,1));
 export function paperPath(shape:Geometry,transform:Matrix=IDENTITY):paper.PathItem{
   scope.activate();
   const path=new scope.CompoundPath({pathData:pathData(shape),insert:false});
-  path.fillRule='evenodd';
+  path.fillRule=shape.fillRule;
   const m=shape.transform;
   path.transform(new scope.Matrix(m[0],m[1],m[2],m[3],m[4],m[5]));
   path.transform(new scope.Matrix(...transform));
   return path;
 }
 export function pathToGeometry(path:paper.PathItem,style?:Geometry):Geometry{
-  const g={...geometry('compound',[],true),stroke:style?.stroke??'#233b2d',fill:style?.fill??'none',strokeWidth:style?.strokeWidth??.65,pathData:path.pathData};
+  const g={...geometry('compound',[],true),stroke:style?.stroke??'#233b2d',fill:style?.fill??'none',strokeWidth:style?.strokeWidth??.65,pathData:path.pathData,fillRule:path.fillRule as 'evenodd'|'nonzero'};
   path.remove();return g;
 }
 export function editablePaths(shape:Geometry):Geometry[]{
