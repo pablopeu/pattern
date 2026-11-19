@@ -1,3 +1,4 @@
+import { StylePanel, StyleIndicator } from '../ui/StylePanel';
 import logo from '../../icono.png';
 import { commonRectangularCell, resolvePattern } from '../symmetry/config';
 import { useState, useRef } from 'react';
@@ -270,7 +271,7 @@ export default function App() {
                   download(
                     JSON.stringify(
                       {
-                        presetVersion: 3,
+                        presetVersion: 4,
                         pattern: freezePattern(s.pattern, s.project.mainSymmetry),
                       },
                       null,
@@ -414,6 +415,7 @@ export default function App() {
               <strong>{s.pattern.name}</strong>
             </div>
             <div className="workspace-actions">
+              <StyleIndicator studio={s} />
               <button
                 title="Deshacer (Ctrl+Z)"
                 aria-label="Deshacer"
@@ -511,6 +513,7 @@ export default function App() {
             </div>
           </footer>
         </section>
+        <StylePanel studio={s} />
       </main>
       <input
         hidden

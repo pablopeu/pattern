@@ -1,3 +1,4 @@
+import { StyleControls } from './StylePanel';
 import { TilePanel } from './TilePanel';
 import { SymmetryGallery } from './SymmetryGallery';
 import { freezePattern } from '../symmetry/config';
@@ -292,108 +293,7 @@ export function Panels({ studio: s, onImport }: { studio: Studio; onImport: () =
           Reflejar Y
         </button>
       </div>
-      <div className="color-row">
-        <label>
-          Trazo{' '}
-          <input
-            aria-label="Color de trazo"
-            type="color"
-            value={shape.stroke === 'none' ? '#233b2d' : shape.stroke}
-            onChange={(e) =>
-              updateShape((g) => {
-                g.stroke = e.target.value;
-              })
-            }
-          />
-        </label>
-        <label>
-          Relleno{' '}
-          <input
-            aria-label="Color de relleno"
-            type="color"
-            value={shape.fill === 'none' ? '#55765b' : shape.fill}
-            onChange={(e) =>
-              updateShape((g) => {
-                g.fill = e.target.value;
-              })
-            }
-          />
-        </label>
-      </div>
-      <div className="button-row">
-        <button
-          onClick={() =>
-            updateShape((g) => {
-              g.stroke = g.stroke === 'none' ? '#233b2d' : 'none';
-            })
-          }
-        >
-          {shape.stroke === 'none' ? 'Activar trazo' : 'Sin trazo'}
-        </button>
-        <button
-          onClick={() =>
-            updateShape((g) => {
-              g.fill = g.fill === 'none' ? '#55765b' : 'none';
-            })
-          }
-        >
-          {shape.fill === 'none' ? 'Activar relleno' : 'Sin relleno'}
-        </button>
-      </div>
-      <Select
-        label="Extremos del trazo"
-        value={shape.strokeCap}
-        onChange={(v) =>
-          updateShape((g) => {
-            g.strokeCap = v as Geometry['strokeCap'];
-          })
-        }
-        options={[
-          { value: 'round', label: 'Redondos' },
-          { value: 'butt', label: 'Rectos' },
-          { value: 'square', label: 'Cuadrados' },
-        ]}
-      />
-      <Select
-        label="Uniones del trazo"
-        value={shape.strokeJoin}
-        onChange={(v) =>
-          updateShape((g) => {
-            g.strokeJoin = v as Geometry['strokeJoin'];
-          })
-        }
-        options={[
-          { value: 'round', label: 'Redondas' },
-          { value: 'miter', label: 'En inglete' },
-          { value: 'bevel', label: 'En bisel' },
-        ]}
-      />
-      <Field
-        label="Opacidad"
-        value={shape.opacity}
-        min={0}
-        max={1}
-        step={0.05}
-        slider
-        onChange={(v) =>
-          updateShape((g) => {
-            g.opacity = v;
-          })
-        }
-      />
-      <Field
-        label="Grosor de trazo"
-        value={units(shape.strokeWidth)}
-        unit={u}
-        min={0}
-        max={units(50)}
-        step={units(0.1)}
-        onChange={(v) =>
-          updateShape((g) => {
-            g.strokeWidth = mm(v);
-          })
-        }
-      />
+      <StyleControls studio={s} target="selection" />
       {shape.kind !== 'path' ? (
         <button
           className="wide-button"

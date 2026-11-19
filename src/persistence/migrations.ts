@@ -1,5 +1,6 @@
+import { defaultDrawingStyle, hexColor } from '../app/styles';
 /** Pure, versioned migrations. V1 p1 always remains wallpaper p1. */
-export const LATEST_SCHEMA_VERSION = 3;
+export const LATEST_SCHEMA_VERSION = 4;
 type Versioned = { schemaVersion: number } & Record<string, unknown>;
 export function migratePatternV1(value: unknown): unknown {
   if (!value || typeof value !== 'object') return value;
@@ -16,6 +17,58 @@ export function migratePatternV1(value: unknown): unknown {
   };
 }
 const migrations: Record<number, (value: Versioned) => Versioned> = {
+  3: (doc) => {
+    const p = structuredClone(doc);
+    p.schemaVersion = 4;
+    p.drawingStyle = defaultDrawingStyle();
+    p.stylePresets = [];
+    p.palette = { colors: [], recent: [], favorites: [] };
+    if (p.preferences && typeof p.preferences === 'object')
+      p.preferences = {
+        ...p.preferences,
+        styleDefaultsFollowSelection: true,
+        stylePanelPinned: false,
+        fillCloseTolerance: 0,
+        fillLinkedDefault: true,
+      };
+    const migrate = (value: unknown) => {
+      if (!value || typeof value !== 'object') return value;
+      const pat = value as Record<string, unknown>;
+      if (Array.isArray(pat.sourceGeometry))
+        pat.sourceGeometry = pat.sourceGeometry.map((value) => {
+          const g = value as Record<string, unknown>;
+          g.strokeDash = [];
+          g.strokeDashOffset = 0;
+          g.strokeProfile = defaultDrawingStyle().strokeProfile;
+          for (const field of ['stroke', 'fill'])
+            if (typeof g[field] === 'string' && g[field] !== 'none') {
+              const color = hexColor(g[field] as string);
+              if (color && color.alpha < 1) {
+                g[field] = color.color;
+                g[field + 'Opacity'] = Number(g[field + 'Opacity'] ?? 1) * color.alpha;
+              }
+            }
+          return g;
+        });
+      return pat;
+    };
+    if (Array.isArray(p.patterns)) p.patterns = p.patterns.map(migrate);
+    if (Array.isArray(p.regions))
+      p.regions = p.regions.map((value) => {
+        if (!value || typeof value !== 'object' || !('geometry' in value)) return value;
+        const converted = migrate({ sourceGeometry: value.geometry }) as {
+          sourceGeometry: unknown;
+        };
+        return { ...value, geometry: converted.sourceGeometry };
+      });
+    if (Array.isArray(p.applications))
+      p.applications = p.applications.map((a) =>
+        a && typeof a === 'object' && 'frozenPattern' in a
+          ? { ...a, frozenPattern: migrate(a.frozenPattern) }
+          : a,
+      );
+    return p;
+  },
   2: (doc) => {
     const p = structuredClone(doc);
     p.schemaVersion = 3;

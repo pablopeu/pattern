@@ -50,19 +50,28 @@ const options = (p: Project): ExportOptions => ({
   outlineStrokes: true,
   patternId: p.patterns[0].id,
 });
+const withoutStrokeExtensions = (g: import('../app/model').Geometry) => {
+  const { strokeDash, strokeDashOffset, strokeProfile, ...old } = g;
+  expect(strokeDash).toEqual([]);
+  expect(strokeDashOffset).toBe(0);
+  expect(strokeProfile.kind).toBe('uniform');
+  return old;
+};
 describe('PRD v2 · migración real', () => {
   oldExamples.forEach((old, i) =>
     it(`ejemplo v1 ${i + 1}: conserva fuentes, IDs, simetría, generador y regiones`, () => {
       const p = parseProject(JSON.stringify(old));
-      expect(p.schemaVersion).toBe(3);
+      expect(p.schemaVersion).toBe(4);
       expect(p.metadata).toEqual(old.metadata);
-      expect(p.regions).toEqual(old.regions);
+      expect(
+        p.regions.map((r) => ({ ...r, geometry: r.geometry.map(withoutStrokeExtensions) })),
+      ).toEqual(old.regions);
       expect(p.applications).toEqual(old.applications);
       for (let k = 0; k < old.patterns.length; k++) {
         const before = old.patterns[k],
           after = p.patterns[k];
         expect(after.id).toBe(before.id);
-        expect(after.sourceGeometry).toEqual(before.sourceGeometry);
+        expect(after.sourceGeometry.map(withoutStrokeExtensions)).toEqual(before.sourceGeometry);
         expect(after.generator).toEqual(before.generator);
         expect(after.symmetry).toEqual({
           ...before.symmetry,

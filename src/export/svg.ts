@@ -1,3 +1,4 @@
+import { strokeRegion } from '../geometry/stroke-outline';
 import {
   tileRectangularCell,
   tileBasis,
@@ -55,7 +56,16 @@ export const escapeXML = (text: string) =>
     (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[c]!,
   );
 export function svgPath(shape: Geometry): string {
-  return `<path d="${escapeXML(pathData(shape))}" transform="${matrixString(shape.transform)}" fill="${escapeXML(shape.fill)}" stroke="${escapeXML(shape.stroke)}" stroke-width="${shape.strokeWidth}" opacity="${shape.opacity}" fill-opacity="${shape.fillOpacity}" stroke-opacity="${shape.strokeOpacity}" stroke-linecap="${shape.strokeCap}" stroke-linejoin="${shape.strokeJoin}" stroke-miterlimit="${shape.miterLimit}" fill-rule="${shape.fillRule}"/>`;
+  return svgPathAtTolerance(shape, 0.02);
+}
+export function svgPathAtTolerance(shape: Geometry, tolerance: number): string {
+  if (shape.strokeProfile.kind !== 'uniform' && shape.stroke !== 'none' && shape.strokeWidth > 0) {
+    return (
+      svgPathAtTolerance({ ...shape, stroke: 'none' }, tolerance) +
+      svgPathAtTolerance(strokeRegion(shape, IDENTITY, tolerance), tolerance)
+    );
+  }
+  return `<path d="${escapeXML(pathData(shape))}" transform="${matrixString(shape.transform)}" fill="${escapeXML(shape.fill)}" stroke="${escapeXML(shape.stroke)}" stroke-width="${shape.strokeWidth}" stroke-dasharray="${shape.strokeDash.length ? shape.strokeDash.join(' ') : 'none'}" stroke-dashoffset="${shape.strokeDashOffset}" opacity="${shape.opacity}" fill-opacity="${shape.fillOpacity}" stroke-opacity="${shape.strokeOpacity}" stroke-linecap="${shape.strokeCap}" stroke-linejoin="${shape.strokeJoin}" stroke-miterlimit="${shape.miterLimit}" fill-rule="${shape.fillRule}"/>`;
 }
 export function svgDocument(content: string, bounds: Bounds, background?: string): string {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${bounds.width}mm" height="${bounds.height}mm" viewBox="${bounds.x} ${bounds.y} ${bounds.width} ${bounds.height}"><title>Pattern Studio 2D</title>${background ? `<rect x="${bounds.x}" y="${bounds.y}" width="${bounds.width}" height="${bounds.height}" fill="${escapeXML(background)}"/>` : ''}${content}</svg>`;
@@ -66,6 +76,7 @@ function preparePatternExport(
   onProgress?: (n: number) => void,
   customBounds?: Bounds,
 ): ExportResult {
+  const renderPath = (g: Geometry) => svgPathAtTolerance(g, options.tolerance);
   let pattern: Pattern | undefined = project.patterns.find((p) => p.id === options.patternId),
     region: Region | undefined,
     application: Application | undefined;
@@ -162,12 +173,7 @@ function preparePatternExport(
   const expanded = options.representation === 'expanded' || options.format === 'dxf';
   const scene = buildScene(
       expanded && tiling
-        ? materializeTiling(
-            pattern,
-            visible,
-            options.outlineStrokes,
-            options.tolerance,
-          )
+        ? materializeTiling(pattern, visible, options.outlineStrokes, options.tolerance)
         : pattern,
       visible,
     ),
@@ -209,13 +215,13 @@ function preparePatternExport(
     for (const contour of tileContours(tiling, tileInstances(tiling, visible)))
       geometries.push(...clipGeometry(contour, cropRegion, placement, false, options.tolerance));
   const mask = region ? regionData(region) : latticeMask;
-  const defs = `<defs><g id="motif">${scene.generated.geometry.map(svgPath).join('')}</g>${mask ? `<clipPath id="region"><path d="${escapeXML(mask)}" clip-rule="evenodd"/></clipPath>` : ''}</defs>`;
+  const defs = `<defs><g id="motif">${scene.generated.geometry.map(renderPath).join('')}</g>${mask ? `<clipPath id="region"><path d="${escapeXML(mask)}" clip-rule="evenodd"/></clipPath>` : ''}</defs>`;
   let content = expanded
-    ? geometries.map(svgPath).join('')
+    ? geometries.map(renderPath).join('')
     : scene.tiling
       ? tiledMarkup(
           scene,
-          svgPath,
+          renderPath,
           'export-tile',
           placement,
           options.includeTileOutlines ?? false,
@@ -226,7 +232,10 @@ function preparePatternExport(
         ? transforms
             .flatMap((t) =>
               scene.generated.geometry.map((shape) =>
-                svgPath({ ...shape, transform: multiply(multiply(placement, t), shape.transform) }),
+                renderPath({
+                  ...shape,
+                  transform: multiply(multiply(placement, t), shape.transform),
+                }),
               ),
             )
             .join('')
@@ -257,7 +266,7 @@ function preparePatternExport(
         fill: 'none',
       },
     ];
-    content += outlines.map(svgPath).join('');
+    content += outlines.map(renderPath).join('');
     if (expanded) geometries.push(...outlines);
   }
   const metadata = {

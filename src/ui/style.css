@@ -1854,3 +1854,23 @@ input[type='color']::-webkit-color-swatch {
   font-size: 12px;
   cursor: pointer;
 }
+
+/* Shared selection/current styles; compact indicator remains available with panel closed. */
+.style-panel { flex: 0 0 300px; width:300px; min-height:0; border-left:1px solid var(--line,#dce3d8); background:#fcfdf9; z-index:25; display:flex; flex-direction:column; animation:style-enter .16s ease-out; }
+.style-panel>header { display:flex; align-items:center; gap:8px; padding:14px; border-bottom:1px solid #dce3d8; }
+.style-panel>header strong { flex:1; } .style-panel button.active { background:#dbe7d6; }
+.style-panel-body { overflow:auto; min-height:0; padding:14px; display:flex; flex-direction:column; gap:12px; }
+.style-controls { display:flex; flex-direction:column; gap:12px; min-width:0; }
+.style-controls hr,.style-panel hr { width:100%; border:0; border-top:1px solid #dce3d8; }
+.paint-control { display:flex; flex-direction:column; gap:6px; font-size:12px; }
+.paint-inputs { display:flex; gap:5px; min-width:0; align-items:center; } .paint-inputs input[type=color] { width:30px; height:30px; padding:2px; flex-shrink:0; }
+.paint-inputs input:not([type=color]) { min-width:0; width:82px; flex:1; } .paint-inputs button { font-size:10px; padding:5px; }
+.style-note,.style-mixed small { font-size:11px; color:#756147; } .style-mixed { border-left:2px solid #c19a55; padding-left:6px; }
+.style-indicator { display:flex; align-items:center; gap:5px; font-size:11px; white-space:nowrap; }
+.style-chip { width:14px; height:14px; border:1px solid #83917e; display:inline-block; border-radius:3px; }
+.palette-swatches { display:flex; flex-wrap:wrap; gap:5px; margin-top:5px; } .palette-swatches button { width:21px; height:21px; padding:0; border:1px solid #a5b19e; border-radius:4px; }
+.palette-group { font-size:11px; } .profile-preview { width:100%; max-height:70px; background:#f1f5ee; border:1px solid #dce3d8; border-radius:6px; }
+.profile-points { display:flex; flex-direction:column; gap:6px; } .profile-points>div { display:flex; gap:5px; align-items:center; } .profile-points .field { min-width:0; flex:1; } .profile-points .number-wrap { max-width:70px; }
+@keyframes style-enter { from {opacity:0;transform:translateX(12px)} to {opacity:1;transform:translateX(0)} }
+@media(max-width:1200px) { .style-panel { position:absolute; right:0; top:0; bottom:0; box-shadow:-6px 0 24px #233b2d24; max-width:85vw; } .workspace { position:relative; } .indicator-detail { display:none; } }
+@media(prefers-reduced-motion:reduce) { .style-panel { animation:none; } }

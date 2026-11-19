@@ -1,6 +1,6 @@
 # Pattern Studio 2D
 
-Implementar `prd_v2.1.txt` como evolución no destructiva de v2; conservar las regresiones v1/v2. Trabajar con Git local. El usuario autorizó el push del historial a `https://github.com/pablopeu/pattern` en la rama `main`. La revisión de la aplicación se mantiene en LAN.
+Implementar `prd_v2.2.txt` como evolución no destructiva de v2.1; conservar las regresiones v1/v2/v2.1 y el logo icono.png. Trabajar con Git local. El usuario autorizó el push del historial a `https://github.com/pablopeu/pattern` en la rama `main`. La revisión de la aplicación se mantiene en LAN.
 
 - Comprobar `python3 scripts/work_monitor.py --status` al comenzar y entre entregas. Si queda menos del 10% en una ventana vigente, cerrar el incremento: verificar, documentar, commit y finalizar el turno para esperar el reset. El monitor solicita la reanudación en esta misma conversación después del reset real.
 - Consultar `docs/CONTINUITY.md`, `docs/PROGRESS.md` y feedback pendiente en `.runtime/feedback.jsonl` antes de continuar. No duplicar servicios activos.

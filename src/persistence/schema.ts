@@ -1,3 +1,4 @@
+import { defaultDrawingStyle, styleIssue } from '../app/styles';
 import { tilingIssue } from '../tiling/validate';
 import { z } from 'zod';
 import { hasClosedGeometry } from '../application/clipping';
@@ -8,7 +9,21 @@ const n = z.number().finite(),
   positive = n.positive(),
   point = z.object({ x: n, y: n }),
   matrix = z.tuple([n, n, n, n, n, n]);
+const strokeProfileSchema = z.object({
+  version: z.literal(1),
+  kind: z.enum(['uniform', 'taper-start', 'taper-end', 'taper-both', 'custom']),
+  points: z
+    .array(z.object({ at: n.min(0).max(1), width: n.min(0).max(4) }))
+    .min(2)
+    .max(64),
+});
+const strokeExtensions = {
+  strokeDash: z.array(n.min(0).max(1000)).max(64).default([]),
+  strokeDashOffset: n.min(-1000000).max(1000000).default(0),
+  strokeProfile: strokeProfileSchema.default(defaultDrawingStyle().strokeProfile),
+};
 export const geometrySchema = z.object({
+  ...strokeExtensions,
   id: z.string().min(1),
   name: z.string(),
   kind: z.enum(['path', 'rectangle', 'ellipse', 'polygon', 'compound']),
@@ -153,8 +168,43 @@ const pattern = z.object({
   placementTransform: matrix,
   visible: z.boolean(),
 });
+export const drawingStyleSchema = geometrySchema
+  .pick({
+    stroke: true,
+    fill: true,
+    strokeWidth: true,
+    strokeCap: true,
+    strokeJoin: true,
+    miterLimit: true,
+    opacity: true,
+    fillOpacity: true,
+    strokeOpacity: true,
+    fillRule: true,
+    strokeDash: true,
+    strokeDashOffset: true,
+    strokeProfile: true,
+  })
+  .superRefine((style, ctx) => {
+    const issue = styleIssue(style);
+    if (issue) ctx.addIssue({ code: 'custom', message: issue });
+  });
 export const projectSchema = z.object({
-  schemaVersion: z.literal(3),
+  schemaVersion: z.literal(4),
+  drawingStyle: drawingStyleSchema,
+  stylePresets: z
+    .array(
+      z.object({
+        id: z.string().min(1),
+        name: z.string().min(1).max(120),
+        style: drawingStyleSchema,
+      }),
+    )
+    .max(128),
+  palette: z.object({
+    colors: z.array(z.string().regex(/^#[a-fA-F0-9]{6}$/)).max(128),
+    recent: z.array(z.string().regex(/^#[a-fA-F0-9]{6}$/)).max(24),
+    favorites: z.array(z.string().regex(/^#[a-fA-F0-9]{6}$/)).max(64),
+  }),
   mainSymmetry: symmetry,
   mainSymmetryProfiles: z.record(z.string(), symmetry),
   metadata: z.object({
@@ -183,6 +233,10 @@ export const projectSchema = z.object({
     )
     .max(100),
   preferences: z.object({
+    styleDefaultsFollowSelection: z.boolean(),
+    stylePanelPinned: z.boolean(),
+    fillCloseTolerance: n.min(0).max(5),
+    fillLinkedDefault: z.boolean(),
     structureVisible: z.boolean(),
     structureOpacity: z.number().min(0.03).max(0.8),
     grid: z.boolean(),
@@ -227,6 +281,8 @@ export function parseProject(text: string): Project {
     for (const g of pat.sourceGeometry) checkGeometry(g);
   };
   const checkGeometry = (g: (typeof p.patterns)[number]['sourceGeometry'][number]) => {
+    const issue = styleIssue(g);
+    if (issue) throw Error(issue);
     checkMatrix(g.transform);
     if (['rectangle', 'ellipse', 'polygon'].includes(g.kind) && !g.parameters)
       throw Error(`La forma «${g.name}» perdió sus parámetros.`);

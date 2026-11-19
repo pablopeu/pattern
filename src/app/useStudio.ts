@@ -1,9 +1,17 @@
+import {
+  styleFields,
+  drawingStyle,
+  mixedStyle,
+  styleIssue,
+  hexColor,
+  type DrawingStyle,
+} from './styles';
 import { constrainTiling, type TilingDefinition } from '../tiling/tiles';
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { hasClosedGeometry } from '../application/clipping';
 import { History } from '../editor/history';
 import { autosave, recover } from '../persistence/storage';
-import { newProject, geometry, type Symmetry } from './model';
+import { newProject, type Symmetry } from './model';
 import {
   resolvePattern,
   changeSymmetry as applySymmetryChoice,
@@ -44,20 +52,8 @@ export function useStudio() {
   const [symmetryPreview, setSymmetryPreview] = useState<SymmetryPreview | null>(null),
     [galleryTarget, setGalleryTarget] = useState<'pattern' | 'project'>('pattern');
   const [instanceExplicit, setInstanceExplicit] = useState(false);
-  const [drawStyle, setDrawStyle] = useState(() => {
-    const g = geometry('path');
-    return {
-      stroke: g.stroke,
-      fill: g.fill,
-      strokeWidth: g.strokeWidth,
-      strokeCap: g.strokeCap,
-      strokeJoin: g.strokeJoin,
-      miterLimit: g.miterLimit,
-      opacity: g.opacity,
-      fillOpacity: g.fillOpacity,
-      strokeOpacity: g.strokeOpacity,
-    };
-  });
+  const [styleOpen, setStyleOpen] = useState(false),
+    [styleTarget, setStyleTarget] = useState<'selection' | 'current'>('selection');
   const [nodeIndex, setNodeIndex] = useState(0);
   const [selected, setSelected] = useState<string[]>([]),
     [instance, setInstance] = useState<Matrix>(IDENTITY),
@@ -66,6 +62,8 @@ export function useStudio() {
     [applicationId, setApplicationId] = useState('');
   const [revision, setRevision] = useState(0),
     [fileSaved, setFileSaved] = useState(false);
+  const selectedRef = useRef(selected);
+  selectedRef.current = selected;
   const replace = useCallback((p: Project) => {
     ref.current = p;
     setProject(p);
@@ -74,6 +72,30 @@ export function useStudio() {
     (recipe: (p: Project) => void, transient = false) => {
       const next = structuredClone(ref.current);
       recipe(next);
+      if (next.preferences.styleDefaultsFollowSelection) {
+        const before = [
+            ...ref.current.patterns.flatMap((p) => p.sourceGeometry),
+            ...ref.current.regions.flatMap((r) => r.geometry),
+          ],
+          after = [
+            ...next.patterns.flatMap((p) => p.sourceGeometry),
+            ...next.regions.flatMap((r) => r.geometry),
+          ];
+        for (const key of styleFields) {
+          const changed = after.filter(
+            (g) =>
+              selectedRef.current.includes(g.id) &&
+              before.some(
+                (old) => old.id === g.id && JSON.stringify(old[key]) !== JSON.stringify(g[key]),
+              ),
+          );
+          if (
+            changed.length &&
+            changed.every((g) => JSON.stringify(g[key]) === JSON.stringify(changed[0][key]))
+          )
+            Object.assign(next.drawingStyle, { [key]: structuredClone(changed[0][key]) });
+        }
+      }
       next.metadata.updatedAt = new Date().toISOString();
       replace(next);
       setFileSaved(false);
@@ -175,6 +197,15 @@ export function useStudio() {
       document.removeEventListener('pointercancel', end, true);
     };
   }, [commit]);
+  const beginGesture = () => {
+    gesture.current = true;
+  };
+  const endGesture = () => {
+    if (gesture.current) {
+      gesture.current = false;
+      commit();
+    }
+  };
   const undo = useCallback(() => {
     replace(history.current.undo());
     setSelected((ids) =>
@@ -320,34 +351,57 @@ export function useStudio() {
   const region = project.regions.find((r) => r.id === regionId);
   const application = project.applications.find((a) => a.id === applicationId);
   const objects = mode === 'apply' ? (region?.geometry ?? []) : pattern.sourceGeometry;
-  const styleSource = objects.find((g) => selected.includes(g.id));
-  const styleKey = styleSource
-    ? JSON.stringify([
-        styleSource.stroke,
-        styleSource.fill,
-        styleSource.strokeWidth,
-        styleSource.strokeCap,
-        styleSource.strokeJoin,
-        styleSource.miterLimit,
-        styleSource.opacity,
-        styleSource.fillOpacity,
-        styleSource.strokeOpacity,
-      ])
-    : '';
-  useEffect(() => {
-    if (styleSource)
-      setDrawStyle({
-        stroke: styleSource.stroke,
-        fill: styleSource.fill,
-        strokeWidth: styleSource.strokeWidth,
-        strokeCap: styleSource.strokeCap,
-        strokeJoin: styleSource.strokeJoin,
-        miterLimit: styleSource.miterLimit,
-        opacity: styleSource.opacity,
-        fillOpacity: styleSource.fillOpacity,
-        strokeOpacity: styleSource.strokeOpacity,
+  const styleSelection = objects.filter((g) => selected.includes(g.id)),
+    styleContext =
+      styleTarget === 'selection' && styleSelection.length
+        ? mixedStyle(styleSelection, project.drawingStyle)
+        : mixedStyle([], project.drawingStyle),
+    drawStyle = project.drawingStyle;
+  const applyStyle = useCallback(
+    (patch: Partial<DrawingStyle>, target: 'selection' | 'current' = styleTarget) => {
+      const chosen = target === 'selection' ? objects.filter((g) => selected.includes(g.id)) : [];
+      for (const old of chosen.length ? chosen : [ref.current.drawingStyle]) {
+        const issue = styleIssue({ ...drawingStyle(old), ...patch });
+        if (issue) {
+          setMessage(issue);
+          return;
+        }
+      }
+      change((p) => {
+        if (chosen.length) {
+          const ids = new Set(chosen.map((g) => g.id));
+          for (const g of [
+            ...p.patterns.flatMap((p) => p.sourceGeometry),
+            ...p.regions.flatMap((r) => r.geometry),
+          ])
+            if (ids.has(g.id)) Object.assign(g, structuredClone(patch));
+        } else Object.assign(p.drawingStyle, structuredClone(patch));
+        for (const key of ['stroke', 'fill'] as const) {
+          const color = patch[key];
+          if (color && color !== 'none') {
+            const parsed = hexColor(color);
+            if (parsed)
+              p.palette.recent = [
+                parsed.color,
+                ...p.palette.recent.filter((c) => c !== parsed.color),
+              ].slice(0, 24);
+          }
+        }
       });
-  }, [styleKey]);
+    },
+    [change, objects, selected, styleTarget],
+  );
+  const updateViewPreferences = useCallback(
+    (patch: Partial<Project['preferences']>) => {
+      history.current.mapStates((p) => ({ ...p, preferences: { ...p.preferences, ...patch } }));
+      replace({ ...ref.current, preferences: { ...ref.current.preferences, ...patch } });
+    },
+    [replace],
+  );
+  useEffect(() => {
+    setStyleOpen(project.preferences.stylePanelPinned);
+    setStyleTarget('selection');
+  }, [project.metadata.id]);
   const editObjects = useCallback(
     (recipe: (shapes: Geometry[]) => void, transient = false) =>
       change((p) => {
@@ -442,6 +496,16 @@ export function useStudio() {
     return () => clearTimeout(timer);
   }, [message]);
   return {
+    styleOpen,
+    setStyleOpen,
+    styleTarget,
+    setStyleTarget,
+    beginGesture,
+    endGesture,
+    styleContext,
+    styleSelection,
+    applyStyle,
+    updateViewPreferences,
     tileEditing,
     setTileEditing,
     tileEdge,

@@ -1,0 +1,492 @@
+prd_v2.2
+## Panel de estilos, trazos personalizados y herramienta de relleno vectorial
+
+**Repositorio:** https://github.com/pablopeu/pattern  
+**Base:** PRD v2.1 implementado  
+**Objetivo:** incorporar un sistema completo de estilos de dibujo y relleno integrado con el editor de simetrías dinámicas.
+
+### 0. Instrucciones de implementación
+
+Implementá este incremento directamente sobre el proyecto existente.
+
+Antes de modificar código, inspeccioná la rama local, el estado del repositorio, las instrucciones de AGENTS.md y los módulos afectados.
+
+La revisión preliminar identificó que ya existen propiedades de estilo en `Geometry`, controles asociados a objetos seleccionados en `Panels.tsx`, un estado `drawStyle` en `useStudio.ts` y geometría booleana basada en Paper.js.
+
+Reutilizá esa infraestructura.
+
+No implementes un segundo motor de estilos ni dupliques modelos existentes.
+
+No te detengas después de una implementación parcial. Completá las pruebas, validación visual, compatibilidad y documentación.
+
+---
+
+## 1. Concepto fundamental
+
+El editor debe distinguir tres situaciones:
+
+**Estilo vigente de dibujo:** define cómo se crean los próximos objetos, aunque no haya nada seleccionado.
+
+**Estilo de selección:** permite modificar las propiedades de los objetos ya creados.
+
+**Estilos guardados:** presets reutilizables de trazo y relleno.
+
+Los tres deben compartir un modelo coherente de propiedades.
+
+Al seleccionar objetos, el panel debe reflejar sus atributos. Si hay varios objetos con valores distintos, mostrar un estado mixto.
+
+Cambiar una propiedad con objetos seleccionados modifica solamente esa propiedad en la selección, y también puede establecerla como predeterminada para próximos objetos conforme a una política explícita y visible.
+
+Cuando no exista selección, todos los ajustes modifican el estilo vigente de dibujo.
+
+Nunca cambiar silenciosamente las propiedades de objetos anteriores que no estén seleccionados.
+
+## 2. Panel lateral derecho
+
+Incorporar un panel vertical de estilos anclado al borde derecho del área de trabajo.
+
+Debe funcionar independientemente del panel izquierdo actual.
+
+Características:
+
+- Botón de apertura/cierre siempre accesible.
+- Animación breve de despliegue.
+- Opción para fijarlo abierto.
+- Cierre mediante Escape cuando corresponda.
+- Cierre automático al volver al lienzo si no está fijado, pero sin interrumpir el trabajo.
+- Panel desplazable verticalmente.
+- Tamaño adaptable a ventanas pequeñas.
+- Sin tapar innecesariamente el dibujo.
+- Mantener la selección y la herramienta activa.
+- Conservar los valores al abrirlo y cerrarlo.
+
+El panel no debe impedir el dibujo desde instancias simétricas.
+
+En pantallas pequeñas puede superponerse temporalmente al lienzo; en escritorio debe reservar espacio cuando esté abierto y sea viable.
+
+Evitar modificar el zoom del documento o sus coordenadas al abrirlo.
+
+## 3. Controles principales
+
+### 3.1. Trazo
+
+Permitir definir:
+
+- Color mediante selector visual.
+- Valor hexadecimal editable.
+- Opción Sin trazo.
+- Grosor numérico con slider.
+- Valores en unidades del documento.
+- Opacidad de trazo.
+- Extremos: butt, round, square.
+- Uniones: miter, round, bevel.
+- Límite de inglete cuando corresponda.
+
+El grosor se almacena en unidades físicas canónicas, respetando el modelo existente en milímetros.
+
+No confundir grosor vectorial con un grosor constante en píxeles de pantalla.
+
+### 3.2. Estilos personalizados de línea
+
+Agregar patrones de trazo:
+
+- Continuo.
+- Punteado.
+- Discontinuo.
+- Trazo-punto.
+- Discontinuo largo.
+- Personalizado.
+
+La configuración personalizada permite editar una secuencia de longitudes de trazo y espacio, además del desplazamiento de fase.
+
+Usar una representación equivalente a `stroke-dasharray` y `stroke-dashoffset`, pero guardar los parámetros como datos vectoriales del documento, no como CSS externo.
+
+La secuencia debe permanecer válida, finita y no negativa. Rechazar configuraciones que no puedan generar un patrón útil.
+
+Los trazos punteados deben respetar las opciones de extremos.
+
+### 3.3. Perfil de grosor
+
+Incorporar perfiles de grosor:
+
+- Uniforme.
+- Afinado al inicio.
+- Afinado al final.
+- Afinado en ambos extremos.
+- Perfil personalizado.
+
+El perfil personalizado se define mediante puntos de control de ancho en función de la longitud normalizada del trazo.
+
+Permitir editar una curva de perfil visualmente.
+
+El resultado debe seguir siendo una forma vectorial exportable.
+
+Para perfiles variables, mantener el eje geométrico original editable y generar el contorno derivado para el renderizado y la exportación.
+
+No reducir el resultado a una imagen raster.
+
+Implementar una generación de contorno robusta para curvas Bézier con tolerancias geométricas documentadas. Tratar correctamente extremos, uniones, inflexiones y posibles autointersecciones.
+
+Si existen límites de estabilidad numérica, validarlos explícitamente.
+
+### 3.4. Relleno
+
+Permitir:
+
+- Sin relleno.
+- Color sólido.
+- Opacidad de relleno.
+- Regla evenodd o nonzero.
+- Intercambiar colores de trazo y relleno.
+- Restablecer colores predeterminados.
+
+No introducir gradientes o patrones de textura a costa de dejar incompleta la herramienta de relleno geométrico.
+
+La prioridad es el color sólido exacto.
+
+### 3.5. Color y paletas
+
+Incluir una paleta compacta de colores frecuentes y un selector personalizado.
+
+Permitir:
+
+- Introducción HEX.
+- Selección visual.
+- Colores recientes.
+- Colores favoritos.
+- Guardar colores en una paleta del proyecto.
+
+Mantener los valores alfa mediante las propiedades de opacidad existentes, sin generar inconsistencias entre distintos formatos de color.
+
+## 4. Indicador del estilo vigente
+
+Añadir un indicador compacto y siempre visible dentro de la interfaz del área de trabajo.
+
+Debe mostrar, como mínimo:
+
+- Muestra del color de trazo.
+- Grosor vigente con unidad.
+- Muestra del color de relleno o símbolo de Sin relleno.
+- Representación abreviada del estilo de línea.
+
+El indicador debe actualizarse inmediatamente.
+
+Pulsarlo abre directamente el panel derecho.
+
+Si hay varios objetos seleccionados y sus propiedades difieren, representar el estado mixto de forma inequívoca.
+
+El indicador no debe confundirse con una barra de progreso ni con los controles de zoom.
+
+Al cerrar el panel, el indicador continúa visible.
+
+## 5. Presets de estilos
+
+Permitir guardar un estilo completo con nombre.
+
+Cada preset debe contener los parámetros aplicables de:
+
+- Trazo.
+- Grosor.
+- Perfil.
+- Patrón discontinuo.
+- Extremos.
+- Uniones.
+- Opacidad.
+- Relleno.
+
+Implementar acciones para crear, aplicar, renombrar, duplicar y eliminar presets.
+
+Conservar los presets al guardar y reabrir proyectos.
+
+Los estilos guardados deben ser valores reutilizables, no vínculos que modifiquen retrospectivamente objetos previos cuando cambia el preset.
+
+No introducir cuentas ni servicios externos.
+
+## 6. Herramienta Fill — Balde de pintura
+
+Agregar una herramienta identificable mediante un icono de balde en la barra de herramientas izquierda.
+
+Debe operar sobre geometría vectorial real.
+
+### 6.1. Rellenar un objeto cerrado
+
+Cuando se hace clic dentro de un path cerrado, el sistema debe poder aplicar el color de relleno vigente al objeto correspondiente.
+
+Respetar:
+
+- Regla de relleno.
+- Agujeros.
+- Transformaciones.
+- Grupos de simetría.
+- Visibilidad.
+- Bloqueo.
+- Orden de capas.
+
+La acción debe ser reversible mediante undo.
+
+### 6.2. Rellenar áreas delimitadas por varios trazos
+
+Este requisito es obligatorio.
+
+Ejemplo: cuatro segmentos independientes forman el contorno de un cuadrado.
+
+El usuario hace clic dentro del cuadrado.
+
+La aplicación debe identificar esa región cerrada y crear una geometría de relleno que corresponda al área delimitada.
+
+No exigir que el usuario una manualmente los cuatro segmentos.
+
+El sistema debe construir las caras de una disposición planar a partir de las curvas visibles, calculando:
+
+- Intersecciones.
+- Subdivisiones en intersecciones.
+- Contornos cerrados.
+- Regiones interiores.
+- Agujeros.
+- Límites de cada cara.
+
+Utilizar Paper.js y las operaciones geométricas existentes cuando sean adecuadas.
+
+No implementar un flood fill raster como fuente de verdad.
+
+No convertir el documento original en píxeles para determinar la geometría que se guarda.
+
+### 6.3. Tolerancia de cierre
+
+Permitir detectar pequeños huecos con una tolerancia configurable.
+
+Por defecto, usar cierre geométrico exacto dentro de la tolerancia numérica existente.
+
+Una tolerancia de cierre ampliada debe ser una opción explícita.
+
+El sistema debe informar cuándo una región sólo puede considerarse cerrada mediante tolerancia y no modificar automáticamente los trazos originales.
+
+No rellenar grandes áreas abiertas por accidente.
+
+### 6.4. Comportamiento ante ambigüedad
+
+Si varias regiones o capas son candidatas bajo el cursor, utilizar una política de selección determinística y comprensible.
+
+Priorizar la capa visible superior cuando corresponda.
+
+Permitir cambiar de región candidata.
+
+No rellenar una región gigantesca o infinita cuando el clic no corresponde a ninguna cara acotada.
+
+Mostrar una previsualización tenue del área que será rellenada antes de confirmar.
+
+### 6.5. Resultado vectorial
+
+El relleno de una región formada por varios objetos debe crear una geometría de relleno derivada, independiente de los trazos que la delimitan.
+
+Los trazos originales permanecen intactos.
+
+La nueva región puede ser un path o compound path, con agujeros cuando corresponda.
+
+Colocarla en un orden de capas apropiado para no ocultar involuntariamente los contornos.
+
+Permitir editar o eliminar posteriormente el relleno.
+
+Evitar crear duplicados idénticos cuando se vuelve a hacer clic sobre una región ya rellenada; ofrecer cambio de color de la región existente cuando sea apropiado.
+
+## 7. Fill y simetría dinámica
+
+Este requisito es crítico.
+
+En un patrón de simetría, la herramienta Fill debe funcionar desde cualquier instancia visible.
+
+Cuando el usuario rellena una zona de una instancia reflejada, rotada o trasladada:
+
+1. Identificar la región visible bajo el cursor.
+2. Determinar la transformación correspondiente.
+3. Transformar la región a coordenadas canónicas cuando exista una representación equivalente.
+4. Crear o modificar una fuente de relleno.
+5. Propagar el resultado a las instancias de la simetría activa.
+6. Actualizar inmediatamente el lienzo.
+
+No materializar cientos de rellenos independientes para cada copia.
+
+### 7.1. Áreas que cruzan dominios fundamentales
+
+Una región puede cruzar el límite de una celda.
+
+No recortarla automáticamente en ese límite.
+
+La herramienta debe identificar correctamente la topología de la región visible, aunque sus bordes provengan de distintas instancias del mismo motivo.
+
+### 7.2. Áreas delimitadas por varias instancias
+
+Una región cerrada puede estar formada por trazos pertenecientes a instancias diferentes.
+
+El sistema debe calcular la región visible completa, no limitarse a buscar un path cerrado dentro de `sourceGeometry`.
+
+Para representar su relleno mediante una única fuente canónica, debe reconstruir el área mediante las transformaciones inversas correspondientes y comprobar su equivalencia al regenerar la órbita.
+
+Si esa región no puede expresarse fielmente con una sola fuente sin producir rellenos adicionales no deseados, utilizar una representación derivada de región u órbita con las restricciones necesarias, manteniendo editabilidad y sin duplicación destructiva.
+
+No afirmar que una fuente simple reproduce exactamente una región compleja si no lo hace.
+
+### 7.3. Cambios posteriores de simetría
+
+Los rellenos deben seguir siendo editables y conservarse al cambiar de grupo.
+
+Distinguir los rellenos vinculados a la geometría fuente de los rellenos generados desde regiones derivadas de una simetría concreta.
+
+Cuando corresponda, permitir recalcular una región vinculada.
+
+Cuando cambie la topología y la región deje de existir, no inventar un área nueva ni eliminar silenciosamente el relleno. Conservar una representación válida y mostrar claramente el estado de vinculación.
+
+## 8. Rellenos vinculados y congelados
+
+Ofrecer dos comportamientos para áreas generadas desde varios límites:
+
+**Relleno vinculado:** recalcula su región si cambian los trazos que la delimitan, mientras la topología siga siendo válida.
+
+**Relleno fijo:** conserva el contorno calculado cuando se creó.
+
+El comportamiento predeterminado debe ser vinculado cuando pueda resolverse de forma robusta.
+
+Guardar las referencias a geometrías fuente, instancia y configuración geométrica necesarias.
+
+No basar la vinculación únicamente en coordenadas aproximadas del cursor.
+
+Evitar ciclos de dependencia entre rellenos y límites.
+
+## 9. Integración con teselas
+
+La v2.1 contiene `src/tiling/` y teselas editables.
+
+El nuevo sistema debe poder rellenar el interior de una tesela y ver el resultado repetido.
+
+La geometría del relleno y el contorno de la tesela deben permanecer diferenciados.
+
+Cuando cambie un borde de la tesela, el relleno vinculado debe actualizarse si la operación sigue siendo válida.
+
+No pintar el overlay matemático de simetría ni las guías como si fueran límites reales del dibujo.
+
+Las líneas de estructura son ayudas visuales, no geometría material para Fill.
+
+## 10. Edición de estilos existentes
+
+El panel derecho debe permitir modificar uno o varios objetos seleccionados.
+
+Aplicar cambios únicamente a los campos efectivamente editados.
+
+Mantener compatibilidad con el panel de propiedades izquierdo.
+
+Extraer controles compartidos cuando corresponda para evitar dos implementaciones independientes del mismo atributo.
+
+Los cambios deben actualizar todas las instancias derivadas sin alterar la geometría canónica.
+
+Al hacer clic sobre una copia reflejada o rotada de un trazo, la modificación debe afectar su fuente.
+
+## 11. Persistencia y exportación
+
+Extender el esquema actual con una migración versionada.
+
+Conservar todos los proyectos anteriores.
+
+Persistir:
+
+- Estilo vigente cuando corresponda al proyecto.
+- Presets.
+- Paletas.
+- Nuevas propiedades de trazo.
+- Perfiles.
+- Dash arrays.
+- Regiones de relleno.
+- Dependencias de rellenos vinculados.
+
+Mantener compatibilidad con SVG, DXF y exportaciones raster.
+
+Los estilos discontinuos deben conservarse en SVG o expandirse correctamente cuando la exportación requiera contornos.
+
+Los trazos de ancho variable deben expandirse a geometría vectorial, respetando las tolerancias físicas.
+
+Los rellenos se exportan como regiones geométricas reales.
+
+DXF debe preservar los contornos resultantes dentro de sus capacidades; documentar las limitaciones respecto a colores y rellenos.
+
+No modificar el comportamiento de las aplicaciones congeladas existentes.
+
+## 12. Historial y rendimiento
+
+Integrar todos los cambios con undo/redo.
+
+Un ajuste continuo de grosor u opacidad mediante slider debe producir una sola operación lógica.
+
+Los presets aplicados y las acciones de Fill deben ser reversibles.
+
+No recalcular la disposición planar completa por cada movimiento de puntero si no cambió la geometría.
+
+Implementar caché e invalidación por revisión geométrica, límites visibles y configuración relevante.
+
+Priorizar respuesta inmediata del lienzo.
+
+Permitir cancelar operaciones geométricas complejas.
+
+Establecer límites documentados para evitar bloqueos por cantidades excesivas de intersecciones.
+
+## 13. Pruebas obligatorias
+
+Agregar pruebas para:
+
+1. Crear trazos utilizando el estilo vigente sin selección.
+2. Modificar solamente los objetos seleccionados.
+3. Persistir colores, grosores, perfiles y presets.
+4. Mostrar el indicador correcto con el panel cerrado.
+5. Representar atributos mixtos en selección múltiple.
+6. Generar dash arrays y perfiles variables correctos.
+7. Rellenar un path cerrado.
+8. Rellenar un área formada por cuatro líneas independientes.
+9. Rellenar regiones delimitadas por curvas Bézier.
+10. Reconocer agujeros y regiones interiores.
+11. Rechazar regiones abiertas.
+12. Reconocer cierre mediante tolerancia explícita.
+13. Rellenar desde instancias reflejadas y rotadas.
+14. Rellenar regiones que cruzan celdas.
+15. Rellenar áreas formadas por bordes de distintas instancias.
+16. Conservar rellenos al cambiar la simetría.
+17. Actualizar rellenos vinculados tras editar límites.
+18. Conservar rellenos congelados.
+19. Rellenar teselas editables.
+20. Exportar SVG vectorial exacto dentro de tolerancias.
+21. Mantener compatibilidad DXF y raster.
+22. Ejecutar todas las pruebas de regresión v1, v2 y v2.1.
+
+Las pruebas E2E deben verificar resultados geométricos reales, no solamente que los botones responden.
+
+## 14. Validación visual
+
+Utilizar Playwright para capturar la aplicación en pantallas de escritorio y tamaños reducidos.
+
+Verificar:
+
+- Panel derecho abierto.
+- Panel derecho cerrado.
+- Estilo vigente visible.
+- Cambio de color.
+- Cambio de grosor.
+- Presets.
+- Selección múltiple.
+- Previsualización de Fill.
+- Relleno propagado en una simetría.
+- Relleno sobre teselas.
+
+El lienzo debe conservar espacio útil y no presentar desbordamientos horizontales.
+
+La interacción debe resultar natural con mouse, teclado y dispositivos de entrada táctil cuando el navegador los soporte.
+
+## 15. Criterio de éxito
+
+El usuario debe poder abrir Pattern Studio, elegir un color y grosor, empezar a dibujar, cambiar el estilo de trazo y seguir dibujando sin seleccionar previamente ningún objeto.
+
+Debe poder cerrar el panel y continuar viendo cuáles son los atributos vigentes.
+
+Debe poder guardar estilos personalizados y reutilizarlos.
+
+También debe poder seleccionar Fill, pulsar dentro de una región visualmente cerrada y obtener un relleno vectorial editable que se propague correctamente mediante la simetría activa.
+
+**El objetivo es que la experiencia de dibujo y pintura sea tan inmediata como la exploración de simetrías.**
+
+Implementar, verificar y documentar todas las funcionalidades sin degradar los incrementos anteriores.

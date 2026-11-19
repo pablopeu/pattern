@@ -1,26 +1,22 @@
+import {
+  defaultDrawingStyle,
+  type DrawingStyle,
+  type StylePreset,
+  type ProjectPalette,
+} from './styles';
 import type { TilingDefinition } from '../tiling/tiles';
 import type { Matrix, Point, Unit } from '../geometry/matrix';
 export type Node = Point & { in: Point; out: Point };
 export type ShapeKind = 'path' | 'rectangle' | 'ellipse' | 'polygon' | 'compound';
-export interface Geometry {
+export interface Geometry extends DrawingStyle {
   id: string;
   name: string;
   kind: ShapeKind;
   nodes: Node[];
   closed: boolean;
   transform: Matrix;
-  stroke: string;
-  fill: string;
-  strokeWidth: number;
   visible: boolean;
   locked: boolean;
-  strokeCap: 'butt' | 'round' | 'square';
-  strokeJoin: 'miter' | 'round' | 'bevel';
-  miterLimit: number;
-  opacity: number;
-  fillOpacity: number;
-  strokeOpacity: number;
-  fillRule: 'evenodd' | 'nonzero';
   groupId?: string;
   pathData?: string;
   parameters?: {
@@ -107,7 +103,10 @@ export interface Application {
   showOutline: boolean;
 }
 export interface Project {
-  schemaVersion: 3;
+  drawingStyle: DrawingStyle;
+  stylePresets: StylePreset[];
+  palette: ProjectPalette;
+  schemaVersion: 4;
   mainSymmetry: Symmetry;
   mainSymmetryProfiles: Record<string, Symmetry>;
   metadata: { id: string; name: string; createdAt: string; updatedAt: string };
@@ -116,6 +115,10 @@ export interface Project {
   regions: Region[];
   applications: Application[];
   preferences: {
+    styleDefaultsFollowSelection: boolean;
+    stylePanelPinned: boolean;
+    fillCloseTolerance: number;
+    fillLinkedDefault: boolean;
     structureVisible: boolean;
     structureOpacity: number;
     grid: boolean;
@@ -154,16 +157,7 @@ export function geometry(kind: ShapeKind, nodes: Node[] = [], closed = false): G
     nodes,
     closed,
     transform: [1, 0, 0, 1, 0, 0],
-    stroke: '#233b2d',
-    fill: 'none',
-    strokeWidth: 0.65,
-    strokeCap: 'round',
-    strokeJoin: 'round',
-    miterLimit: 10,
-    opacity: 1,
-    fillOpacity: 1,
-    strokeOpacity: 1,
-    fillRule: 'evenodd',
+    ...defaultDrawingStyle(),
     visible: true,
     locked: false,
   };
@@ -217,7 +211,10 @@ export function newPattern(): Pattern {
 export function newProject(): Project {
   const now = new Date().toISOString();
   return {
-    schemaVersion: 3,
+    schemaVersion: 4,
+    drawingStyle: defaultDrawingStyle(),
+    stylePresets: [],
+    palette: { colors: [], recent: [], favorites: [] },
     mainSymmetry: newPattern().symmetry,
     mainSymmetryProfiles: {},
     metadata: { id: uid(), name: 'Estudio sin título', createdAt: now, updatedAt: now },
@@ -226,6 +223,10 @@ export function newProject(): Project {
     regions: [],
     applications: [],
     preferences: {
+      styleDefaultsFollowSelection: true,
+      stylePanelPinned: false,
+      fillCloseTolerance: 0,
+      fillLinkedDefault: true,
       structureVisible: false,
       structureOpacity: 0.22,
       grid: true,

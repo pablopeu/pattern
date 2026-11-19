@@ -1,3 +1,4 @@
+import { strokeRegion, paintedAxes } from '../geometry/stroke-outline';
 import type { Geometry } from '../app/model';
 import { flattened } from '../geometry/paper';
 export function exportDXF(shapes: Geometry[], tolerance = 0.05): string {
@@ -21,7 +22,14 @@ export function exportDXF(shapes: Geometry[], tolerance = 0.05): string {
     2,
     'ENTITIES',
   ];
-  for (const shape of shapes)
+  const expanded = shapes.flatMap((shape) =>
+    shape.stroke !== 'none' && shape.strokeWidth > 0
+      ? shape.strokeProfile.kind !== 'uniform'
+        ? [strokeRegion(shape, undefined, tolerance)]
+        : paintedAxes(shape)
+      : [shape],
+  );
+  for (const shape of expanded)
     for (const path of flattened(shape, tolerance)) {
       if (path.points.length < 2) continue;
       lines.push(

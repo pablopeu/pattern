@@ -55,6 +55,7 @@ interface Drag {
   start: Point;
   last?: Point;
   view?: Bounds;
+  viewPixelWidth?: number;
   ids?: string[];
   transforms?: Map<string, Matrix>;
   matrix?: Matrix;
@@ -106,9 +107,16 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
   );
   useEffect(() => {
     if (!container.current) return;
+    let measuredWidth: number | undefined;
     const observer = new ResizeObserver((entries) => {
       const r = entries[0].contentRect;
-      setSize({ width: Math.max(1, r.width), height: Math.max(1, r.height) });
+      const width = Math.max(1, r.width);
+      if (measuredWidth !== undefined && measuredWidth !== width) {
+        const ratio = width / measuredWidth;
+        setView((v) => ({ ...v, width: v.width * ratio }));
+      }
+      measuredWidth = width;
+      setSize({ width, height: Math.max(1, r.height) });
     });
     observer.observe(container.current);
     return () => observer.disconnect();
@@ -267,6 +275,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         finishPath(e.shiftKey);
       }
       if (e.key === 'Escape') {
+        if (s.styleOpen) return;
         if (pathDraft.current) cancelPath();
         else {
           s.setSelected([]);
@@ -440,6 +449,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     svgRef.current?.focus();
     s.setSymmetryPreview(null);
     const p = point(event);
+    if (s.styleOpen && !s.project.preferences.stylePanelPinned) s.setStyleOpen(false);
     lastPointer.current = p;
     if (event.button === 1 || space.current || s.tool === 'pan') {
       event.preventDefault();
@@ -448,6 +458,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         type: 'pan',
         start: { x: event.clientX, y: event.clientY },
         view: { ...view },
+        viewPixelWidth: size.width,
       };
       return;
     }
@@ -583,7 +594,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       return;
     }
     if (d.type === 'pan') {
-      const ratio = d.view!.width / size.width;
+      const ratio = d.view!.width / (d.viewPixelWidth ?? size.width);
       setView({
         ...d.view!,
         x: d.view!.x - (event.clientX - d.start.x) * ratio,
@@ -764,21 +775,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     });
   };
   const renderShape = (g: Geometry) => (
-    <path
-      key={g.id}
-      d={pathData(g)}
-      transform={matrixString(g.transform)}
-      fill={g.fill}
-      stroke={g.stroke}
-      strokeWidth={g.strokeWidth}
-      opacity={g.opacity}
-      fillOpacity={g.fillOpacity}
-      strokeOpacity={g.strokeOpacity}
-      strokeLinecap={g.strokeCap}
-      strokeLinejoin={g.strokeJoin}
-      strokeMiterlimit={g.miterLimit}
-      fillRule={g.fillRule}
-    />
+    <g key={g.id} dangerouslySetInnerHTML={{ __html: svgPath(g) }} />
   );
   const selectCached = (e: RPointerEvent, sc: Scene, placement: Matrix) => {
     if (s.mode !== 'apply') {
@@ -1044,6 +1041,9 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         tabIndex={0}
         viewBox={`${actualView.x} ${actualView.y} ${actualView.width} ${actualView.height}`}
         style={{ background: s.project.preferences.background }}
+        onPointerDownCapture={() => {
+          if (s.styleOpen && !s.project.preferences.stylePanelPinned) s.setStyleOpen(false);
+        }}
         onPointerDown={pointerDown}
         onPointerMove={pointerMove}
         onPointerUp={pointerUp}
