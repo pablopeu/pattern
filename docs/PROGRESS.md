@@ -78,3 +78,11 @@
 - El usuario solicitó commit y push a `https://github.com/pablopeu/pattern`.
 - Repositorio remoto comprobado vacío y rama de destino `main`; se conserva el historial local completo.
 - Actualizadas las instrucciones y la documentación para reflejar la autorización del remoto. Sin cambios funcionales en la aplicación.
+
+## PRD v2 · Baseline y auditoría inicial
+
+- Especificación v2 leída completa; se reutilizan modelo canónico, matrices, grupos, renderer SVG, historial y exportación.
+- Baseline ejecutado: TypeScript, 57 unitarias, 19 E2E, 4 del monitor y build correctos.
+- Confirmado: p1 actual es periódico, no Libre; la creación captura coordenadas globales; el cambio de modo reinicia herramienta; las simetrías se ocultan al seleccionar; sólo se representa un patrón activo.
+- Se inicia evolución a esquema 2, resolver efectivo común, captura inversa estable, galería programada y composición ligera mediante patterns[].
+- Referencias públicas iOrnament/Bridges/Springer inspeccionadas conceptualmente. El artículo Springer figura publicado en marzo de 2026, aunque su DOI incluye 2025. No se incorpora geometría hiperbólica ni código/recursos propietarios.

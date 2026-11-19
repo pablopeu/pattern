@@ -1,0 +1,864 @@
+# PATTERN — PRD v2
+## Editor vectorial de simetría dinámica, dibujo libre y exploración continua
+
+**Repositorio:** https://github.com/pablopeu/pattern  
+**Base:** PRD v1 implementado el 19 de noviembre de 2026  
+**Tipo de trabajo:** Evolución no destructiva de la aplicación existente  
+**Destinatario:** Codex, trabajando directamente sobre el repositorio local
+
+---
+
+# 0. Instrucciones obligatorias para Codex
+
+Implementá íntegramente esta especificación en el repositorio existente.
+
+No crees otra aplicación, no reemplaces innecesariamente el motor geométrico y no introduzcas infraestructura comercial o servicios externos.
+
+Antes de modificar código:
+
+1. Inspeccioná el estado real del árbol Git y la rama activa.
+2. Leé `AGENTS.md`, `ARCHITECTURE.md`, `GEOMETRY.md`, `PROJECT_FORMAT.md`, `TESTING.md` y `docs/ACCEPTANCE.md`.
+3. Revisá los módulos existentes que se identifican en este documento.
+4. Ejecutá las pruebas actuales y registrá el baseline.
+5. Contrastá esta especificación con el código. El código real tiene prioridad sobre supuestos acerca de la implementación v1.
+
+Trabajá autónomamente hasta completar el producto, la documentación, las pruebas y la auditoría final.
+
+No entregues únicamente un plan o un prototipo.
+
+No dejes funciones simuladas, botones inoperantes ni pruebas artificiales que no validen el comportamiento real.
+
+Conservá el Git local y los mecanismos de revisión existentes.
+
+# 1. Objetivo principal
+
+El usuario debe poder dibujar y cambiar cualquier simetría en cualquier momento, tantas veces como desee.
+
+No existen etapas obligatorias de "primero dibujar" y "después aplicar simetría".
+
+Tampoco existe la obligación de seleccionar una simetría antes de comenzar.
+
+Dibujo y simetría son aspectos independientes, simultáneos y permanentemente modificables de la misma composición.
+
+## Flujo principal obligatorio
+
+1. Abrir un documento.
+2. Dibujar libremente.
+3. Elegir una simetría.
+4. Ver inmediatamente el patrón resultante.
+5. Continuar dibujando directamente sobre ese patrón.
+6. Seleccionar otra simetría.
+7. Continuar dibujando.
+8. Modificar curvas desde cualquier instancia.
+9. Volver a cualquier simetría anterior.
+10. Conservar todos los trazos y modificaciones acumulados.
+
+El paso 6 no puede provocar pérdida de geometría, reinicio de herramientas, interrupción del flujo de trabajo ni conversión destructiva.
+
+El cambio debe sentirse tan inmediato como modificar un color o un grosor de línea.
+
+# 2. Arquitectura existente que debe aprovecharse
+
+La inspección inicial del repositorio identificó:
+
+- `src/app/model.ts`: tipos `Project`, `Pattern`, `Geometry`, `Symmetry` y `Generator`.
+- `src/app/useStudio.ts`: estado React, selección, `change`, `commit`, historial y persistencia.
+- `src/editor/Canvas.tsx`: interacción SVG, dibujo, hit-testing y transformación inversa desde instancias.
+- `src/patterns/engine.ts`: `buildScene`, generación y expansión de transformaciones.
+- `src/symmetry/groups.ts`: `cosets`, `lattice`, `visibleInstances`, `fundamentalDomain` y clasificación de grupos.
+- `src/symmetry/guides.ts`: guías y verificaciones matemáticas.
+- `src/ui/Panels.tsx`: selector de simetrías con miniaturas estáticas.
+- `src/app/App.tsx`: organización de modos, herramientas y vistas.
+- `src/persistence/schema.ts`: validación Zod.
+- `src/persistence/migrations.ts`: infraestructura de migración.
+- `src/export/`: mecanismos de exportación existentes.
+
+Reutilizá esas estructuras.
+
+No introduzcas un motor geométrico paralelo.
+
+La geometría vectorial fuente ya existe independientemente de las instancias. Conservar esa propiedad como invariante central.
+
+# 3. Modo Libre genuino
+
+Actualmente, `newPattern()` inicializa una simetría wallpaper `p1`.
+
+Eso no equivale a ausencia de simetría, porque `p1` contiene dos traslaciones independientes.
+
+Implementar un estado explícito `none` o `free`, con un identificador inequívoco.
+
+Elegir la representación más pequeña compatible con la arquitectura existente. Puede ser una nueva familia `none` dentro de `Symmetry` o una discriminated union equivalente.
+
+## Comportamiento
+
+En modo Libre:
+
+- Una fuente aparece una sola vez.
+- No hay traslaciones.
+- No hay reflexiones.
+- No hay rotaciones adicionales.
+- No hay dominio fundamental obligatorio.
+- Las coordenadas físicas no cambian.
+- Las herramientas existentes funcionan normalmente.
+
+El motor debe devolver la identidad como única transformación efectiva.
+
+No simular el modo libre mediante `p1` con una celda gigantesca.
+
+No clasificar un dibujo libre como `PERIODIC_SEAMLESS`.
+
+Añadir una clasificación explícita de composición no periódica libre, sin confundirla con Penrose o con un grupo radial finito.
+
+Los proyectos nuevos deben iniciarse en modo Libre, con el generador `motif`.
+
+Los ocho ejemplos existentes deben conservar su configuración específica mediante la migración y los valores explícitos de cada ejemplo.
+
+# 4. Simetría dinámica no destructiva
+
+La propiedad `Pattern.sourceGeometry` permanece como fuente canónica.
+
+El cambio de simetría modifica únicamente la configuración matemática y la escena derivada.
+
+No debe:
+
+- Modificar nodos.
+- Redondear coordenadas.
+- Expandir instancias.
+- Crear copias permanentes.
+- Cambiar IDs.
+- Materializar trazados.
+- Destruir estilos.
+- Reemplazar el generador.
+- Modificar aplicaciones congeladas.
+
+Implementar una operación única para cambiar grupo y familia.
+
+Esta operación debe poder invocarse desde el selector visual sin depender de los modos Diseño/Patrón.
+
+## Configuración efectiva
+
+Introducir una función pura de resolución de configuración efectiva que acepte la configuración del patrón y, cuando exista, la herencia de un nivel superior.
+
+No modificar `buildScene` para que consulte directamente estado React o componentes de UI.
+
+Preferir que el motor reciba una configuración efectiva ya resuelta.
+
+La misma función debe utilizarse para lienzo, miniaturas, exportación y aplicaciones vinculadas.
+
+# 5. Cambio entre redes incompatibles
+
+Los grupos existentes poseen diferentes redes:
+
+- Oblicuas.
+- Rectangulares.
+- Cuadradas.
+- Triangulares o hexagonales.
+- Rómbicas primitivas.
+
+Las funciones `lattice()` y `cosets()` ya calculan estas estructuras.
+
+## Política predeterminada
+
+**Preservar la geometría en coordenadas absolutas del documento.**
+
+Al pasar de `p4m` a `p6m`, no trasladar automáticamente todos los nodos a una nueva celda.
+
+Conservar la geometría y cambiar las operaciones de simetría que actúan sobre ella.
+
+El usuario debe poder reposicionar o cambiar la escala de la red posteriormente.
+
+## Preservación de parámetros
+
+No perder innecesariamente los parámetros al cambiar de familia.
+
+Cuando una familia requiere otros parámetros, utilizar valores válidos sin destruir los anteriores.
+
+Considerar una configuración persistente por familia para conservar, por ejemplo:
+
+- Ancho y alto de red.
+- Ángulo.
+- Centro radial.
+- Cantidad de sectores.
+- Orientación y origen efectivo.
+
+No imponer un único ancho/alto para familias con semánticas geométricas diferentes.
+
+## Origen de la simetría
+
+Agregar controles directos sobre el lienzo para trasladar el origen de simetría y modificar la orientación de la red, donde corresponda.
+
+El origen no debe quedar implícitamente fijado a `(0,0)` sin posibilidad de ajuste.
+
+La modificación del origen afecta a la interpretación del patrón, no a las fuentes.
+
+## Adaptar a celda
+
+Ofrecer una acción explícita, reversible y no destructiva para adaptar visualmente el motivo a una nueva red.
+
+Implementarla como transformación de colocación o encuadre independiente de la fuente.
+
+No activarla automáticamente al cambiar de grupo.
+
+# 6. Dibujo directamente sobre las instancias
+
+Esta sección es uno de los cambios más importantes respecto al PRD anterior.
+
+La aplicación ya permite modificar nodos desde copias simétricas mediante matrices inversas.
+
+Extender el mismo principio a la **creación de geometría nueva**.
+
+## 6.1. Instancia activa de dibujo
+
+Cuando el usuario empieza un trazo sobre una instancia, determinar la transformación responsable de esa representación.
+
+Al comenzar el trazo, fijar un contexto:
+
+- ID del patrón.
+- Instancia activa.
+- Transformación efectiva.
+- Transformación inversa.
+- Herramienta.
+- Geometría en construcción.
+
+Los puntos capturados por el puntero deben transformarse al espacio canónico correcto.
+
+El usuario debe sentir que dibuja donde colocó el cursor.
+
+No debe aparecer un salto del trazo hacia la celda de origen.
+
+## 6.2. Ambigüedad de instancias
+
+En un patrón repetido pueden existir varias instancias coincidentes o superpuestas.
+
+Definir una política determinística de selección de instancia activa.
+
+Priorizar:
+
+1. La instancia seleccionada explícitamente.
+2. La instancia bajo el cursor que corresponda al objeto editado.
+3. La instancia más cercana a un punto o dominio de referencia.
+4. Un criterio geométrico estable de desempate.
+
+Incorporar una indicación visual discreta de la instancia activa.
+
+Permitir elegir otra instancia cuando exista ambigüedad.
+
+No depender del orden incidental de renderizado SVG para decidir silenciosamente.
+
+## 6.3. Trazos que cruzan celdas
+
+Un trazo puede comenzar en una celda, cruzar sus límites y continuar fuera de ella.
+
+No recortarlo automáticamente.
+
+No dividirlo en múltiples fuentes.
+
+No cambiar su transformación inversa a mitad del trazo.
+
+La transformación de captura queda fijada durante el gesto completo.
+
+Los cruces entre celdas son parte legítima del dibujo.
+
+## 6.4. Cambio de grupo durante un trazo
+
+Si el usuario cambia la simetría mientras un trazo continúa abierto:
+
+- Preservar la fuente parcial.
+- No descartar los nodos.
+- No generar clones.
+- No finalizar silenciosamente el trazo.
+- Mantener la captura de coordenadas coherente con el contexto inicial.
+- Recalcular las instancias con la nueva simetría.
+
+La representación de la fuente puede desplazarse visualmente al reinterpretarse bajo otro grupo, pero no deben alterarse las coordenadas del trazo ni producirse saltos artificiales en los puntos capturados.
+
+Documentar y comprobar la política de transformación utilizada durante este caso.
+
+En la interfaz de escritorio, cambiar la simetría entre gestos debe funcionar siempre. Para cambios con un pointer capturado, preservar el gesto y permitir confirmarlo o cancelarlo correctamente.
+
+# 7. Unificación del flujo Diseño/Patrón
+
+Actualmente `App.tsx` presenta tres modos:
+
+- Diseño.
+- Patrón.
+- Aplicar.
+
+Además, cambiar de modo puede borrar la selección y cambiar la herramienta a `select`.
+
+La simetría dinámica no debe depender de esa transición.
+
+## Comportamiento esperado
+
+Seleccionar una simetría desde Diseño debe actualizar el patrón inmediatamente.
+
+Seleccionarla desde Patrón no debe obligar al usuario a regresar a Diseño para continuar.
+
+Los controles de simetría deben estar disponibles durante la edición vectorial.
+
+Se puede conservar la separación entre modos para organizar herramientas avanzadas, pero no para imponer etapas de trabajo.
+
+## Lienzo principal
+
+El lienzo predeterminado debe mostrar la composición con la simetría activa y permitir editar directamente sobre ella.
+
+La vista de fuente pura debe continuar disponible como una opción.
+
+La vista dividida existente debe mantenerse como herramienta adicional de inspección, no como requisito para poder dibujar.
+
+## Herramientas
+
+Cambiar simetría no modifica la herramienta activa.
+
+Mantener:
+
+- Pencil.
+- Pen.
+- Nodos Bézier.
+- Selección.
+- Formas.
+- Borrado.
+- Transformaciones.
+- Estilos.
+
+Conservar siempre que sea válido el estado de selección y los controles de estilo.
+
+Revisar especialmente `setMode`, `setTool`, `pathDraft` y los efectos que terminan trazos al cambiar el contexto.
+
+# 8. Selector visual de simetrías
+
+El selector existente de `Panels.tsx` ya genera miniaturas mediante `cosets()`.
+
+No eliminar ese código.
+
+Extenderlo hacia una galería dinámica.
+
+## 8.1. Dos representaciones
+
+Cada opción debe mostrar:
+
+**Icono matemático:** motivo fijo, equivalente al actual.
+
+**Preview del dibujo:** cómo quedaría la composición actual con esa simetría.
+
+El preview utiliza las mismas fuentes, generador y motor de transformación que el lienzo.
+
+No deben generarse imágenes aproximadas que representen otro patrón distinto del que efectivamente produciría la selección.
+
+## 8.2. Contexto comparable
+
+Para comparar grupos, las vistas deben mantener un encuadre físico coherente.
+
+No aplicar automáticamente un zoom distinto a cada opción que haga parecer equivalentes densidades de repetición muy diferentes.
+
+Ofrecer opcionalmente un encuadre de comparación de celdas, claramente diferenciado del encuadre físico.
+
+## 8.3. Previsualización transitoria
+
+Al pasar el mouse por una opción:
+
+- Mostrar temporalmente el resultado ampliado en el lienzo.
+- No modificar el proyecto.
+- No generar una entrada de historial.
+- No guardar el cambio en IndexedDB.
+- No cambiar la selección del usuario.
+
+Al salir, restaurar la configuración efectiva anterior.
+
+Al hacer clic, confirmar la nueva simetría con una sola entrada de historial.
+
+Soportar navegación mediante teclado y activación mediante Enter o Espacio.
+
+Para interacción táctil, permitir seleccionar una opción y confirmar mediante un mecanismo explícito o aplicar directamente con una acción reversible de undo, sin depender de hover.
+
+## 8.4. Catálogo
+
+Incluir:
+
+- Libre.
+- 17 grupos wallpaper.
+- Siete frisos.
+- Cn.
+- Dn.
+- Todas las variantes adicionales matemáticamente implementadas.
+
+Los nombres repetidos, como `p1` en wallpaper y friso, deben tener IDs diferenciados por familia.
+
+No confundir el `GeneratorKind='freeform'` existente con el nuevo modo de simetría Libre.
+
+El primero describe colocaciones manuales; el segundo describe ausencia de transformaciones de grupo.
+
+## 8.5. Rendimiento
+
+No recalcular las 26 o más miniaturas completas en cada evento de pointermove.
+
+Implementar invalidación por revisión geométrica y configuración, con tareas cancelables o programadas.
+
+Priorizar siempre la fluidez del lienzo principal.
+
+Mantener miniaturas visibles mientras se actualizan las restantes.
+
+# 9. Guías matemáticas
+
+Reutilizar `src/symmetry/guides.ts`.
+
+Agregar un overlay visual discreto que pueda mostrar:
+
+- Dominio fundamental.
+- Celda primitiva.
+- Centros de rotación.
+- Ejes de reflexión.
+- Direcciones de traslación.
+- Deslizamientos.
+- Instancias vecinas.
+- Origen de simetría.
+- Vectores de red.
+
+Diferenciar claramente la celda primitiva de traslación del dominio fundamental del grupo.
+
+Por defecto, usar guías tenues que ayuden a anticipar el resultado sin tapar el dibujo.
+
+Los ejes, centros y traslaciones deben provenir de las operaciones matemáticas reales.
+
+Para grupos libres, no mostrar una celda inventada.
+
+Para frisos, no mostrar periodicidad bidimensional.
+
+Para radiales, no inventar traslaciones.
+
+Las guías no se exportan con el dibujo salvo solicitud explícita.
+
+# 10. Ubicación y densidad del patrón
+
+La composición debe poder explorarse mediante:
+
+- Zoom.
+- Pan.
+- Ajustar al dibujo.
+- Ajustar al patrón.
+- Mostrar una sola región de trabajo.
+- Mostrar varias repeticiones.
+- Mostrar guías.
+- Ocultar guías.
+
+Conservar las coordenadas y dimensiones físicas.
+
+No centrar o escalar destructivamente las fuentes al cambiar las preferencias de visualización.
+
+Implementar una vista previa extendida en el mismo flujo de edición, usando el motor existente.
+
+# 11. Simetrías independientes y composición por capas
+
+El modelo actual contiene varios `Pattern` dentro de un `Project`.
+
+Por tanto, no introducir automáticamente una segunda jerarquía completa de capas.
+
+Evaluar primero cómo aprovechar `patterns[]` y el orden de `sourceGeometry[]`.
+
+## Requisito funcional
+
+Permitir que una composición tenga:
+
+- Un conjunto de fuentes que herede la simetría principal.
+- Otro conjunto con una simetría propia.
+- Un conjunto completamente libre.
+
+Las tres partes deben poder verse simultáneamente y editarse sin convertir instancias en clones.
+
+## Diseño preferido
+
+Conservar `Pattern` como unidad principal de geometría fuente, generador y simetría.
+
+Agregar una configuración de herencia explícita o una agrupación ligera si es necesaria.
+
+El usuario debe poder crear, seleccionar y ordenar conjuntos independientes sin duplicar fuentes.
+
+No reutilizar `Geometry.groupId` como si fuera automáticamente una capa: actualmente representa agrupación de objetos y tiene otra semántica.
+
+No reutilizar `Application` como capa: actualmente representa una aplicación sobre una región y puede contener snapshots congelados.
+
+Mantener separadas esas responsabilidades.
+
+## Configuración principal
+
+Implementar una configuración de simetría principal del proyecto solamente si simplifica efectivamente la herencia y no rompe patrones existentes.
+
+Cada patrón o conjunto podrá:
+
+- Heredar configuración principal.
+- Usar configuración propia.
+- Usar modo Libre.
+
+Al migrar proyectos v1, conservar la simetría efectiva de cada patrón.
+
+## Composición
+
+El renderizado debe permitir representar los patrones visibles en un mismo sistema de coordenadas.
+
+La selección, hit-testing y edición deben identificar correctamente patrón, fuente e instancia.
+
+Las aplicaciones vinculadas deben seguir actualizándose correctamente.
+
+Las aplicaciones congeladas deben seguir siendo inmutables respecto de los cambios de la fuente.
+
+## Alcance
+
+Implementar una solución sencilla y completa.
+
+No crear un sistema de escenas anidadas, jerarquías arbitrarias o dependencias circulares de capas salvo que sea imprescindible.
+
+# 12. Generadores procedurales existentes
+
+El repositorio ya contiene:
+
+- Motif.
+- Grid.
+- Warp.
+- Radial.
+- Rosette.
+- Wave.
+- Guilloche.
+- Spirograph.
+- Lattice.
+- Tessellation.
+- Freeform.
+- Penrose.
+
+No modificar sus algoritmos sin una razón concreta.
+
+## Compatibilidad
+
+La simetría dinámica debe operar coherentemente con los generadores cuyo resultado admite operaciones de grupo.
+
+Cuando un generador produce una composición finita o no periódica, no anunciar que tiene una red periódica bidimensional si no la tiene.
+
+En particular, Penrose no debe convertirse artificialmente en un wallpaper seamless.
+
+Mantener la distinción entre:
+
+- Generación geométrica.
+- Colocaciones del motivo.
+- Simetría.
+- Repetición de red.
+- Transformaciones de aplicación.
+- Recorte.
+
+Documentar las combinaciones admitidas y sus restricciones matemáticas.
+
+Cuando la arquitectura de v1 ya impone una restricción real, conservarla y mostrarla de forma comprensible, sin desactivar silenciosamente herramientas.
+
+# 13. Persistencia y migración
+
+Actualmente:
+
+- `Project.schemaVersion` es 1.
+- `LATEST_SCHEMA_VERSION` es 1.
+- Existe un registro de migraciones todavía vacío.
+
+Crear la versión 2 con migración real.
+
+## Requisitos
+
+- Leer proyectos v1.
+- Conservar geometría fuente.
+- Conservar IDs.
+- Conservar transformaciones.
+- Conservar generadores.
+- Conservar parámetros y semillas.
+- Conservar dimensiones en mm.
+- Conservar regiones.
+- Conservar aplicaciones.
+- Conservar snapshots congelados.
+- Conservar presets existentes mediante migración o lectura compatible.
+
+Los patrones de v1 deben abrirse con la misma simetría efectiva que tenían previamente.
+
+No interpretar automáticamente `p1` de un proyecto antiguo como modo Libre.
+
+Los nuevos proyectos sí deben iniciar en Libre.
+
+## Validación
+
+Actualizar los esquemas Zod y validaciones semánticas.
+
+Rechazar configuraciones incompatibles o corruptas sin sustituir el documento activo.
+
+No serializar caches ni instancias visuales.
+
+El selector en hover debe ser estado transitorio de interfaz, nunca una modificación del JSON.
+
+Actualizar `PROJECT_FORMAT.md` con ejemplos de ambos formatos y pruebas de migración.
+
+# 14. Historial y cancelación
+
+El historial existente está en `src/editor/history.ts` y se administra desde `useStudio.ts`.
+
+Reutilizarlo.
+
+Cada cambio confirmado de simetría debe ser una operación reversible.
+
+El hover no entra al historial.
+
+Los movimientos continuos de parámetros deben agruparse como una sola operación.
+
+Undo/redo debe mantener coherencia entre:
+
+- Fuentes.
+- Simetría.
+- Capas o conjuntos.
+- Selección válida.
+- Vista.
+- Aplicaciones.
+
+Si la selección anterior deja de ser válida, resolverla explícitamente sin alterar geometría.
+
+No introducir centenares de entradas de historial durante un gesto o slider.
+
+# 15. Exportación
+
+No reemplazar el pipeline actual.
+
+Reutilizar:
+
+- `src/export/svg.ts`
+- `src/export/dxf.ts`
+- `src/export/raster.ts`
+- `src/export/worker.ts`
+- `src/application/clipping.ts`
+
+La exportación debe utilizar la configuración confirmada del proyecto, nunca la previsualización temporal de hover.
+
+Soportar el modo Libre como geometría directa sin instancias artificiales.
+
+Mantener:
+
+- SVG expandido.
+- DXF en milímetros.
+- PNG/JPEG.
+- Recorte por perímetro irregular.
+- Agujeros.
+- Contornos reales.
+- Aplicaciones vinculadas.
+- Aplicaciones congeladas.
+
+Cuando existan varios conjuntos con simetrías distintas, exportar su composición efectiva en la región solicitada.
+
+No prometer una celda seamless común si la composición no posee un grupo de traslaciones bidimensional verificable.
+
+# 16. Pruebas de aceptación obligatorias
+
+## AC-21 — Inicio Libre
+
+Crear un proyecto nuevo y verificar una sola representación de cada fuente, sin traslaciones.
+
+## AC-22 — Cambio no destructivo
+
+Dibujar tres curvas y recorrer:
+
+Libre → p4m → p6m → p1 → friso p2 → D8 → Libre.
+
+Verificar igualdad exacta de las fuentes antes y después.
+
+## AC-23 — Continuación de dibujo
+
+Dibujar en Libre, añadir curvas en p4m, añadir otras en p6m y regresar a Libre.
+
+Verificar que todas las fuentes persisten.
+
+## AC-24 — Creación sobre instancia reflejada
+
+Iniciar una curva desde una copia reflejada.
+
+Verificar que la fuente y sus instancias aparecen en las posiciones correctas durante pointermove y después de pointerup.
+
+## AC-25 — Creación sobre instancia rotada
+
+Repetir AC-24 con p4 y p6.
+
+## AC-26 — Cruce de celdas
+
+Dibujar una curva que atraviesa un borde de celda.
+
+Verificar que sigue siendo una sola fuente editable.
+
+## AC-27 — Cambio durante trazo abierto
+
+Cambiar la simetría mientras existe un path multipunto sin finalizar.
+
+Verificar conservación de nodos, ausencia de duplicación y continuidad de edición.
+
+## AC-28 — Ciclos sin deriva
+
+Ejecutar 100 cambios entre grupos incompatibles.
+
+Verificar conservación numérica de la geometría y regreso exacto a la configuración inicial.
+
+## AC-29 — Miniaturas reales
+
+Modificar el dibujo y comprobar que las miniaturas dinámicas reflejan la modificación.
+
+## AC-30 — Preview sin modificación
+
+Explorar alternativas sin confirmarlas.
+
+Verificar que proyecto, historial y autosave permanecen intactos.
+
+## AC-31 — Confirmación e historial
+
+Seleccionar un grupo, editar geometría y ejecutar undo/redo.
+
+Verificar reversibilidad completa.
+
+## AC-32 — Continuidad de herramientas
+
+Seleccionar Pencil, cambiar la simetría y seguir dibujando sin volver a seleccionar Pencil.
+
+Repetir con Pen y edición de nodos.
+
+## AC-33 — Selección sobre instancias
+
+Editar desde instancias reflejadas y rotadas después de varios cambios de simetría.
+
+## AC-34 — Origen ajustable
+
+Mover el origen de simetría y verificar que cambian las instancias sin alterar las fuentes.
+
+## AC-35 — Guías correctas
+
+Verificar correspondencia entre guías matemáticas y operaciones reales.
+
+## AC-36 — Composición de simetrías
+
+Crear un conjunto Libre, uno p4m y uno D8.
+
+Editar cada uno y cambiar la configuración principal.
+
+Verificar que la herencia afecta únicamente a los conjuntos correspondientes.
+
+## AC-37 — Migración
+
+Abrir los ocho ejemplos y proyectos v1 representativos.
+
+Verificar que su geometría y simetría efectiva originales no cambian.
+
+## AC-38 — Exportaciones
+
+Comparar exportaciones antes y después de cambios de simetría, incluyendo modo Libre, composiciones y aplicaciones congeladas.
+
+## AC-39 — Rendimiento
+
+Medir latencia del cambio de grupo, primera representación y regeneración de miniaturas.
+
+Registrar mediciones reales en TESTING.md.
+
+## AC-40 — Interfaz continua
+
+Realizar un recorrido completo sin utilizar navegación obligatoria entre Diseño y Patrón.
+
+## AC-41 — Build estático
+
+Comprobar raíz, subdirectorio y funcionamiento sin conexión externa.
+
+## AC-42 — Regresión v1
+
+Ejecutar y conservar el conjunto completo de pruebas previas.
+
+No aceptar una implementación v2 que rompa criterios de aceptación v1.
+
+# 17. Referencias de investigación
+
+Estudiar y aplicar conceptualmente:
+
+**iOrnament — Science-to-Touch**
+
+https://science-to-touch.com/en/features.html
+
+https://science-to-touch.com/en/demos.html
+
+Prestar especial atención a la selección de simetrías, dibujo directo, edición y cambios durante la composición.
+
+**Jürgen Richter-Gebert — Études in Symmetric Pattern Drawing (2025)**
+
+https://archive.bridgesmathart.org/2025/bridges2025-5.html
+
+Estudiar especialmente cambios de simetría y composiciones que combinan grupos diferentes.
+
+**Montag, Reinhardt y Richter-Gebert — The Smooth Power of the Neandertal Method**
+
+https://link.springer.com/article/10.1007/s00283-025-10492-0
+
+Utilizar como referencia conceptual para futuras extensiones geométricas, no como justificación para introducir ahora un motor hiperbólico innecesario.
+
+**Conway, Burgiel y Goodman-Strauss — The Symmetries of Things**
+
+Utilizar como referencia de clasificación y consistencia matemática.
+
+No copiar recursos, diseños o código protegidos de otras aplicaciones.
+
+# 18. Restricciones
+
+La aplicación continúa siendo personal.
+
+No introducir:
+
+- Autenticación.
+- Suscripciones.
+- Cuentas.
+- Servicios en la nube obligatorios.
+- Bases de datos remotas.
+- APIs pagas.
+- Dependencias de Internet en producción.
+- Telemetría externa.
+
+Conservar hosting estático y funcionamiento LAN.
+
+No introducir frameworks nuevos si React, TypeScript, SVG, Paper.js y las dependencias existentes resuelven correctamente el problema.
+
+No sacrificar exactitud geométrica por efectos visuales.
+
+# 19. Implementación y cierre
+
+La implementación debe realizarse en una secuencia coherente:
+
+1. Baseline y auditoría del código.
+2. Modelo Libre y configuración efectiva.
+3. Cambio de simetría no destructivo.
+4. Captura y edición desde instancias.
+5. Continuidad del flujo Diseño/Patrón.
+6. Selector con previews dinámicos.
+7. Origen ajustable y guías.
+8. Composición de simetrías.
+9. Migración y persistencia.
+10. Integración con exportaciones.
+11. Pruebas unitarias.
+12. Pruebas E2E.
+13. Auditoría visual.
+14. Auditoría matemática.
+15. Auditoría de regresión v1.
+16. Documentación final.
+
+Los puntos anteriores no son entregables opcionales.
+
+Resolver las dependencias y completar la implementación.
+
+Si alguna solución propuesta exige duplicar estructuras ya existentes, buscar primero una alternativa que reutilice el modelo actual.
+
+En la revisión final, contrastar cada criterio de aceptación con evidencia ejecutada.
+
+Corregir los problemas identificados y repetir las pruebas afectadas.
+
+No declarar cumplimiento por inspección superficial.
+
+# 20. Criterio definitivo de éxito
+
+El editor debe permitir trabajar sobre una composición viva.
+
+El usuario puede dibujar un elemento, observar cómo se repite, cambiar el grupo, continuar dibujando sobre las nuevas instancias, modificar curvas existentes y cambiar nuevamente de grupo.
+
+Nada de eso debe interrumpir la experiencia ni destruir geometría.
+
+La simetría debe sentirse como una propiedad dinámica del lienzo, no como una decisión estructural que se toma al crear el documento.
+
+**La herramienta no debe obligar al usuario a pensar primero en grupos matemáticos para poder dibujar. Debe permitirle descubrir qué simetría funciona mejor mientras crea.**
+
+Al terminar, entregar código funcional, tests, documentación, resultados medidos y una verificación final de compatibilidad con v1.

@@ -1,43 +1,20 @@
-# Continuidad de trabajo
+# Continuidad de trabajo · PRD v2
 
-## Estado al cierre · 19/11/2026
+## Objetivo activo
+Implementar íntegramente `prd_v2.txt` sobre v1, preservando motor, archivos y regresión. Servir por LAN, documentar avances y hacer commits. Remoto autorizado `pablopeu/pattern`, main.
 
-PRD implementado y auditado conforme a `docs/ACCEPTANCE.md`. No quedan tareas de implementación abiertas ni defectos críticos conocidos en los flujos comprobados. Los límites residuales de SVG, aproximación geométrica y rendimiento están documentados; no se promete soporte universal ni rendimiento para complejidad arbitraria.
+## Baseline confirmado
+- HEAD inicial `2aa0987`, sólo `prd_v2.txt` nuevo fuera de Git.
+- TypeScript + 57 unitarias, 19 E2E, 4 tests de monitor y build correctos antes de modificar código.
+- App 4173 y monitor 4174 activos. Retirado `.runtime/PROJECT_COMPLETE`; monitor retomado.
 
-### Evidencia final
+## Trabajo previsto
+1. Esquema 2, Libre explícito, migración real de v1 y presets; resolver efectivo único.
+2. Conservar configuraciones por grupo, origen/orientación y colocación independiente.
+3. Creación desde instancias con inversa fija; dibujo continuo y cambios de grupo con trazo abierto.
+4. Galería dinámica programada, hover transitorio e historial correcto.
+5. Composición de patrones propios/heredados/libres, exportación efectiva y snapshots congelados.
+6. AC-21…AC-42, regresión v1, benchmark, revisión visual, documentación y build estático.
 
-- TypeScript estricto y 57 pruebas unitarias correctas.
-- 19 flujos Playwright completos correctos.
-- 4 pruebas del monitor correctas.
-- Build de producción correcto; pruebas HTTP estáticas en raíz y `/pattern/`, también con `BASE_PATH=/pattern/`, sin recursos de Internet.
-- CairoSVG, Pillow y ezdxf validaron SVG aplicado, PNG/JPEG con DPI físicos y polilíneas DXF 2D en mm.
-- Instalación aislada `npm ci` correcta desde el lockfile.
-- Capturas reales revisadas y benchmark documentado en TESTING.md.
-- Git local con remoto autorizado `https://github.com/pablopeu/pattern` y rama `main`. Consultar `git log` y el upstream para el estado de sincronización. La aplicación se mantiene servida por LAN.
-
-## Acceso conservado para feedback
-
-- Estudio en vivo: http://<IP_LOCAL>:4173
-- Avances/cupo/registro de feedback: http://<IP_LOCAL>:4174
-- Interfaz alternativa de la máquina: <IP_LOCAL>.
-- Procesos/PIDs/logs en `.runtime/`; `npm run local:status` los inspecciona. No duplicar servicios.
-- `.runtime/feedback.jsonl` guarda comentarios de la LAN. Al cierre no había feedback pendiente.
-
-La aplicación sirve los proyectos del navegador cliente; para compartir documentos entre PCs se utiliza JSON. El panel de avances es independiente del producto estático.
-
-## Monitor y siguientes cambios
-
-El monitor usa telemetría real de la sesión, umbral 10%, cierre del incremento, timer al reset efectivo +60 s y solicitud de reanudación en el mismo hilo. Las decisiones se probaron con mocks; no hizo falta agotar una ventana real durante esta implementación.
-
-`.runtime/PROJECT_COMPLETE` cancela reanudaciones del encargo ya verificado. El panel y su proceso permanecen activos. Si el usuario solicita cambios nuevos, quitar ese marcador: el monitor retoma automáticamente la vigilancia. Leer feedback, revisar el estado Git y continuar dentro del alcance autorizado. Si cambia el hilo, conservar/reconfigurar su identidad explícitamente sin duplicar monitores.
-
-## Comandos principales
-
-- `npm run dev`: desarrollo LAN, puerto 4173.
-- `npm run check`: TypeScript y Vitest.
-- `npm run test:e2e`: navegador real.
-- `npm run test:monitor`: decisiones del timer sin mensajes reales.
-- `npm run build`: build estático con avisos de licencias.
-- `npm run serve:dist`: servir dist con Python en 4180.
-- `npm run benchmark`: mediciones reproducibles contra desarrollo.
-- `npm run local:start|local:status|local:stop`: administrar servicios propios.
+## Operación
+Consultar `python3 scripts/work_monitor.py --status` entre incrementos. Con <=10% vigente, cerrar incremento, documentar, commit y finalizar turno; el timer retoma este mismo hilo tras reset real +60s. No duplicar procesos. Revisar `.runtime/feedback.jsonl`.
