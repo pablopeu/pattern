@@ -16,7 +16,7 @@ export function strokeRegion(shape:Geometry,matrix:Matrix=IDENTITY,tolerance=.02
  // This preserves anisotropic scaling, including elliptical caps and joins.
  for(const path of paths)if(path.points.length>1)offset.AddPath(path.points.map(p=>({X:Math.round(p.x*factor),Y:Math.round(p.y*factor)})),ClipperLib.JoinType.jtRound,path.closed?ClipperLib.EndType.etClosedLine:ClipperLib.EndType.etOpenRound);
  offset.Execute(solution,shape.strokeWidth/2*factor);
- const g=geometry('compound',[],true);g.fill=shape.stroke;g.stroke='none';g.pathData=solution.map(p=>p.map((v,i)=>`${i?'L':'M'}${v.X/factor} ${v.Y/factor}`).join('')+'Z').join('');
+ const g=geometry('compound',[],true);g.fill=shape.stroke;g.stroke='none';g.opacity=shape.opacity;g.fillOpacity=shape.strokeOpacity;g.pathData=solution.map(p=>p.map((v,i)=>`${i?'L':'M'}${v.X/factor} ${v.Y/factor}`).join('')+'Z').join('');
  const source=paperPath(g,multiply(matrix,shape.transform));const result=pathToGeometry(source,g);return result;
 }
 export function clipGeometry(shape:Geometry,region:Region,transform:Matrix=IDENTITY,outlineStroke=false,tolerance=.02):Geometry[]{

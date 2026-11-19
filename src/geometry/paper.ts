@@ -14,7 +14,7 @@ export function paperPath(shape:Geometry,transform:Matrix=IDENTITY):paper.PathIt
   return path;
 }
 export function pathToGeometry(path:paper.PathItem,style?:Geometry):Geometry{
-  const g={...geometry('compound',[],true),stroke:style?.stroke??'#233b2d',fill:style?.fill??'none',strokeWidth:style?.strokeWidth??.65,pathData:path.pathData,fillRule:path.fillRule as 'evenodd'|'nonzero'};
+  const g={...geometry('compound',[],true),stroke:style?.stroke??'#233b2d',fill:style?.fill??'none',strokeWidth:style?.strokeWidth??.65,pathData:path.pathData,opacity:style?.opacity??1,fillOpacity:style?.fillOpacity??1,strokeOpacity:style?.strokeOpacity??1,fillRule:path.fillRule as 'evenodd'|'nonzero'};
   path.remove();return g;
 }
 export function editablePaths(shape:Geometry):Geometry[]{
@@ -36,7 +36,7 @@ export function booleanGeometry(shapes:Geometry[],operation:BooleanOperation):Ge
       else result=result.subtract(next,{insert:false});
       old.remove();next.remove();
     }
-    return {...pathToGeometry(result,shapes[0]),name:operation};
+    if(!result.pathData)throw Error('La operación produce una región vacía. Los objetos originales se conservan.');return {...pathToGeometry(result,shapes[0]),name:operation};
   }finally{result.remove();}
 }
 /** Physical-unit flattening for DXF with Paper.js adaptive subdivision. */

@@ -66,8 +66,8 @@ def watch(thread_id, session):
                              resume_result=timer.get('result'))
                 if resume_at:
                     state['status'] = 'winding_down'
-                    if timer.get('resume_at') != resume_at:
-                        timer = dict(resume_at=resume_at, sent=False, close_requested=False)
+                    if not timer.get('resume_at') or abs(timer['resume_at']-resume_at)>120:
+                        timer = dict(resume_at=resume_at, sent=False, close_requested=bool(timer.get('close_requested') and not timer.get('sent')))
                         atomic_json(timer_file, timer)
                         event('timer_scheduled', resume_at=resume_at)
                     if not timer.get('close_requested'):
@@ -86,7 +86,11 @@ def watch(thread_id, session):
         except Exception as error:
             event('monitor_error', error=str(error))
         time.sleep(20)
-    event('stopped')
+    state=read_json(STATE,{})
+    state['status']='complete' if (RUNTIME/'PROJECT_COMPLETE').exists() else 'stopped'
+    state['resume_at']=None
+    atomic_json(STATE,state)
+    event('stopped',status=state['status'])
 
 def git(*args):
     return subprocess.run(['git', *args], cwd=ROOT, text=True, capture_output=True, timeout=5).stdout.strip()
@@ -133,7 +137,7 @@ def read_json_lines(path):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--thread', default=os.getenv('CODEX_THREAD_ID'))
+    parser.add_argument('--thread', default=os.getenv('CODEX_THREAD_ID') or ((RUNTIME/'thread-id').read_text().strip() if (RUNTIME/'thread-id').exists() else None))
     parser.add_argument('--port', type=int, default=4174)
     parser.add_argument('--status', action='store_true')
     args = parser.parse_args()
@@ -144,7 +148,9 @@ if __name__ == '__main__':
     try: fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except BlockingIOError: raise SystemExit('Monitor ya activo')
     if not args.thread: raise SystemExit('Falta --thread o CODEX_THREAD_ID')
-    paths = list(pathlib.Path.home().joinpath('.codex/sessions').rglob('*' + args.thread + '*.jsonl'))
+    (RUNTIME/'thread-id').write_text(args.thread)
+    (RUNTIME/'thread-id').chmod(0o600)
+    paths = list(pathlib.Path(os.getenv('CODEX_HOME',str(pathlib.Path.home()/'.codex'))).joinpath('sessions').rglob('*' + args.thread + '*.jsonl'))
     if len(paths) != 1: raise SystemExit('No se identificó un registro de sesión único')
     server = ThreadingHTTPServer(('0.0.0.0', args.port), Handler)
     threading.Thread(target=watch, args=(args.thread, paths[0]), daemon=True).start()

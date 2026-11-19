@@ -46,3 +46,15 @@ describe('Región fundamental y clasificación',()=>{
  it('tiene área de la celda dividida por el orden del grupo',async()=>{const {fundamentalDomain}=await import('../symmetry/groups');for(const name of wallpaperNames){const s={...newPattern().symmetry,group:name};const poly=fundamentalDomain(s),b=lattice(s);const area=Math.abs(poly.reduce((sum,p,i)=>{const q=poly[(i+1)%poly.length];return sum+p.x*q.y-p.y*q.x;},0))/2;expect(area).toBeCloseTo(Math.abs(b[0]*b[3]-b[1]*b[2])/cosets(s).length,5);}});
  it('culling conserva motivos desplazados a muchas celdas del origen',async()=>{const {buildScene}=await import('../patterns/engine');const p=example(0).patterns[0];p.sourceGeometry[0].transform=[1,0,0,1,6000,6000];const scene=buildScene(p,{x:0,y:0,width:60,height:60});expect(scene.instances.some(i=>i.cell[0]<-90&&i.cell[1]<-90)).toBe(true);});
 });
+
+describe('Todas las familias de generadores',()=>{
+ for(const kind of ['grid','warp','radial','rosette','wave','guilloche','spirograph','lattice','tessellation','freeform','penrose'] as const){it(`${kind}: salida vectorial, finita y determinística`,()=>{const p=example(0).patterns[0];p.generator.kind=kind;const a=generate(p.generator,p.sourceGeometry),b=generate(p.generator,p.sourceGeometry);expect(a).toEqual(b);expect(a.geometry.length).toBeGreaterThan(0);expect(JSON.stringify(a)).not.toMatch(/NaN|Infinity/);});}
+ it('warp circular usa amplitud, frecuencia y fase; elíptica conserva motivos',()=>{const p=example(4).patterns[0];p.generator.distribution='circular';const a=generate(p.generator,p.sourceGeometry);p.generator.amplitude+=2;expect(generate(p.generator,p.sourceGeometry)).not.toEqual(a);const b=generate(p.generator,p.sourceGeometry);p.generator.aspectRatio=.5;expect(generate(p.generator,p.sourceGeometry)).not.toEqual(b);});
+ it('p3m1 y p31m son grupos distintos sobre la misma red',()=>{expect(new Set(closure(fractionalGenerators('p3m1')).map(key))).not.toEqual(new Set(closure(fractionalGenerators('p31m')).map(key)));});
+ it('el dominio Dirichlet funciona con redes muy oblicuas y ejes desiguales',async()=>{const {fundamentalDomain}=await import('../symmetry/groups');const s={...newPattern().symmetry,width:5,height:200,angle:15};const poly=fundamentalDomain(s),b=lattice(s);const area=Math.abs(poly.reduce((sum,p,i)=>{const q=poly[(i+1)%poly.length];return sum+p.x*q.y-p.y*q.x;},0))/2;expect(area).toBeCloseTo(Math.abs(b[0]*b[3]-b[1]*b[2]),5);});
+});
+
+describe('Validación semántica del documento',()=>{
+ it('rechaza matrices singulares y shapes paramétricas incompletas',()=>{const p=example(0);p.patterns[0].sourceGeometry[0].transform=[0,0,0,0,0,0];expect(()=>parseProject(serialize(p))).toThrow(/invertible/);const q=example(0);q.patterns[0].sourceGeometry[2].parameters=undefined;expect(()=>parseProject(serialize(q))).toThrow(/parámetros/);});
+ it('rechaza compound paths corruptos antes de reemplazar el documento',()=>{const p=example(0);p.patterns[0].sourceGeometry[0].kind='compound';p.patterns[0].sourceGeometry[0].pathData='invalid';expect(()=>parseProject(serialize(p))).toThrow(/válida/);});
+});

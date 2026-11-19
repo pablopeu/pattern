@@ -85,8 +85,8 @@ export function visibleInstances(s:Symmetry,bounds:Bounds,motif:Bounds):Instance
  const viewport=extent(corners(bounds).map(p=>apply(inv,p))),out:Instance[]=[];
  for(let k=0;k<ops.length;k++){
   const op=ops[k],content=extent(corners(motif).map(p=>apply(inv,apply(op,p))));
-  const x0=Math.ceil(viewport.minX-content.maxX)-1,x1=Math.floor(viewport.maxX-content.minX)+1;
-  const y0=s.family==='frieze'?0:Math.ceil(viewport.minY-content.maxY)-1,y1=s.family==='frieze'?0:Math.floor(viewport.maxY-content.minY)+1;
+  const x0=Math.ceil(viewport.minX-content.maxX),x1=Math.floor(viewport.maxX-content.minX);
+  const y0=s.family==='frieze'?0:Math.ceil(viewport.minY-content.maxY),y1=s.family==='frieze'?0:Math.floor(viewport.maxY-content.minY);
   if(out.length+(x1-x0+1)*(y1-y0+1)>20000)throw Error('Demasiadas instancias. Aumentá la celda o acercá la vista.');
   for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const p=apply(basis,{x,y});out.push({id:`${x}:${y}:${k}`,matrix:multiply(translate(p.x,p.y),op),cell:[x,y]});}
  }

@@ -47,7 +47,7 @@ export function generate(g:Generator,source:Geometry[]):Generated{
       if(g.kind==='grid'){if(g.staggerAxis==='rows')x+=(row%2)*g.offset*g.spacing;else y+=(col%2)*g.offset*g.spacing;}
       if(g.kind==='lattice'||g.kind==='tessellation'){x+=(row%2)*g.spacing/2;y*=Math.sqrt(3)/2;}
       if(g.kind==='warp'){
-        const u=col/Math.max(1,g.columns-1),v=row/Math.max(1,g.rows-1);
+        const u=col/Math.max(1,g.columns),v=row/Math.max(1,g.rows);
         x+=g.amplitude*Math.sin(2*Math.PI*g.frequency*v+g.phase*Math.PI/180);
         y+=g.amplitude*Math.sin(2*Math.PI*g.frequency*u+g.phase*Math.PI/180);
       }

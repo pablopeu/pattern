@@ -6,7 +6,7 @@ import {IDENTITY,apply,inverse,multiply,translate,matrixString,sub,distance,type
 import {pathData,simplifyPoints} from '../geometry/paths';
 import {paperPath,scope,smoothNodes} from '../geometry/paper';
 import {buildScene,type Scene} from '../patterns/engine';
-import {latticeVectors,fundamentalDomain,type Bounds} from '../symmetry/groups';
+import {lattice,latticeVectors,fundamentalDomain,type Bounds} from '../symmetry/groups';
 import {symmetryGuides,verifyPeriodicity} from '../symmetry/guides';
 import {geometryBounds,regionData} from '../application/clipping';
 
@@ -15,7 +15,7 @@ interface Drag {type:'pan'|'move'|'node'|'draw'|'penhandle'|'marquee';start:Poin
 function safeScene(pattern:Studio['pattern'],bounds:Bounds):{scene:Scene|null;error:string}{try{return {scene:buildScene(pattern,bounds),error:''};}catch(e){return {scene:null,error:(e as Error).message};}}
 export function Canvas({studio:s,editorOnly=false,previewOnly=false}:Props){
  const [view,setView]=useState<Bounds>({x:-110,y:-100,width:300,height:240}),[size,setSize]=useState({width:1000,height:800}),[cursor,setCursor]=useState<Point>({x:0,y:0}),[marquee,setMarquee]=useState<{start:Point;end:Point}|null>(null);
- const svgRef=useRef<SVGSVGElement>(null),container=useRef<HTMLDivElement>(null),drag=useRef<Drag|null>(null),pathDraft=useRef<{id:string;anchors:Node[]}|null>(null),space=useRef(false),lastPointer=useRef<Point>({x:0,y:0});
+ const svgRef=useRef<SVGSVGElement>(null),container=useRef<HTMLDivElement>(null),drag=useRef<Drag|null>(null),pathDraft=useRef<{id:string;anchors:Node[];tool:string;mode:string;patternId:string;region:boolean}|null>(null),space=useRef(false),lastPointer=useRef<Point>({x:0,y:0});
  const prefix=useId().replace(/:/g,''),scalePx=size.width/view.width;
  const actualView=useMemo(()=>({...view,height:view.width*size.height/size.width}),[view,size]);
  useEffect(()=>{if(!container.current)return;const observer=new ResizeObserver(entries=>{const r=entries[0].contentRect;setSize({width:Math.max(1,r.width),height:Math.max(1,r.height)});});observer.observe(container.current);return ()=>observer.disconnect();},[]);
@@ -37,7 +37,7 @@ export function Canvas({studio:s,editorOnly=false,previewOnly=false}:Props){
  };
  const finishPath=(closed=false)=>{
   const draft=pathDraft.current;if(!draft)return;
-  if(draft.anchors.length>=2){updateShape(draft.id,g=>{g.nodes=structuredClone(draft.anchors);g.closed=closed||s.mode==='apply';});s.setSelected([draft.id]);s.commit();}
+  if(draft.anchors.length>=2){updateShape(draft.id,g=>{g.nodes=structuredClone(draft.anchors);g.closed=closed||draft.region;});s.setSelected([draft.id]);s.commit();}
   else {s.change(p=>{for(const pat of p.patterns)pat.sourceGeometry=pat.sourceGeometry.filter(g=>g.id!==draft.id);for(const r of p.regions)r.geometry=r.geometry.filter(g=>g.id!==draft.id);p.regions=p.regions.filter(r=>r.geometry.length);},true);s.commit();}
   pathDraft.current=null;drag.current=null;
  };
@@ -49,7 +49,7 @@ export function Canvas({studio:s,editorOnly=false,previewOnly=false}:Props){
   const down=(e:KeyboardEvent)=>{if(e.target instanceof HTMLElement&&e.target.matches('input,textarea,select'))return;if(e.code==='Space'){space.current=true;e.preventDefault();}if(e.key==='Enter'){e.preventDefault();finishPath(e.shiftKey);}if(e.key==='Escape'){if(pathDraft.current)cancelPath();else{s.setSelected([]);s.setTool('select');}}};
   const up=(e:KeyboardEvent)=>{if(e.code==='Space')space.current=false;};window.addEventListener('keydown',down);window.addEventListener('keyup',up);return ()=>{window.removeEventListener('keydown',down);window.removeEventListener('keyup',up);};
  });
- useEffect(()=>{if(pathDraft.current)finishPath(false);},[s.tool,s.mode,s.patternId]); // Finish an existing path when changing context.
+ useEffect(()=>{const draft=pathDraft.current;if(draft&&(draft.tool!==s.tool||draft.mode!==s.mode||draft.patternId!==s.patternId))finishPath(false);},[s.tool,s.mode,s.patternId]); // Finish an existing path when changing context.
  const selectInstance=(event:RPointerEvent,transform:Matrix,objects=s.objects)=>{
   if(previewOnly||!['select','nodes'].includes(s.tool)||space.current||event.button!==0)return;
   const p=apply(inverse(transform),point(event));let hit:Geometry|undefined;
@@ -80,7 +80,7 @@ export function Canvas({studio:s,editorOnly=false,previewOnly=false}:Props){
   if(s.tool==='pen'||s.tool==='polygon'||s.tool==='region'){
    const current=pathDraft.current;
    if(current&&current.anchors.length>=3&&distance(q,current.anchors[0])<10/scalePx){finishPath(true);return;}
-   if(!current){const g=geometry('path',[node(q.x,q.y)],false);g.name=s.mode==='apply'?'Perímetro':'Curva';if(s.mode==='apply')g.fill='#dce6d4';addShape(g);pathDraft.current={id:g.id,anchors:[node(q.x,q.y)]};}
+   if(!current){const g=geometry('path',[node(q.x,q.y)],false);g.name=s.mode==='apply'?'Perímetro':'Curva';if(s.mode==='apply')g.fill='#dce6d4';addShape(g);pathDraft.current={id:g.id,anchors:[node(q.x,q.y)],tool:s.tool,mode:s.mode,patternId:s.patternId,region:s.mode==='apply'};}
    else {current.anchors.push(node(q.x,q.y));updateShape(current.id,g=>{g.nodes=structuredClone(current.anchors);});}
    const draft=pathDraft.current!;drag.current={type:'penhandle',id:draft.id,index:draft.anchors.length-1,start:q};return;
   }
@@ -126,10 +126,23 @@ export function Canvas({studio:s,editorOnly=false,previewOnly=false}:Props){
   const svg=svgRef.current;if(!svg)return;const wheel=(e:WheelEvent)=>{e.preventDefault();if(e.ctrlKey||e.metaKey)zoom(Math.exp(e.deltaY*.002),point(e));else setView(v=>({...v,x:v.x+e.deltaX*v.width/size.width,y:v.y+e.deltaY*v.width/size.width}));};svg.addEventListener('wheel',wheel,{passive:false});return ()=>svg.removeEventListener('wheel',wheel);
  });
  const fit=()=>{let b:Bounds;if(s.mode==='apply'&&s.region)b=geometryBounds(s.region.geometry);else if(s.pattern.generator.kind==='penrose')b={x:-s.pattern.generator.radius,y:-s.pattern.generator.radius,width:s.pattern.generator.radius*2,height:s.pattern.generator.radius*2};else b=geometryBounds(s.objects);const width=Math.max(b.width+30,(b.height+30)*size.width/size.height);setView({x:b.x+b.width/2-width/2,y:b.y+b.height/2-width*size.height/size.width/2,width,height:width*size.height/size.width});};
- const renderShape=(g:Geometry)=> <path key={g.id} d={pathData(g)} transform={matrixString(g.transform)} fill={g.fill} stroke={g.stroke} strokeWidth={g.strokeWidth} strokeLinecap="round" strokeLinejoin="round" fillRule={g.fillRule}/>;
- const renderPattern=(sc:Scene,id:string,placement:Matrix=IDENTITY,interactive=true)=>{
+ const renderShape=(g:Geometry)=> <path key={g.id} d={pathData(g)} transform={matrixString(g.transform)} fill={g.fill} stroke={g.stroke} strokeWidth={g.strokeWidth} opacity={g.opacity} fillOpacity={g.fillOpacity} strokeOpacity={g.strokeOpacity} strokeLinecap="round" strokeLinejoin="round" fillRule={g.fillRule}/>;
+ const selectCached=(e:RPointerEvent,sc:Scene,placement:Matrix)=>{
+  if(previewOnly||!['select','nodes'].includes(s.tool)||space.current||e.button!==0)return;
+  const p=point(e),shapes=[...s.objects].reverse().filter(g=>g.visible&&!g.locked).map(g=>({g,path:paperPath(g)}));
+  try{for(const instance of [...sc.instances].reverse())for(const place of [...sc.generated.placements].reverse()){
+   const matrix=multiply(placement,multiply(instance.matrix,place)),q=apply(inverse(matrix),p),paperPoint=new scope.Point(q.x,q.y);
+   for(const {g,path} of shapes){if(!path.bounds.expand(14/scalePx).contains(paperPoint))continue;const near=path.getNearestPoint(paperPoint);if((g.fill!=='none'&&path.contains(paperPoint))||near&&distance(q,{x:near.x,y:near.y})<Math.max(7/scalePx,g.strokeWidth/2)){selectInstance(e,matrix);return;}}
+  }}finally{shapes.forEach(x=>x.path.remove());}
+ };
+ const renderPattern=(sc:Scene,id:string,placement:Matrix=IDENTITY,interactive=true,pat=s.pattern)=>{
   const count=sc.instances.length*sc.generated.placements.length;
   if(count>18000)return <text x={view.x+10} y={view.y+15} fontSize={4}>Demasiadas instancias. Aumentá la celda o acercá la vista.</text>;
+  if(count*sc.generated.geometry.length>15000&&pat.symmetry.family==='wallpaper'&&!sc.generated.finite){
+   const basis=lattice(pat.symmetry),inv=inverse(basis),corners=[{x:0,y:0},{x:basis[0],y:basis[1]},{x:basis[2],y:basis[3]},{x:basis[0]+basis[2],y:basis[1]+basis[3]}];
+   const tile=buildScene(pat,{x:Math.min(...corners.map(p=>p.x)),y:Math.min(...corners.map(p=>p.y)),width:Math.max(...corners.map(p=>p.x))-Math.min(...corners.map(p=>p.x)),height:Math.max(...corners.map(p=>p.y))-Math.min(...corners.map(p=>p.y))});
+   return <><defs><g id={id}>{sc.generated.geometry.map(renderShape)}</g><pattern id={`${id}-repeat`} width={1} height={1} patternUnits="userSpaceOnUse" patternTransform={matrixString(multiply(placement,basis))}><g transform={matrixString(inv)}>{tile.instances.map(i=><g key={i.id}>{tile.generated.placements.map((m,k)=><use key={k} href={`#${id}`} transform={matrixString(multiply(i.matrix,m))}/>)}</g>)}</g></pattern></defs><rect data-cached-pattern="true" x={actualView.x} y={actualView.y} width={actualView.width} height={actualView.height} fill={`url(#${id}-repeat)`} onPointerDown={interactive?e=>selectCached(e,sc,placement):undefined}/></>;
+  }
   return <><defs><g id={id}>{sc.generated.geometry.map(renderShape)}</g></defs>{sc.instances.map(i=><g key={i.id}>{sc.generated.placements.map((m,k)=>{const matrix=multiply(placement,multiply(i.matrix,m));return <use key={k} href={`#${id}`} transform={matrixString(matrix)} onPointerDown={interactive?e=>selectInstance(e,matrix):undefined} className={interactive?'pattern-instance':''}/>;})}</g>)}</>;
  };
  const selectedShapes=s.objects.filter(g=>s.selected.includes(g.id)&&g.visible);
@@ -140,7 +153,7 @@ export function Canvas({studio:s,editorOnly=false,previewOnly=false}:Props){
   if(!region||!pat)return null;
   const inv=inverse(app.placementTransform),corners=[{x:actualView.x,y:actualView.y},{x:actualView.x+actualView.width,y:actualView.y},{x:actualView.x,y:actualView.y+actualView.height},{x:actualView.x+actualView.width,y:actualView.y+actualView.height}].map(p=>apply(inv,p));
   const bounds={x:Math.min(...corners.map(p=>p.x)),y:Math.min(...corners.map(p=>p.y)),width:Math.max(...corners.map(p=>p.x))-Math.min(...corners.map(p=>p.x)),height:Math.max(...corners.map(p=>p.y))-Math.min(...corners.map(p=>p.y))};
-  return {app,region,data:regionData(region),...safeScene(pat,bounds)};
+  return {app,region,pattern:pat,data:regionData(region),...safeScene(pat,bounds)};
  }),[s.project,actualView]);
  return <div className={`canvas-container ${editorOnly?'source-canvas':''} ${previewOnly?'preview-canvas':''}`} ref={container}>
   {s.project.preferences.split&&<div className="view-label">{editorOnly?'GEOMETRÍA FUENTE':'VISTA DEL PATRÓN'}<span>{editorOnly?'Editable':'Sincronizada'}</span></div>}
@@ -148,7 +161,7 @@ export function Canvas({studio:s,editorOnly=false,previewOnly=false}:Props){
    <defs><pattern id={`${prefix}-grid`} width={5} height={5} patternUnits="userSpaceOnUse"><circle cx={0} cy={0} r={.22} fill="#bdcbbd"/></pattern></defs>
    {s.project.preferences.grid&&<rect x={actualView.x} y={actualView.y} width={actualView.width} height={actualView.height} fill={`url(#${prefix}-grid)`} pointerEvents="none"/>}
    {s.mode!=='apply'&&scene&&(editorOnly?<g onPointerDown={e=>selectInstance(e,IDENTITY)}>{scene.generated.geometry.map(renderShape)}</g>:renderPattern(scene,`${prefix}-motif`))}
-   {s.mode==='apply'&&applications.map((entry,i)=>entry&&entry.scene?<g key={entry.app.id}><defs><clipPath id={`${prefix}-region-${i}`}><path d={entry.data} clipRule="evenodd"/></clipPath></defs><g clipPath={`url(#${prefix}-region-${i})`}>{renderPattern(entry.scene,`${prefix}-app-${i}`,entry.app.placementTransform,false)}</g>{entry.app.showOutline&&<path d={entry.data} fill="none" stroke="#627d58" strokeWidth={.4} pointerEvents="none"/>}</g>:null)}
+   {s.mode==='apply'&&applications.map((entry,i)=>entry&&entry.scene?<g key={entry.app.id}>{s.project.preferences.outside&&<g opacity={.15} pointerEvents="none">{renderPattern(entry.scene,`${prefix}-outside-${i}`,entry.app.placementTransform,false,entry.pattern)}</g>}<defs><clipPath id={`${prefix}-region-${i}`}><path d={entry.data} clipRule="evenodd"/></clipPath></defs><g clipPath={`url(#${prefix}-region-${i})`}>{renderPattern(entry.scene,`${prefix}-app-${i}`,entry.app.placementTransform,false,entry.pattern)}</g>{entry.app.showOutline&&<path d={entry.data} fill="none" stroke="#627d58" strokeWidth={.4} pointerEvents="none"/>}</g>:null)}
    {s.mode==='apply'&&s.project.regions.map(region=><g key={region.id} opacity={region.id===s.regionId?1:.4}>{region.geometry.filter(g=>g.visible).map(g=><path key={g.id} d={pathData(g)} transform={matrixString(g.transform)} fill="transparent" fillRule={g.fillRule} stroke={region.id===s.regionId?'#527744':'#a2ad9e'} strokeWidth={.5} strokeDasharray={region.id===s.regionId?undefined:'2 2'} onPointerDown={e=>{s.setRegionId(region.id);selectInstance(e,IDENTITY,region.geometry);}}/>)}</g>)}
    {s.project.preferences.guides&&!editorOnly&&s.mode!=='apply'&&s.pattern.symmetry.family==='wallpaper'&&s.pattern.generator.kind!=='penrose'&&<g pointerEvents="none"><path d={`M0 0L${a.x} ${a.y}L${a.x+b.x} ${a.y+b.y}L${b.x} ${b.y}Z`} fill="none" stroke="#79976b" strokeWidth={.35} strokeDasharray="2 1.5"/><circle cx={0} cy={0} r={.8} fill="#59764d"/><text x={a.x/2} y={a.y/2-2} fill="#648154" fontSize={2.8}>a</text><text x={b.x/2-3} y={b.y/2} fill="#648154" fontSize={2.8}>b</text></g>}
    {s.project.preferences.guides&&s.pattern.symmetry.family==='radial'&&<g pointerEvents="none" stroke="#79976b" strokeWidth={.3} strokeDasharray="2 2">{Array.from({length:s.pattern.symmetry.sectors},(_,i)=>{const t=i*2*Math.PI/s.pattern.symmetry.sectors,c=s.pattern.symmetry.center;return <line key={i} x1={c.x} y1={c.y} x2={c.x+Math.cos(t)*80} y2={c.y+Math.sin(t)*80}/>;})}</g>}

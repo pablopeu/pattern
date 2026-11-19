@@ -5,13 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 4173 --strictPort",
-    "build": "tsc -b && vite build",
+    "build": "npm run notices && tsc -b && vite build",
     "preview": "vite preview --host 0.0.0.0 --port 4173 --strictPort",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "monitor": "python3 scripts/work_monitor.py",
-    "check": "tsc -b && vitest run"
+    "check": "tsc -b && vitest run",
+    "notices": "node scripts/notices.mjs",
+    "benchmark": "node scripts/benchmark.mjs",
+    "test:monitor": "python3 scripts/test_monitor.py"
   },
   "dependencies": {
     "clipper-lib": "^6.4.2",
@@ -32,5 +35,11 @@
     "typescript": "~5.9.3",
     "vite": "^7.2.2",
     "vitest": "^4.0.8"
+  },
+  "engines": {
+    "node": ">=22.12"
+  },
+  "allowScripts": {
+    "esbuild": true
   }
 }

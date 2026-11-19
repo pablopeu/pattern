@@ -53,7 +53,8 @@ export function importSVG(text:string,explicitWidthMM:number):ImportedSVG{
    const factor=width/vb[2];copy.scale(factor,new scope.Point(0,0));
    if(copy instanceof scope.Path){g.nodes=copy.segments.map(s=>({...node(s.point.x,s.point.y),in:{x:s.handleIn.x,y:s.handleIn.y},out:{x:s.handleOut.x,y:s.handleOut.y}}));g.closed=copy.closed;}
    else {g.pathData=copy.pathData;g.closed=copy.children.every(p=>(p as paper.Path).closed);}
-   g.stroke=path.strokeColor?.toCSS(true)??'none';g.fill=path.fillColor?.toCSS(true)??'none';g.strokeWidth=(path.strokeWidth||1)*factor;
+   const color=(c:paper.Color|null)=>{if(!c)return 'none';const opaque=c.clone();opaque.alpha=1;return opaque.toCSS(true);};
+   g.stroke=color(path.strokeColor);g.fill=color(path.fillColor);g.strokeOpacity=path.strokeColor?.alpha??1;g.fillOpacity=path.fillColor?.alpha??1;g.opacity=path.opacity;let parent=path.parent;while(parent){g.opacity*=parent.opacity;if(parent.opacity<1)warnings.push('La opacidad de grupo se aplica por objeto; las superposiciones pueden diferir del SVG original.');parent=parent.parent;}g.strokeWidth=(path.strokeWidth||1)*factor;
    if(!g.stroke.startsWith('#')&&g.stroke!=='none')g.stroke='#233b2d';if(!g.fill.startsWith('#')&&g.fill!=='none')g.fill='#233b2d';
    g.fillRule=path.fillRule as 'evenodd'|'nonzero';g.transform=scale(1);g.name=entry.name||'SVG importado';copy.remove();out.push(g);
   }else entry.children?.forEach(visit);
