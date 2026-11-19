@@ -22,7 +22,7 @@ npm run build
 - Booleanas y recorte con agujeros; Bézier abiertas, contornos afines, celdas rectangulares/oblicuas y snapshots congelados.
 - Navegador: dibujo antes de pointerup, nodos editados desde copias reflejadas y rotadas, pluma con tangentes, parámetros, vista dividida, guardado/recuperación, biblioteca/presets, aplicaciones y undo/redo.
 - SVG hostil: scripts/eventos/recursos externos, conservación de escala y transforms, rechazo de paths abiertos como perímetro.
-- Descargas SVG/PNG/JPEG/DXF desde el worker; expansión sin máscaras.
+- Descargas SVG/PNG/JPEG/DXF desde el worker; expansión sin máscaras. Cancelación tanto del worker como de la rasterización, sin descarga tardía.
 - Comparación rasterizada de una escena 3×3 contra mosaicos de la celda SVG para p1, p4g y p6m con formas que cruzan bordes. Diferencia media permitida <2 niveles por canal (0–255), admitiendo antialiasing entre renderizados.
 - Monitor Python: umbral real, ventana semanal, eventos expirados y advertencia de fallo de reanudación. No se encolan mensajes reales en sus pruebas.
 

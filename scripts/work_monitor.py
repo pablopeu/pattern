@@ -53,7 +53,16 @@ def queue(thread_id, message, resume=False):
 def watch(thread_id, session):
     timer_file = RUNTIME / 'timer.json'
     timer = read_json(timer_file, {})
-    while not (RUNTIME / 'STOP').exists() and not (RUNTIME / 'PROJECT_COMPLETE').exists():
+    while not (RUNTIME / 'STOP').exists():
+        if (RUNTIME/'PROJECT_COMPLETE').exists():
+            completed=read_json(STATE,{})
+            if completed.get('status')!='complete':
+                completed.update(status='complete',resume_at=None)
+                atomic_json(STATE,completed)
+                timer={};atomic_json(timer_file,timer)
+                event('project_complete')
+            time.sleep(20)
+            continue
         try:
             sample = read_limits(session)
             if sample:

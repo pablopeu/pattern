@@ -23,7 +23,7 @@ El proyecto real requiere al menos un patrón. Los valores completos pueden insp
 | `patterns[].sourceGeometry` | Fuente canónica; orden del array = orden de capas |
 | `patterns[].generator` | `kind`, `version:1`, semilla, parámetros y matrices de colocación libre |
 | `patterns[].symmetry` | Familia, grupo, ancho, alto, ángulo, sectores y centro |
-| `regions[].geometry` | Una o varias geometrías cerradas interpretadas como región de paridad |
+| `regions[].geometry` | Una o varias geometrías cerradas unidas respetando sus fill-rules |
 | `applications[]` | IDs de patrón/región, matriz de colocación, vínculo, snapshot congelado y contorno |
 | `preferences` | Grilla, snapping, vista dividida, fondo, guías y controles de inspección |
 
@@ -34,7 +34,7 @@ Cada objeto contiene `id`, `name`, `kind`, `nodes`, `closed`, `transform`, estil
 - Un nodo tiene `x,y` y tangentes relativas `in:{x,y}`, `out:{x,y}`.
 - Rectángulos, elipses y polígonos conservan `parameters:{x,y,width,height,radius,sides}`. Sólo la conversión explícita los materializa como nodos.
 - `compound` contiene `pathData` SVG; las operaciones booleanas pueden crear varias subregiones y agujeros.
-- El estilo incluye colores hex o `none`, grosor en mm, `fillRule`, `opacity`, `fillOpacity`, `strokeOpacity`.
+- El estilo incluye colores hex o `none`, grosor en mm, `fillRule`, `opacity`, `fillOpacity`, `strokeOpacity`, extremos, uniones y límite de inglete.
 - Las matrices siguen `[a,b,c,d,e,f]` de SVG y se aplican a coordenadas del documento.
 
 Una aplicación con `linked:true` usa el patrón referenciado. Una aplicación con `linked:false` exige `frozenPattern`; editar el original no altera ese snapshot. Al volver a vincular se descarta el snapshot y se usa el patrón actual.

@@ -73,7 +73,7 @@ Penrose genera un parche P3 finito mediante subdivisión de triángulos de Robin
 
 ## Regiones y recorte
 
-Los perímetros pueden ser paths Bézier, paramétricas convertibles o compound paths. Los agujeros se conservan mediante fill-rule y orientación del resultado booleano. Para combinar varias formas de un mismo perímetro se usa paridad (evenodd); cada aplicación puede referir a un perímetro diferente.
+Los perímetros pueden ser paths Bézier, paramétricas convertibles o compound paths. Los agujeros se conservan mediante fill-rule y orientación del resultado booleano. Las formas independientes de un perímetro se unen respetando el fill-rule de cada una. Los agujeros pertenecen a paths compuestos o se crean con Diferencia; una forma separada dentro de otra no crea un agujero por accidente. Cada aplicación puede referir a un perímetro diferente.
 
 La vista usa clipPath no destructivo. Expanded SVG calcula intersecciones reales y no incluye máscaras ni instancias. Convierte trazos a regiones por defecto; una Bézier abierta sin contorneado se recorta con `intersect(trace:false)`. En ese modo opcional se conserva la línea central, y los caps/anchos no equivalen al contorno material recortado; para contornos exactos usar la opción predeterminada.
 

@@ -20,7 +20,8 @@
     "local:stop": "python3 scripts/local-services.py stop",
     "serve:dist": "python3 -m http.server 4180 --bind 0.0.0.0 --directory dist",
     "test:static": "TEST_STATIC=1 playwright test",
-    "validate:exports": "node scripts/validate-exports.mjs"
+    "validate:exports": "node scripts/validate-exports.mjs",
+    "format": "prettier --write src tests scripts/*.mjs vite.config.ts playwright.config.ts"
   },
   "dependencies": {
     "clipper-lib": "^6.4.2",
@@ -38,6 +39,7 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.1.1",
+    "prettier": "^3.6.2",
     "typescript": "~5.9.3",
     "vite": "^7.2.2",
     "vitest": "^4.0.8"
