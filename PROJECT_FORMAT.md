@@ -99,3 +99,27 @@ Estos fragmentos muestran sólo los campos afectados, no son documentos autónom
 ## Esquema 3 · PRD v2.1 en curso
 
 La migración 2→3 agrega únicamente `preferences.structureVisible:false` y `preferences.structureOpacity:0.22`. No altera entidades existentes. La migración v1 continúa pasando por v2 y conserva p1 periódico. El overlay y su caché no se exportan como parte del diseño ni se almacenan como geometría. La visibilidad/opacidad son preferencias de edición.
+
+## Teselas en esquema 3
+
+`patterns[].tiling` es opcional. No tenerlo conserva íntegramente el comportamiento v2. Un snapshot congelado incluye su propia definición. Los presets nuevos declaran `presetVersion:3`; se siguen leyendo versiones 1 y 2.
+
+```json
+{
+  "version": 1,
+  "kind": "square",
+  "width": 60, "height": 60, "shear": 15,
+  "origin": {"x": 0, "y": 0}, "rotation": 0,
+  "showOutline": true,
+  "edges": [
+    [{"x":0,"y":0,"in":{"x":0,"y":0},"out":{"x":0,"y":0}}, {"x":0.5,"y":0,"in":{"x":0,"y":0},"out":{"x":0,"y":0}}, {"x":1,"y":0,"in":{"x":0,"y":0},"out":{"x":0,"y":0}}],
+    [{"x":0,"y":0,"in":{"x":0,"y":0},"out":{"x":0,"y":0}}, {"x":0.5,"y":0,"in":{"x":0,"y":0},"out":{"x":0,"y":0}}, {"x":1,"y":0,"in":{"x":0,"y":0},"out":{"x":0,"y":0}}]
+  ]
+}
+```
+
+La definición anterior es el valor de `tiling`, no un proyecto completo. `kind` admite `square`, `rectangle`, `parallelogram`, `triangle`, `hexagon`. Dimensiones y marco usan mm/grados. Los nodos de borde son coordenadas normalizadas: x recorre el segmento y y es el desplazamiento normal, con tangentes relativas en ese mismo marco. Cuadriláteros guardan dos bordes maestros; hexágonos tres. Triángulos guardan tres medios bordes con extremo x=0.5. Las parejas y las instancias se derivan, no se serializan.
+
+Los nodos y controles deben permanecer en sus corredores y el extremo estructural es fijo. Se valida el área, autointersección y solapamiento con vecinos antes de sustituir el documento. Los parámetros de forma no reemplazan `sourceGeometry` ni `generator`. Cambiar la familia reinicia sus perfiles de borde mediante una acción reversible; el motivo se conserva.
+
+`showOutline` sólo controla la edición. `includeTileOutlines` es una opción explícita de exportación, inicialmente false. Los contornos exportados comparten la misma geometría de borde y DXF recibe líneas centrales deduplicadas. El overlay matemático nunca forma parte de la exportación. No se guardan clips, fragmentos recortados, SVG de miniaturas ni colocaciones derivadas.

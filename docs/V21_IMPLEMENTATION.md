@@ -8,7 +8,7 @@ Estructura independiente de la cuadrícula. `symmetry/structure.ts` calcula cent
 
 Captura canónica usa una referencia genérica de órbita independiente del contenido. Busca las celdas próximas al puntero incluso cuando la escena está vacía o el culling de las fuentes existentes no las incluye. Prioridades de selección/hit explícito se conservan. La inversa sigue fija durante el gesto.
 
-## Teselas: construcción prevista para el incremento siguiente
+## Teselas: construcción implementada
 
 Modelo opcional de tesela en Pattern, separado de generator/sourceGeometry/symmetry. Forma, dimensiones, marco de colocación, perfiles normalizados de borde y visibilidad de contorno; no almacenar instancias derivadas. Mantener defaults de lectura para documentos/presets anteriores y migración de snapshots congelados.
 
@@ -22,6 +22,6 @@ Motivo canónico y contorno de tesela deben seguir siendo entidades distintas. L
 
 Reutilizar el exportador: preparar geometría vectorial del motivo recortado a la tesela en una etapa temporal, derivar copias sólo para la región solicitada y luego aplicar el recorte final de región. Exportar contornos únicamente con una opción explícita. Certificar celdas a partir de la red real de teselas, no del grupo local del motivo. Mantener linked/frozen.
 
-## Cierre pendiente
+## Cierre verificado
 
-Integración de teselas, pruebas de encastre/cobertura/render/persistencia/exportación, regresión completa, benchmark overlay on/off, auditoría visual y docs finales. No declarar v2.1 completo hasta terminar todo el PRD.
+Implementación y verificaciones completadas: 140 unitarias, 50 E2E, 4 del monitor y 4 estáticas; TypeScript/build correctos. Ver docs/ACCEPTANCE.md y TESTING.md. El cruce de bordes aplica isometrías de adyacencia antes del recorte; el exportador usa el mismo interior. Los contornos se deduplican por curva/sentido y se exportan sólo por solicitud explícita. icono.png integrado sin modificar el bitmap. Servicios LAN conservados para feedback.

@@ -1,3 +1,4 @@
+import { tileRectangularCell } from '../tiling/tiles';
 import { useState, useEffect, useRef } from 'react';
 import { X, Download, LoaderCircle, FileCode2 } from 'lucide-react';
 import type { Studio } from '../app/useStudio';
@@ -113,7 +114,9 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
       setDownloading(false);
     }
   };
-  const rect = rectangularCell(s.confirmedSymmetry);
+  const rect = s.pattern.tiling
+    ? tileRectangularCell(s.pattern.tiling)
+    : rectangularCell(s.confirmedSymmetry);
   return (
     <div
       className="modal-shade"
@@ -167,6 +170,14 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
                 value={options.applicationId ?? ''}
                 onChange={(v) => set('applicationId', v)}
                 options={s.project.applications.map((a) => ({ value: a.id, label: a.name }))}
+              />
+            )}
+            {(s.project.patterns.some((p) => p.tiling) ||
+              s.project.applications.some((a) => a.frozenPattern?.tiling)) && (
+              <Toggle
+                label="Exportar contornos de teselas"
+                checked={options.includeTileOutlines ?? false}
+                onChange={(v) => set('includeTileOutlines', v)}
               />
             )}
             <Select

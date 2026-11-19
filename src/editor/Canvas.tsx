@@ -1,4 +1,8 @@
-import { symmetryStructure, structureMarkup } from '../symmetry/structure';
+import { TileEditor } from '../tiling/TileEditor';
+import { tiledMarkup } from '../tiling/render';
+import { tileBounds, tileBasis, tileFrame, tileWorldBounds } from '../tiling/tiles';
+import { svgPath } from '../export/svg';
+import { cachedStructure, structureMarkup } from '../symmetry/structure';
 import { resolvePattern, symmetryOrigin, frameBounds } from '../symmetry/config';
 import {
   chooseCapture,
@@ -116,7 +120,10 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       s.mode !== 'apply' &&
       activePattern.generator.kind !== 'penrose' &&
       activePattern.symmetry.family !== 'none'
-        ? symmetryStructure(activePattern.symmetry, actualView)
+        ? cachedStructure(
+            activePattern.symmetry,
+            activePattern.tiling ? tileBounds(activePattern.tiling) : actualView,
+          )
         : null,
     [
       s.project.preferences.structureVisible,
@@ -124,6 +131,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       s.mode,
       activePattern.symmetry,
       activePattern.generator.kind,
+      activePattern.tiling,
       actualView,
     ],
   );
@@ -556,7 +564,9 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       return;
     }
     if (d.type === 'origin') {
-      const next = snap(p);
+      const next = activePattern.tiling
+        ? apply(inverse(tileFrame(activePattern.tiling)), snap(p))
+        : snap(p);
       s.patchSymmetry(
         activePattern.symmetry.family === 'radial' ? { center: next } : { origin: next },
         true,
@@ -565,8 +575,9 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       return;
     }
     if (d.type === 'orientation') {
-      const origin = symmetryOrigin(activePattern.symmetry);
-      let angle = (Math.atan2(p.y - origin.y, p.x - origin.x) * 180) / Math.PI;
+      const origin = symmetryOrigin(activePattern.symmetry),
+        q = activePattern.tiling ? apply(inverse(tileFrame(activePattern.tiling)), p) : p;
+      let angle = (Math.atan2(q.y - origin.y, q.x - origin.x) * 180) / Math.PI;
       if (event.shiftKey) angle = Math.round(angle / 15) * 15;
       s.patchSymmetry({ orientation: angle }, true, true);
       return;
@@ -726,6 +737,8 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
   const fit = (patternView = false) => {
     let b: Bounds;
     if (s.mode === 'apply' && s.region) b = geometryBounds(s.region.geometry);
+    else if (patternView && activePattern.tiling && activePattern.generator.kind !== 'penrose')
+      b = tileWorldBounds(activePattern.tiling);
     else if (patternView && activePattern.symmetry.family === 'wallpaper') {
       const cell = frameBounds(activePattern.symmetry);
       b = {
@@ -809,6 +822,35 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     interactive = true,
     pat = activePattern,
   ) => {
+    if (sc.tiling) {
+      const underlay =
+        s.project.preferences.structureVisible &&
+        s.mode !== 'apply' &&
+        !editorOnly &&
+        pat.id === activePattern.id
+          ? structureMarkup(
+              cachedStructure(pat.symmetry, tileBounds(sc.tiling.definition)),
+              s.project.preferences.structureOpacity,
+              scalePx,
+            )
+          : '';
+      return (
+        <g
+          data-tiled-pattern={pat.id}
+          onPointerDown={interactive ? (e) => selectAcrossLayers(e) : undefined}
+          dangerouslySetInnerHTML={{
+            __html: tiledMarkup(
+              sc,
+              svgPath,
+              id,
+              placement,
+              sc.tiling.definition.showOutline,
+              underlay,
+            ),
+          }}
+        />
+      );
+    }
     const count = sc.instances.length * sc.generated.placements.length;
     if (count > 18000)
       return (
@@ -1032,7 +1074,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
             pointerEvents="none"
           />
         )}
-        {structure && (
+        {structure && !scene?.tiling && (
           <g
             aria-label="Estructura matemática de simetría"
             pointerEvents="none"
@@ -1055,14 +1097,21 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
                   single =
                     s.project.preferences.repetitionView === 'single' &&
                     !layer.scene.generated.finite &&
-                    ['wallpaper', 'frieze'].includes(sym.family);
-                const basis = lattice(sym),
+                    (!!layer.scene.tiling || ['wallpaper', 'frieze'].includes(sym.family));
+                const tile = layer.scene.tiling?.definition;
+                const basis = tile ? tileBasis(tile) : lattice(sym),
                   o = sym.origin,
                   reach = 2 * Math.hypot(actualView.width, actualView.height),
                   length = Math.hypot(basis[0], basis[1]),
                   normal = { x: (-basis[1] / length) * reach, y: (basis[0] / length) * reach };
-                const points =
-                  sym.family === 'frieze'
+                const points = tile
+                  ? [
+                      { x: 0, y: 0 },
+                      { x: basis[0], y: basis[1] },
+                      { x: basis[0] + basis[2], y: basis[1] + basis[3] },
+                      { x: basis[2], y: basis[3] },
+                    ].map((p) => apply(tileFrame(tile), p))
+                  : sym.family === 'frieze'
                     ? [
                         { x: o.x - normal.x, y: o.y - normal.y },
                         { x: o.x + basis[0] - normal.x, y: o.y + basis[1] - normal.y },
@@ -1325,7 +1374,11 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
           )}
         {!previewOnly &&
           selectedShapes.map((shape) => (
-            <g key={shape.id} transform={matrixString(multiply(s.instance, shape.transform))}>
+            <g
+              data-editing-handles="true"
+              key={shape.id}
+              transform={matrixString(multiply(s.instance, shape.transform))}
+            >
               <path
                 d={pathData(shape)}
                 fill="none"
@@ -1382,7 +1435,11 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
           activePattern.symmetry.family !== 'none' &&
           activePattern.generator.kind !== 'penrose' &&
           s.project.preferences.guides && (
-            <g>
+            <g
+              transform={
+                activePattern.tiling ? matrixString(tileFrame(activePattern.tiling)) : undefined
+              }
+            >
               <line
                 x1={symmetryOrigin(activePattern.symmetry).x}
                 y1={symmetryOrigin(activePattern.symmetry).y}
@@ -1438,6 +1495,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
               />
             </g>
           )}
+        {!editorOnly && !previewOnly && <TileEditor studio={s} scale={scalePx} />}
         {marquee && (
           <rect
             x={Math.min(marquee.start.x, marquee.end.x)}
@@ -1546,11 +1604,12 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
           <Grid2X2 size={17} />
         </button>
         <button
-          title="Guías"
+          title="Guías detalladas · inspección individual"
           aria-label="Mostrar guías"
           onClick={() =>
             s.change((p) => {
               p.preferences.guides = !p.preferences.guides;
+              p.preferences.structureVisible = false;
             })
           }
         >

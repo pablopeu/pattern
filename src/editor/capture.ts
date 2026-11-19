@@ -26,9 +26,29 @@ export interface CaptureContext {
   tool: string;
 }
 export const matrixId = (m: Matrix) => m.map((n) => n.toFixed(9)).join(',');
+function tilesUnderPointer(scene: Scene, p: Point) {
+  const data = scene.tiling;
+  if (!data) return [];
+  const path = paperPath(data.boundary);
+  try {
+    return data.tiles.filter((tile) => {
+      const q = apply(inverse(tile.matrix), p),
+        point = new scope.Point(q.x, q.y);
+      if (!path.bounds.expand(1e-6).contains(point)) return false;
+      const nearest = path.getNearestPoint(point);
+      return (
+        path.contains(point) || (nearest && distance(q, { x: nearest.x, y: nearest.y }) < 1e-6)
+      );
+    });
+  } finally {
+    path.remove();
+  }
+}
 export function captureCandidates(pattern: Pattern, scene: Scene, p: Point): CaptureInstance[] {
   const center = captureReference(pattern);
+  const allowed = scene.tiling ? new Set(tilesUnderPointer(scene, p).map((t) => t.id)) : null;
   return scene.instances
+    .filter((i) => !allowed || (i.tileId && allowed.has(i.tileId)))
     .flatMap((i) =>
       scene.generated.placements.map((m, k) => {
         const matrix = multiply(i.matrix, m),
@@ -56,6 +76,25 @@ export function captureReference(pattern: Pattern): Point {
 }
 export function canonicalCandidates(pattern: Pattern, scene: Scene, p: Point): CaptureInstance[] {
   if (scene.generated.finite) return [];
+  if (scene.tiling)
+    return tilesUnderPointer(scene, p).flatMap((tile) => {
+      const local = apply(inverse(tile.matrix), p);
+      return canonicalCandidates({ ...pattern, tiling: undefined }, scene.tiling!.inner, local).map(
+        (candidate) => {
+          const matrix = multiply(tile.matrix, candidate.matrix),
+            reference = apply(tile.matrix, candidate.reference);
+          return {
+            ...candidate,
+            id: `${tile.id}/${candidate.id}`,
+            matrix,
+            inverse: inverse(matrix),
+            reference,
+            distance: distance(reference, p),
+          };
+        },
+      );
+    });
+
   const s = pattern.symmetry,
     basis = lattice(s),
     inv = inverse(basis),

@@ -112,3 +112,30 @@ El tiempo de grupo incluye preparación y presentación: los dos requestAnimatio
 Una medición previa sin suspender gestos tuvo arrastre de nodo de 77,5 ms / p95 303,9 ms. La mejora reduce esos picos; siguen existiendo pausas en escenas densas. La mediana de parámetros cumple interacción habitual fluida, pero no se afirma 30 FPS para todo caso ni se convierte el tiempo de protocolo de nodos en FPS del renderer.
 
 Auditoría visual final: miniaturas reales del Jardín a 1440×900 y 1366×768, primera fila completa visible, sin desborde ni errores de consola. Capturas locales `.runtime/v2-gallery-1440.png` y `.runtime/v2-gallery-1366.png`.
+
+
+## PRD v2.1 · Overlay, captura y teselas
+
+Las pruebas nuevas en `src/tests/v21.test.ts`, `src/tests/tiles.test.ts` y `tests/v21.spec.ts` conservan la suite v2. Verifican isometrías testigo, 17 wallpaper/7 frisos/Cn/Dn en cálculo y SVG, p3m1/p31m, centros a medias traslaciones y deduplicación. Las muestras de tinta rasterizan el SVG real excluyendo contornos de selección y handles; no se aceptan sólo conteos de use en el DOM.
+
+Cada familia de tesela se verifica con bordes rectos y Bézier: emparejamientos, área, cruces, vecinos y cobertura de una región independiente. En navegador se dibuja dentro y fuera de la tesela inicial, se editan bordes con undo/redo y se comprueba recuperación sin alterar fuentes. Se edita un nodo de motivo desde una copia reflejada dentro de otra tesela. Los mosaicos raster de SVG exportados se comparan con la escena grande para cuadrado, rectángulo, triángulo y hexágono curvos, con diferencia media <2 por canal.
+
+```bash
+node scripts/benchmark-structure.mjs
+```
+
+Medición aislada del 19/11/2026 21:36 UTC, Chromium headless 1440×900, 100 fuentes, p6m, viewport 300×190,32 mm:
+
+| Desplazamiento real, 25 muestras | Mediana | p95 |
+|---|---:|---:|
+| Overlay apagado | 33,19 ms | 34,49 ms |
+| Overlay encendido | 33,33 ms | 34,21 ms |
+
+Las muestras incluyen protocolo Playwright y un frame: no equivalen a FPS del renderer. La diferencia observada está dentro de la variación de la medición. El cálculo sin caché del overlay tuvo medianas de 0,1 a 1,6 ms entre los 17 grupos; p6m: 1,6 ms y p95 1,9 ms, con 97 ejes, 110 centros y 419 segmentos de dominio en ese encuadre. Ningún caso requirió reducción por densidad. Informe en `.runtime/benchmark-structure.json`.
+
+Auditoría visual: `.runtime/v21-review-1440.png`, `v21-review-1366.png` y `v21-tiles-1366.png`. Logo local cargado a 142×66 px, sin desbordes ni errores de consola; se inspeccionaron el fondo matemático tenue y la edición de un hexágono irregular con motivo local.
+
+
+Cierre v2.1: **140 unitarias, 50 E2E y 4 tests de monitor correctos**. Producción: **4 pruebas estáticas correctas**, dos por raíz/subdirectorio, manteniendo el caso previo y añadiendo logo local, tesela curva, exclusión de guías y contornos explícitos desde el worker. TypeScript y build correctos.
+
+El validador independiente ahora produce también tile-editable.svg, tile-expanded.svg, tile.png y tile.dxf. CairoSVG y el raster del navegador muestran tinta real de un hexágono Bézier a 787×630; ezdxf comprueba 58 polilíneas 2D en mm dentro de la región de 100×80. Se sigue verificando la aplicación irregular v1 a 200 DPI. El test de parametrización compara puntos cúbicos continuos tras reflexión e inversión del recorrido.

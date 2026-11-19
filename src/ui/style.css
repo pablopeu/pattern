@@ -126,26 +126,11 @@ input[type='color']::-webkit-color-swatch {
   text-decoration: none;
   flex-shrink: 0;
 }
-.brand > svg {
-  width: 31px;
-  height: 31px;
-}
-.brand > span {
-  font-size: 26px;
-  font-weight: 600;
-  letter-spacing: -1.4px;
-  position: relative;
-  line-height: 1.05;
-}
-.brand-dot {
-  color: #7f9c4c;
-}
-.brand small {
-  display: block;
-  font-size: 8px;
-  letter-spacing: 4.8px;
-  margin-top: 4px;
-  font-weight: 500;
+.brand > img {
+  width: 142px;
+  height: 66px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
 }
 .top-divider {
   height: 28px;
@@ -1836,4 +1821,36 @@ input[type='color']::-webkit-color-swatch {
 .structure-opacity input {
   width: 70px;
   accent-color: #718b68;
+}
+
+.tile-panel {
+  flex-shrink: 0;
+  max-height: 38%;
+  overflow: auto;
+  scrollbar-width: thin;
+  border-bottom: 1px solid var(--line);
+}
+.tile-panel > summary {
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.tile-panel > summary strong {
+  font-weight: 500;
+  color: #718860;
+}
+.tile-controls {
+  padding: 0 14px 14px;
+  display: grid;
+  gap: 10px;
+}
+.context-panel:has(.tile-panel[open]) .symmetry-gallery {
+  max-height: 30%;
+}
+.tile-controls > details > summary {
+  font-size: 12px;
+  cursor: pointer;
 }

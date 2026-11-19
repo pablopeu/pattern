@@ -106,3 +106,27 @@ Las celdas comunes sólo se certifican para períodos rectangulares compatibles;
 ### Resultado de cierre v2
 
 TypeScript y **80 unitarias**, **31 E2E**, **4 tests del monitor**, build y dos verificaciones estáticas correctos. Validadores independientes de SVG, raster y DXF correctos. Se completaron las auditorías visual, matemática, persistencia, exportación y regresión; servicios LAN conservados para revisión. Las limitaciones de complejidad/importación de v1 y la certificación conservadora de celdas comunes permanecen documentadas.
+
+
+## PRD v2.1 · Cierre de aceptación
+
+| Requisito | Evidencia verificada |
+|---|---|
+| Fondo matemático completo | 17 wallpaper, siete frisos y Cn/Dn en unitarias y recorrido SVG real; ejes/centros con isometría testigo, medias traslaciones, p3m1/p31m y glides |
+| Overlay utilizable | Botón independiente de la grilla, opacidad persistida, grosor no escalable, pointer-events none, culling/deduplicación y caché acotado; modos detallados excluyen la estructura completa |
+| Casos no cristalográficos | Libre oculta estructura; friso sin red vertical; radial sin traslaciones; Penrose conserva exactamente su construcción finita, incluso con una configuración de tesela guardada e inactiva |
+| Dibujo en zonas vacías | Tinta rasterizada bajo el cursor antes/después de pointerup en dos posiciones distantes: p6m, p4g, pg, p2mg y Dn. Se excluyen helpers de selección del raster de comprobación |
+| Captura coherente | Matriz canónica independiente de la geometría previa, desempate estable, inversa fija, fuente única y prioridades explícitas; se conserva la regresión de Bézier, herramientas y cambios de grupo abiertos |
+| Teselas básicas e irregulares | Cuadrado, rectángulo, paralelogramo, triángulo equilátero y hexágono regular; bordes Bézier emparejados por transformaciones exactas, área/cobertura y vecinos sin solapamiento |
+| Edición de bordes | Nodos/tangentes y parámetros, una acción por gesto, límites constructivos explícitos, undo/redo y recuperación; fuentes/generadores del motivo permanecen intactos |
+| Cruzar bordes reales | Cinco E2E verifican tinta fuera de la tesela inicial, fuente única y undo/redo. La continuidad por adyacencia precede al recorte; no depende de un contorno de selección |
+| Editar desde otras copias | Nodo de motivo editado desde una copia reflejada dentro de otra tesela, con el mismo ID fuente; regresiones de instancias rotadas y reflejadas conservadas |
+| Persistencia | Esquema 3, migraciones 1→2→3, fuentes/IDs/unidades/aplicaciones preservados, presets 1/2/3 y snapshots efectivos con su tesela propia; sin instancias serializadas |
+| Exportación | SVG editable/expandido, DXF y raster existentes; overlay excluido, contornos optativos y deduplicados. Comparación raster de mosaicos curvos contra escena grande para cuatro familias; paralelogramo conserva su red oblicua |
+| Interoperabilidad | CairoSVG renderiza el SVG editable de hexágonos curvos con tinta real a 787×630; PNG coincide en tamaño. ezdxf lee 58 polilíneas 2D recortadas en mm. Exportación aplicada v1 también validada |
+| Rendimiento | Benchmark aislado con 100 fuentes: desplazamiento 33,19 ms sin overlay y 33,33 ms con overlay, incluyendo protocolo/frame; cálculo de p6m 1,6 ms mediana. Detalles y límites en TESTING.md |
+| Logo e interfaz | icono.png original integrado como asset; capturas a 1440×900 y 1366×768 sin desbordes/errores. Misma interfaz, sin nuevas cuentas/dependencias remotas |
+| Producción estática | Cuatro comprobaciones: edición/exportación v2 y flujo v2.1 con logo/tesela curva/worker, en raíz y /pattern/, con solicitudes externas bloqueadas |
+| Regresión | 140 unitarias y 50 E2E correctas, incluyendo los 80 tests/31 flujos de v2; TypeScript, build y 4 tests del monitor correctos |
+
+Límites: los vértices de las construcciones son estructurales; los controles de borde se limitan a corredores seguros. Los triángulos requieren simetría central por borde. La simetría elegida describe el motivo local antes de su recorte/adyacencia, sin prometer un grupo global arbitrario. Se conserva el límite de complejidad y no se ofrece un clasificador universal de polígonos. Penrose no se convierte a una red periódica.

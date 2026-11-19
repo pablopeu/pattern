@@ -36,3 +36,8 @@ El motor del proyecto tiene implementación propia de los contratos y transforma
 - [The Symmetries of Things, editorial Routledge](https://www.routledge.com/The-Symmetries-of-Things/Goodman-Strauss-Conway-Burgiel/p/book/9781568812205): vocabulario de simetría, grupos y dominios fundamentales.
 
 V2 conserva las mismas dependencias de ejecución y licencias; no incorpora bibliotecas nuevas ni recursos remotos en producción.
+
+
+## Recursos del incremento v2.1
+
+`icono.png` fue aportado por el usuario y se integra sin modificar el bitmap. No procede de iOrnament ni de otra referencia investigada. Las construcciones de teselas y el overlay son código propio sobre las matrices y dependencias ya existentes; no se añaden paquetes ni servicios externos.

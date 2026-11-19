@@ -1,3 +1,4 @@
+import { TilePanel } from './TilePanel';
 import { SymmetryGallery } from './SymmetryGallery';
 import { freezePattern } from '../symmetry/config';
 import { useState } from 'react';
@@ -568,7 +569,12 @@ export function Panels({ studio: s, onImport }: { studio: Studio; onImport: () =
   ) : null;
   return (
     <aside className="context-panel">
-      {s.mode !== 'apply' && <SymmetryGallery studio={s} />}
+      {s.mode !== 'apply' && (
+        <>
+          <SymmetryGallery studio={s} />
+          <TilePanel studio={s} />
+        </>
+      )}
       {s.mode !== 'apply' && (
         <div className="pattern-set-list" aria-label="Conjuntos de composición">
           {s.project.patterns.map((p, i) => (
@@ -1254,11 +1260,12 @@ export function Panels({ studio: s, onImport }: { studio: Studio; onImport: () =
                 }
               />
               <Toggle
-                label="Guías de simetría"
+                label="Guías detalladas"
                 checked={s.project.preferences.guides}
                 onChange={(v) =>
                   s.change((p) => {
                     p.preferences.guides = v;
+                    p.preferences.structureVisible = false;
                   })
                 }
               />
@@ -1269,6 +1276,7 @@ export function Panels({ studio: s, onImport }: { studio: Studio; onImport: () =
                   s.change((p) => {
                     p.preferences.fundamental = v;
                     p.preferences.guides = true;
+                    p.preferences.structureVisible = false;
                   })
                 }
               />
@@ -1279,6 +1287,7 @@ export function Panels({ studio: s, onImport }: { studio: Studio; onImport: () =
                   s.change((p) => {
                     p.preferences.axes = v;
                     p.preferences.guides = true;
+                    p.preferences.structureVisible = false;
                   })
                 }
               />
@@ -1289,6 +1298,7 @@ export function Panels({ studio: s, onImport }: { studio: Studio; onImport: () =
                   s.change((p) => {
                     p.preferences.centers = v;
                     p.preferences.guides = true;
+                    p.preferences.structureVisible = false;
                   })
                 }
               />
@@ -1299,6 +1309,7 @@ export function Panels({ studio: s, onImport }: { studio: Studio; onImport: () =
                   s.change((p) => {
                     p.preferences.continuity = v;
                     p.preferences.guides = true;
+                    p.preferences.structureVisible = false;
                   })
                 }
               />

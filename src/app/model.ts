@@ -1,3 +1,4 @@
+import type { TilingDefinition } from '../tiling/tiles';
 import type { Matrix, Point, Unit } from '../geometry/matrix';
 export type Node = Point & { in: Point; out: Point };
 export type ShapeKind = 'path' | 'rectangle' | 'ellipse' | 'polygon' | 'compound';
@@ -79,6 +80,7 @@ export interface Symmetry {
   center: Point;
 }
 export interface Pattern {
+  tiling?: TilingDefinition;
   id: string;
   name: string;
   sourceGeometry: Geometry[];

@@ -1,3 +1,4 @@
+import { tileRectangularCell, tileVertices } from '../tiling/tiles';
 import { newPattern, type Pattern, type Project, type Symmetry } from '../app/model';
 import { multiply, translate, scale, apply, type Matrix, type Point } from '../geometry/matrix';
 import { geometryBounds } from '../application/clipping';
@@ -93,13 +94,31 @@ export function adaptToCell(pattern: Pattern, main?: Symmetry): Matrix {
   const b = lattice(s),
     origin = symmetryOrigin(s),
     periodic = s.family === 'wallpaper' || s.family === 'frieze';
-  const center = periodic
+  let center = periodic
     ? { x: origin.x + (b[0] + b[2]) / 2, y: origin.y + (b[1] + b[3]) / 2 }
     : origin;
-  const area = Math.abs(b[0] * b[3] - b[1] * b[2]),
-    radius = periodic
-      ? area / (2 * Math.max(Math.hypot(b[0], b[1]), Math.hypot(b[2], b[3])))
-      : Math.min(s.width, s.height) / 2;
+  const area = Math.abs(b[0] * b[3] - b[1] * b[2]);
+  let radius = periodic
+    ? area / (2 * Math.max(Math.hypot(b[0], b[1]), Math.hypot(b[2], b[3])))
+    : Math.min(s.width, s.height) / 2;
+  if (pattern.tiling) {
+    const vertices = tileVertices(pattern.tiling);
+    center = {
+      x: vertices.reduce((sum, p) => sum + p.x, 0) / vertices.length,
+      y: vertices.reduce((sum, p) => sum + p.y, 0) / vertices.length,
+    };
+    radius =
+      0.8 *
+      Math.min(
+        ...vertices.map((a, i) => {
+          const b = vertices[(i + 1) % vertices.length];
+          return (
+            Math.abs((b.x - a.x) * (center.y - a.y) - (b.y - a.y) * (center.x - a.x)) /
+            Math.hypot(b.x - a.x, b.y - a.y)
+          );
+        }),
+      );
+  }
   const factor = (0.75 * radius) / Math.max(0.001, Math.hypot(w, h) / 2);
   return multiply(
     translate(center.x, center.y),
@@ -114,7 +133,13 @@ export function commonRectangularCell(
 ): { width: number; height: number } | null {
   const cells = patterns
     .filter((p) => p.visible)
-    .map((p) => (p.generator.kind === 'penrose' ? null : rectangularCell(p.symmetry)));
+    .map((p) =>
+      p.generator.kind === 'penrose'
+        ? null
+        : p.tiling
+          ? tileRectangularCell(p.tiling)
+          : rectangularCell(p.symmetry),
+    );
   if (!cells.length || cells.some((c) => !c)) return null;
   const common = (values: number[]) => {
     const base = values[0];

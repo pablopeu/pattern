@@ -1,4 +1,6 @@
-import { symmetryStructure, structureMarkup } from '../symmetry/structure';
+import { tiledMarkup } from '../tiling/render';
+import { tileBounds, tileWorldBounds } from '../tiling/tiles';
+import { cachedStructure, structureMarkup } from '../symmetry/structure';
 import { useEffect, useMemo, useRef, useState, memo } from 'react';
 import type { Studio } from '../app/useStudio';
 import type { Symmetry, Pattern } from '../app/model';
@@ -29,6 +31,25 @@ export function previewSVG(
   structure = false,
 ): string {
   const scene = buildScene(pattern, bounds, prepared);
+  if (scene.tiling)
+    return svgDocument(
+      tiledMarkup(
+        scene,
+        svgPath,
+        'preview-tile',
+        undefined,
+        scene.tiling.definition.showOutline,
+        structure
+          ? structureMarkup(
+              cachedStructure(pattern.symmetry, tileBounds(scene.tiling.definition)),
+              0.15,
+              0.7,
+            )
+          : '',
+      ),
+      bounds,
+      '#f8faf5',
+    );
   const refs = scene.instances
     .flatMap((i) =>
       scene.generated.placements.map(
@@ -37,7 +58,7 @@ export function previewSVG(
     )
     .join('');
   return svgDocument(
-    `${structure && pattern.generator.kind !== 'penrose' ? structureMarkup(symmetryStructure(pattern.symmetry, bounds), 0.15, 0.7) : ''}<defs><g id="motif">${scene.generated.geometry.map(svgPath).join('')}</g></defs>${refs}`,
+    `${structure && pattern.generator.kind !== 'penrose' ? structureMarkup(cachedStructure(pattern.symmetry, bounds), 0.15, 0.7) : ''}<defs><g id="motif">${scene.generated.geometry.map(svgPath).join('')}</g></defs>${refs}`,
     bounds,
     '#f8faf5',
   );
@@ -162,9 +183,11 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
             choice,
           });
           const frame =
-            comparison === 'cell' && choice.family === 'wallpaper'
-              ? frameBounds(resolved.symmetry)
-              : { x: -60, y: -45, width: 120, height: 90 };
+            comparison === 'cell' && resolved.tiling
+              ? tileWorldBounds(resolved.tiling)
+              : comparison === 'cell' && choice.family === 'wallpaper'
+                ? frameBounds(resolved.symmetry)
+                : { x: -60, y: -45, width: 120, height: 90 };
           const svg = previewSVG(resolved, frame, prepared, s.project.preferences.structureVisible);
           if (!cancelled)
             setPreviews((old) => ({
@@ -202,7 +225,11 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
   return (
     <details className="symmetry-gallery" open>
       <summary>
-        <span>SIMETRÍA VIVA</span>
+        <span>
+          {s.pattern.tiling && s.pattern.generator.kind !== 'penrose'
+            ? 'SIMETRÍA DEL MOTIVO'
+            : 'SIMETRÍA VIVA'}
+        </span>
         <strong>
           {confirmed.family === 'none'
             ? 'Libre'
@@ -436,7 +463,9 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
                   </>
                 )}
                 <button className="wide-button" onClick={s.adaptPattern}>
-                  Adaptar a celda · conservar fuente
+                  {s.pattern.tiling
+                    ? 'Adaptar motivo a tesela'
+                    : 'Adaptar a celda · conservar fuente'}
                 </button>
                 <button
                   className="wide-button"
@@ -454,11 +483,12 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
           </>
         )}
         <Toggle
-          label="Guías de simetría"
+          label="Guías detalladas"
           checked={s.project.preferences.guides}
           onChange={(v) =>
             s.change((p) => {
               p.preferences.guides = v;
+              p.preferences.structureVisible = false;
             })
           }
         />

@@ -1,3 +1,4 @@
+import logo from '../../icono.png';
 import { commonRectangularCell, resolvePattern } from '../symmetry/config';
 import { useState, useRef } from 'react';
 import {
@@ -140,24 +141,7 @@ export default function App() {
     <div className="app-shell">
       <header className="topbar">
         <a className="brand" href="./" aria-label="Pattern Studio">
-          <svg viewBox="0 0 30 30">
-            <path
-              d="M4 4H15V15H4ZM15 15H26V26H15ZM15 4H26V15H15ZM4 15H15V26H4Z"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            />
-            <path
-              d="M4 15Q15 4 15 15Q15 26 26 15"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            />
-          </svg>
-          <span>
-            pattern<span className="brand-dot">.</span>
-            <small>STUDIO</small>
-          </span>
+          <img src={logo} alt="PEU Patterns" width="142" height="66" />
         </a>
         <div className="top-divider" />
         <div className="project-name">
@@ -286,7 +270,7 @@ export default function App() {
                   download(
                     JSON.stringify(
                       {
-                        presetVersion: 2,
+                        presetVersion: 3,
                         pattern: freezePattern(s.pattern, s.project.mainSymmetry),
                       },
                       null,
@@ -398,7 +382,7 @@ export default function App() {
                   !s.visiblePatterns.some(
                     (p) =>
                       p.generator.kind !== 'penrose' &&
-                      ['wallpaper', 'frieze'].includes(p.symmetry.family),
+                      (p.tiling || ['wallpaper', 'frieze'].includes(p.symmetry.family)),
                   )
                 }
                 aria-pressed={s.project.preferences.repetitionView === 'single'}
@@ -499,19 +483,23 @@ export default function App() {
                 ? commonCell
                   ? 'Composición · celda común verificada'
                   : 'Composición · sin celda común verificada'
-                : status === 'FREE_NONPERIODIC'
-                  ? 'Libre · sin repetición'
-                  : status === 'PERIODIC_SEAMLESS'
-                    ? s.effectivePattern.symmetry.family === 'frieze'
-                      ? 'Friso · periódico en una dirección'
-                      : 'Periódico · seamless'
-                    : status === 'FINITE_NONPERIODIC'
-                      ? 'Composición finita · no periódica'
-                      : 'Sin verificar'}
+                : s.effectivePattern.tiling && s.effectivePattern.generator.kind !== 'penrose'
+                  ? 'Teselas · cobertura periódica'
+                  : status === 'FREE_NONPERIODIC'
+                    ? 'Libre · sin repetición'
+                    : status === 'PERIODIC_SEAMLESS'
+                      ? s.effectivePattern.symmetry.family === 'frieze'
+                        ? 'Friso · periódico en una dirección'
+                        : 'Periódico · seamless'
+                      : status === 'FINITE_NONPERIODIC'
+                        ? 'Composición finita · no periódica'
+                        : 'Sin verificar'}
               <small>
-                {s.effectivePattern.symmetry.family === 'none'
-                  ? 'Libre'
-                  : s.effectivePattern.symmetry.group}
+                {s.effectivePattern.tiling && s.effectivePattern.generator.kind !== 'penrose'
+                  ? `Motivo local: ${s.effectivePattern.symmetry.family === 'none' ? 'Libre' : s.effectivePattern.symmetry.group}`
+                  : s.effectivePattern.symmetry.family === 'none'
+                    ? 'Libre'
+                    : s.effectivePattern.symmetry.group}
               </small>
             </div>
             <div>

@@ -70,3 +70,15 @@ El orden es `G · P · Q · S`: operación/traslación de grupo, colocación ind
 La composición reutiliza `patterns[]` como capas visibles ordenadas. Cada conjunto mantiene generador, modo y colocación; no se introduce un scene graph. El SVG compuesto asigna prefijos a las referencias locales de cada conjunto y los demás formatos reutilizan la misma geometría efectiva. Un friso, radial, Libre o Penrose no certifica una baldosa bidimensional común.
 
 Los trazos se registran una vez al iniciarse y su contenido final actualiza las versiones históricas que contienen ese ID. Así un cambio de grupo durante una Pluma abierta sigue siendo una acción separada, y undo no recupera un path parcialmente capturado. El viewport de cada canvas permanece estable al cambiar entre Diseño y Patrón.
+
+## Incremento v2.1
+
+`structure.ts` deriva marcas con una isometría testigo T(Bn)G, no sólo con representantes de una celda. Incluye centros intermedios, ejes deslizantes y marcos girados. Recorta al viewport y deduplica coincidencias; los centros conservan su orden máximo. Un caché de contenido acotado evita recomputar cuando sólo cambia una fuente. El renderer aplica opacidad al grupo completo y vector-effect para grosor visual constante. Las miniaturas usan el mismo cálculo, las exportaciones no lo reciben.
+
+`tiling/tiles.ts` construye vértices, bordes emparejados, redes, colocaciones y contornos únicos. `validate.ts` contrasta esas construcciones con Paper.js. La definición opcional permanece separada del generador y de las fuentes. `TilePanel` y `TileEditor` actualizan nodos/tangentes normalizados mediante el historial existente; no materializan vecinos editables.
+
+`buildScene` compone una escena interior de motivo, sus continuaciones por adyacencia y las copias de la tesela. El renderer comparte una plantilla vectorial recortada, con contornos deduplicados externos. La captura filtra las copias por su clip real, incorpora la matriz exterior y mantiene una inversa fija.
+
+`materializeTiling` crea únicamente una plantilla temporal para exportaciones expandidas/DXF. Reutiliza el mismo interior y el recorte real, conservando aplicaciones vinculadas/congeladas. SVG editable conserva defs/use y clips; los demás formatos usan la geometría derivada. Contornos se solicitan aparte y no se convierten accidentalmente en bordes duplicados para corte.
+
+Esquema nativo 3 y presets 3, con lectura compatible v1/v2; formato geométrico canónico intacto. El logo del usuario es un asset PNG local de Vite, sin servicio remoto.

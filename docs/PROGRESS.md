@@ -120,3 +120,32 @@
 - Esquema 3 con migración 2→3 sólo de preferencias; entidades v1/v2 conservadas.
 - **115 unitarias y 37 E2E correctas**, conservando la regresión v2. Cinco pruebas rasterizan el SVG real y verifican tinta bajo el cursor antes/después de soltar en dos posiciones vacías distantes: p6m, p4g, pg, friso p2mg y Dn.
 - Teselas editables todavía en desarrollo: el generador legado no prueba encastre. Decisiones y pendientes en docs/V21_IMPLEMENTATION.md. No se declara v2.1 completo.
+
+
+## PRD v2.1 · Teselas conectadas al editor
+
+- Cinco construcciones: cuadrado, rectángulo, paralelogramo, triángulo equilátero (bordes con simetría central) y hexágono regular. Perfiles normalizados de nodos/tangentes, parejas exactas y corredores conservadores.
+- Validación Paper.js independiente de área, autointersección, solapamiento vecino y cobertura de una región; casos regulares y Bézier.
+- Modelo opcional versionado de tesela separado de fuente/generador/simetría local. Render vectorial recortado a la tesela y repetición según su red propia. Captura y selección usan la composición de matrices y respetan el clip de cada copia.
+- Panel de familia/dimensiones/origen/orientación/contorno y edición de nodos/tangentes, con una acción por gesto. Motivo interior preservado.
+- Cinco E2E de teselas pasaron: tinta real en dos copias distantes, borde emparejado, arrastre/undo/redo, persistencia y fuentes intactas. Unitarias ampliadas a **137 correctas**, incluyendo exportación y snapshots/presets.
+- Pendiente: comparación raster de exportaciones, prueba de nodo de motivo desde copia reflejada dentro de tesela, deduplicación de contornos exportados, auditoría visual y benchmark overlay on/off; regresión final y logo icono.png solicitado.
+
+
+## PRD v2.1 · Continuidad entre bordes y logo
+
+- El motivo recortado incorpora las isometrías de adyacencia para que un trazo continúe realmente fuera de la tesela inicial, sin dividir ni modificar su única fuente. La exportación usa el mismo template derivado.
+- Las pruebas de tinta eliminan los contornos de selección del SVG rasterizado, evitando confundir ayudas de edición con contenido real. **18 E2E v2.1 correctos**, incluidos cruces de borde y undo/redo en las cinco familias, copia reflejada y comparación de mosaicos exportados.
+- Contornos de teselas deduplicados por curva y sentido, exportados sólo mediante opción explícita; DXF usa líneas centrales de borde.
+- Logo visible reemplazado por `icono.png` provisto por el usuario, como asset local de Vite; pendiente inspección visual final junto con build raíz/subdirectorio.
+- Cierre aún en verificación: benchmark overlay, regresión completa, documentación final y pruebas estáticas.
+
+
+## PRD v2.1 · Integración verificada para cierre
+
+- **140 unitarias**, **50 E2E**, **4 del monitor** correctas; TypeScript y build correctos. Se conserva la regresión v1/v2 completa.
+- Cuatro pruebas de producción correctas: flujo anterior y flujo v2.1 con logo local/hexágono curvo/exportación desde worker, en raíz y /pattern/, bloqueando Internet.
+- Validación externa ampliada: CairoSVG y PNG de hexágono curvo con tinta real a 787×630; DXF con 58 polilíneas 2D recortadas en mm. Caso aplicado v1 también correcto.
+- Benchmark aislado y auditoría visual final registrados en TESTING.md; controles de guías detalladas desactivan la estructura completa para evitar estados contradictorios.
+- Logo icono.png comprobado cargado y legible a 1366/1440; bitmap original conservado y asset incluido en ambos builds estáticos.
+- Matriz completa v2.1 y restricciones constructivas documentadas en docs/ACCEPTANCE.md. No quedan funcionalidades requeridas pendientes; resta registrar el cierre en Git y conservar servicios LAN.

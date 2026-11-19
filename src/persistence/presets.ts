@@ -12,7 +12,7 @@ export function parsePreset(text: string): Pattern {
     typeof data !== 'object' ||
     data === null ||
     !('presetVersion' in data) ||
-    (data.presetVersion !== 1 && data.presetVersion !== 2) ||
+    (data.presetVersion !== 1 && data.presetVersion !== 2 && data.presetVersion !== 3) ||
     !('pattern' in data)
   )
     throw Error('Versión o estructura de preset no compatible.');

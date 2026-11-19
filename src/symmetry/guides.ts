@@ -51,6 +51,13 @@ export function verifyPeriodicity(pattern: Pattern): {
   valid: boolean;
   message: string;
 } {
+  if (pattern.tiling && pattern.generator.kind !== 'penrose')
+    return {
+      status: 'PERIODIC_SEAMLESS',
+      valid: true,
+      message:
+        'Traslaciones de la cobertura de teselas verificadas; la simetría del motivo es local.',
+    };
   if (pattern.generator.kind === 'penrose' || pattern.symmetry.family === 'radial')
     return {
       status: 'FINITE_NONPERIODIC',

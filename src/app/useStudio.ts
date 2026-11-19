@@ -1,3 +1,4 @@
+import { constrainTiling, type TilingDefinition } from '../tiling/tiles';
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { hasClosedGeometry } from '../application/clipping';
 import { History } from '../editor/history';
@@ -27,6 +28,9 @@ export type Tool =
   | 'region'
   | 'pan';
 export function useStudio() {
+  const [tileEditing, setTileEditing] = useState(false),
+    [tileEdge, setTileEdge] = useState(0),
+    [tileNode, setTileNode] = useState(1);
   const [project, setProject] = useState<Project>(() => newProject()),
     ref = useRef(project),
     history = useRef(new History(project)),
@@ -89,6 +93,9 @@ export function useStudio() {
       if (hydrated.current) void autosave(ref.current).catch(() => {});
       history.current.reset(p);
       replace(p);
+      setTileEditing(false);
+      setTileEdge(0);
+      setTileNode(1);
       setPatternId(p.patterns[0].id);
       setRegionId(p.regions[0]?.id ?? '');
       setApplicationId(p.applications[0]?.id ?? '');
@@ -266,6 +273,16 @@ export function useStudio() {
     },
     [change, pattern.id],
   );
+  const editTiling = useCallback(
+    (recipe: (t: TilingDefinition) => void, transient = false) =>
+      change((p) => {
+        const pat = p.patterns.find((x) => x.id === pattern.id)!;
+        if (!pat.tiling) return;
+        recipe(pat.tiling);
+        pat.tiling = constrainTiling(pat.tiling);
+      }, transient),
+    [change, pattern.id],
+  );
   const adaptPattern = useCallback(
     () =>
       change((p) => {
@@ -425,6 +442,13 @@ export function useStudio() {
     return () => clearTimeout(timer);
   }, [message]);
   return {
+    tileEditing,
+    setTileEditing,
+    tileEdge,
+    setTileEdge,
+    tileNode,
+    setTileNode,
+    editTiling,
     effectivePattern,
     visiblePatterns,
     confirmedSymmetry,

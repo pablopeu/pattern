@@ -18,7 +18,7 @@ export const generatorLabels: Record<Generator['kind'], string> = {
   guilloche: 'Guilloché',
   spirograph: 'Spirograph',
   lattice: 'Lattice',
-  tessellation: 'Tessellation',
+  tessellation: 'Motivos escalonados · legado',
   freeform: 'Freeform Arrangement',
   penrose: 'Penrose',
 };

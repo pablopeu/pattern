@@ -1,3 +1,12 @@
+import {
+  tileRectangularCell,
+  tileBasis,
+  tileFrame,
+  tileContours,
+  tileInstances,
+} from '../tiling/tiles';
+import { materializeTiling } from '../tiling/materialize';
+import { tiledMarkup } from '../tiling/render';
 import { resolvePattern, commonRectangularCell, symmetryOrigin } from '../symmetry/config';
 import {
   geometry,
@@ -18,6 +27,7 @@ import {
   type Bounds,
 } from '../symmetry/groups';
 export interface ExportOptions {
+  includeTileOutlines?: boolean;
   scope?: 'pattern' | 'composition';
   target: 'view' | 'tile' | 'lattice' | 'fundamental' | 'application';
   format: 'svg' | 'png' | 'jpeg' | 'dxf';
@@ -73,6 +83,7 @@ function preparePatternExport(
   }
   if (!pattern) throw Error('No se encontró el patrón.');
   pattern = resolvePattern(pattern, project);
+  const tiling = pattern.generator.kind !== 'penrose' ? pattern.tiling : undefined;
   let bounds: Bounds = customBounds ?? {
     x: -options.width / 2,
     y: -options.height / 2,
@@ -82,7 +93,7 @@ function preparePatternExport(
   let latticeMask = '';
   if (region) bounds = geometryBounds(region.geometry);
   if (options.target === 'tile') {
-    const cell = rectangularCell(pattern.symmetry);
+    const cell = tiling ? tileRectangularCell(tiling) : rectangularCell(pattern.symmetry);
     if (!cell || pattern.generator.kind === 'penrose')
       throw Error(
         'Este patrón no tiene una celda rectangular seamless. Elegí celda de red o región finita.',
@@ -90,10 +101,19 @@ function preparePatternExport(
     bounds = { x: 0, y: 0, ...cell };
   }
   if (options.target === 'lattice') {
-    if (pattern.symmetry.family !== 'wallpaper' || pattern.generator.kind === 'penrose')
+    if (
+      (!tiling && pattern.symmetry.family !== 'wallpaper') ||
+      pattern.generator.kind === 'penrose'
+    )
       throw Error('Este patrón no tiene una celda de traslación bidimensional.');
-    const [a, b] = latticeVectors(pattern.symmetry),
-      o = symmetryOrigin(pattern.symmetry);
+    const basis = tiling ? multiply(tileFrame(tiling), tileBasis(tiling)) : null;
+    const [a, b] = basis
+        ? [
+            { x: basis[0], y: basis[1] },
+            { x: basis[2], y: basis[3] },
+          ]
+        : latticeVectors(pattern.symmetry),
+      o = tiling ? tiling.origin : symmetryOrigin(pattern.symmetry);
     const xs = [o.x, o.x + a.x, o.x + b.x, o.x + a.x + b.x],
       ys = [o.y, o.y + a.y, o.y + b.y, o.y + a.y + b.y];
     bounds = {
@@ -105,6 +125,10 @@ function preparePatternExport(
     latticeMask = `M${o.x} ${o.y}l${a.x} ${a.y}l${b.x} ${b.y}l${-a.x} ${-a.y}Z`;
   }
   if (options.target === 'fundamental') {
+    if (tiling)
+      throw Error(
+        'La simetría del motivo es local a la tesela. Exportá celda de red o región finita.',
+      );
     if (pattern.symmetry.family !== 'wallpaper' || pattern.generator.kind === 'penrose')
       throw Error('Esta composición no tiene una región fundamental periódica.');
     const points = fundamentalDomain(pattern.symmetry),
@@ -135,7 +159,18 @@ function preparePatternExport(
     width: Math.max(...corners.map((p) => p.x)) - Math.min(...corners.map((p) => p.x)),
     height: Math.max(...corners.map((p) => p.y)) - Math.min(...corners.map((p) => p.y)),
   };
-  const scene = buildScene(pattern, visible),
+  const expanded = options.representation === 'expanded' || options.format === 'dxf';
+  const scene = buildScene(
+      expanded && tiling
+        ? materializeTiling(
+            pattern,
+            visible,
+            options.outlineStrokes,
+            options.tolerance,
+          )
+        : pattern,
+      visible,
+    ),
     transforms = expandedTransforms(scene),
     geometries: Geometry[] = [];
   const cropShape = geometry('compound', [], true);
@@ -146,12 +181,11 @@ function preparePatternExport(
     name: 'Límite de exportación',
     geometry: [cropShape],
   };
-  const expanded = options.representation === 'expanded' || options.format === 'dxf';
   const total = transforms.length * scene.generated.geometry.length;
   if (total > 150000)
     throw Error('La exportación excede 150.000 trazados. Aumentá la celda o reducí la región.');
   const warnings: string[] = [];
-  if (scene.status !== 'PERIODIC_SEAMLESS') warnings.push(scene.message);
+  if (!tiling && scene.status !== 'PERIODIC_SEAMLESS') warnings.push(scene.message);
   if (pattern.symmetry.family === 'frieze')
     warnings.push(
       'Friso: sólo repite en una dirección. Esta exportación es una región finita, no una baldosa bidimensional.',
@@ -171,29 +205,47 @@ function preparePatternExport(
         if (++count % 100 === 0) onProgress?.(count / total);
       }
   }
+  if (expanded && tiling && options.includeTileOutlines)
+    for (const contour of tileContours(tiling, tileInstances(tiling, visible)))
+      geometries.push(...clipGeometry(contour, cropRegion, placement, false, options.tolerance));
   const mask = region ? regionData(region) : latticeMask;
   const defs = `<defs><g id="motif">${scene.generated.geometry.map(svgPath).join('')}</g>${mask ? `<clipPath id="region"><path d="${escapeXML(mask)}" clip-rule="evenodd"/></clipPath>` : ''}</defs>`;
   let content = expanded
     ? geometries.map(svgPath).join('')
-    : pattern.symmetry.family === 'none'
-      ? transforms
-          .flatMap((t) =>
-            scene.generated.geometry.map((shape) =>
-              svgPath({ ...shape, transform: multiply(multiply(placement, t), shape.transform) }),
-            ),
-          )
-          .join('')
-      : transforms
-          .map(
-            (t) =>
-              `<use href="#motif" xlink:href="#motif" transform="${matrixString(multiply(placement, t))}"/>`,
-          )
-          .join('');
+    : scene.tiling
+      ? tiledMarkup(
+          scene,
+          svgPath,
+          'export-tile',
+          placement,
+          options.includeTileOutlines ?? false,
+          '',
+          true,
+        )
+      : pattern.symmetry.family === 'none'
+        ? transforms
+            .flatMap((t) =>
+              scene.generated.geometry.map((shape) =>
+                svgPath({ ...shape, transform: multiply(multiply(placement, t), shape.transform) }),
+              ),
+            )
+            .join('')
+        : transforms
+            .map(
+              (t) =>
+                `<use href="#motif" xlink:href="#motif" transform="${matrixString(multiply(placement, t))}"/>`,
+            )
+            .join('');
   // Expanded applications contain real intersections and no masks/definitions.
-  if (options.target === 'tile' && !expanded) {
+  if (options.target === 'tile' && !expanded && !scene.tiling) {
     content = `${defs}<defs><pattern id="tile" patternUnits="userSpaceOnUse" width="${bounds.width}" height="${bounds.height}">${content}</pattern></defs><rect width="${bounds.width}" height="${bounds.height}" fill="url(#tile)"/>`;
   } else if (mask && !expanded) content = `${defs}<g clip-path="url(#region)">${content}</g>`;
-  else if (!expanded && options.target !== 'tile' && pattern.symmetry.family !== 'none')
+  else if (
+    !expanded &&
+    !scene.tiling &&
+    options.target !== 'tile' &&
+    pattern.symmetry.family !== 'none'
+  )
     content = defs + content;
   if (region && application?.showOutline) {
     const outlines: Geometry[] = [
@@ -211,7 +263,8 @@ function preparePatternExport(
   const metadata = {
     units: 'mm',
     symmetry: pattern.symmetry,
-    status: scene.status,
+    status: tiling ? 'PERIODIC_SEAMLESS' : scene.status,
+    ...(tiling ? { tiling, motifSymmetry: 'local-to-tile' } : {}),
     algorithmVersion: pattern.generator.version,
   };
   content = `<metadata>${escapeXML(JSON.stringify(metadata))}</metadata>` + content;

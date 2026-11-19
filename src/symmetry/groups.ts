@@ -226,6 +226,7 @@ export interface Bounds {
   height: number;
 }
 export interface Instance {
+  tileId?: string;
   id: string;
   matrix: Matrix;
   cell: [number, number];

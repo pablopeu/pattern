@@ -46,6 +46,16 @@ La pestaña Capas permite nombrar, seleccionar, ocultar, bloquear y ordenar obje
 
 Hay ocho ejemplos editables en Archivo. Abrir ejemplos o crear proyectos conserva los anteriores en **Biblioteca de este navegador**. Los presets de patrones se exportan e importan en JSON.
 
+## Estructura matemática y teselas (v2.1)
+
+El botón **Mostrar/Ocultar estructura de simetría**, en la barra del lienzo, es independiente de la grilla. Su opacidad es ajustable. Muestra espejos continuos, deslizamientos discontinuos, centros por orden y límites matemáticos en el viewport. Libre no dibuja una red; frisos y radiales conservan su dimensionalidad. Usar una opción de **Guías detalladas** desactiva la estructura completa y permite inspeccionar sus elementos por separado.
+
+Abrí **Teselas encastrables** para activar cuadrados, rectángulos, paralelogramos, triángulos equiláteros o hexágonos regulares. La forma define la cobertura y la simetría elegida actúa sobre el motivo local. **Editar bordes de tesela** muestra nodos y tangentes; los bordes correspondientes cambian juntos. Los vértices estructurales permanecen fijos y las curvas se limitan a corredores seguros. En triángulos se edita media curva y se deriva su pareja mediante simetría central. Así se obtienen variantes irregulares con encastre verificado, sin ofrecer polígonos arbitrarios como teselables.
+
+El dibujo interior sigue siendo fuente vectorial independiente. Se puede comenzar en una copia distante y cruzar bordes con una captura fija; el recorte continúa el trazo en las vecinas. Ajustar al patrón encuadra la tesela de referencia. El contorno de edición tiene su propio control; para incluirlo en SVG, DXF o raster hay que activar **Exportar contornos de teselas**. Las aristas compartidas se deduplican. El generador legado **Motivos escalonados** se conserva separado de estas construcciones; Penrose mantiene su región aperiódica finita.
+
+El logo visible usa `icono.png`, aportado por el usuario, como recurso local incluido en el build.
+
 ## Guardado y privacidad local
 
 El autosave transaccional usa IndexedDB y guarda cada proyecto por su ID. La biblioteca pertenece al navegador y al origen HTTP (host y puerto). Otra PC puede revisar la aplicación y sus ejemplos, pero no ve automáticamente los proyectos privados de tu navegador. Para intercambiarlos, guardá y abrí JSON.

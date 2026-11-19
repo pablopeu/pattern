@@ -6,11 +6,15 @@ Baseline: commit `c6f6cb5`, v2 cerrada con 80 unitarias/31 E2E. Marcador PROJECT
 
 Baseline v2 confirmado: 80 unitarias y 31 E2E. Auditoría en curso. Ventana anterior expirada; telemetría actual confirma reset y 1% usado; al umbral cerrar incremento y dejar que el monitor retome tras el reset real. No declarar completo este PRD mientras falte cualquiera de sus tres funcionalidades y verificaciones.
 
+## Pedido adicional del usuario
+Al cerrar v2.1, reemplazar el logo visible actual por `icono.png` (archivo raíz presente). Integrarlo como asset, verificar escritorio/LAN y estático/subdirectorio. No perder este pedido.
+
 ## Incremento actual
-- Overlay y captura implementados: 115 unitarias + 37 E2E correctas, incluidas posiciones rasterizadas bajo el cursor en escenas vacías.
-- Esquema 3 migra preferencias 2→3; el resto de entidades se conserva.
-- `src/tiling/tiles.ts` contiene una construcción inicial aún sin integrar/validar. Ver docs/V21_IMPLEMENTATION.md para decisiones matemáticas y próximos pasos: validación independiente, modelo/UI, renderer/captura, exportación/persistencia, E2E y performance.
-- Mantener el PRD activo; no escribir PROJECT_COMPLETE hasta completar teselas y cierre de auditorías.
+- Overlay y captura: esquema 3, grupo completo de isometrías testigo, preferencias y botón independiente. Checkpoint `c11008d` subido.
+- Teselas integradas (fuente/generador separados, motivo local, borde emparejado, recorte y continuidad al cruzar, contornos deduplicados). Archivos src/tiling/*, ui/TilePanel.tsx y engine/capture/export adaptados.
+- Último check: 138 unitarias correctas. Los 18 E2E v2.1 pasan con píxeles reales, sin helpers de selección en el raster. Los 31 de v2 deben repetirse sobre este incremento completo.
+- Logo pedido por el usuario ya integrado con import ../../icono.png; conservar el PNG original. Falta revisión visual final y build estático.
+- Pendiente: benchmark-structure.mjs aislado, auditoría visual/operativa y documentación final, regresión/build/estático/validadores, commit/push. Mantener PRD activo sin PROJECT_COMPLETE hasta terminar esos checks.
 
 ## Referencia del cierre anterior
 

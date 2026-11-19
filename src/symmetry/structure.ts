@@ -311,3 +311,16 @@ export function structureMarkup(data: SymmetryStructure, opacity = 0.22, pixelsP
   };
   return `<g data-symmetry-structure="true" pointer-events="none" opacity="${opacity}" stroke="#71887c">${data.primitive.map((e) => line(e, 'stroke-width="0.65" stroke-dasharray="4 3"')).join('')}${data.domain.map((e) => line(e, 'stroke-width="0.55"')).join('')}${data.axes.map((e) => line(e, `data-axis="${e.glide ? 'glide' : 'reflection'}" stroke-width="0.9"${e.glide ? ' stroke-dasharray="2 3"' : ''}`)).join('')}${data.centers.map(glyph).join('')}</g>`;
 }
+
+const structures = new Map<string, SymmetryStructure>();
+/** Renderer cache: callers treat returned mathematical data as immutable. */
+export function cachedStructure(s: Symmetry, view: Bounds): SymmetryStructure {
+  const key = JSON.stringify([s, view]);
+  let result = structures.get(key);
+  if (!result) {
+    result = symmetryStructure(s, view);
+    if (structures.size >= 64) structures.delete(structures.keys().next().value!);
+    structures.set(key, result);
+  }
+  return result;
+}

@@ -88,3 +88,15 @@ Para una red con base B, origen O y orientación R, la nueva base es R·B y las 
 La captura emplea la inversa de C=G·P·Q, congelada al primer punto. Cada coordenada de puntero se transforma al espacio canónico antes de crear nodos/tangentes. Un cruce de celda no recalcula C. Las fuentes permanecen absolutas al pasar de una red rectangular a una triangular; el ajuste explícito a celda sólo compone una matriz P adicional.
 
 La celda común de una composición se certifica únicamente para períodos rectangulares compatibles (hasta 1024 múltiplos y tolerancia relativa 1e-7). Otros casos se exportan como región finita; no se afirman inexistencia matemática ni continuidad sin verificar.
+
+## Teselas editables y adyacencia
+
+La cobertura es independiente de la simetría local del motivo. Para cuadrados/rectángulos/paralelogramos se usan dos bordes maestros y sus opuestos trasladados con recorrido inverso. La red tiene u=(w,0), v=(shear,h); square usa h=w y sólo parallelogram usa shear.
+
+El hexágono regular tiene tres pares opuestos por traslación, red u=(3r/2,√3r/2), v=(0,√3r). El triángulo equilátero usa u=(w,0), v=(w/2,√3w/2) y dos orientaciones por celda, relacionadas por H(x)=u+v−x. Cada borde triangular debe coincidir con su media vuelta alrededor del punto medio. Por eso su segunda mitad se deriva de la primera, invirtiendo recorrido y transformando ambas tangentes. No se permite una curva triangular arbitraria que rompa esa condición.
+
+Los vértices se fijan y los controles Bézier quedan en corredores convexos conservadores. `tilingIssue` verifica encastre de la construcción, autointersecciones, área y solapamiento con vecinos. Las pruebas independientes suman áreas de intersecciones con un rectángulo de prueba y verifican cobertura completa para bases rectas y curvas. No se afirma un clasificador universal.
+
+El marco de tesela F compone origen y orientación. La captura completa es C=F·T_red·H_orientación·J_adyacencia·G_local·P·Q; el objeto añade S. Se conserva C⁻¹ durante el gesto. Los fragmentos que cruzan un borde se continúan mediante isometrías de adyacencia antes del recorte a la tesela, conservando una sola fuente. Esto también se usa al exportar. El grupo seleccionado genera el motivo local antes de ese empaquetado; no se promete que toda su simetría sea global para cualquier forma de tesela.
+
+La cobertura de teselas sí certifica sus traslaciones. Las celdas rectangulares se ofrecen para cuadrados/rectángulos y superceldas verificadas de triángulos/hexágonos, en orientaciones de múltiplos de 90°. Los paralelogramos oblicuos conservan su celda de red sin deformarla a un rectángulo. Penrose suspende la familia periódica y conserva su construcción finita.

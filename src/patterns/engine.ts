@@ -1,15 +1,88 @@
+import {
+  tileBoundary,
+  tileBounds,
+  tileInstances,
+  tileOperations,
+  type TileInstance,
+  type TilingDefinition,
+} from '../tiling/tiles';
+import type { Geometry } from '../app/model';
 import type { Pattern } from '../app/model';
 import { generate, type Generated } from '../generators';
 import { IDENTITY, multiply, apply, type Matrix } from '../geometry/matrix';
 import { visibleInstances, type Bounds, type Instance, type Periodicity } from '../symmetry/groups';
 import { geometryBounds } from '../application/clipping';
 export interface Scene {
+  tiling?: {
+    definition: TilingDefinition;
+    boundary: Geometry;
+    tiles: TileInstance[];
+    inner: Scene;
+  };
   generated: Generated;
   instances: Instance[];
   status: Periodicity;
   message: string;
 }
 export function buildScene(pattern: Pattern, bounds: Bounds, prepared?: Generated): Scene {
+  if (pattern.tiling && pattern.generator.kind !== 'penrose') {
+    const definition = pattern.tiling,
+      boundary = tileBoundary(definition),
+      inner = buildScene({ ...pattern, tiling: undefined }, tileBounds(definition), prepared),
+      tiles = tileInstances(definition, bounds);
+    // Continue a stroke across paired boundaries without splitting its canonical source.
+    const base = geometryBounds(inner.generated.geometry),
+      corners = [
+        { x: base.x, y: base.y },
+        { x: base.x + base.width, y: base.y },
+        { x: base.x, y: base.y + base.height },
+        { x: base.x + base.width, y: base.y + base.height },
+      ],
+      padding = Math.max(1, ...inner.generated.geometry.map((g) => g.strokeWidth)) * 2,
+      wrapped = new Map<string, Instance>(),
+      local = { ...definition, origin: { x: 0, y: 0 }, rotation: 0 };
+    for (const instance of inner.instances) {
+      const points = inner.generated.placements.flatMap((p) =>
+          corners.map((q) => apply(multiply(instance.matrix, p), q)),
+        ),
+        xs = points.map((p) => p.x),
+        ys = points.map((p) => p.y);
+      if (!points.length) continue;
+      const content = {
+        x: Math.min(...xs) - padding,
+        y: Math.min(...ys) - padding,
+        width: Math.max(...xs) - Math.min(...xs) + 2 * padding,
+        height: Math.max(...ys) - Math.min(...ys) + 2 * padding,
+      };
+      for (const wrap of tileOperations(local, tileBounds(local), content)) {
+        const matrix = multiply(wrap.matrix, instance.matrix),
+          key = matrix.map((v) => (Math.abs(v) < 1e-9 ? '0' : v.toFixed(9))).join(',');
+        if (!wrapped.has(key))
+          wrapped.set(key, { ...instance, id: `${wrap.id}/${instance.id}`, matrix });
+        if (wrapped.size > 60000)
+          throw Error('Demasiados fragmentos de motivo. Simplificá el dibujo o aumentá la tesela.');
+      }
+    }
+    inner.instances = [...wrapped.values()];
+    if (tiles.length * inner.instances.length > 60000)
+      throw Error('Demasiadas operaciones de tesela. Acercá el zoom o simplificá el motivo local.');
+    const instances = tiles.flatMap((tile) =>
+      inner.instances.map((instance) => ({
+        ...instance,
+        id: `${tile.id}/${instance.id}`,
+        tileId: tile.id,
+        matrix: multiply(tile.matrix, instance.matrix),
+      })),
+    );
+    return {
+      generated: inner.generated,
+      instances,
+      tiling: { definition, boundary, tiles, inner },
+      status: 'PERIODIC_SEAMLESS',
+      message: 'Teselado geométrico por encastre · simetría del motivo local independiente',
+    };
+  }
+
   const generated = { ...(prepared ?? generate(pattern.generator, pattern.sourceGeometry)) };
   generated.placements = generated.placements.map((m) =>
     multiply(pattern.placementTransform ?? IDENTITY, m),

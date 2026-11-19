@@ -1,3 +1,4 @@
+import { tilingIssue } from '../tiling/validate';
 import { z } from 'zod';
 import { hasClosedGeometry } from '../application/clipping';
 import { paperPath } from '../geometry/paper';
@@ -121,7 +122,27 @@ const symmetry = z
         path: ['group'],
       });
   });
+export const tilingSchema = z.object({
+  version: z.literal(1).default(1),
+  kind: z.enum(['square', 'rectangle', 'parallelogram', 'triangle', 'hexagon']),
+  width: n.min(5).max(400),
+  height: n.min(5).max(400),
+  shear: n.min(-400).max(400),
+  origin: point,
+  rotation: n.min(-180).max(180),
+  showOutline: z.boolean(),
+  edges: z
+    .array(
+      z
+        .array(point.extend({ in: point, out: point }))
+        .min(3)
+        .max(16),
+    )
+    .min(2)
+    .max(3),
+});
 const pattern = z.object({
+  tiling: tilingSchema.optional(),
   id: z.string(),
   name: z.string(),
   sourceGeometry: z.array(geometrySchema).max(10000),
@@ -197,6 +218,10 @@ export function parseProject(text: string): Project {
       throw Error('El proyecto contiene una transformación no invertible.');
   };
   const checkPattern = (pat: (typeof p.patterns)[number]) => {
+    if (pat.tiling) {
+      const issue = tilingIssue(pat.tiling);
+      if (issue) throw Error(`Tesela inválida: ${issue}`);
+    }
     checkMatrix(pat.placementTransform);
     for (const m of pat.generator.placements) checkMatrix(m);
     for (const g of pat.sourceGeometry) checkGeometry(g);
