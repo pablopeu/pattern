@@ -77,7 +77,9 @@ const generator = z.object({
 });
 const symmetry = z
   .object({
-    family: z.enum(['wallpaper', 'frieze', 'radial']),
+    family: z.enum(['none', 'wallpaper', 'frieze', 'radial']),
+    origin: point,
+    orientation: n,
     group: z.string(),
     width: positive.max(10000),
     height: positive.max(10000),
@@ -87,29 +89,31 @@ const symmetry = z
   })
   .superRefine((s, ctx) => {
     const allowed =
-      s.family === 'wallpaper'
-        ? [
-            'p1',
-            'p2',
-            'pm',
-            'pg',
-            'cm',
-            'pmm',
-            'pmg',
-            'pgg',
-            'cmm',
-            'p4',
-            'p4m',
-            'p4g',
-            'p3',
-            'p3m1',
-            'p31m',
-            'p6',
-            'p6m',
-          ]
-        : s.family === 'frieze'
-          ? ['p1', 'p11g', 'p1m1', 'p11m', 'p2', 'p2mg', 'p2mm']
-          : ['Cn', 'Dn'];
+      s.family === 'none'
+        ? ['none']
+        : s.family === 'wallpaper'
+          ? [
+              'p1',
+              'p2',
+              'pm',
+              'pg',
+              'cm',
+              'pmm',
+              'pmg',
+              'pgg',
+              'cmm',
+              'p4',
+              'p4m',
+              'p4g',
+              'p3',
+              'p3m1',
+              'p31m',
+              'p6',
+              'p6m',
+            ]
+          : s.family === 'frieze'
+            ? ['p1', 'p11g', 'p1m1', 'p11m', 'p2', 'p2mg', 'p2mm']
+            : ['Cn', 'Dn'];
     if (!allowed.includes(s.group))
       ctx.addIssue({
         code: 'custom',
@@ -123,9 +127,15 @@ const pattern = z.object({
   sourceGeometry: z.array(geometrySchema).max(10000),
   generator,
   symmetry,
+  symmetryMode: z.enum(['own', 'inherit', 'free']),
+  symmetryProfiles: z.record(z.string(), symmetry),
+  placementTransform: matrix,
+  visible: z.boolean(),
 });
 export const projectSchema = z.object({
-  schemaVersion: z.literal(1),
+  schemaVersion: z.literal(2),
+  mainSymmetry: symmetry,
+  mainSymmetryProfiles: z.record(z.string(), symmetry),
   metadata: z.object({
     id: z.string(),
     name: z.string(),
@@ -162,6 +172,8 @@ export const projectSchema = z.object({
     centers: z.boolean().default(false),
     continuity: z.boolean().default(false),
     outside: z.boolean().default(false),
+    sourceView: z.boolean().default(false),
+    repetitionView: z.enum(['extended', 'single']).default('extended'),
   }),
 });
 export function parseProject(text: string): Project {
@@ -183,6 +195,7 @@ export function parseProject(text: string): Project {
       throw Error('El proyecto contiene una transformación no invertible.');
   };
   const checkPattern = (pat: (typeof p.patterns)[number]) => {
+    checkMatrix(pat.placementTransform);
     for (const m of pat.generator.placements) checkMatrix(m);
     for (const g of pat.sourceGeometry) checkGeometry(g);
   };
@@ -204,11 +217,22 @@ export function parseProject(text: string): Project {
       }
     }
   };
-  for (const pat of p.patterns) checkPattern(pat);
+  for (const [id, value] of Object.entries(p.mainSymmetryProfiles))
+    if (id !== `${value.family}:${value.group}`)
+      throw Error('Perfil principal de simetría incompatible.');
+  for (const pat of p.patterns) {
+    for (const [id, value] of Object.entries(pat.symmetryProfiles))
+      if (id !== `${value.family}:${value.group}`) throw Error('Perfil de simetría incompatible.');
+    checkPattern(pat);
+  }
   for (const r of p.regions) for (const g of r.geometry) checkGeometry(g);
   for (const app of p.applications) {
     checkMatrix(app.placementTransform);
-    if (app.frozenPattern) checkPattern(app.frozenPattern);
+    if (app.frozenPattern) {
+      if (app.frozenPattern.symmetryMode === 'inherit')
+        throw Error('Un snapshot congelado no puede heredar una simetría mutable.');
+      checkPattern(app.frozenPattern);
+    }
   }
   const geometryIds = [
     ...p.patterns.flatMap((p) => p.sourceGeometry.map((g) => g.id)),

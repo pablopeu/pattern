@@ -53,7 +53,7 @@ describe('Los 17 wallpaper groups', () => {
       const keys = new Set(group.map(key));
       for (const a of group)
         for (const b of group) expect(keys.has(key(multiply(a, b)))).toBe(true);
-      const s = { ...newPattern().symmetry, group: name };
+      const s = { ...newPattern().symmetry, family: 'wallpaper' as const, group: name };
       const basis = lattice(s),
         inv = inverse(basis);
       for (const a of cosets(s)) {
@@ -128,7 +128,7 @@ describe('Generadores y recuperación', () => {
     const p = example(0);
     expect(() => parseProject('{')).toThrow();
     expect(() => parseProject(JSON.stringify({ ...p, schemaVersion: 999 }))).toThrow();
-    expect(p.schemaVersion).toBe(1);
+    expect(p.schemaVersion).toBe(2);
   });
   it('undo y redo coherentes y descartado de futuro', () => {
     const h = new History({ x: 0 });
@@ -160,7 +160,7 @@ describe('Región fundamental y clasificación', () => {
   it('tiene área de la celda dividida por el orden del grupo', async () => {
     const { fundamentalDomain } = await import('../symmetry/groups');
     for (const name of wallpaperNames) {
-      const s = { ...newPattern().symmetry, group: name };
+      const s = { ...newPattern().symmetry, family: 'wallpaper' as const, group: name };
       const poly = fundamentalDomain(s),
         b = lattice(s);
       const area =
@@ -223,7 +223,14 @@ describe('Todas las familias de generadores', () => {
   });
   it('el dominio Dirichlet funciona con redes muy oblicuas y ejes desiguales', async () => {
     const { fundamentalDomain } = await import('../symmetry/groups');
-    const s = { ...newPattern().symmetry, width: 5, height: 200, angle: 15 };
+    const s = {
+      ...newPattern().symmetry,
+      family: 'wallpaper' as const,
+      group: 'p1',
+      width: 5,
+      height: 200,
+      angle: 15,
+    };
     const poly = fundamentalDomain(s),
       b = lattice(s);
     const area =

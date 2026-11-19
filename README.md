@@ -34,12 +34,13 @@ npm run local:stop
 
 ## Flujo de trabajo
 
-1. En **Diseño**, dibujá con línea, pluma Bézier, lápiz, rectángulo, elipse o polígono. Las copias cambian antes de soltar el mouse. La pluma crea tangentes al arrastrar; Enter termina el trazado, Shift+Enter o clic en el primer nodo lo cierra, Esc lo cancela.
-2. Elegí **Motivo propio** o una familia paramétrica. Los controles visibles corresponden al generador activo. La geometría fuente se conserva al cambiar de familia. «Convertir generador a paths» materializa explícitamente su resultado.
-3. En **Patrón**, elegí entre 17 grupos del plano, siete frisos o Cn/Dn. El ancho, alto y ángulo se restringen según la red. La vista de uniones y las guías están en VIEW.
-4. Seleccioná una copia y arrastrala o editá sus nodos. Se modifica la fuente mediante la inversa de esa instancia. Shift suma objetos; Ctrl+A selecciona todas las fuentes. Las formas paramétricas conservan sus medidas hasta convertirlas a paths.
-5. En **Aplicar**, dibujá o importá un perímetro cerrado. Elegí un patrón y pulsá **Aplicar al perímetro**. Ajustá escala, giro y fase. Podés mostrar el patrón fuera del contorno para editar y congelar una aplicación para separarla de cambios posteriores.
-6. Guardá un **JSON** portable desde Archivo o el icono de guardado. Exportar ofrece SVG, PNG, JPEG y DXF; distingue región finita, celda rectangular, celda de red, región fundamental y aplicación.
+1. Un proyecto nuevo comienza en **Libre**: cada fuente aparece una vez. Dibujá con línea, pluma Bézier, lápiz, rectángulo, elipse o polígono. Enter termina la pluma, Shift+Enter o clic en el primer nodo la cierra y Esc la cancela.
+2. La **Simetría viva** permanece accesible al seleccionar objetos: Libre, 17 grupos del plano, siete frisos y Cn/Dn. Cada opción muestra el dibujo actual y un icono matemático. Hover o foco permiten explorar; clic, Enter o Espacio confirman una sola acción reversible.
+3. Seguí dibujando sobre las copias. Se usa la inversa de la instancia seleccionada, de la copia bajo el puntero o de la referencia más cercana, en ese orden. La captura queda fija durante todo el trazo, incluso al cruzar celdas o cambiar el grupo con la Pluma abierta. Alt permite alternar candidatos; la instancia seleccionada ofrece «Otra instancia».
+4. Diseño y Patrón son vistas de énfasis: conservan herramienta, selección y fuente. Podés usar Fuente pura, vista dividida, una celda/período o repetición extendida. El origen y la orientación se arrastran con Selección o Nodos. «Adaptar a celda» cambia una colocación separada y nunca reescribe los nodos.
+5. Los conjuntos de patrones pueden ser propios, heredar la simetría principal o permanecer libres. Su lista permite seleccionar, ocultar y ordenar la composición. Los grupos conservan sus configuraciones al ir y volver. Los generadores paramétricos mantienen la fuente; «Convertir generador a paths» materializa su resultado explícitamente.
+6. En **Aplicar**, creá o importá un perímetro cerrado, aplicá el conjunto y ajustá su colocación. Una copia congelada conserva su simetría efectiva aunque cambie la principal.
+7. Guardá JSON portable o exportá SVG, PNG, JPEG y DXF. El exportador usa la simetría confirmada y permite elegir conjunto activo o composición visible. Sólo ofrece una celda común cuando su periodicidad está verificada.
 
 La pestaña Capas permite nombrar, seleccionar, ocultar, bloquear y ordenar objetos. El inspector ofrece medidas, trazo, relleno, opacidad, nodos, transformaciones y booleanas. Las operaciones sobre regiones pueden producir paths compuestos con agujeros.
 

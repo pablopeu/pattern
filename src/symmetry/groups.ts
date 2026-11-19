@@ -145,7 +145,8 @@ export function fractionalGenerators(group: string): Matrix[] {
       throw Error(`Grupo desconocido: ${group}`);
   }
 }
-export function lattice(s: Symmetry): Matrix {
+function baseLattice(s: Symmetry): Matrix {
+  if (s.family === 'frieze') return [s.width, 0, 0, s.height, 0, 0];
   const w = Math.max(1, s.width),
     h = Math.max(1, s.height);
   if (/^p[36]/.test(s.group)) return [w, 0, w / 2, (w * Math.sqrt(3)) / 2, 0, 0];
@@ -157,7 +158,23 @@ export function lattice(s: Symmetry): Matrix {
   }
   return [w, 0, 0, h, 0, 0];
 }
+export function lattice(s: Symmetry): Matrix {
+  return multiply(rotate(s.orientation ?? 0), baseLattice(s));
+}
 export function cosets(s: Symmetry): Matrix[] {
+  if (s.family === 'none') return [IDENTITY];
+  const base = baseCosets({ ...s, orientation: 0, origin: { x: 0, y: 0 } });
+  const o = s.family === 'radial' ? s.center : (s.origin ?? { x: 0, y: 0 });
+  const frame = multiply(
+    translate(o.x, o.y),
+    multiply(rotate(s.orientation ?? 0), translate(-o.x, -o.y)),
+  );
+  const positioned =
+    s.family === 'radial' ? frame : multiply(translate(o.x, o.y), rotate(s.orientation ?? 0));
+  const inv = inverse(positioned);
+  return base.map((g) => multiply(positioned, multiply(g, inv)));
+}
+function baseCosets(s: Symmetry): Matrix[] {
   if (s.family === 'radial') {
     const center = s.center;
     return Array.from({ length: s.sectors }, (_, i) =>
@@ -215,9 +232,9 @@ export interface Instance {
 }
 export function instances(s: Symmetry, bounds: Bounds, margin = 1): Instance[] {
   const group = cosets(s);
-  if (s.family === 'radial')
+  if (s.family === 'radial' || s.family === 'none')
     return group.map((matrix, i) => ({ id: `radial-${i}`, matrix, cell: [0, 0] }));
-  const b = s.family === 'frieze' ? ([s.width, 0, 0, s.height, 0, 0] as Matrix) : lattice(s),
+  const b = lattice(s),
     inv = inverse(b);
   const corners = [
     { x: bounds.x, y: bounds.y },
@@ -242,13 +259,24 @@ export function instances(s: Symmetry, bounds: Bounds, margin = 1): Instance[] {
     }
   return out;
 }
-export type Periodicity = 'PERIODIC_SEAMLESS' | 'FINITE_NONPERIODIC' | 'UNVERIFIED';
-export function rectangularCell(s: Symmetry): { width: number; height: number } | null {
+export type Periodicity =
+  | 'PERIODIC_SEAMLESS'
+  | 'FREE_NONPERIODIC'
+  | 'FINITE_NONPERIODIC'
+  | 'UNVERIFIED';
+function baseRectangularCell(s: Symmetry): { width: number; height: number } | null {
   if (s.family !== 'wallpaper') return null;
   if (/^p[36]/.test(s.group)) return { width: s.width, height: s.width * Math.sqrt(3) };
   if (s.group === 'cm' || s.group === 'cmm') return { width: s.width, height: s.height };
   if ((s.group === 'p1' || s.group === 'p2') && Math.abs(s.angle - 90) > 1e-6) return null;
   return { width: s.width, height: /^p4/.test(s.group) ? s.width : s.height };
+}
+export function rectangularCell(s: Symmetry): { width: number; height: number } | null {
+  const cell = baseRectangularCell(s);
+  if (!cell) return null;
+  const turns = (s.orientation ?? 0) / 90;
+  if (Math.abs(turns - Math.round(turns)) > 1e-7) return null;
+  return Math.abs(Math.round(turns)) % 2 ? { width: cell.height, height: cell.width } : cell;
 }
 export function latticeVectors(s: Symmetry): [Point, Point] {
   const b = lattice(s);
@@ -260,9 +288,9 @@ export function latticeVectors(s: Symmetry): [Point, Point] {
 /** Cull translations against the actual transformed motif extent, even far from the origin. */
 export function visibleInstances(s: Symmetry, bounds: Bounds, motif: Bounds): Instance[] {
   const ops = cosets(s);
-  if (s.family === 'radial')
+  if (s.family === 'radial' || s.family === 'none')
     return ops.map((matrix, i) => ({ id: `radial-${i}`, matrix, cell: [0, 0] }));
-  const basis = s.family === 'frieze' ? ([s.width, 0, 0, s.height, 0, 0] as Matrix) : lattice(s),
+  const basis = lattice(s),
     inv = inverse(basis);
   const corners = (r: Bounds) => [
     { x: r.x, y: r.y },
@@ -299,7 +327,10 @@ export function visibleInstances(s: Symmetry, bounds: Bounds, motif: Bounds): In
 export function fundamentalDomain(s: Symmetry): Point[] {
   if (s.family !== 'wallpaper') return [];
   const basis = lattice(s),
-    seed = apply(basis, { x: 0.1732050807569, y: 0.2718281828459 }),
+    seed = {
+      x: apply(basis, { x: 0.1732050807569, y: 0.2718281828459 }).x + (s.origin?.x ?? 0),
+      y: apply(basis, { x: 0.1732050807569, y: 0.2718281828459 }).y + (s.origin?.y ?? 0),
+    },
     range = Math.max(s.width, s.height) * 4;
   let u = { x: basis[0], y: basis[1] },
     v = { x: basis[2], y: basis[3] };

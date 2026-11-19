@@ -1,7 +1,48 @@
-/** Future upgrades must be pure functions and covered by round-trip fixtures. */
-export const LATEST_SCHEMA_VERSION = 1;
+/** Pure, versioned migrations. V1 p1 always remains wallpaper p1. */
+export const LATEST_SCHEMA_VERSION = 2;
 type Versioned = { schemaVersion: number } & Record<string, unknown>;
-const migrations: Record<number, (value: Versioned) => Versioned> = {};
+export function migratePatternV1(value: unknown): unknown {
+  if (!value || typeof value !== 'object') return value;
+  const p = structuredClone(value) as Record<string, unknown>,
+    sym = p.symmetry;
+  return {
+    ...p,
+    symmetry:
+      sym && typeof sym === 'object' ? { ...sym, origin: { x: 0, y: 0 }, orientation: 0 } : sym,
+    symmetryMode: 'own',
+    symmetryProfiles: {},
+    placementTransform: [1, 0, 0, 1, 0, 0],
+    visible: true,
+  };
+}
+const migrations: Record<number, (value: Versioned) => Versioned> = {
+  1: (doc) => {
+    const p = structuredClone(doc);
+    p.schemaVersion = 2;
+    p.mainSymmetry = {
+      family: 'none',
+      group: 'none',
+      width: 60,
+      height: 60,
+      angle: 90,
+      sectors: 8,
+      center: { x: 0, y: 0 },
+      origin: { x: 0, y: 0 },
+      orientation: 0,
+    };
+    p.mainSymmetryProfiles = {};
+    if (Array.isArray(p.patterns)) p.patterns = p.patterns.map(migratePatternV1);
+    if (Array.isArray(p.applications))
+      p.applications = p.applications.map((a) =>
+        a && typeof a === 'object' && 'frozenPattern' in a
+          ? { ...a, frozenPattern: migratePatternV1(a.frozenPattern) }
+          : a,
+      );
+    if (p.preferences && typeof p.preferences === 'object')
+      p.preferences = { ...p.preferences, sourceView: false, repetitionView: 'extended' };
+    return p;
+  },
+};
 export function migrateDocument(raw: unknown): unknown {
   if (
     typeof raw !== 'object' ||

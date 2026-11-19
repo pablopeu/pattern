@@ -1,8 +1,17 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { hasClosedGeometry } from '../application/clipping';
 import { History } from '../editor/history';
 import { autosave, recover } from '../persistence/storage';
-import { example } from './examples';
+import { newProject, geometry, type Symmetry } from './model';
+import {
+  resolvePattern,
+  changeSymmetry as applySymmetryChoice,
+  resolveSymmetry,
+  symmetryId,
+  adaptToCell,
+  type SymmetryChoice,
+  type SymmetryPreview,
+} from '../symmetry/config';
 import { uid, type Project, type Geometry } from './model';
 import { IDENTITY, type Matrix } from '../geometry/matrix';
 export type Mode = 'edit' | 'pattern' | 'apply';
@@ -18,7 +27,7 @@ export type Tool =
   | 'region'
   | 'pan';
 export function useStudio() {
-  const [project, setProject] = useState<Project>(() => example(0)),
+  const [project, setProject] = useState<Project>(() => newProject()),
     ref = useRef(project),
     history = useRef(new History(project)),
     hydrated = useRef(false),
@@ -28,6 +37,23 @@ export function useStudio() {
     [message, setMessage] = useState(''),
     [mode, setMode] = useState<Mode>('edit'),
     [tool, setTool] = useState<Tool>('select');
+  const [symmetryPreview, setSymmetryPreview] = useState<SymmetryPreview | null>(null),
+    [galleryTarget, setGalleryTarget] = useState<'pattern' | 'project'>('pattern');
+  const [instanceExplicit, setInstanceExplicit] = useState(false);
+  const [drawStyle, setDrawStyle] = useState(() => {
+    const g = geometry('path');
+    return {
+      stroke: g.stroke,
+      fill: g.fill,
+      strokeWidth: g.strokeWidth,
+      strokeCap: g.strokeCap,
+      strokeJoin: g.strokeJoin,
+      miterLimit: g.miterLimit,
+      opacity: g.opacity,
+      fillOpacity: g.fillOpacity,
+      strokeOpacity: g.strokeOpacity,
+    };
+  });
   const [nodeIndex, setNodeIndex] = useState(0);
   const [selected, setSelected] = useState<string[]>([]),
     [instance, setInstance] = useState<Matrix>(IDENTITY),
@@ -68,11 +94,25 @@ export function useStudio() {
       setApplicationId(p.applications[0]?.id ?? '');
       setSelected([]);
       setInstance(IDENTITY);
+      setInstanceExplicit(false);
+      setSymmetryPreview(null);
       setRevision((n) => n + 1);
       setFileSaved(true);
     },
     [replace],
   );
+  useEffect(() => {
+    if (!project.patterns.some((p) => p.id === patternId)) {
+      setPatternId(project.patterns[0].id);
+      setSelected([]);
+      setInstance(IDENTITY);
+      setInstanceExplicit(false);
+    }
+    if (regionId && !project.regions.some((r) => r.id === regionId))
+      setRegionId(project.regions[0]?.id ?? '');
+    if (applicationId && !project.applications.some((a) => a.id === applicationId))
+      setApplicationId(project.applications[0]?.id ?? '');
+  }, [project.patterns, project.regions, project.applications, patternId, regionId, applicationId]);
   useEffect(() => {
     let live = true;
     recover()
@@ -130,20 +170,167 @@ export function useStudio() {
   }, [commit]);
   const undo = useCallback(() => {
     replace(history.current.undo());
-    setSelected([]);
+    setSelected((ids) =>
+      ids.filter(
+        (id) =>
+          ref.current.patterns.some((p) => p.sourceGeometry.some((g) => g.id === id)) ||
+          ref.current.regions.some((r) => r.geometry.some((g) => g.id === id)),
+      ),
+    );
+    setInstance(IDENTITY);
+    setInstanceExplicit(false);
+    setSymmetryPreview(null);
     setRevision((n) => n + 1);
     setFileSaved(false);
   }, [replace]);
   const redo = useCallback(() => {
     replace(history.current.redo());
-    setSelected([]);
+    setSelected((ids) =>
+      ids.filter(
+        (id) =>
+          ref.current.patterns.some((p) => p.sourceGeometry.some((g) => g.id === id)) ||
+          ref.current.regions.some((r) => r.geometry.some((g) => g.id === id)),
+      ),
+    );
+    setInstance(IDENTITY);
+    setInstanceExplicit(false);
+    setSymmetryPreview(null);
     setRevision((n) => n + 1);
     setFileSaved(false);
   }, [replace]);
   const pattern = project.patterns.find((p) => p.id === patternId) ?? project.patterns[0];
+  const effectivePattern = useMemo(
+    () => resolvePattern(pattern, project, symmetryPreview),
+    [pattern, project.mainSymmetry, project.mainSymmetryProfiles, symmetryPreview],
+  );
+  const visiblePatterns = useMemo(
+    () =>
+      project.patterns
+        .filter((p) => p.visible)
+        .map((p) => resolvePattern(p, project, symmetryPreview)),
+    [project.patterns, project.mainSymmetry, project.mainSymmetryProfiles, symmetryPreview],
+  );
+  const confirmedSymmetry = resolveSymmetry(pattern, project.mainSymmetry);
+  const symmetryTarget =
+    galleryTarget === 'project' || pattern.symmetryMode === 'inherit' ? null : pattern.id;
+  const changeSymmetryChoice = useCallback(
+    (choice: SymmetryChoice) => {
+      const current =
+        galleryTarget === 'project'
+          ? ref.current.mainSymmetry
+          : resolveSymmetry(
+              ref.current.patterns.find((p) => p.id === pattern.id)!,
+              ref.current.mainSymmetry,
+            );
+      setSymmetryPreview(null);
+      if (symmetryId(current) === symmetryId(choice)) return;
+      change((p) => applySymmetryChoice(p, symmetryTarget, choice));
+      setInstance(IDENTITY);
+      setInstanceExplicit(false);
+    },
+    [change, galleryTarget, pattern.id, symmetryTarget],
+  );
+  const patchSymmetry = useCallback(
+    (patch: Partial<Symmetry>, transient = false, activeOnly = false) =>
+      change((p) => {
+        const target = activeOnly
+          ? pattern.symmetryMode === 'inherit'
+            ? null
+            : pattern.id
+          : symmetryTarget;
+        if (target === null) p.mainSymmetry = { ...p.mainSymmetry, ...patch };
+        else {
+          const pat = p.patterns.find((x) => x.id === target)!;
+          pat.symmetry = { ...pat.symmetry, ...patch };
+        }
+      }, transient),
+    [change, symmetryTarget, pattern.id, pattern.symmetryMode],
+  );
+  const setSymmetryMode = useCallback(
+    (value: 'own' | 'inherit' | 'free') => {
+      setSymmetryPreview(null);
+      change((p) => {
+        const pat = p.patterns.find((x) => x.id === pattern.id)!;
+        if (pat.symmetryMode === 'own')
+          pat.symmetryProfiles[symmetryId(pat.symmetry)] = structuredClone(pat.symmetry);
+        if (
+          pat.symmetryMode === 'inherit' &&
+          value === 'own' &&
+          !Object.keys(pat.symmetryProfiles).length
+        )
+          pat.symmetry = structuredClone(p.mainSymmetry);
+        pat.symmetryMode = value;
+      });
+      setInstance(IDENTITY);
+      setInstanceExplicit(false);
+    },
+    [change, pattern.id],
+  );
+  const adaptPattern = useCallback(
+    () =>
+      change((p) => {
+        const pat = p.patterns.find((x) => x.id === pattern.id)!;
+        pat.placementTransform = adaptToCell(pat, p.mainSymmetry);
+      }),
+    [change, pattern.id],
+  );
+  const finishDrawing = useCallback((id: string, cancel = false) => {
+    const source = ref.current.patterns.flatMap((p) => p.sourceGeometry).find((g) => g.id === id);
+    history.current.mapStates((old) => {
+      if (!old.patterns.some((p) => p.sourceGeometry.some((g) => g.id === id))) return old;
+      const next = structuredClone(old);
+      for (const p of next.patterns)
+        p.sourceGeometry = p.sourceGeometry.flatMap((g) =>
+          g.id !== id
+            ? [g]
+            : cancel || !source
+              ? []
+              : [
+                  {
+                    ...g,
+                    nodes: structuredClone(source.nodes),
+                    closed: source.closed,
+                    parameters: source.parameters ? structuredClone(source.parameters) : undefined,
+                  },
+                ],
+        );
+      next.metadata.updatedAt = ref.current.metadata.updatedAt;
+      return next;
+    });
+    history.current.commit(ref.current);
+    setRevision((n) => n + 1);
+  }, []);
   const region = project.regions.find((r) => r.id === regionId);
   const application = project.applications.find((a) => a.id === applicationId);
   const objects = mode === 'apply' ? (region?.geometry ?? []) : pattern.sourceGeometry;
+  const styleSource = objects.find((g) => selected.includes(g.id));
+  const styleKey = styleSource
+    ? JSON.stringify([
+        styleSource.stroke,
+        styleSource.fill,
+        styleSource.strokeWidth,
+        styleSource.strokeCap,
+        styleSource.strokeJoin,
+        styleSource.miterLimit,
+        styleSource.opacity,
+        styleSource.fillOpacity,
+        styleSource.strokeOpacity,
+      ])
+    : '';
+  useEffect(() => {
+    if (styleSource)
+      setDrawStyle({
+        stroke: styleSource.stroke,
+        fill: styleSource.fill,
+        strokeWidth: styleSource.strokeWidth,
+        strokeCap: styleSource.strokeCap,
+        strokeJoin: styleSource.strokeJoin,
+        miterLimit: styleSource.miterLimit,
+        opacity: styleSource.opacity,
+        fillOpacity: styleSource.fillOpacity,
+        strokeOpacity: styleSource.strokeOpacity,
+      });
+  }, [styleKey]);
   const editObjects = useCallback(
     (recipe: (shapes: Geometry[]) => void, transient = false) =>
       change((p) => {
@@ -194,7 +381,8 @@ export function useStudio() {
     const key = (e: KeyboardEvent) => {
       if (
         e.target instanceof HTMLElement &&
-        (e.target.matches('input,textarea,select') || e.target.isContentEditable)
+        (e.target.matches('input,textarea,select,button,[role=option]') ||
+          e.target.isContentEditable)
       )
         return;
       const mod = e.ctrlKey || e.metaKey;
@@ -237,6 +425,21 @@ export function useStudio() {
     return () => clearTimeout(timer);
   }, [message]);
   return {
+    effectivePattern,
+    visiblePatterns,
+    confirmedSymmetry,
+    symmetryPreview,
+    setSymmetryPreview,
+    galleryTarget,
+    setGalleryTarget,
+    changeSymmetryChoice,
+    patchSymmetry,
+    setSymmetryMode,
+    adaptPattern,
+    instanceExplicit,
+    setInstanceExplicit,
+    finishDrawing,
+    drawStyle,
     nodeIndex,
     setNodeIndex,
     project,

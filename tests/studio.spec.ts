@@ -2,6 +2,8 @@ import { test, expect, type Page } from '@playwright/test';
 async function ready(page: Page) {
   await page.goto('/');
   await expect(page.locator('.save-indicator')).toHaveText(/Guardado local/);
+  await menu(page, 'Jardín geométrico');
+  await expect(page.locator('.save-indicator')).toHaveText(/Guardado local/);
 }
 async function menu(page: Page, name: string) {
   const details = page.locator('.main-menu');
@@ -63,6 +65,7 @@ test('editor inicial, tres modos y capturas desktop sin errores', async ({ page 
 test('AC-01: primera línea visible antes de soltar; undo y redo', async ({ page }) => {
   await ready(page);
   await newProject(page);
+  await page.getByRole('button', { name: 'Simetría p1', exact: true }).click();
   await page.getByRole('button', { name: 'Línea', exact: true }).click();
   const a = await modelPoint(page, 0, 0),
     b = await modelPoint(page, 20, 15);
@@ -307,7 +310,15 @@ test('la celda SVG teselada coincide con la escena grande, incluidos cruces de b
     for (const group of ['p1', 'p4g', 'p6m']) {
       const p = newProject(),
         pat = p.patterns[0];
-      pat.symmetry = { ...pat.symmetry, group, angle: 90, width: 40, height: 40 };
+      pat.symmetryMode = 'own';
+      pat.symmetry = {
+        ...pat.symmetry,
+        family: 'wallpaper',
+        group,
+        angle: 90,
+        width: 40,
+        height: 40,
+      };
       const g = geometry('rectangle', [], true);
       g.parameters = { x: 35, y: 28, width: 12, height: 20, radius: 2, sides: 4 };
       g.fill = '#334455';

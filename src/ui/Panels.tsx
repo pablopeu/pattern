@@ -1,3 +1,5 @@
+import { SymmetryGallery } from './SymmetryGallery';
+import { freezePattern } from '../symmetry/config';
 import { useState } from 'react';
 import {
   Eye,
@@ -36,14 +38,7 @@ import {
 } from '../geometry/paper';
 import { geometryBounds, hasClosedGeometry } from '../application/clipping';
 import { generatorLabels, generatorParameters, generate } from '../generators';
-import {
-  wallpaperNames,
-  friezeNames,
-  groupDescriptions,
-  friezeDescriptions,
-  cosets,
-  latticeVectors,
-} from '../symmetry/groups';
+
 import { pathData } from '../geometry/paths';
 import { Field, Section, Select, Toggle } from './Controls';
 const paramLabels: Partial<Record<keyof Generator, string>> = {
@@ -573,6 +568,65 @@ export function Panels({ studio: s, onImport }: { studio: Studio; onImport: () =
   ) : null;
   return (
     <aside className="context-panel">
+      {s.mode !== 'apply' && <SymmetryGallery studio={s} />}
+      {s.mode !== 'apply' && (
+        <div className="pattern-set-list" aria-label="Conjuntos de composición">
+          {s.project.patterns.map((p, i) => (
+            <div key={p.id} className={`pattern-set-row ${p.id === s.pattern.id ? 'active' : ''}`}>
+              <button
+                className="set-name"
+                onClick={() => {
+                  s.setPatternId(p.id);
+                  s.setSelected([]);
+                  s.setInstance(IDENTITY);
+                  s.setInstanceExplicit(false);
+                }}
+              >
+                {p.name}
+                <small>
+                  {p.symmetryMode === 'inherit'
+                    ? 'hereda'
+                    : p.symmetryMode === 'free'
+                      ? 'Libre'
+                      : p.symmetry.group}
+                </small>
+              </button>
+              <button
+                aria-label={`Visibilidad ${p.name}`}
+                onClick={() =>
+                  s.change((doc) => {
+                    doc.patterns[i].visible = !doc.patterns[i].visible;
+                  })
+                }
+              >
+                {p.visible ? <Eye size={13} /> : <EyeOff size={13} />}
+              </button>
+              <button
+                aria-label={`Subir conjunto ${p.name}`}
+                disabled={i === s.project.patterns.length - 1}
+                onClick={() =>
+                  s.change((doc) => {
+                    [doc.patterns[i], doc.patterns[i + 1]] = [doc.patterns[i + 1], doc.patterns[i]];
+                  })
+                }
+              >
+                <ChevronUp size={12} />
+              </button>
+              <button
+                aria-label={`Bajar conjunto ${p.name}`}
+                disabled={i === 0}
+                onClick={() =>
+                  s.change((doc) => {
+                    [doc.patterns[i], doc.patterns[i - 1]] = [doc.patterns[i - 1], doc.patterns[i]];
+                  })
+                }
+              >
+                <ChevronDown size={12} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
       <div className="panel-tabs">
         <button className={tab === 'design' ? 'selected' : ''} onClick={() => setTab('design')}>
           <SlidersHorizontal size={15} /> Diseño
@@ -936,8 +990,9 @@ export function Panels({ studio: s, onImport }: { studio: Studio; onImport: () =
                             a.linked = !a.linked;
                             a.frozenPattern = a.linked
                               ? undefined
-                              : structuredClone(
+                              : freezePattern(
                                   s.project.patterns.find((p) => p.id === a.patternId)!,
+                                  s.project.mainSymmetry,
                                 );
                           })
                         }
@@ -1185,177 +1240,6 @@ export function Panels({ studio: s, onImport }: { studio: Studio; onImport: () =
                     </button>
                   )}
                 </Section>
-                {s.pattern.generator.kind !== 'penrose' && (
-                  <Section title="SYMMETRY">
-                    <Select
-                      label="Sistema"
-                      value={s.pattern.symmetry.family}
-                      onChange={(family) =>
-                        updatePattern((p) => {
-                          p.symmetry.family = family as typeof p.symmetry.family;
-                          p.symmetry.group = family === 'radial' ? 'Dn' : 'p1';
-                        })
-                      }
-                      options={[
-                        { value: 'wallpaper', label: 'Plano · 17 grupos' },
-                        { value: 'frieze', label: 'Friso · 7 grupos' },
-                        { value: 'radial', label: 'Radial · Cn / Dn' },
-                      ]}
-                    />
-                    <div className="symmetry-grid">
-                      {(s.pattern.symmetry.family === 'wallpaper'
-                        ? wallpaperNames
-                        : s.pattern.symmetry.family === 'frieze'
-                          ? friezeNames
-                          : ['Cn', 'Dn']
-                      ).map((name) => {
-                        const sym = {
-                            ...s.pattern.symmetry,
-                            group: name,
-                            width: 30,
-                            height: 30,
-                            center: { x: 15, y: 15 },
-                          },
-                          base = cosets(sym),
-                          [a, b] = latticeVectors(sym),
-                          matrices =
-                            sym.family === 'radial'
-                              ? base
-                              : [-1, 0, 1].flatMap((x) =>
-                                  (sym.family === 'frieze' ? [0] : [-1, 0, 1]).flatMap((y) =>
-                                    base.map((m) =>
-                                      multiply(translate(a.x * x + b.x * y, a.y * x + b.y * y), m),
-                                    ),
-                                  ),
-                                );
-                        return (
-                          <button
-                            className={s.pattern.symmetry.group === name ? 'chosen' : ''}
-                            key={name}
-                            title={
-                              (sym.family === 'frieze' ? friezeDescriptions : groupDescriptions)[
-                                name
-                              ]
-                            }
-                            aria-label={`Simetría ${name}`}
-                            onClick={() =>
-                              updatePattern((p) => {
-                                p.symmetry.group = name;
-                              })
-                            }
-                          >
-                            <svg viewBox={sym.family === 'frieze' ? '-4 -18 38 38' : '-4 -4 38 38'}>
-                              {matrices.map((m, i) => (
-                                <path
-                                  key={i}
-                                  d="M4 5L11 7L8 13Z"
-                                  transform={`matrix(${m.join(' ')})`}
-                                  fill="currentColor"
-                                />
-                              ))}
-                            </svg>
-                            <span>{name}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <p className="group-description">
-                      {
-                        (s.pattern.symmetry.family === 'frieze'
-                          ? friezeDescriptions
-                          : groupDescriptions)[s.pattern.symmetry.group]
-                      }
-                    </p>
-                    {s.pattern.symmetry.family === 'radial' ? (
-                      <>
-                        <Field
-                          integer
-                          label="Sectores"
-                          value={s.pattern.symmetry.sectors}
-                          min={2}
-                          max={64}
-                          slider
-                          onChange={(v) =>
-                            updatePattern((p) => {
-                              p.symmetry.sectors = v;
-                            })
-                          }
-                        />
-                        <Field
-                          label="Centro X"
-                          value={units(s.pattern.symmetry.center.x)}
-                          unit={u}
-                          step={0.5}
-                          onChange={(v) =>
-                            updatePattern((p) => {
-                              p.symmetry.center.x = mm(v);
-                            })
-                          }
-                        />
-                        <Field
-                          label="Centro Y"
-                          value={units(s.pattern.symmetry.center.y)}
-                          unit={u}
-                          step={0.5}
-                          onChange={(v) =>
-                            updatePattern((p) => {
-                              p.symmetry.center.y = mm(v);
-                            })
-                          }
-                        />
-                      </>
-                    ) : (
-                      <>
-                        <Field
-                          label="Ancho de celda"
-                          value={units(s.pattern.symmetry.width)}
-                          unit={u}
-                          min={units(5)}
-                          max={units(200)}
-                          step={units(1)}
-                          slider
-                          onChange={(v) =>
-                            updatePattern((p) => {
-                              p.symmetry.width = mm(v);
-                            })
-                          }
-                        />
-                        {!/^p[346]/.test(s.pattern.symmetry.group) && (
-                          <Field
-                            label="Alto de celda"
-                            value={units(s.pattern.symmetry.height)}
-                            unit={u}
-                            min={units(5)}
-                            max={units(200)}
-                            step={units(1)}
-                            slider
-                            onChange={(v) =>
-                              updatePattern((p) => {
-                                p.symmetry.height = mm(v);
-                              })
-                            }
-                          />
-                        )}
-                        {s.pattern.symmetry.family === 'wallpaper' &&
-                          ['p1', 'p2'].includes(s.pattern.symmetry.group) && (
-                            <Field
-                              label="Ángulo de red"
-                              value={s.pattern.symmetry.angle}
-                              unit="°"
-                              min={15}
-                              max={165}
-                              slider
-                              onChange={(v) =>
-                                updatePattern((p) => {
-                                  p.symmetry.angle = v;
-                                })
-                              }
-                            />
-                          )}
-                      </>
-                    )}
-                  </Section>
-                )}
               </>
             )}
 

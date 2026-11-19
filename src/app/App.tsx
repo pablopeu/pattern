@@ -1,3 +1,4 @@
+import { commonRectangularCell, resolvePattern } from '../symmetry/config';
 import { useState, useRef } from 'react';
 import {
   MousePointer2,
@@ -32,6 +33,7 @@ import {
 import { useStudio, type Tool } from './useStudio';
 import { example, exampleNames } from './examples';
 import { newProject, geometry, uid } from './model';
+import { freezePattern } from '../symmetry/config';
 import { IDENTITY } from '../geometry/matrix';
 import { parseProject, serialize } from '../persistence/schema';
 import { download, autosave, savedProjects, loadSavedProject } from '../persistence/storage';
@@ -123,12 +125,17 @@ export default function App() {
   let status = 'UNVERIFIED',
     statusText = '';
   try {
-    const scene = buildScene(s.pattern, { x: 0, y: 0, width: 1, height: 1 });
+    const scene = buildScene(s.effectivePattern, { x: 0, y: 0, width: 1, height: 1 });
     status = scene.status;
     statusText = scene.message;
   } catch (e) {
     statusText = (e as Error).message;
   }
+  const confirmedVisible = s.project.patterns
+    .filter((p) => p.visible)
+    .map((p) => resolvePattern(p, s.project));
+  const mixed = confirmedVisible.length > 1,
+    commonCell = mixed ? commonRectangularCell(confirmedVisible) : null;
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -189,8 +196,11 @@ export default function App() {
               className={s.mode === mode ? 'active' : ''}
               onClick={() => {
                 s.setMode(mode);
-                s.setSelected([]);
-                s.setTool('select');
+                if ((mode === 'apply') !== (s.mode === 'apply')) {
+                  s.setSelected([]);
+                  s.setTool('select');
+                }
+                s.setSymmetryPreview(null);
               }}
             >
               {label}
@@ -274,7 +284,14 @@ export default function App() {
               <button
                 onClick={() => {
                   download(
-                    JSON.stringify({ presetVersion: 1, pattern: s.pattern }, null, 2),
+                    JSON.stringify(
+                      {
+                        presetVersion: 2,
+                        pattern: freezePattern(s.pattern, s.project.mainSymmetry),
+                      },
+                      null,
+                      2,
+                    ),
                     s.pattern.name + '.preset.json',
                   );
                 }}
@@ -308,7 +325,6 @@ export default function App() {
               aria-pressed={s.tool === id}
               onClick={() => {
                 s.setTool(id);
-                s.setMode(s.mode === 'pattern' ? 'edit' : s.mode);
               }}
             >
               <Icon size={20} strokeWidth={1.6} />
@@ -365,6 +381,41 @@ export default function App() {
         </nav>
         {!collapsed && <Panels studio={s} onImport={() => svgRef.current?.click()} />}
         <section className="drawing-area">
+          {s.mode !== 'apply' && (
+            <div className="continuous-view-controls">
+              <button
+                aria-pressed={s.project.preferences.sourceView}
+                onClick={() =>
+                  s.change((p) => {
+                    p.preferences.sourceView = !p.preferences.sourceView;
+                  })
+                }
+              >
+                Fuente pura
+              </button>
+              <button
+                disabled={
+                  !s.visiblePatterns.some(
+                    (p) =>
+                      p.generator.kind !== 'penrose' &&
+                      ['wallpaper', 'frieze'].includes(p.symmetry.family),
+                  )
+                }
+                aria-pressed={s.project.preferences.repetitionView === 'single'}
+                onClick={() =>
+                  s.change((p) => {
+                    p.preferences.repetitionView =
+                      p.preferences.repetitionView === 'single' ? 'extended' : 'single';
+                  })
+                }
+              >
+                Una celda
+              </button>
+              <span>
+                {s.symmetryPreview ? 'Previsualización temporal' : 'Simetría confirmada'} · {s.tool}
+              </span>
+            </div>
+          )}
           <div className="workspace-bar">
             <div className="breadcrumb">
               <span>
@@ -434,7 +485,7 @@ export default function App() {
                 <Canvas studio={s} previewOnly />
               </>
             ) : (
-              <Canvas studio={s} />
+              <Canvas studio={s} editorOnly={s.project.preferences.sourceView} />
             )}
           </div>
           <footer className="statusbar">
@@ -443,14 +494,24 @@ export default function App() {
               title={statusText}
             >
               <span />
-              {status === 'PERIODIC_SEAMLESS'
-                ? s.pattern.symmetry.family === 'frieze'
-                  ? 'Friso · periódico en una dirección'
-                  : 'Periódico · seamless'
-                : status === 'FINITE_NONPERIODIC'
-                  ? 'Composición finita · no periódica'
-                  : 'Sin verificar'}
-              <small>{s.pattern.symmetry.group}</small>
+              {mixed
+                ? commonCell
+                  ? 'Composición · celda común verificada'
+                  : 'Composición · sin celda común verificada'
+                : status === 'FREE_NONPERIODIC'
+                  ? 'Libre · sin repetición'
+                  : status === 'PERIODIC_SEAMLESS'
+                    ? s.effectivePattern.symmetry.family === 'frieze'
+                      ? 'Friso · periódico en una dirección'
+                      : 'Periódico · seamless'
+                    : status === 'FINITE_NONPERIODIC'
+                      ? 'Composición finita · no periódica'
+                      : 'Sin verificar'}
+              <small>
+                {s.effectivePattern.symmetry.family === 'none'
+                  ? 'Libre'
+                  : s.effectivePattern.symmetry.group}
+              </small>
             </div>
             <div>
               {s.objects.length} objetos fuente <i />{' '}

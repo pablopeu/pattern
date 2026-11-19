@@ -14,6 +14,9 @@ export function example(index: number): Project {
   p.metadata.name = exampleNames[index] ?? exampleNames[0];
   const pattern = p.patterns[0];
   pattern.name = p.metadata.name;
+  pattern.symmetryMode = 'own';
+  pattern.symmetry.family = 'wallpaper';
+  pattern.symmetry.group = 'p1';
   pattern.symmetry.angle = 90;
   const leaf = geometry(
     'path',

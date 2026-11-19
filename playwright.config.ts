@@ -2,7 +2,7 @@ import { defineConfig } from '@playwright/test';
 export default defineConfig({
   testDir: './tests',
   outputDir: process.env.TEST_STATIC ? 'test-results/static' : 'test-results/editor',
-  testMatch: process.env.TEST_STATIC ? '**/static.spec.ts' : '**/studio.spec.ts',
+  testMatch: process.env.TEST_STATIC ? '**/static.spec.ts' : ['**/studio.spec.ts', '**/v2.spec.ts'],
   timeout: 45000,
   expect: { timeout: 8000 },
   fullyParallel: false,

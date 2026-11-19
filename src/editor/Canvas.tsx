@@ -1,3 +1,13 @@
+import { resolvePattern, symmetryOrigin, frameBounds } from '../symmetry/config';
+import {
+  chooseCapture,
+  captureCandidates,
+  hitCandidates,
+  capturedPoint,
+  identityCapture,
+  type CaptureContext,
+  type CaptureInstance,
+} from './capture';
 import {
   useState,
   useRef,
@@ -34,7 +44,9 @@ interface Props {
   previewOnly?: boolean;
 }
 interface Drag {
-  type: 'pan' | 'move' | 'node' | 'draw' | 'penhandle' | 'marquee';
+  type: 'pan' | 'move' | 'node' | 'draw' | 'penhandle' | 'marquee' | 'origin' | 'orientation';
+  capture?: CaptureContext;
+  patternId?: string;
   start: Point;
   last?: Point;
   view?: Bounds;
@@ -58,6 +70,7 @@ function safeScene(
   }
 }
 export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: Props) {
+  const activePattern = s.effectivePattern;
   const [view, setView] = useState<Bounds>({ x: -110, y: -100, width: 300, height: 240 }),
     [size, setSize] = useState({ width: 1000, height: 800 }),
     [cursor, setCursor] = useState<Point>({ x: 0, y: 0 }),
@@ -72,9 +85,14 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       mode: string;
       patternId: string;
       region: boolean;
+      capture: CaptureContext;
     } | null>(null),
     space = useRef(false),
     lastPointer = useRef<Point>({ x: 0, y: 0 });
+  const [captureLabel, setCaptureLabel] = useState(''),
+    [captureCount, setCaptureCount] = useState(0);
+  const alternatives = useRef<CaptureInstance[]>([]),
+    captureContext = useRef<CaptureContext | null>(null);
   const prefix = useId().replace(/:/g, ''),
     scalePx = size.width / view.width;
   const actualView = useMemo(
@@ -90,7 +108,14 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     observer.observe(container.current);
     return () => observer.disconnect();
   }, []);
-  const { scene, error } = useMemo(() => safeScene(s.pattern, actualView), [s.pattern, actualView]);
+  const { scene, error } = useMemo(
+    () => safeScene(activePattern, actualView),
+    [activePattern, actualView],
+  );
+  const patternLayers = useMemo(
+    () => s.visiblePatterns.map((pattern) => ({ pattern, ...safeScene(pattern, actualView) })),
+    [s.visiblePatterns, actualView],
+  );
   const point = (event: { clientX: number; clientY: number }): Point => {
     const svg = svgRef.current;
     if (!svg) return { x: 0, y: 0 };
@@ -118,7 +143,16 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         p.regions.push({ id, name: `Perímetro ${p.regions.length + 1}`, geometry: [g] });
       }, true);
       s.setRegionId(id);
-    } else s.editObjects((objects) => objects.push(g), true);
+    } else if (s.mode === 'apply') s.editObjects((objects) => objects.push(g), true);
+    else {
+      s.change((p) => {
+        const pat = p.patterns.find(
+          (p) => p.id === (captureContext.current?.patternId ?? s.patternId),
+        );
+        if (pat) pat.sourceGeometry.push(g);
+      }, true);
+      s.commit();
+    }
   };
   const updateShape = (id: string, recipe: (g: Geometry) => void) => {
     // Resolve region by shape ID as the first pointer event may precede a React render.
@@ -156,7 +190,8 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       });
       s.setSelected([draft.id]);
       if (draft.region) discardInvalidRegion(draft.id);
-      s.commit();
+      if (draft.region) s.commit();
+      else s.finishDrawing(draft.id);
     } else {
       s.change((p) => {
         for (const pat of p.patterns)
@@ -164,8 +199,11 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         for (const r of p.regions) r.geometry = r.geometry.filter((g) => g.id !== draft.id);
         p.regions = p.regions.filter((r) => r.geometry.length);
       }, true);
-      s.commit();
+      if (draft.region) s.commit();
+      else s.finishDrawing(draft.id, true);
     }
+    captureContext.current = null;
+    setCaptureLabel('');
     pathDraft.current = null;
     drag.current = null;
   };
@@ -180,11 +218,19 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     }, true);
     pathDraft.current = null;
     drag.current = null;
-    s.commit();
+    s.finishDrawing(draft.id, true);
+    captureContext.current = null;
+    setCaptureLabel('');
   };
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLElement && e.target.matches('input,textarea,select')) return;
+      if (
+        e.key !== 'Escape' &&
+        e.target instanceof HTMLElement &&
+        e.target.matches('button,[role=option]')
+      )
+        return;
       if (e.code === 'Space') {
         space.current = true;
         e.preventDefault();
@@ -215,11 +261,69 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     const draft = pathDraft.current;
     if (
       draft &&
-      (draft.tool !== s.tool || draft.mode !== s.mode || draft.patternId !== s.patternId)
+      (draft.tool !== s.tool ||
+        draft.region !== (s.mode === 'apply') ||
+        draft.patternId !== s.patternId)
     )
       finishPath(false);
   }, [s.tool, s.mode, s.patternId]); // Finish an existing path when changing context.
+  const selectAcrossLayers = (event: RPointerEvent): boolean => {
+    if (previewOnly || !['select', 'nodes'].includes(s.tool) || space.current || event.button !== 0)
+      return false;
+    const p = point(event);
+    const selectableLayers = s.symmetryPreview
+      ? s.project.patterns
+          .filter((p) => p.visible)
+          .map((p) => {
+            const pattern = resolvePattern(p, s.project);
+            return { pattern, ...safeScene(pattern, actualView) };
+          })
+      : patternLayers;
+    s.setSymmetryPreview(null);
+    for (const layer of [...selectableLayers].reverse()) {
+      if (!layer.scene) continue;
+      const candidates = captureCandidates(layer.pattern, layer.scene, p),
+        hits = hitCandidates(layer.pattern, candidates, p, 7 / scalePx);
+      if (!hits.length) continue;
+      const chosen = hits[event.altKey && hits.length > 1 ? 1 : 0],
+        shape = layer.pattern.sourceGeometry.find((g) => g.id === chosen.shapeId)!;
+      let ids =
+        s.patternId === layer.pattern.id && s.selected.includes(shape.id) ? s.selected : [shape.id];
+      if (shape.groupId && !event.altKey)
+        ids = layer.pattern.sourceGeometry
+          .filter((g) => g.groupId === shape.groupId)
+          .map((g) => g.id);
+      if (event.shiftKey && s.patternId === layer.pattern.id)
+        ids = [...new Set([...s.selected, ...ids])];
+      event.stopPropagation();
+      svgRef.current?.setPointerCapture(event.pointerId);
+      s.setPatternId(layer.pattern.id);
+      s.setSelected(ids);
+      s.setInstance(chosen.matrix);
+      s.setInstanceExplicit(true);
+      alternatives.current = hits;
+      setCaptureCount(hits.length);
+      drag.current = {
+        type: 'move',
+        start: apply(chosen.inverse, p),
+        ids,
+        patternId: layer.pattern.id,
+        transforms: new Map(
+          layer.pattern.sourceGeometry
+            .filter((g) => ids.includes(g.id))
+            .map((g) => [g.id, g.transform]),
+        ),
+        matrix: chosen.matrix,
+      };
+      return true;
+    }
+    return false;
+  };
   const selectInstance = (event: RPointerEvent, transform: Matrix, objects = s.objects) => {
+    if (s.mode !== 'apply' && !editorOnly) {
+      selectAcrossLayers(event);
+      return;
+    }
     if (previewOnly || !['select', 'nodes'].includes(s.tool) || space.current || event.button !== 0)
       return;
     const p = apply(inverse(transform), point(event));
@@ -258,6 +362,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         : [...s.selected, ...ids];
     s.setSelected([...new Set(ids)]);
     s.setInstance(transform);
+    s.setInstanceExplicit(true);
     drag.current = {
       type: 'move',
       start: apply(inverse(transform), point(event)),
@@ -290,8 +395,23 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       baseNode: structuredClone(shape.nodes[index]),
     };
   };
+  useEffect(() => {
+    const draft = pathDraft.current;
+    if (
+      draft &&
+      !s.project.patterns.some((p) => p.sourceGeometry.some((g) => g.id === draft.id)) &&
+      !s.project.regions.some((r) => r.geometry.some((g) => g.id === draft.id))
+    ) {
+      pathDraft.current = null;
+      captureContext.current = null;
+      drag.current = null;
+      setCaptureLabel('');
+    }
+  }, [s.project]);
   const pointerDown = (event: RPointerEvent<SVGSVGElement>) => {
     if (event.button === 2) return;
+    svgRef.current?.focus();
+    s.setSymmetryPreview(null);
     const p = point(event);
     lastPointer.current = p;
     if (event.button === 1 || space.current || s.tool === 'pan') {
@@ -305,15 +425,46 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       return;
     }
     if (previewOnly) return;
-    const q = snap(p);
+    let q = snap(p);
     event.currentTarget.setPointerCapture(event.pointerId);
     if (s.tool === 'select' || s.tool === 'nodes') {
+      if (s.mode !== 'apply' && !editorOnly && selectAcrossLayers(event)) return;
       s.setSelected([]);
       s.setInstance(IDENTITY);
       drag.current = { type: 'marquee', start: p };
       return;
     }
-    s.setInstance(IDENTITY);
+    let capture = pathDraft.current?.capture;
+    if (!capture) {
+      if (s.mode === 'apply' || editorOnly || !scene)
+        capture = identityCapture(s.patternId, p, s.tool);
+      else {
+        const capturePattern = s.symmetryPreview
+          ? resolvePattern(s.pattern, s.project)
+          : activePattern;
+        const captureScene = s.symmetryPreview ? buildScene(capturePattern, actualView) : scene;
+        const picked = chooseCapture(
+          capturePattern,
+          captureScene,
+          p,
+          7 / scalePx,
+          s.instanceExplicit ? s.instance : undefined,
+        );
+        alternatives.current = picked.candidates;
+        setCaptureCount(picked.candidates.length);
+        capture = {
+          patternId: s.patternId,
+          tool: s.tool,
+          instance: picked.candidates[event.altKey && picked.candidates.length > 1 ? 1 : 0],
+        };
+      }
+    }
+    captureContext.current = capture;
+    q = capturedPoint(capture, q);
+    s.setInstance(capture.instance.matrix);
+    setCaptureLabel(
+      `Captura fija · ${capture.instance.id === 'source' ? 'fuente' : capture.instance.matrix[0] * capture.instance.matrix[3] - capture.instance.matrix[1] * capture.instance.matrix[2] < 0 ? 'copia reflejada' : 'copia vinculada'}`,
+    );
     if (s.tool === 'pen' || s.tool === 'polygon' || s.tool === 'region') {
       const current = pathDraft.current;
       if (
@@ -325,7 +476,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         return;
       }
       if (!current) {
-        const g = geometry('path', [node(q.x, q.y)], false);
+        const g = { ...geometry('path', [node(q.x, q.y)], false), ...s.drawStyle };
         g.name = s.mode === 'apply' ? 'Perímetro' : 'Curva';
         if (s.mode === 'apply') g.fill = '#dce6d4';
         addShape(g);
@@ -336,6 +487,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
           mode: s.mode,
           patternId: s.patternId,
           region: s.mode === 'apply',
+          capture,
         };
       } else {
         current.anchors.push(node(q.x, q.y));
@@ -344,7 +496,13 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         });
       }
       const draft = pathDraft.current!;
-      drag.current = { type: 'penhandle', id: draft.id, index: draft.anchors.length - 1, start: q };
+      drag.current = {
+        type: 'penhandle',
+        id: draft.id,
+        index: draft.anchors.length - 1,
+        start: q,
+        capture: draft.capture,
+      };
       return;
     }
     const kind = ['rectangle', 'ellipse'].includes(s.tool)
@@ -355,12 +513,13 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       [node(q.x, q.y), node(q.x, q.y)],
       kind !== 'path' || s.mode === 'apply',
     );
+    Object.assign(g, s.drawStyle);
     if (kind !== 'path')
       g.parameters = { x: q.x, y: q.y, width: 0.1, height: 0.1, radius: 0, sides: 5 };
     if (s.mode === 'apply') g.fill = '#dce6d4';
     addShape(g);
     s.setSelected([g.id]);
-    drag.current = { type: 'draw', start: q, id: g.id, shape: g };
+    drag.current = { type: 'draw', start: q, id: g.id, shape: g, capture };
   };
   const pointerMove = (event: RPointerEvent<SVGSVGElement>) => {
     const p = point(event);
@@ -370,11 +529,27 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     if (!d) {
       if (pathDraft.current) {
         const draft = pathDraft.current;
-        const q = snap(p);
+        const q = capturedPoint(draft.capture, snap(p));
         updateShape(draft.id, (g) => {
           g.nodes = [...structuredClone(draft.anchors), node(q.x, q.y)];
         });
       }
+      return;
+    }
+    if (d.type === 'origin') {
+      const next = snap(p);
+      s.patchSymmetry(
+        activePattern.symmetry.family === 'radial' ? { center: next } : { origin: next },
+        true,
+        true,
+      );
+      return;
+    }
+    if (d.type === 'orientation') {
+      const origin = symmetryOrigin(activePattern.symmetry);
+      let angle = (Math.atan2(p.y - origin.y, p.x - origin.x) * 180) / Math.PI;
+      if (event.shiftKey) angle = Math.round(angle / 15) * 15;
+      s.patchSymmetry({ orientation: angle }, true, true);
       return;
     }
     if (d.type === 'pan') {
@@ -393,7 +568,11 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         delta.x = Math.round(delta.x);
         delta.y = Math.round(delta.y);
       }
-      s.editObjects((objects) => {
+      s.change((project) => {
+        const objects = [
+          ...project.patterns.flatMap((p) => p.sourceGeometry),
+          ...project.regions.flatMap((r) => r.geometry),
+        ];
         for (const g of objects)
           if (d.ids!.includes(g.id)) {
             const m = d.transforms!.get(g.id)!;
@@ -421,7 +600,9 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       });
     }
     if (d.type === 'draw') {
-      const q = s.tool === 'pencil' ? p : snap(p);
+      const q = d.capture
+        ? capturedPoint(d.capture, d.capture.tool === 'pencil' ? p : snap(p))
+        : snap(p);
       updateShape(d.id!, (g) => {
         if (g.parameters) {
           g.parameters = {
@@ -432,13 +613,13 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
             height: Math.max(0.01, Math.abs(q.y - d.start.y)),
           };
           if (event.shiftKey) g.parameters.height = g.parameters.width;
-        } else if (s.tool === 'pencil') {
+        } else if ((d.capture?.tool ?? s.tool) === 'pencil') {
           if (distance(g.nodes.at(-1)!, q) > 0.6 / scalePx) g.nodes.push(node(q.x, q.y));
         } else g.nodes = [node(d.start.x, d.start.y), node(q.x, q.y)];
       });
     }
     if (d.type === 'penhandle' && s.tool === 'pen') {
-      const q = snap(p),
+      const q = d.capture ? capturedPoint(d.capture, snap(p)) : snap(p),
         delta = sub(q, d.start),
         draft = pathDraft.current!;
       draft.anchors[d.index!].out = delta;
@@ -452,7 +633,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
   const pointerUp = (event: RPointerEvent<SVGSVGElement>) => {
     const d = drag.current;
     if (!d) return;
-    if (d.type === 'draw' && s.tool === 'pencil')
+    if (d.type === 'draw' && (d.capture?.tool ?? s.tool) === 'pencil')
       updateShape(d.id!, (g) => {
         g.nodes = smoothNodes(
           simplifyPoints(g.nodes, 0.25).map((p) => node(p.x, p.y)),
@@ -480,7 +661,12 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       setMarquee(null);
     }
     if (d.type === 'draw' && s.mode === 'apply') discardInvalidRegion(d.id!);
-    if (d.type !== 'penhandle' && d.type !== 'pan' && d.type !== 'marquee') s.commit();
+    if (d.type === 'draw' && s.mode !== 'apply') s.finishDrawing(d.id!);
+    else if (d.type !== 'penhandle' && d.type !== 'pan' && d.type !== 'marquee') s.commit();
+    if (!pathDraft.current) {
+      captureContext.current = null;
+      setCaptureLabel('');
+    }
     drag.current = null;
     if (event.currentTarget.hasPointerCapture(event.pointerId))
       event.currentTarget.releasePointerCapture(event.pointerId);
@@ -518,15 +704,23 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     svg.addEventListener('wheel', wheel, { passive: false });
     return () => svg.removeEventListener('wheel', wheel);
   });
-  const fit = () => {
+  const fit = (patternView = false) => {
     let b: Bounds;
     if (s.mode === 'apply' && s.region) b = geometryBounds(s.region.geometry);
-    else if (s.pattern.generator.kind === 'penrose')
+    else if (patternView && activePattern.symmetry.family === 'wallpaper') {
+      const cell = frameBounds(activePattern.symmetry);
       b = {
-        x: -s.pattern.generator.radius,
-        y: -s.pattern.generator.radius,
-        width: s.pattern.generator.radius * 2,
-        height: s.pattern.generator.radius * 2,
+        x: cell.x - cell.width,
+        y: cell.y - cell.height,
+        width: cell.width * 3,
+        height: cell.height * 3,
+      };
+    } else if (activePattern.generator.kind === 'penrose')
+      b = {
+        x: -activePattern.generator.radius,
+        y: -activePattern.generator.radius,
+        width: activePattern.generator.radius * 2,
+        height: activePattern.generator.radius * 2,
       };
     else b = geometryBounds(s.objects);
     const width = Math.max(b.width + 30, ((b.height + 30) * size.width) / size.height);
@@ -555,6 +749,10 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     />
   );
   const selectCached = (e: RPointerEvent, sc: Scene, placement: Matrix) => {
+    if (s.mode !== 'apply') {
+      selectAcrossLayers(e);
+      return;
+    }
     if (previewOnly || !['select', 'nodes'].includes(s.tool) || space.current || e.button !== 0)
       return;
     const p = point(e),
@@ -590,7 +788,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     id: string,
     placement: Matrix = IDENTITY,
     interactive = true,
-    pat = s.pattern,
+    pat = activePattern,
   ) => {
     const count = sc.instances.length * sc.generated.placements.length;
     if (count > 18000)
@@ -681,11 +879,20 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     );
   };
   const selectedShapes = s.objects.filter((g) => s.selected.includes(g.id) && g.visible);
-  const [a, b] = latticeVectors(s.pattern.symmetry);
-  const sym = s.pattern.symmetry;
+  const [a, b] = latticeVectors(activePattern.symmetry);
+  const sym = activePattern.symmetry;
   const domain = useMemo(
     () => fundamentalDomain(sym),
-    [sym.family, sym.group, sym.width, sym.height, sym.angle],
+    [
+      sym.family,
+      sym.group,
+      sym.width,
+      sym.height,
+      sym.angle,
+      sym.origin.x,
+      sym.origin.y,
+      sym.orientation,
+    ],
   );
   const mathGuides = useMemo(
     () => symmetryGuides(sym),
@@ -698,9 +905,15 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       sym.sectors,
       sym.center.x,
       sym.center.y,
+      sym.origin.x,
+      sym.origin.y,
+      sym.orientation,
     ],
   );
-  const inspection = useMemo(() => verifyPeriodicity(s.pattern), [sym, s.pattern.generator.kind]);
+  const inspection = useMemo(
+    () => verifyPeriodicity(activePattern),
+    [sym, activePattern.generator.kind],
+  );
   const applications = useMemo(
     () =>
       s.project.applications.map((app) => {
@@ -722,7 +935,14 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
           width: Math.max(...corners.map((p) => p.x)) - Math.min(...corners.map((p) => p.x)),
           height: Math.max(...corners.map((p) => p.y)) - Math.min(...corners.map((p) => p.y)),
         };
-        return { app, region, pattern: pat, data: regionData(region), ...safeScene(pat, bounds) };
+        const effective = resolvePattern(pat, s.project);
+        return {
+          app,
+          region,
+          pattern: effective,
+          data: regionData(region),
+          ...safeScene(effective, bounds),
+        };
       }),
     [s.project, actualView],
   );
@@ -731,6 +951,26 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       className={`canvas-container ${editorOnly ? 'source-canvas' : ''} ${previewOnly ? 'preview-canvas' : ''}`}
       ref={container}
     >
+      {s.mode !== 'apply' && !previewOnly && (captureLabel || s.instanceExplicit) && (
+        <div className="capture-indicator">
+          <span>{captureLabel || 'Instancia seleccionada'}</span>
+          <button
+            disabled={!!captureLabel || captureCount < 2}
+            onClick={() => {
+              const current = alternatives.current.findIndex((c) =>
+                  c.matrix.every((n, i) => Math.abs(n - s.instance[i]) < 1e-8),
+                ),
+                next = alternatives.current[(current + 1) % alternatives.current.length];
+              if (next) {
+                s.setInstance(next.matrix);
+                s.setInstanceExplicit(true);
+              }
+            }}
+          >
+            Otra instancia ({captureCount})
+          </button>
+        </div>
+      )}
       {s.project.preferences.split && (
         <div className="view-label">
           {editorOnly ? 'GEOMETRÍA FUENTE' : 'VISTA DEL PATRÓN'}
@@ -740,6 +980,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       <svg
         ref={svgRef}
         className={`studio-canvas tool-${s.tool}`}
+        tabIndex={0}
         viewBox={`${actualView.x} ${actualView.y} ${actualView.width} ${actualView.height}`}
         style={{ background: s.project.preferences.background }}
         onPointerDown={pointerDown}
@@ -779,7 +1020,59 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
               {scene.generated.geometry.map(renderShape)}
             </g>
           ) : (
-            renderPattern(scene, `${prefix}-motif`)
+            <>
+              {patternLayers.map((layer) => {
+                if (!layer.scene) return null;
+                const sym = layer.pattern.symmetry,
+                  single =
+                    s.project.preferences.repetitionView === 'single' &&
+                    !layer.scene.generated.finite &&
+                    ['wallpaper', 'frieze'].includes(sym.family);
+                const basis = lattice(sym),
+                  o = sym.origin,
+                  reach = 2 * Math.hypot(actualView.width, actualView.height),
+                  length = Math.hypot(basis[0], basis[1]),
+                  normal = { x: (-basis[1] / length) * reach, y: (basis[0] / length) * reach };
+                const points =
+                  sym.family === 'frieze'
+                    ? [
+                        { x: o.x - normal.x, y: o.y - normal.y },
+                        { x: o.x + basis[0] - normal.x, y: o.y + basis[1] - normal.y },
+                        { x: o.x + basis[0] + normal.x, y: o.y + basis[1] + normal.y },
+                        { x: o.x + normal.x, y: o.y + normal.y },
+                      ]
+                    : [
+                        o,
+                        { x: o.x + basis[0], y: o.y + basis[1] },
+                        { x: o.x + basis[0] + basis[2], y: o.y + basis[1] + basis[3] },
+                        { x: o.x + basis[2], y: o.y + basis[3] },
+                      ];
+                const clip = `${prefix}-cell-${layer.pattern.id}`;
+                return (
+                  <g key={layer.pattern.id} data-pattern-id={layer.pattern.id}>
+                    {single && (
+                      <defs>
+                        <clipPath id={clip}>
+                          <polygon points={points.map((p) => `${p.x},${p.y}`).join(' ')} />
+                        </clipPath>
+                      </defs>
+                    )}
+                    <g
+                      data-single-cell={single || undefined}
+                      clipPath={single ? `url(#${clip})` : undefined}
+                    >
+                      {renderPattern(
+                        layer.scene,
+                        `${prefix}-motif-${layer.pattern.id}`,
+                        IDENTITY,
+                        true,
+                        layer.pattern,
+                      )}
+                    </g>
+                  </g>
+                );
+              })}
+            </>
           ))}
         {s.mode === 'apply' &&
           applications.map((entry, i) =>
@@ -848,111 +1141,156 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         {s.project.preferences.guides &&
           !editorOnly &&
           s.mode !== 'apply' &&
-          s.pattern.symmetry.family === 'wallpaper' &&
-          s.pattern.generator.kind !== 'penrose' && (
+          activePattern.symmetry.family === 'wallpaper' &&
+          activePattern.generator.kind !== 'penrose' && (
             <g pointerEvents="none">
               <path
-                d={`M0 0L${a.x} ${a.y}L${a.x + b.x} ${a.y + b.y}L${b.x} ${b.y}Z`}
+                d={`M${sym.origin.x} ${sym.origin.y}l${a.x} ${a.y}l${b.x} ${b.y}l${-a.x} ${-a.y}Z`}
                 fill="none"
                 stroke="#79976b"
                 strokeWidth={0.35}
                 strokeDasharray="2 1.5"
               />
-              <circle cx={0} cy={0} r={0.8} fill="#59764d" />
-              <text x={a.x / 2} y={a.y / 2 - 2} fill="#648154" fontSize={2.8}>
+              <circle cx={sym.origin.x} cy={sym.origin.y} r={0.8} fill="#59764d" />
+              <text
+                x={sym.origin.x + a.x / 2}
+                y={sym.origin.y + a.y / 2 - 2}
+                fill="#648154"
+                fontSize={2.8}
+              >
                 a
               </text>
-              <text x={b.x / 2 - 3} y={b.y / 2} fill="#648154" fontSize={2.8}>
+              <text
+                x={sym.origin.x + b.x / 2 - 3}
+                y={sym.origin.y + b.y / 2}
+                fill="#648154"
+                fontSize={2.8}
+              >
                 b
               </text>
             </g>
           )}
-        {s.project.preferences.guides && s.pattern.symmetry.family === 'radial' && (
-          <g pointerEvents="none" stroke="#79976b" strokeWidth={0.3} strokeDasharray="2 2">
-            {Array.from({ length: s.pattern.symmetry.sectors }, (_, i) => {
-              const t = (i * 2 * Math.PI) / s.pattern.symmetry.sectors,
-                c = s.pattern.symmetry.center;
-              return (
-                <line
-                  key={i}
-                  x1={c.x}
-                  y1={c.y}
-                  x2={c.x + Math.cos(t) * 80}
-                  y2={c.y + Math.sin(t) * 80}
-                />
-              );
-            })}
-          </g>
-        )}
-        {s.project.preferences.guides && s.mode !== 'apply' && (
-          <g pointerEvents="none">
-            {s.project.preferences.fundamental && domain.length > 0 && (
-              <path
-                d={domain.map((p, i) => `${i ? 'L' : 'M'}${p.x} ${p.y}`).join('') + 'Z'}
-                fill="#a1bd7020"
-                stroke="#94b073"
-                strokeWidth={0.4}
-                strokeDasharray="1 1"
+        {s.project.preferences.guides &&
+          !editorOnly &&
+          s.mode !== 'apply' &&
+          sym.family === 'frieze' &&
+          activePattern.generator.kind !== 'penrose' && (
+            <g pointerEvents="none" aria-label="Traslación del friso en una dirección">
+              <line
+                x1={sym.origin.x}
+                y1={sym.origin.y}
+                x2={sym.origin.x + a.x}
+                y2={sym.origin.y + a.y}
+                stroke="#79976b"
+                strokeWidth={0.35}
+                strokeDasharray="2 1.5"
               />
-            )}
-            {s.project.preferences.axes &&
-              mathGuides.axes.map((axis, i) => {
-                const length = Math.max(actualView.width, actualView.height);
+              <text
+                x={sym.origin.x + a.x / 2}
+                y={sym.origin.y + a.y / 2 - 2}
+                fill="#648154"
+                fontSize={2.8}
+              >
+                a · período del friso
+              </text>
+            </g>
+          )}
+        {s.project.preferences.guides &&
+          !editorOnly &&
+          s.mode !== 'apply' &&
+          activePattern.generator.kind !== 'penrose' &&
+          activePattern.symmetry.family === 'radial' && (
+            <g pointerEvents="none" stroke="#79976b" strokeWidth={0.3} strokeDasharray="2 2">
+              {Array.from({ length: activePattern.symmetry.sectors }, (_, i) => {
+                const t =
+                    (i * 2 * Math.PI) / activePattern.symmetry.sectors +
+                    (activePattern.symmetry.orientation * Math.PI) / 180,
+                  c = activePattern.symmetry.center;
                 return (
                   <line
                     key={i}
-                    x1={axis.origin.x - axis.direction.x * length}
-                    y1={axis.origin.y - axis.direction.y * length}
-                    x2={axis.origin.x + axis.direction.x * length}
-                    y2={axis.origin.y + axis.direction.y * length}
-                    stroke={axis.glide ? '#b7a271' : '#95a97c'}
-                    strokeWidth={0.3}
-                    strokeDasharray={axis.glide ? '3 2 1 2' : '3 2'}
+                    x1={c.x}
+                    y1={c.y}
+                    x2={c.x + Math.cos(t) * 80}
+                    y2={c.y + Math.sin(t) * 80}
                   />
                 );
               })}
-            {s.project.preferences.centers &&
-              mathGuides.centers.map((c, i) => (
-                <g key={i}>
-                  <circle
-                    cx={c.point.x}
-                    cy={c.point.y}
-                    r={1.2}
-                    fill="#f7faf0"
-                    stroke="#8aa26d"
-                    strokeWidth={0.3}
-                  />
-                  <text x={c.point.x + 2} y={c.point.y + 1} fontSize={2.5} fill="#7c9360">
-                    {c.order}
-                  </text>
-                </g>
-              ))}
-            {s.project.preferences.continuity &&
-              s.pattern.symmetry.family === 'wallpaper' &&
-              scene?.instances
-                .filter(
-                  (v, i, arr) =>
-                    i === arr.findIndex((o) => o.cell[0] === v.cell[0] && o.cell[1] === v.cell[1]),
-                )
-                .slice(0, 300)
-                .map((i) => (
-                  <path
-                    key={i.id}
-                    d={`M0 0L${a.x} ${a.y}L${a.x + b.x} ${a.y + b.y}L${b.x} ${b.y}Z`}
-                    transform={matrixString(
-                      translate(
-                        i.cell[0] * a.x + i.cell[1] * b.x,
-                        i.cell[0] * a.y + i.cell[1] * b.y,
-                      ),
-                    )}
-                    fill="none"
-                    stroke="#a6af75"
-                    strokeWidth={0.3}
-                    strokeDasharray="2 1"
-                  />
+            </g>
+          )}
+        {s.project.preferences.guides &&
+          !editorOnly &&
+          activePattern.generator.kind !== 'penrose' &&
+          s.mode !== 'apply' && (
+            <g pointerEvents="none">
+              {s.project.preferences.fundamental && domain.length > 0 && (
+                <path
+                  d={domain.map((p, i) => `${i ? 'L' : 'M'}${p.x} ${p.y}`).join('') + 'Z'}
+                  fill="#a1bd7020"
+                  stroke="#94b073"
+                  strokeWidth={0.4}
+                  strokeDasharray="1 1"
+                />
+              )}
+              {s.project.preferences.axes &&
+                mathGuides.axes.map((axis, i) => {
+                  const length = Math.max(actualView.width, actualView.height);
+                  return (
+                    <line
+                      key={i}
+                      x1={axis.origin.x - axis.direction.x * length}
+                      y1={axis.origin.y - axis.direction.y * length}
+                      x2={axis.origin.x + axis.direction.x * length}
+                      y2={axis.origin.y + axis.direction.y * length}
+                      stroke={axis.glide ? '#b7a271' : '#95a97c'}
+                      strokeWidth={0.3}
+                      strokeDasharray={axis.glide ? '3 2 1 2' : '3 2'}
+                    />
+                  );
+                })}
+              {s.project.preferences.centers &&
+                mathGuides.centers.map((c, i) => (
+                  <g key={i}>
+                    <circle
+                      cx={c.point.x}
+                      cy={c.point.y}
+                      r={1.2}
+                      fill="#f7faf0"
+                      stroke="#8aa26d"
+                      strokeWidth={0.3}
+                    />
+                    <text x={c.point.x + 2} y={c.point.y + 1} fontSize={2.5} fill="#7c9360">
+                      {c.order}
+                    </text>
+                  </g>
                 ))}
-          </g>
-        )}
+              {s.project.preferences.continuity &&
+                activePattern.symmetry.family === 'wallpaper' &&
+                scene?.instances
+                  .filter(
+                    (v, i, arr) =>
+                      i ===
+                      arr.findIndex((o) => o.cell[0] === v.cell[0] && o.cell[1] === v.cell[1]),
+                  )
+                  .slice(0, 300)
+                  .map((i) => (
+                    <path
+                      key={i.id}
+                      d={`M${sym.origin.x} ${sym.origin.y}l${a.x} ${a.y}l${b.x} ${b.y}l${-a.x} ${-a.y}Z`}
+                      transform={matrixString(
+                        translate(
+                          i.cell[0] * a.x + i.cell[1] * b.x,
+                          i.cell[0] * a.y + i.cell[1] * b.y,
+                        ),
+                      )}
+                      fill="none"
+                      stroke="#a6af75"
+                      strokeWidth={0.3}
+                      strokeDasharray="2 1"
+                    />
+                  ))}
+            </g>
+          )}
         {!previewOnly &&
           selectedShapes.map((shape) => (
             <g key={shape.id} transform={matrixString(multiply(s.instance, shape.transform))}>
@@ -1007,6 +1345,67 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
                 : null}
             </g>
           ))}
+        {s.mode !== 'apply' &&
+          !editorOnly &&
+          activePattern.symmetry.family !== 'none' &&
+          activePattern.generator.kind !== 'penrose' &&
+          s.project.preferences.guides && (
+            <g>
+              <line
+                x1={symmetryOrigin(activePattern.symmetry).x}
+                y1={symmetryOrigin(activePattern.symmetry).y}
+                x2={
+                  symmetryOrigin(activePattern.symmetry).x +
+                  Math.cos((activePattern.symmetry.orientation * Math.PI) / 180) * 22
+                }
+                y2={
+                  symmetryOrigin(activePattern.symmetry).y +
+                  Math.sin((activePattern.symmetry.orientation * Math.PI) / 180) * 22
+                }
+                stroke="#89a36b"
+                strokeWidth={0.4}
+              />
+              <circle
+                data-symmetry-origin="true"
+                aria-label="Mover origen de simetría"
+                className="origin-handle"
+                pointerEvents={['select', 'nodes'].includes(s.tool) ? 'all' : 'none'}
+                cx={symmetryOrigin(activePattern.symmetry).x}
+                cy={symmetryOrigin(activePattern.symmetry).y}
+                r={4 / scalePx}
+                fill="#edf4df"
+                stroke="#779355"
+                strokeWidth={1 / scalePx}
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  e.currentTarget.setPointerCapture(e.pointerId);
+                  drag.current = { type: 'origin', start: point(e) };
+                }}
+              />
+              <circle
+                aria-label="Orientar red de simetría"
+                className="orientation-handle"
+                pointerEvents={['select', 'nodes'].includes(s.tool) ? 'all' : 'none'}
+                cx={
+                  symmetryOrigin(activePattern.symmetry).x +
+                  Math.cos((activePattern.symmetry.orientation * Math.PI) / 180) * 22
+                }
+                cy={
+                  symmetryOrigin(activePattern.symmetry).y +
+                  Math.sin((activePattern.symmetry.orientation * Math.PI) / 180) * 22
+                }
+                r={3 / scalePx}
+                fill="#f6f9ef"
+                stroke="#9eae8d"
+                strokeWidth={1 / scalePx}
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  e.currentTarget.setPointerCapture(e.pointerId);
+                  drag.current = { type: 'orientation', start: point(e) };
+                }}
+              />
+            </g>
+          )}
         {marquee && (
           <rect
             x={Math.min(marquee.start.x, marquee.end.x)}
@@ -1048,7 +1447,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
           <ZoomIn size={17} />
         </button>
         <i />
-        <button title="Ajustar contenido" aria-label="Ajustar contenido" onClick={fit}>
+        <button title="Ajustar contenido" aria-label="Ajustar contenido" onClick={() => fit()}>
           <Maximize size={17} />
         </button>
         <button
@@ -1056,6 +1455,9 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
           aria-label="Restablecer vista"
           onClick={() => setView({ x: -110, y: -100, width: 300, height: 240 })}
         >
+          <Scan size={17} />
+        </button>
+        <button aria-label="Ajustar al patrón" title="Ajustar al patrón" onClick={() => fit(true)}>
           <Scan size={17} />
         </button>
         <i />

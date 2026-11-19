@@ -78,3 +78,13 @@ Los perímetros pueden ser paths Bézier, paramétricas convertibles o compound 
 La vista usa clipPath no destructivo. Expanded SVG calcula intersecciones reales y no incluye máscaras ni instancias. Convierte trazos a regiones por defecto; una Bézier abierta sin contorneado se recorta con `intersect(trace:false)`. En ese modo opcional se conserva la línea central, y los caps/anchos no equivalen al contorno material recortado; para contornos exactos usar la opción predeterminada.
 
 Las operaciones booleanas exigen regiones cerradas. Si el resultado es vacío se informa y se conservan las fuentes. Un SVG abierto importado como perímetro se rechaza, nunca se cierra silenciosamente.
+
+## Simetría y captura en v2
+
+Libre corresponde a la operación identidad única y a `FREE_NONPERIODIC`. `FINITE_NONPERIODIC` se reserva para radial y Penrose finito, incluso si este último guarda una configuración Libre. p1 conserva sus dos traslaciones.
+
+Para una red con base B, origen O y orientación R, la nueva base es R·B y las operaciones afines se conjugan por T(O)·R. En radial se conserva el centro propio de rotación/reflexión. El origen desplaza el marco matemático, sin trasladar las fuentes. La región fundamental se obtiene del mismo conjunto de operaciones; su área sigue siendo el área primitiva dividida por el orden del cociente.
+
+La captura emplea la inversa de C=G·P·Q, congelada al primer punto. Cada coordenada de puntero se transforma al espacio canónico antes de crear nodos/tangentes. Un cruce de celda no recalcula C. Las fuentes permanecen absolutas al pasar de una red rectangular a una triangular; el ajuste explícito a celda sólo compone una matriz P adicional.
+
+La celda común de una composición se certifica únicamente para períodos rectangulares compatibles (hasta 1024 múltiplos y tolerancia relativa 1e-7). Otros casos se exportan como región finita; no se afirman inexistencia matemática ni continuidad sin verificar.

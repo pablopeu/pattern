@@ -68,7 +68,9 @@ export interface Generator {
   placements: Matrix[];
 }
 export interface Symmetry {
-  family: 'wallpaper' | 'frieze' | 'radial';
+  family: 'none' | 'wallpaper' | 'frieze' | 'radial';
+  origin: Point;
+  orientation: number;
   group: string;
   width: number;
   height: number;
@@ -82,6 +84,10 @@ export interface Pattern {
   sourceGeometry: Geometry[];
   generator: Generator;
   symmetry: Symmetry;
+  symmetryMode: 'own' | 'inherit' | 'free';
+  symmetryProfiles: Record<string, Symmetry>;
+  placementTransform: Matrix;
+  visible: boolean;
 }
 export interface Region {
   id: string;
@@ -99,7 +105,9 @@ export interface Application {
   showOutline: boolean;
 }
 export interface Project {
-  schemaVersion: 1;
+  schemaVersion: 2;
+  mainSymmetry: Symmetry;
+  mainSymmetryProfiles: Record<string, Symmetry>;
   metadata: { id: string; name: string; createdAt: string; updatedAt: string };
   documentUnits: Unit;
   patterns: Pattern[];
@@ -116,6 +124,8 @@ export interface Project {
     centers: boolean;
     continuity: boolean;
     outside: boolean;
+    sourceView: boolean;
+    repetitionView: 'extended' | 'single';
   };
 }
 export const uid = () =>
@@ -183,9 +193,15 @@ export function newPattern(): Pattern {
     name: 'Patrón 01',
     sourceGeometry: [],
     generator: defaultGenerator(),
+    visible: true,
+    symmetryMode: 'own',
+    symmetryProfiles: {},
+    placementTransform: [1, 0, 0, 1, 0, 0],
     symmetry: {
-      family: 'wallpaper',
-      group: 'p1',
+      family: 'none',
+      group: 'none',
+      origin: { x: 0, y: 0 },
+      orientation: 0,
       width: 60,
       height: 60,
       angle: 90,
@@ -197,10 +213,12 @@ export function newPattern(): Pattern {
 export function newProject(): Project {
   const now = new Date().toISOString();
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
+    mainSymmetry: newPattern().symmetry,
+    mainSymmetryProfiles: {},
     metadata: { id: uid(), name: 'Estudio sin título', createdAt: now, updatedAt: now },
     documentUnits: 'mm',
-    patterns: [newPattern()],
+    patterns: [{ ...newPattern(), symmetryMode: 'inherit' }],
     regions: [],
     applications: [],
     preferences: {
@@ -214,6 +232,8 @@ export function newProject(): Project {
       centers: false,
       continuity: false,
       outside: false,
+      sourceView: false,
+      repetitionView: 'extended',
     },
   };
 }

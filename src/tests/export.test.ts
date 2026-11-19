@@ -67,6 +67,9 @@ describe('Recorte vectorial exacto', () => {
   });
   it('SVG expandido de celda sólo incluye geometría dentro de su frontera', () => {
     const p = newProject();
+    p.patterns[0].symmetryMode = 'own';
+    p.patterns[0].symmetry.family = 'wallpaper';
+    p.patterns[0].symmetry.group = 'p1';
     p.patterns[0].symmetry.angle = 90;
     p.patterns[0].symmetry.width = 60;
     p.patterns[0].symmetry.height = 60;
@@ -83,6 +86,9 @@ describe('Recorte vectorial exacto', () => {
   });
   it('red oblicua: rechaza baldosa rectangular; celda de red expandida sin máscaras', () => {
     const p = newProject();
+    p.patterns[0].symmetryMode = 'own';
+    p.patterns[0].symmetry.family = 'wallpaper';
+    p.patterns[0].symmetry.group = 'p1';
     p.patterns[0].symmetry.angle = 70;
     p.patterns[0].sourceGeometry = [rect(0, 0, 35, 35)];
     expect(() =>

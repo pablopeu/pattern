@@ -86,3 +86,15 @@
 - Confirmado: p1 actual es periódico, no Libre; la creación captura coordenadas globales; el cambio de modo reinicia herramienta; las simetrías se ocultan al seleccionar; sólo se representa un patrón activo.
 - Se inicia evolución a esquema 2, resolver efectivo común, captura inversa estable, galería programada y composición ligera mediante patterns[].
 - Referencias públicas iOrnament/Bridges/Springer inspeccionadas conceptualmente. El artículo Springer figura publicado en marzo de 2026, aunque su DOI incluye 2025. No se incorpora geometría hiperbólica ni código/recursos propietarios.
+
+
+## PRD v2 · Incremento funcional integrado
+
+- Libre explícito, estado `FREE_NONPERIODIC`, proyecto inicial vacío y simetría efectiva centralizada. Los ocho ejemplos mantienen sus grupos originales.
+- Esquema 2 y migración real 1→2, incluyendo snapshots congelados y presets. Fixtures capturados desde el commit v1 `2aa0987`; IDs/fuentes/generadores/unidades y regiones conservados.
+- Configuración por grupo, origen/orientación, colocación independiente y adaptación reversible sin reescribir fuentes.
+- Captura determinística por instancia y matriz inversa fija, cruces de celdas, trazo multipunto abierto y cambios de grupo con puntero capturado. Herramienta/selección continúan entre Diseño y Patrón.
+- Galería de 27 opciones con dibujo real, icono matemático, encuadre físico común, hover/foco transitorio, confirmación única y generación diferida/cancelable. Corregida cancelación por cambios de preferencias sin cambio geométrico.
+- Composición visible/ordenada mediante patterns[] propios/heredados/libres; exportación compuesta con IDs locales independientes. Aplicaciones congeladas guardan la simetría efectiva propia.
+- Corrida integrada: **80 unitarias y 29 E2E correctas** (incluye los 19 de v1), TypeScript y build correctos; 4 tests del monitor y validadores CairoSVG/Pillow/ezdxf correctos. Estático en raíz y `/pattern/` funciona con Internet bloqueado.
+- Pendiente antes del cierre de v2: terminar auditoría visual a 1366/1440, pruebas adicionales de toque/teclado/estilo y recuperación del conjunto activo, repetir benchmark aislado y build tras últimas correcciones, consolidar matriz AC-21…AC-42. No se declara completo todavía.

@@ -56,3 +56,17 @@ Paper.js calcula intersecciones de regiones y curvas abiertas. Clipper construye
 ## Operación
 
 `dist/` funciona por sí solo, sin Node ni Python en producción. Vite y el monitor Python sirven únicamente al desarrollo/revisión LAN. El monitor permite tres rutas HTTP explícitas; no sirve el repo ni los logs de sesiones. Los proyectos permanecen en IndexedDB del cliente o JSON descargado.
+
+## Evolución v2
+
+`src/symmetry/config.ts` centraliza la resolución pura de Libre/propia/heredada, las configuraciones por grupo, el congelado efectivo y la verificación conservadora de una celda rectangular común. Canvas, galería y exportación consumen patrones resueltos; las aplicaciones vinculadas resuelven contra la principal confirmada y las congeladas almacenan un conjunto autónomo.
+
+El orden es `G · P · Q · S`: operación/traslación de grupo, colocación independiente del patrón, colocación del generador y transformación del objeto. Cambiar grupo modifica sólo configuración y perfiles. Adaptar a celda modifica P; cambiar origen/orientación conjuga las operaciones y rota la red, conservando las coordenadas fuente absolutas.
+
+`editor/capture.ts` produce candidatos ordenados por prioridad explícita, hit geométrico, distancia de referencia e ID estable. El contexto del gesto guarda patrón, herramienta, matriz C e inversa. Cada punto usa C⁻¹ hasta finalizar; cada nodo existente añade la inversa del objeto. El orden de nodos SVG no elige el contexto.
+
+`SymmetryGallery` agenda las 27 miniaturas después de 180 ms y cede el hilo entre opciones. Comparte una generación de motivo por tanda; cancela por firma de contenido y conserva las miniaturas anteriores. Las preferencias sin cambios geométricos no cancelan una tanda útil. Hover se aloja fuera de Project/History/IndexedDB y sólo afecta los patrones correspondientes al objetivo del preview.
+
+La composición reutiliza `patterns[]` como capas visibles ordenadas. Cada conjunto mantiene generador, modo y colocación; no se introduce un scene graph. El SVG compuesto asigna prefijos a las referencias locales de cada conjunto y los demás formatos reutilizan la misma geometría efectiva. Un friso, radial, Libre o Penrose no certifica una baldosa bidimensional común.
+
+Los trazos se registran una vez al iniciarse y su contenido final actualiza las versiones históricas que contienen ese ID. Así un cambio de grupo durante una Pluma abierta sigue siendo una acción separada, y undo no recupera un path parcialmente capturado. El viewport de cada canvas permanece estable al cambiar entre Diseño y Patrón.

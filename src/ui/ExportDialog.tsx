@@ -8,6 +8,7 @@ import { rectangularCell } from '../symmetry/groups';
 import { Field, Select, Toggle } from './Controls';
 export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: () => void }) {
   const [options, setOptions] = useState<ExportOptions>({
+    scope: s.project.patterns.filter((p) => p.visible).length > 1 ? 'composition' : 'pattern',
     target: s.mode === 'apply' && s.application ? 'application' : 'view',
     format: 'svg',
     representation: 'editable',
@@ -112,7 +113,7 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
       setDownloading(false);
     }
   };
-  const rect = rectangularCell(s.pattern.symmetry);
+  const rect = rectangularCell(s.confirmedSymmetry);
   return (
     <div
       className="modal-shade"
@@ -137,6 +138,15 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
         </header>
         <div className="export-body">
           <div className="export-options">
+            <Select
+              label="Contenido"
+              value={options.scope ?? 'pattern'}
+              onChange={(v) => set('scope', v as 'pattern' | 'composition')}
+              options={[
+                { value: 'composition', label: 'Composición visible' },
+                { value: 'pattern', label: 'Conjunto activo' },
+              ]}
+            />
             <Select
               label="Qué exportar"
               value={options.target}
@@ -266,7 +276,7 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
                 )}
               </>
             )}
-            {!rect && s.pattern.symmetry.family === 'wallpaper' && (
+            {!rect && s.confirmedSymmetry.family === 'wallpaper' && (
               <p className="math-notice">
                 La red oblicua no tiene una celda rectangular verificada. Exportá su celda de red o
                 una región finita; no se deforma para simular continuidad.

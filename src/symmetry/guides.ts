@@ -57,6 +57,12 @@ export function verifyPeriodicity(pattern: Pattern): {
       valid: false,
       message: 'Composición finita: no existen dos traslaciones de red para verificar.',
     };
+  if (pattern.symmetry.family === 'none')
+    return {
+      status: 'FREE_NONPERIODIC',
+      valid: false,
+      message: 'Libre: no hay una red de traslaciones ni dominio fundamental.',
+    };
   if (pattern.symmetry.family === 'frieze')
     return {
       status: 'PERIODIC_SEAMLESS',

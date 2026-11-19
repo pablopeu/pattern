@@ -9,8 +9,12 @@ export interface Scene {
   status: Periodicity;
   message: string;
 }
-export function buildScene(pattern: Pattern, bounds: Bounds): Scene {
-  const generated = generate(pattern.generator, pattern.sourceGeometry);
+export function buildScene(pattern: Pattern, bounds: Bounds, prepared?: Generated): Scene {
+  const generated = { ...(prepared ?? generate(pattern.generator, pattern.sourceGeometry)) };
+  generated.placements = generated.placements.map((m) =>
+    multiply(pattern.placementTransform ?? IDENTITY, m),
+  );
+  const free = pattern.symmetry.family === 'none' && !generated.finite;
   const finite = generated.finite || pattern.symmetry.family === 'radial';
   const base = geometryBounds(generated.geometry),
     corners = [
@@ -37,14 +41,16 @@ export function buildScene(pattern: Pattern, bounds: Bounds): Scene {
   return {
     generated,
     instances: repeating,
-    status: finite ? 'FINITE_NONPERIODIC' : 'PERIODIC_SEAMLESS',
-    message: generated.finite
-      ? 'Penrose · región aperiódica finita'
-      : pattern.symmetry.family === 'radial'
-        ? 'Simetría radial · sin periodicidad de traslación'
-        : pattern.symmetry.family === 'frieze'
-          ? 'Periódico en una dirección'
-          : 'Periódico por construcción sobre su red de traslación',
+    status: free ? 'FREE_NONPERIODIC' : finite ? 'FINITE_NONPERIODIC' : 'PERIODIC_SEAMLESS',
+    message: free
+      ? 'Libre · geometría sin operaciones de grupo'
+      : generated.finite
+        ? 'Penrose · región aperiódica finita'
+        : pattern.symmetry.family === 'radial'
+          ? 'Simetría radial · sin periodicidad de traslación'
+          : pattern.symmetry.family === 'frieze'
+            ? 'Periódico en una dirección'
+            : 'Periódico por construcción sobre su red de traslación',
   };
 }
 export function expandedTransforms(scene: Scene): Matrix[] {

@@ -13,7 +13,15 @@ const data = await page.evaluate(async () => {
   const p = newProject();
   p.metadata.name = 'Benchmark · 100 fuentes / 300 celdas';
   const pat = p.patterns[0];
-  pat.symmetry = { ...pat.symmetry, group: 'p4m', width: 60, height: 60, angle: 90 };
+  pat.symmetryMode = 'own';
+  pat.symmetry = {
+    ...pat.symmetry,
+    family: 'wallpaper',
+    group: 'p4m',
+    width: 60,
+    height: 60,
+    angle: 90,
+  };
   pat.generator = { ...pat.generator, kind: 'warp', rows: 2, columns: 2, scale: 0.2, spacing: 15 };
   for (let i = 0; i < 100; i++) {
     const x = (i % 10) * 1.5 + 2,
@@ -66,13 +74,11 @@ const data = await page.evaluate(async () => {
     }
   }
 });
-await page
-  .locator('input[type=file][accept=".json,application/json"]')
-  .setInputFiles({
-    name: 'benchmark.json',
-    mimeType: 'application/json',
-    buffer: Buffer.from(JSON.stringify(data.project)),
-  });
+await page.locator('input[type=file][accept=".json,application/json"]').setInputFiles({
+  name: 'benchmark.json',
+  mimeType: 'application/json',
+  buffer: Buffer.from(JSON.stringify(data.project)),
+});
 await page.getByRole('button', { name: 'Mostrar grilla', exact: true }).click();
 await page.waitForTimeout(800);
 // Drive an actual slider through repeated input events while measuring presented frames.
@@ -104,6 +110,33 @@ const ui = await page.evaluate(async () => {
     visibleUseElements: document.querySelectorAll('.studio-canvas use').length,
   };
 });
+// Measure committed group changes through React and two animation frames, without hover.
+const groupChanges = await page.evaluate(async () => {
+  const samples = [];
+  for (const group of ['pm', 'p4', 'p6', 'p4m', 'pm', 'p4', 'p6', 'p4m']) {
+    const start = performance.now();
+    document.querySelector(`[data-symmetry-id="wallpaper:${group}"]`).click();
+    await new Promise(requestAnimationFrame);
+    await new Promise(requestAnimationFrame);
+    samples.push(performance.now() - start);
+  }
+  return {
+    samplesMs: samples,
+    medianMs: [...samples].sort((a, b) => a - b)[Math.floor(samples.length / 2)],
+  };
+});
+const gallery = page.locator('.dynamic-symmetry-grid');
+await page.waitForFunction(
+  () =>
+    document.querySelector('.dynamic-symmetry-grid')?.getAttribute('data-preview-completed') ===
+      '27' &&
+    document.querySelector('.dynamic-symmetry-grid')?.getAttribute('data-preview-pending') ===
+      'false',
+);
+const thumbnails = {
+  completed: Number(await gallery.getAttribute('data-preview-completed')),
+  elapsedIncludingScheduledYieldsMs: Number(await gallery.getAttribute('data-preview-ms')),
+};
 await page.getByRole('button', { name: /^Capas/ }).click();
 await page.locator('.layer-name').last().click();
 await page.getByRole('button', { name: 'Editar nodos', exact: true }).click();
@@ -135,6 +168,8 @@ const report = {
   core: data.core,
   ui,
   nodeDrag,
+  groupChanges,
+  thumbnails,
 };
 await mkdir('.runtime', { recursive: true });
 await writeFile('.runtime/benchmark.json', JSON.stringify(report, null, 2) + '\n');

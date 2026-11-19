@@ -27,6 +27,11 @@ export class History<T> {
     }
     return this.current;
   }
+  mapStates(update: (value: T) => T): void {
+    this.past = this.past.map(update);
+    this.future = this.future.map(update);
+    this.current = update(this.current);
+  }
   reset(next: T): T {
     this.past = [];
     this.future = [];

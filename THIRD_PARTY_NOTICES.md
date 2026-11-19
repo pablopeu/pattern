@@ -27,3 +27,12 @@ Las versiones exactas y transitivas están fijadas en `package-lock.json`. TypeS
 - [SVG del W3C](https://www.w3.org/TR/SVG/), MDN [pattern](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/pattern) y [clipPath](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/clipPath): coordenadas, repetición y recorte.
 
 El motor del proyecto tiene implementación propia de los contratos y transformaciones matemáticas descritos. Las operaciones geométricas robustas reutilizan Paper.js y Clipper. No se incorporó código de aplicaciones de referencia. La subdivisión Penrose y Mulberry32 implementan algoritmos matemáticos conocidos; su salida y versión están documentadas y comprobadas mediante pruebas.
+
+## Referencias conceptuales de v2
+
+- [iOrnament: funciones](https://science-to-touch.com/en/features.html) y [demos](https://science-to-touch.com/en/demos.html): dibujo continuo con copias actualizadas y composición de capas. No se copian interfaz, assets ni código.
+- [Bridges 2025, artículo 5](https://archive.bridgesmathart.org/2025/bridges2025-5.html): relación entre dibujo, operaciones de simetría y exploración visual.
+- [The Mathematical Intelligencer, DOI 10.1007/s00283-025-10492-0](https://link.springer.com/article/10.1007/s00283-025-10492-0): referencia conceptual; la ficha publica el artículo en marzo de 2026 aunque el identificador incluya 2025. No se incorpora motor hiperbólico.
+- [The Symmetries of Things, editorial Routledge](https://www.routledge.com/The-Symmetries-of-Things/Goodman-Strauss-Conway-Burgiel/p/book/9781568812205): vocabulario de simetría, grupos y dominios fundamentales.
+
+V2 conserva las mismas dependencias de ejecución y licencias; no incorpora bibliotecas nuevas ni recursos remotos en producción.

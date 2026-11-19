@@ -1,3 +1,4 @@
+import { resolvePattern, commonRectangularCell, symmetryOrigin } from '../symmetry/config';
 import {
   geometry,
   type Application,
@@ -17,6 +18,7 @@ import {
   type Bounds,
 } from '../symmetry/groups';
 export interface ExportOptions {
+  scope?: 'pattern' | 'composition';
   target: 'view' | 'tile' | 'lattice' | 'fundamental' | 'application';
   format: 'svg' | 'png' | 'jpeg' | 'dxf';
   representation: 'editable' | 'expanded';
@@ -48,10 +50,11 @@ export function svgPath(shape: Geometry): string {
 export function svgDocument(content: string, bounds: Bounds, background?: string): string {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${bounds.width}mm" height="${bounds.height}mm" viewBox="${bounds.x} ${bounds.y} ${bounds.width} ${bounds.height}"><title>Pattern Studio 2D</title>${background ? `<rect x="${bounds.x}" y="${bounds.y}" width="${bounds.width}" height="${bounds.height}" fill="${escapeXML(background)}"/>` : ''}${content}</svg>`;
 }
-export function prepareExport(
+function preparePatternExport(
   project: Project,
   options: ExportOptions,
   onProgress?: (n: number) => void,
+  customBounds?: Bounds,
 ): ExportResult {
   let pattern: Pattern | undefined = project.patterns.find((p) => p.id === options.patternId),
     region: Region | undefined,
@@ -69,7 +72,8 @@ export function prepareExport(
     placement = application.placementTransform;
   }
   if (!pattern) throw Error('No se encontró el patrón.');
-  let bounds: Bounds = {
+  pattern = resolvePattern(pattern, project);
+  let bounds: Bounds = customBounds ?? {
     x: -options.width / 2,
     y: -options.height / 2,
     width: options.width,
@@ -88,16 +92,17 @@ export function prepareExport(
   if (options.target === 'lattice') {
     if (pattern.symmetry.family !== 'wallpaper' || pattern.generator.kind === 'penrose')
       throw Error('Este patrón no tiene una celda de traslación bidimensional.');
-    const [a, b] = latticeVectors(pattern.symmetry);
-    const xs = [0, a.x, b.x, a.x + b.x],
-      ys = [0, a.y, b.y, a.y + b.y];
+    const [a, b] = latticeVectors(pattern.symmetry),
+      o = symmetryOrigin(pattern.symmetry);
+    const xs = [o.x, o.x + a.x, o.x + b.x, o.x + a.x + b.x],
+      ys = [o.y, o.y + a.y, o.y + b.y, o.y + a.y + b.y];
     bounds = {
       x: Math.min(...xs),
       y: Math.min(...ys),
       width: Math.max(...xs) - Math.min(...xs),
       height: Math.max(...ys) - Math.min(...ys),
     };
-    latticeMask = `M0 0L${a.x} ${a.y}L${a.x + b.x} ${a.y + b.y}L${b.x} ${b.y}Z`;
+    latticeMask = `M${o.x} ${o.y}l${a.x} ${a.y}l${b.x} ${b.y}l${-a.x} ${-a.y}Z`;
   }
   if (options.target === 'fundamental') {
     if (pattern.symmetry.family !== 'wallpaper' || pattern.generator.kind === 'penrose')
@@ -170,17 +175,26 @@ export function prepareExport(
   const defs = `<defs><g id="motif">${scene.generated.geometry.map(svgPath).join('')}</g>${mask ? `<clipPath id="region"><path d="${escapeXML(mask)}" clip-rule="evenodd"/></clipPath>` : ''}</defs>`;
   let content = expanded
     ? geometries.map(svgPath).join('')
-    : transforms
-        .map(
-          (t) =>
-            `<use href="#motif" xlink:href="#motif" transform="${matrixString(multiply(placement, t))}"/>`,
-        )
-        .join('');
+    : pattern.symmetry.family === 'none'
+      ? transforms
+          .flatMap((t) =>
+            scene.generated.geometry.map((shape) =>
+              svgPath({ ...shape, transform: multiply(multiply(placement, t), shape.transform) }),
+            ),
+          )
+          .join('')
+      : transforms
+          .map(
+            (t) =>
+              `<use href="#motif" xlink:href="#motif" transform="${matrixString(multiply(placement, t))}"/>`,
+          )
+          .join('');
   // Expanded applications contain real intersections and no masks/definitions.
   if (options.target === 'tile' && !expanded) {
     content = `${defs}<defs><pattern id="tile" patternUnits="userSpaceOnUse" width="${bounds.width}" height="${bounds.height}">${content}</pattern></defs><rect width="${bounds.width}" height="${bounds.height}" fill="url(#tile)"/>`;
   } else if (mask && !expanded) content = `${defs}<g clip-path="url(#region)">${content}</g>`;
-  else if (!expanded && options.target !== 'tile') content = defs + content;
+  else if (!expanded && options.target !== 'tile' && pattern.symmetry.family !== 'none')
+    content = defs + content;
   if (region && application?.showOutline) {
     const outlines: Geometry[] = [
       {
@@ -206,5 +220,75 @@ export function prepareExport(
     geometries,
     bounds,
     warnings,
+  };
+}
+
+/** Exports always resolve confirmed state; UI hover is never an input. */
+export function prepareExport(
+  project: Project,
+  options: ExportOptions,
+  onProgress?: (n: number) => void,
+): ExportResult {
+  if (options.scope !== 'composition' || options.target === 'application')
+    return preparePatternExport(project, options, onProgress);
+  const patterns = project.patterns.filter((p) => p.visible).map((p) => resolvePattern(p, project));
+  if (!patterns.length) throw Error('La composición no tiene conjuntos visibles.');
+  if (patterns.length === 1)
+    return preparePatternExport(
+      { ...project, patterns },
+      { ...options, scope: 'pattern', patternId: patterns[0].id },
+      onProgress,
+    );
+  if (options.target === 'fundamental')
+    throw Error(
+      'Una composición de grupos distintos no tiene un dominio fundamental común verificado. Exportá una región finita o elegí un conjunto.',
+    );
+  const cell = commonRectangularCell(patterns);
+  let bounds: Bounds = {
+    x: -options.width / 2,
+    y: -options.height / 2,
+    width: options.width,
+    height: options.height,
+  };
+  if (options.target === 'tile' || options.target === 'lattice') {
+    if (!cell)
+      throw Error(
+        'Los conjuntos no tienen una celda seamless común verificada. Exportá una región finita.',
+      );
+    bounds = { x: 0, y: 0, ...cell };
+  }
+  const results = patterns.map((pat, i) =>
+    preparePatternExport(
+      { ...project, patterns: [pat] },
+      { ...options, target: 'view', scope: 'pattern', patternId: pat.id, transparent: true },
+      (n) => onProgress?.((i + n) / patterns.length),
+      bounds,
+    ),
+  );
+  const content = results
+    .map((r, i) => {
+      const start = r.svg.indexOf('>', r.svg.indexOf('<svg')) + 1;
+      return r.svg
+        .slice(start, r.svg.lastIndexOf('</svg>'))
+        .replace(
+          /(id="|href="#|xlink:href="#|url\(#)([\w-]+)/g,
+          (_, prefix: string, id: string) => prefix + `set-${i}-` + id,
+        );
+    })
+    .join('');
+  return {
+    svg: svgDocument(content, bounds, options.transparent ? undefined : options.background),
+    bounds,
+    geometries: results.flatMap((r) => r.geometries),
+    warnings: [
+      ...new Set([
+        ...results.flatMap((r) => r.warnings),
+        ...(!cell
+          ? [
+              'Composición de conjuntos independientes: no hay periodicidad bidimensional común verificada.',
+            ]
+          : []),
+      ]),
+    ],
   };
 }

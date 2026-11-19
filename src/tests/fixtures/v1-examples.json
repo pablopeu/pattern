@@ -1,0 +1,1312 @@
+[
+  {
+    "schemaVersion": 1,
+    "metadata": {
+      "id": "033fb3ac-bc8b-4b65-b058-0842f7829c76",
+      "name": "Jardín geométrico",
+      "createdAt": "2026-11-19T18:43:35.504Z",
+      "updatedAt": "2026-11-19T18:43:35.504Z"
+    },
+    "documentUnits": "mm",
+    "patterns": [
+      {
+        "id": "1a58b9a6-d286-48a5-90fe-c15acc458482",
+        "name": "Jardín geométrico",
+        "sourceGeometry": [
+          {
+            "id": "0776a150-4a46-48de-9ddd-fca000de6cfd",
+            "name": "Trazado",
+            "kind": "path",
+            "nodes": [
+              {
+                "x": 8,
+                "y": 32,
+                "in": {
+                  "x": 0,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": -17
+                }
+              },
+              {
+                "x": 31,
+                "y": 7,
+                "in": {
+                  "x": -15,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": 16
+                }
+              },
+              {
+                "x": 8,
+                "y": 32,
+                "in": {
+                  "x": 15,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            ],
+            "closed": true,
+            "transform": [1, 0, 0, 1, 0, 0],
+            "stroke": "#233b2d",
+            "fill": "#55765b",
+            "strokeWidth": 0.4,
+            "strokeCap": "round",
+            "strokeJoin": "round",
+            "miterLimit": 10,
+            "opacity": 1,
+            "fillOpacity": 1,
+            "strokeOpacity": 1,
+            "fillRule": "evenodd",
+            "visible": true,
+            "locked": false
+          },
+          {
+            "id": "3a2a664b-6257-42ef-b88d-cc7cc467813d",
+            "name": "Trazado",
+            "kind": "path",
+            "nodes": [
+              {
+                "x": 9,
+                "y": 31,
+                "in": {
+                  "x": 0,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "x": 26,
+                "y": 12,
+                "in": {
+                  "x": -8,
+                  "y": 10
+                },
+                "out": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            ],
+            "closed": false,
+            "transform": [1, 0, 0, 1, 0, 0],
+            "stroke": "#dce7c9",
+            "fill": "none",
+            "strokeWidth": 0.6,
+            "strokeCap": "round",
+            "strokeJoin": "round",
+            "miterLimit": 10,
+            "opacity": 1,
+            "fillOpacity": 1,
+            "strokeOpacity": 1,
+            "fillRule": "evenodd",
+            "visible": true,
+            "locked": false
+          },
+          {
+            "id": "7c23d2e3-c591-42c7-ba02-124ace4862cf",
+            "name": "Elipse",
+            "kind": "ellipse",
+            "nodes": [],
+            "closed": true,
+            "transform": [1, 0, 0, 1, 0, 0],
+            "stroke": "none",
+            "fill": "#c0cd8f",
+            "strokeWidth": 0.65,
+            "strokeCap": "round",
+            "strokeJoin": "round",
+            "miterLimit": 10,
+            "opacity": 1,
+            "fillOpacity": 1,
+            "strokeOpacity": 1,
+            "fillRule": "evenodd",
+            "visible": true,
+            "locked": false,
+            "parameters": {
+              "x": 37,
+              "y": 36,
+              "width": 8,
+              "height": 8,
+              "radius": 0,
+              "sides": 5
+            }
+          }
+        ],
+        "generator": {
+          "kind": "motif",
+          "version": 1,
+          "seed": 42,
+          "count": 12,
+          "rows": 4,
+          "columns": 4,
+          "spacing": 22,
+          "offset": 0.5,
+          "aspectRatio": 1,
+          "staggerAxis": "rows",
+          "rotation": 0,
+          "scale": 1,
+          "scaleRatio": 0.9,
+          "amplitude": 6,
+          "frequency": 3,
+          "phase": 0,
+          "radius": 28,
+          "ratio": 0.35,
+          "distribution": "rectangular",
+          "periodicWarp": true,
+          "placements": [[1, 0, 0, 1, 0, 0]]
+        },
+        "symmetry": {
+          "family": "wallpaper",
+          "group": "p1",
+          "width": 60,
+          "height": 60,
+          "angle": 90,
+          "sectors": 8,
+          "center": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      }
+    ],
+    "regions": [],
+    "applications": [],
+    "preferences": {
+      "grid": true,
+      "snap": true,
+      "guides": true,
+      "split": false,
+      "background": "#f8faf5",
+      "fundamental": false,
+      "axes": false,
+      "centers": false,
+      "continuity": false,
+      "outside": false
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "metadata": {
+      "id": "30fba390-0fdb-499c-816d-0e392640a922",
+      "name": "Espejos · p4m",
+      "createdAt": "2026-11-19T18:43:35.505Z",
+      "updatedAt": "2026-11-19T18:43:35.505Z"
+    },
+    "documentUnits": "mm",
+    "patterns": [
+      {
+        "id": "e92f8a4d-a506-44cd-aae9-a802daedd886",
+        "name": "Espejos · p4m",
+        "sourceGeometry": [
+          {
+            "id": "03036281-a7cc-4f9c-ba03-4219b2652424",
+            "name": "Trazado",
+            "kind": "path",
+            "nodes": [
+              {
+                "x": 8,
+                "y": 32,
+                "in": {
+                  "x": 0,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": -17
+                }
+              },
+              {
+                "x": 31,
+                "y": 7,
+                "in": {
+                  "x": -15,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": 16
+                }
+              },
+              {
+                "x": 8,
+                "y": 32,
+                "in": {
+                  "x": 15,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            ],
+            "closed": true,
+            "transform": [0.6, 0, 0, 0.6, 2, 2],
+            "stroke": "#233b2d",
+            "fill": "#496e55",
+            "strokeWidth": 0.4,
+            "strokeCap": "round",
+            "strokeJoin": "round",
+            "miterLimit": 10,
+            "opacity": 1,
+            "fillOpacity": 1,
+            "strokeOpacity": 1,
+            "fillRule": "evenodd",
+            "visible": true,
+            "locked": false
+          },
+          {
+            "id": "96639c83-7245-4c0d-a48c-e6e27dd28b46",
+            "name": "Elipse",
+            "kind": "ellipse",
+            "nodes": [],
+            "closed": true,
+            "transform": [1, 0, 0, 1, 0, 0],
+            "stroke": "none",
+            "fill": "#c0cd8f",
+            "strokeWidth": 0.65,
+            "strokeCap": "round",
+            "strokeJoin": "round",
+            "miterLimit": 10,
+            "opacity": 1,
+            "fillOpacity": 1,
+            "strokeOpacity": 1,
+            "fillRule": "evenodd",
+            "visible": true,
+            "locked": false,
+            "parameters": {
+              "x": 7,
+              "y": 5,
+              "width": 3,
+              "height": 3,
+              "radius": 0,
+              "sides": 5
+            }
+          }
+        ],
+        "generator": {
+          "kind": "motif",
+          "version": 1,
+          "seed": 42,
+          "count": 12,
+          "rows": 4,
+          "columns": 4,
+          "spacing": 22,
+          "offset": 0.5,
+          "aspectRatio": 1,
+          "staggerAxis": "rows",
+          "rotation": 0,
+          "scale": 1,
+          "scaleRatio": 0.9,
+          "amplitude": 6,
+          "frequency": 3,
+          "phase": 0,
+          "radius": 28,
+          "ratio": 0.35,
+          "distribution": "rectangular",
+          "periodicWarp": true,
+          "placements": [[1, 0, 0, 1, 0, 0]]
+        },
+        "symmetry": {
+          "family": "wallpaper",
+          "group": "p4m",
+          "width": 80,
+          "height": 60,
+          "angle": 90,
+          "sectors": 8,
+          "center": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      }
+    ],
+    "regions": [],
+    "applications": [],
+    "preferences": {
+      "grid": true,
+      "snap": true,
+      "guides": true,
+      "split": false,
+      "background": "#f8faf5",
+      "fundamental": false,
+      "axes": false,
+      "centers": false,
+      "continuity": false,
+      "outside": false
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "metadata": {
+      "id": "f678ef62-d240-4da8-a0d2-554ddef60319",
+      "name": "Hexagonal · p6m",
+      "createdAt": "2026-11-19T18:43:35.505Z",
+      "updatedAt": "2026-11-19T18:43:35.505Z"
+    },
+    "documentUnits": "mm",
+    "patterns": [
+      {
+        "id": "ece4721b-f3a7-4834-97a3-73d8a64dc561",
+        "name": "Hexagonal · p6m",
+        "sourceGeometry": [
+          {
+            "id": "24c88bf4-1169-4b1a-bb98-79ed14695b2f",
+            "name": "Trazado",
+            "kind": "path",
+            "nodes": [
+              {
+                "x": 8,
+                "y": 32,
+                "in": {
+                  "x": 0,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": -17
+                }
+              },
+              {
+                "x": 31,
+                "y": 7,
+                "in": {
+                  "x": -15,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": 16
+                }
+              },
+              {
+                "x": 8,
+                "y": 32,
+                "in": {
+                  "x": 15,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            ],
+            "closed": true,
+            "transform": [0.6, 0, 0, 0.6, 2, 2],
+            "stroke": "#233b2d",
+            "fill": "#496e55",
+            "strokeWidth": 0.4,
+            "strokeCap": "round",
+            "strokeJoin": "round",
+            "miterLimit": 10,
+            "opacity": 1,
+            "fillOpacity": 1,
+            "strokeOpacity": 1,
+            "fillRule": "evenodd",
+            "visible": true,
+            "locked": false
+          },
+          {
+            "id": "69f8587c-d571-43d2-bbd0-0760a1064ac2",
+            "name": "Elipse",
+            "kind": "ellipse",
+            "nodes": [],
+            "closed": true,
+            "transform": [1, 0, 0, 1, 0, 0],
+            "stroke": "none",
+            "fill": "#c0cd8f",
+            "strokeWidth": 0.65,
+            "strokeCap": "round",
+            "strokeJoin": "round",
+            "miterLimit": 10,
+            "opacity": 1,
+            "fillOpacity": 1,
+            "strokeOpacity": 1,
+            "fillRule": "evenodd",
+            "visible": true,
+            "locked": false,
+            "parameters": {
+              "x": 7,
+              "y": 5,
+              "width": 3,
+              "height": 3,
+              "radius": 0,
+              "sides": 5
+            }
+          }
+        ],
+        "generator": {
+          "kind": "motif",
+          "version": 1,
+          "seed": 42,
+          "count": 12,
+          "rows": 4,
+          "columns": 4,
+          "spacing": 22,
+          "offset": 0.5,
+          "aspectRatio": 1,
+          "staggerAxis": "rows",
+          "rotation": 0,
+          "scale": 1,
+          "scaleRatio": 0.9,
+          "amplitude": 6,
+          "frequency": 3,
+          "phase": 0,
+          "radius": 28,
+          "ratio": 0.35,
+          "distribution": "rectangular",
+          "periodicWarp": true,
+          "placements": [[1, 0, 0, 1, 0, 0]]
+        },
+        "symmetry": {
+          "family": "wallpaper",
+          "group": "p6m",
+          "width": 80,
+          "height": 60,
+          "angle": 90,
+          "sectors": 8,
+          "center": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      }
+    ],
+    "regions": [],
+    "applications": [],
+    "preferences": {
+      "grid": true,
+      "snap": true,
+      "guides": true,
+      "split": false,
+      "background": "#f8faf5",
+      "fundamental": false,
+      "axes": false,
+      "centers": false,
+      "continuity": false,
+      "outside": false
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "metadata": {
+      "id": "b987681e-e735-4c11-9e6e-a78b2d623fbd",
+      "name": "Órbita radial",
+      "createdAt": "2026-11-19T18:43:35.505Z",
+      "updatedAt": "2026-11-19T18:43:35.505Z"
+    },
+    "documentUnits": "mm",
+    "patterns": [
+      {
+        "id": "6ec35e34-a76d-4409-9316-6425b6380ab8",
+        "name": "Órbita radial",
+        "sourceGeometry": [
+          {
+            "id": "486c2bd6-e2f4-4e25-af83-a684b6e47beb",
+            "name": "Trazado",
+            "kind": "path",
+            "nodes": [
+              {
+                "x": 8,
+                "y": 32,
+                "in": {
+                  "x": 0,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": -17
+                }
+              },
+              {
+                "x": 31,
+                "y": 7,
+                "in": {
+                  "x": -15,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": 16
+                }
+              },
+              {
+                "x": 8,
+                "y": 32,
+                "in": {
+                  "x": 15,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            ],
+            "closed": true,
+            "transform": [1, 0, 0, 1, 0, 0],
+            "stroke": "#233b2d",
+            "fill": "#55765b",
+            "strokeWidth": 0.4,
+            "strokeCap": "round",
+            "strokeJoin": "round",
+            "miterLimit": 10,
+            "opacity": 1,
+            "fillOpacity": 1,
+            "strokeOpacity": 1,
+            "fillRule": "evenodd",
+            "visible": true,
+            "locked": false
+          },
+          {
+            "id": "02018c14-fe91-42a7-8319-337f1004560f",
+            "name": "Trazado",
+            "kind": "path",
+            "nodes": [
+              {
+                "x": 9,
+                "y": 31,
+                "in": {
+                  "x": 0,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "x": 26,
+                "y": 12,
+                "in": {
+                  "x": -8,
+                  "y": 10
+                },
+                "out": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            ],
+            "closed": false,
+            "transform": [1, 0, 0, 1, 0, 0],
+            "stroke": "#dce7c9",
+            "fill": "none",
+            "strokeWidth": 0.6,
+            "strokeCap": "round",
+            "strokeJoin": "round",
+            "miterLimit": 10,
+            "opacity": 1,
+            "fillOpacity": 1,
+            "strokeOpacity": 1,
+            "fillRule": "evenodd",
+            "visible": true,
+            "locked": false
+          },
+          {
+            "id": "cb2be198-8216-4949-b7be-84a0e8814bbd",
+            "name": "Elipse",
+            "kind": "ellipse",
+            "nodes": [],
+            "closed": true,
+            "transform": [1, 0, 0, 1, 0, 0],
+            "stroke": "none",
+            "fill": "#c0cd8f",
+            "strokeWidth": 0.65,
+            "strokeCap": "round",
+            "strokeJoin": "round",
+            "miterLimit": 10,
+            "opacity": 1,
+            "fillOpacity": 1,
+            "strokeOpacity": 1,
+            "fillRule": "evenodd",
+            "visible": true,
+            "locked": false,
+            "parameters": {
+              "x": 37,
+              "y": 36,
+              "width": 8,
+              "height": 8,
+              "radius": 0,
+              "sides": 5
+            }
+          }
+        ],
+        "generator": {
+          "kind": "motif",
+          "version": 1,
+          "seed": 42,
+          "count": 12,
+          "rows": 4,
+          "columns": 4,
+          "spacing": 22,
+          "offset": 0.5,
+          "aspectRatio": 1,
+          "staggerAxis": "rows",
+          "rotation": 0,
+          "scale": 1,
+          "scaleRatio": 0.9,
+          "amplitude": 6,
+          "frequency": 3,
+          "phase": 0,
+          "radius": 28,
+          "ratio": 0.35,
+          "distribution": "rectangular",
+          "periodicWarp": true,
+          "placements": [[1, 0, 0, 1, 0, 0]]
+        },
+        "symmetry": {
+          "family": "radial",
+          "group": "Dn",
+          "width": 60,
+          "height": 60,
+          "angle": 90,
+          "sectors": 10,
+          "center": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      }
+    ],
+    "regions": [],
+    "applications": [],
+    "preferences": {
+      "grid": true,
+      "snap": true,
+      "guides": true,
+      "split": false,
+      "background": "#f8faf5",
+      "fundamental": false,
+      "axes": false,
+      "centers": false,
+      "continuity": false,
+      "outside": false
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "metadata": {
+      "id": "c6bfef92-874c-4fcc-99a6-087fe34c98fe",
+      "name": "Warp Grid",
+      "createdAt": "2026-11-19T18:43:35.505Z",
+      "updatedAt": "2026-11-19T18:43:35.505Z"
+    },
+    "documentUnits": "mm",
+    "patterns": [
+      {
+        "id": "9911d655-25b2-4955-99c8-8f19ad951c16",
+        "name": "Warp Grid",
+        "sourceGeometry": [
+          {
+            "id": "3e17ad9e-aa87-42ea-ac86-389133e4fa69",
+            "name": "Trazado",
+            "kind": "path",
+            "nodes": [
+              {
+                "x": 8,
+                "y": 32,
+                "in": {
+                  "x": 0,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": -17
+                }
+              },
+              {
+                "x": 31,
+                "y": 7,
+                "in": {
+                  "x": -15,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": 16
+                }
+              },
+              {
+                "x": 8,
+                "y": 32,
+                "in": {
+                  "x": 15,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            ],
+            "closed": true,
+            "transform": [1, 0, 0, 1, 0, 0],
+            "stroke": "#233b2d",
+            "fill": "#55765b",
+            "strokeWidth": 0.4,
+            "strokeCap": "round",
+            "strokeJoin": "round",
+            "miterLimit": 10,
+            "opacity": 1,
+            "fillOpacity": 1,
+            "strokeOpacity": 1,
+            "fillRule": "evenodd",
+            "visible": true,
+            "locked": false
+          },
+          {
+            "id": "c469390a-801e-45bc-b45c-dfe9fa710791",
+            "name": "Trazado",
+            "kind": "path",
+            "nodes": [
+              {
+                "x": 9,
+                "y": 31,
+                "in": {
+                  "x": 0,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "x": 26,
+                "y": 12,
+                "in": {
+                  "x": -8,
+                  "y": 10
+                },
+                "out": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            ],
+            "closed": false,
+            "transform": [1, 0, 0, 1, 0, 0],
+            "stroke": "#dce7c9",
+            "fill": "none",
+            "strokeWidth": 0.6,
+            "strokeCap": "round",
+            "strokeJoin": "round",
+            "miterLimit": 10,
+            "opacity": 1,
+            "fillOpacity": 1,
+            "strokeOpacity": 1,
+            "fillRule": "evenodd",
+            "visible": true,
+            "locked": false
+          },
+          {
+            "id": "2be414de-221e-4891-b0cd-cffbc86a94a3",
+            "name": "Elipse",
+            "kind": "ellipse",
+            "nodes": [],
+            "closed": true,
+            "transform": [1, 0, 0, 1, 0, 0],
+            "stroke": "none",
+            "fill": "#c0cd8f",
+            "strokeWidth": 0.65,
+            "strokeCap": "round",
+            "strokeJoin": "round",
+            "miterLimit": 10,
+            "opacity": 1,
+            "fillOpacity": 1,
+            "strokeOpacity": 1,
+            "fillRule": "evenodd",
+            "visible": true,
+            "locked": false,
+            "parameters": {
+              "x": 37,
+              "y": 36,
+              "width": 8,
+              "height": 8,
+              "radius": 0,
+              "sides": 5
+            }
+          }
+        ],
+        "generator": {
+          "kind": "warp",
+          "version": 1,
+          "seed": 42,
+          "count": 12,
+          "rows": 3,
+          "columns": 3,
+          "spacing": 18,
+          "offset": 0.5,
+          "aspectRatio": 1,
+          "staggerAxis": "rows",
+          "rotation": 0,
+          "scale": 0.3,
+          "scaleRatio": 0.9,
+          "amplitude": 4,
+          "frequency": 2,
+          "phase": 0,
+          "radius": 28,
+          "ratio": 0.35,
+          "distribution": "rectangular",
+          "periodicWarp": true,
+          "placements": [[1, 0, 0, 1, 0, 0]]
+        },
+        "symmetry": {
+          "family": "wallpaper",
+          "group": "p1",
+          "width": 75,
+          "height": 75,
+          "angle": 90,
+          "sectors": 8,
+          "center": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      }
+    ],
+    "regions": [],
+    "applications": [],
+    "preferences": {
+      "grid": true,
+      "snap": true,
+      "guides": true,
+      "split": false,
+      "background": "#f8faf5",
+      "fundamental": false,
+      "axes": false,
+      "centers": false,
+      "continuity": false,
+      "outside": false
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "metadata": {
+      "id": "a0b9f091-608f-4175-9d4d-d08b25c10695",
+      "name": "Guilloché",
+      "createdAt": "2026-11-19T18:43:35.505Z",
+      "updatedAt": "2026-11-19T18:43:35.505Z"
+    },
+    "documentUnits": "mm",
+    "patterns": [
+      {
+        "id": "ff6384ca-b579-4aa7-abc3-6bbd6984accf",
+        "name": "Guilloché",
+        "sourceGeometry": [],
+        "generator": {
+          "kind": "guilloche",
+          "version": 1,
+          "seed": 42,
+          "count": 17,
+          "rows": 4,
+          "columns": 4,
+          "spacing": 22,
+          "offset": 0.5,
+          "aspectRatio": 1,
+          "staggerAxis": "rows",
+          "rotation": 0,
+          "scale": 1,
+          "scaleRatio": 0.9,
+          "amplitude": 5,
+          "frequency": 9,
+          "phase": 0,
+          "radius": 23,
+          "ratio": 0.35,
+          "distribution": "rectangular",
+          "periodicWarp": true,
+          "placements": [[1, 0, 0, 1, 0, 0]]
+        },
+        "symmetry": {
+          "family": "wallpaper",
+          "group": "p1",
+          "width": 70,
+          "height": 70,
+          "angle": 90,
+          "sectors": 8,
+          "center": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      }
+    ],
+    "regions": [],
+    "applications": [],
+    "preferences": {
+      "grid": true,
+      "snap": true,
+      "guides": true,
+      "split": false,
+      "background": "#f8faf5",
+      "fundamental": false,
+      "axes": false,
+      "centers": false,
+      "continuity": false,
+      "outside": false
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "metadata": {
+      "id": "7e165e9a-028b-41bb-92fe-f893cafaf950",
+      "name": "Jardín en un perímetro",
+      "createdAt": "2026-11-19T18:43:35.505Z",
+      "updatedAt": "2026-11-19T18:43:35.505Z"
+    },
+    "documentUnits": "mm",
+    "patterns": [
+      {
+        "id": "22828ac9-7cb2-4638-8345-1342f1f483e1",
+        "name": "Jardín en un perímetro",
+        "sourceGeometry": [
+          {
+            "id": "18673003-72c4-4adc-9d80-f8bb5fb9c12b",
+            "name": "Trazado",
+            "kind": "path",
+            "nodes": [
+              {
+                "x": 8,
+                "y": 32,
+                "in": {
+                  "x": 0,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": -17
+                }
+              },
+              {
+                "x": 31,
+                "y": 7,
+                "in": {
+                  "x": -15,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": 16
+                }
+              },
+              {
+                "x": 8,
+                "y": 32,
+                "in": {
+                  "x": 15,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            ],
+            "closed": true,
+            "transform": [1, 0, 0, 1, 0, 0],
+            "stroke": "#233b2d",
+            "fill": "#55765b",
+            "strokeWidth": 0.4,
+            "strokeCap": "round",
+            "strokeJoin": "round",
+            "miterLimit": 10,
+            "opacity": 1,
+            "fillOpacity": 1,
+            "strokeOpacity": 1,
+            "fillRule": "evenodd",
+            "visible": true,
+            "locked": false
+          },
+          {
+            "id": "3d6bede8-5740-41f3-84ba-9ebcace38d3c",
+            "name": "Trazado",
+            "kind": "path",
+            "nodes": [
+              {
+                "x": 9,
+                "y": 31,
+                "in": {
+                  "x": 0,
+                  "y": 0
+                },
+                "out": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "x": 26,
+                "y": 12,
+                "in": {
+                  "x": -8,
+                  "y": 10
+                },
+                "out": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            ],
+            "closed": false,
+            "transform": [1, 0, 0, 1, 0, 0],
+            "stroke": "#dce7c9",
+            "fill": "none",
+            "strokeWidth": 0.6,
+            "strokeCap": "round",
+            "strokeJoin": "round",
+            "miterLimit": 10,
+            "opacity": 1,
+            "fillOpacity": 1,
+            "strokeOpacity": 1,
+            "fillRule": "evenodd",
+            "visible": true,
+            "locked": false
+          },
+          {
+            "id": "c9b8bd52-4d65-4dec-b5b2-3b347f5758ad",
+            "name": "Elipse",
+            "kind": "ellipse",
+            "nodes": [],
+            "closed": true,
+            "transform": [1, 0, 0, 1, 0, 0],
+            "stroke": "none",
+            "fill": "#c0cd8f",
+            "strokeWidth": 0.65,
+            "strokeCap": "round",
+            "strokeJoin": "round",
+            "miterLimit": 10,
+            "opacity": 1,
+            "fillOpacity": 1,
+            "strokeOpacity": 1,
+            "fillRule": "evenodd",
+            "visible": true,
+            "locked": false,
+            "parameters": {
+              "x": 37,
+              "y": 36,
+              "width": 8,
+              "height": 8,
+              "radius": 0,
+              "sides": 5
+            }
+          }
+        ],
+        "generator": {
+          "kind": "motif",
+          "version": 1,
+          "seed": 42,
+          "count": 12,
+          "rows": 4,
+          "columns": 4,
+          "spacing": 22,
+          "offset": 0.5,
+          "aspectRatio": 1,
+          "staggerAxis": "rows",
+          "rotation": 0,
+          "scale": 1,
+          "scaleRatio": 0.9,
+          "amplitude": 6,
+          "frequency": 3,
+          "phase": 0,
+          "radius": 28,
+          "ratio": 0.35,
+          "distribution": "rectangular",
+          "periodicWarp": true,
+          "placements": [[1, 0, 0, 1, 0, 0]]
+        },
+        "symmetry": {
+          "family": "wallpaper",
+          "group": "p1",
+          "width": 60,
+          "height": 60,
+          "angle": 90,
+          "sectors": 8,
+          "center": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      }
+    ],
+    "regions": [
+      {
+        "id": "2a19f82c-6bf4-47da-a27f-9045bbc4a5a5",
+        "name": "Perímetro orgánico",
+        "geometry": [
+          {
+            "id": "82d7c65e-0801-4b6d-8624-db95dc3c00a4",
+            "name": "Perímetro orgánico",
+            "kind": "path",
+            "nodes": [
+              {
+                "x": -70,
+                "y": -65,
+                "in": {
+                  "x": 0,
+                  "y": 0
+                },
+                "out": {
+                  "x": 95,
+                  "y": -35
+                }
+              },
+              {
+                "x": 75,
+                "y": -45,
+                "in": {
+                  "x": -45,
+                  "y": -15
+                },
+                "out": {
+                  "x": 60,
+                  "y": 55
+                }
+              },
+              {
+                "x": 40,
+                "y": 65,
+                "in": {
+                  "x": 60,
+                  "y": -5
+                },
+                "out": {
+                  "x": -50,
+                  "y": 40
+                }
+              },
+              {
+                "x": -75,
+                "y": 35,
+                "in": {
+                  "x": 10,
+                  "y": 50
+                },
+                "out": {
+                  "x": -30,
+                  "y": -45
+                }
+              }
+            ],
+            "closed": true,
+            "transform": [1, 0, 0, 1, 0, 0],
+            "stroke": "#233b2d",
+            "fill": "#edf1e8",
+            "strokeWidth": 0.65,
+            "strokeCap": "round",
+            "strokeJoin": "round",
+            "miterLimit": 10,
+            "opacity": 1,
+            "fillOpacity": 1,
+            "strokeOpacity": 1,
+            "fillRule": "evenodd",
+            "visible": true,
+            "locked": false
+          }
+        ]
+      }
+    ],
+    "applications": [
+      {
+        "id": "b4bae248-a120-4b18-9b26-ba1f2ec09b8f",
+        "name": "Aplicación 01",
+        "patternId": "22828ac9-7cb2-4638-8345-1342f1f483e1",
+        "regionId": "2a19f82c-6bf4-47da-a27f-9045bbc4a5a5",
+        "placementTransform": [1, 0, 0, 1, 0, 0],
+        "linked": true,
+        "showOutline": true
+      }
+    ],
+    "preferences": {
+      "grid": true,
+      "snap": true,
+      "guides": true,
+      "split": false,
+      "background": "#f8faf5",
+      "fundamental": false,
+      "axes": false,
+      "centers": false,
+      "continuity": false,
+      "outside": false
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "metadata": {
+      "id": "0edde0ec-abba-4131-8617-5ed6b98c37cf",
+      "name": "Penrose aperiódico",
+      "createdAt": "2026-11-19T18:43:35.505Z",
+      "updatedAt": "2026-11-19T18:43:35.505Z"
+    },
+    "documentUnits": "mm",
+    "patterns": [
+      {
+        "id": "e9933a9d-4312-40e2-aa69-f3ff5593dbf4",
+        "name": "Penrose aperiódico",
+        "sourceGeometry": [],
+        "generator": {
+          "kind": "penrose",
+          "version": 1,
+          "seed": 42,
+          "count": 12,
+          "rows": 4,
+          "columns": 4,
+          "spacing": 22,
+          "offset": 0.5,
+          "aspectRatio": 1,
+          "staggerAxis": "rows",
+          "rotation": 0,
+          "scale": 1,
+          "scaleRatio": 0.9,
+          "amplitude": 6,
+          "frequency": 4,
+          "phase": 0,
+          "radius": 95,
+          "ratio": 0.35,
+          "distribution": "rectangular",
+          "periodicWarp": true,
+          "placements": [[1, 0, 0, 1, 0, 0]]
+        },
+        "symmetry": {
+          "family": "wallpaper",
+          "group": "p1",
+          "width": 60,
+          "height": 60,
+          "angle": 90,
+          "sectors": 8,
+          "center": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      }
+    ],
+    "regions": [],
+    "applications": [],
+    "preferences": {
+      "grid": true,
+      "snap": true,
+      "guides": true,
+      "split": false,
+      "background": "#f8faf5",
+      "fundamental": false,
+      "axes": false,
+      "centers": false,
+      "continuity": false,
+      "outside": false
+    }
+  }
+]
