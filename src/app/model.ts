@@ -1,0 +1,38 @@
+import type { Matrix, Point, Unit } from '../geometry/matrix';
+export type Node = Point & { in: Point; out: Point };
+export type ShapeKind = 'path'|'rectangle'|'ellipse'|'polygon'|'compound';
+export interface Geometry {
+  id: string; name: string; kind: ShapeKind; nodes: Node[]; closed: boolean;
+  transform: Matrix; stroke: string; fill: string; strokeWidth: number; visible: boolean; locked: boolean;
+  groupId?: string; pathData?: string; parameters?: {x:number;y:number;width:number;height:number;radius:number;sides:number};
+}
+export type GeneratorKind = 'motif'|'grid'|'warp'|'radial'|'rosette'|'wave'|'guilloche'|'spirograph'|'lattice'|'tessellation'|'freeform'|'penrose';
+export interface Generator {
+  kind: GeneratorKind; version: 1; seed: number; count: number; rows: number; columns: number;
+  spacing: number; offset: number; rotation: number; scale: number; scaleRatio: number;
+  amplitude: number; frequency: number; phase: number; radius: number; ratio: number;
+  distribution: 'rectangular'|'circular'|'freeform'; periodicWarp: boolean;
+  placements: Matrix[];
+}
+export interface Symmetry {
+  family: 'wallpaper'|'frieze'|'radial'; group: string; width: number; height: number; angle: number; sectors: number; center: Point;
+}
+export interface Pattern {id:string;name:string;sourceGeometry:Geometry[];generator:Generator;symmetry:Symmetry;}
+export interface Region {id:string;name:string;geometry:Geometry[];}
+export interface Application {id:string;name:string;patternId:string;regionId:string;placementTransform:Matrix;linked:boolean; frozenPattern?:Pattern;showOutline:boolean;}
+export interface Project {
+  schemaVersion:1;metadata:{id:string;name:string;createdAt:string;updatedAt:string};documentUnits:Unit;
+  patterns:Pattern[];regions:Region[];applications:Application[];
+  preferences:{grid:boolean;snap:boolean;guides:boolean;split:boolean;background:string};
+}
+export const uid = () => globalThis.crypto?.randomUUID?.() ?? `id-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+export const node = (x:number,y:number):Node => ({x,y,in:{x:0,y:0},out:{x:0,y:0}});
+export function geometry(kind:ShapeKind,nodes:Node[]=[],closed=false):Geometry {
+  return {id:uid(),name:({path:'Tracé',rectangle:'Rectangle',ellipse:'Ellipse',polygon:'Polygone',compound:'Composé'})[kind],kind,nodes,closed,transform:[1,0,0,1,0,0],stroke:'#233b2d',fill:'none',strokeWidth:0.65,visible:true,locked:false};
+}
+export const defaultGenerator = ():Generator => ({kind:'motif',version:1,seed:42,count:12,rows:4,columns:4,spacing:22,offset:0.5,rotation:0,scale:1,scaleRatio:0.9,amplitude:6,frequency:3,phase:0,radius:28,ratio:0.35,distribution:'rectangular',periodicWarp:true,placements:[[1,0,0,1,0,0]]});
+export function newPattern():Pattern {return {id:uid(),name:'Patrón 01',sourceGeometry:[],generator:defaultGenerator(),symmetry:{family:'wallpaper',group:'p1',width:60,height:60,angle:70,sectors:8,center:{x:0,y:0}}};}
+export function newProject():Project {
+  const now=new Date().toISOString();
+  return {schemaVersion:1,metadata:{id:uid(),name:'Estudio sin título',createdAt:now,updatedAt:now},documentUnits:'mm',patterns:[newPattern()],regions:[],applications:[],preferences:{grid:true,snap:true,guides:true,split:false,background:'#f8faf5'}};
+}
