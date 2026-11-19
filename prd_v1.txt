@@ -1,0 +1,1689 @@
+# PRD — Pattern Studio 2D
+**Generador y editor vectorial paramétrico de patrones, simetrías y teselaciones**
+
+**Versión:** 1.0 — Especificación definitiva para implementación con Codex  
+**Fecha:** 19 de noviembre de 2026  
+**Estado:** Listo para implementación
+
+---
+
+## 0. Instrucciones para Codex
+
+Actuá como arquitecto de software senior, especialista en gráficos vectoriales 2D, geometría computacional, interfaces gráficas interactivas y aplicaciones web.
+
+Tu tarea es **implementar una aplicación completa y funcional** siguiendo este PRD. Este documento constituye tanto la especificación funcional como las instrucciones de ejecución.
+
+### Reglas de trabajo
+
+1. Antes de escribir código, inspeccioná el directorio de trabajo y cualquier proyecto existente. No sobrescribas ni elimines archivos ajenos al proyecto.
+2. Investigá las implementaciones y bibliotecas citadas en la sección 16. Reutilizá algoritmos existentes cuando sea técnicamente conveniente y sus licencias lo permitan. No implementes desde cero lo que ya resuelve correctamente una biblioteca probada.
+3. Implementá el proyecto en etapas internas, pero entregá una aplicación integrada, no una colección de prototipos.
+4. Aplicá los criterios de aceptación de este documento. No reemplaces funcionalidades con controles decorativos, simulaciones visuales o placeholders.
+5. Toda funcionalidad presentada al usuario como disponible MUST estar implementada y ser operativa.
+6. El modelo geométrico y sus resultados MUST ser determinísticos cuando los parámetros y la semilla sean idénticos.
+7. Priorizá la exactitud geométrica, la edición no destructiva, la respuesta interactiva y la claridad de interfaz.
+8. Utilizá TypeScript con tipado estricto, pruebas automatizadas y módulos con responsabilidades claramente separadas.
+9. Escribí documentación operativa suficiente para instalar, ejecutar, compilar, probar y desplegar la aplicación.
+10. No agregues autenticación, pagos, telemetría, infraestructura comercial, servicios externos ni funcionalidades no solicitadas.
+11. Resolvé las decisiones técnicas menores de forma autónoma. Documentá las decisiones importantes.
+12. No detengas la implementación después de completar una fase ni solicites nuevos prompts para continuar.
+13. Al terminar, ejecutá las pruebas, corregí los errores detectados y realizá una revisión de la aplicación completa. No declares finalizado algo que no haya sido comprobado.
+14. Si una capacidad presenta una limitación matemática real, no la simules: implementá el comportamiento correcto y explicá esa limitación en la interfaz.
+
+**Resultado requerido:** código fuente funcional, aplicación ejecutable, build estático desplegable, documentación y pruebas.
+
+---
+
+## 1. Objetivo del producto
+
+Desarrollar una aplicación web 2D que permita:
+
+- Crear geometría vectorial libremente.
+- Generar patrones paramétricos a partir de geometrías propias o de generadores incorporados.
+- Aplicar transformaciones, repeticiones, simetrías y teselaciones matemáticas complejas.
+- Visualizar inmediatamente el resultado mientras se dibuja o modifican parámetros.
+- Conservar editable la geometría original y todas las propiedades que generan el patrón.
+- Aplicar cualquier patrón a un perímetro irregular definido por el usuario.
+- Exportar resultados vectoriales exactos y archivos rasterizados de alta calidad.
+- Guardar y recuperar proyectos completos.
+
+### Principio rector
+
+> Cualquier geometría vectorial 2D editable debe poder convertirse en un patrón mediante transformaciones matemáticas. El patrón resultante debe poder reutilizarse, parametrizarse y aplicarse de manera no destructiva a cualquier región plana definida por un perímetro cerrado.
+
+El programa no debe estar orientado a una industria, oficio o proceso de fabricación específico.
+
+No debe imponer limitaciones artificiales sobre las formas del perímetro de aplicación.
+
+### Fuera de alcance
+
+- Modelado 3D.
+- Renderizado 3D.
+- Simulación de materiales.
+- Texturas volumétricas.
+- CAD mecánico generalista.
+- Inteligencia artificial generativa.
+- Servicios en la nube.
+- Colaboración multiusuario.
+- Gestión comercial.
+- Cuentas, suscripciones y pagos.
+- Backend obligatorio.
+- Aplicaciones móviles nativas.
+
+---
+
+## 2. Plataforma y distribución
+
+### 2.1 Arquitectura de despliegue
+
+La solución MUST ser una aplicación web estática que pueda ejecutarse íntegramente en el navegador.
+
+El despliegue prioritario será:
+
+**Opción A — Hosting compartido convencional**
+
+- Archivos HTML, CSS, JavaScript y assets estáticos.
+- Instalación mediante FTP o copia de archivos.
+- Sin Node.js en el servidor de producción.
+- Sin PHP, MySQL ni base de datos.
+- Sin API remota.
+- Compatible con instalación en un subdirectorio de un dominio.
+- Ruta base configurable al compilar.
+
+**Opción B — Debian headless, red local**
+
+La misma compilación MUST poder servirse desde una máquina Debian sin escritorio gráfico, mediante un servidor HTTP estático sencillo.
+
+El procesamiento geométrico se realizará en el navegador del equipo cliente.
+
+El servidor Debian no necesitará GPU, interfaz gráfica ni servicios de renderizado.
+
+### 2.2 Operación sin conexión
+
+La aplicación MUST funcionar sin acceso a Internet cuando sus archivos estáticos se encuentren disponibles localmente.
+
+No debe depender de CDN, fuentes externas ni servicios de terceros en tiempo de ejecución.
+
+Un service worker/PWA puede mejorar el uso offline bajo HTTPS o localhost, pero **no debe ser necesario para funcionar mediante HTTP en una LAN**.
+
+### 2.3 Stack preferido
+
+- React + TypeScript + Vite.
+- Paper.js para edición vectorial, geometría Bézier y operaciones sobre paths.
+- SVG nativo para intercambio y exportación.
+- Canvas 2D y/o SVG optimizado para visualización.
+- Web Workers para procesamiento pesado cuando corresponda.
+- IndexedDB para autosave y almacenamiento local.
+- Vitest para pruebas unitarias.
+- Playwright para pruebas funcionales.
+
+Codex puede sustituir una biblioteca si demuestra técnicamente que otra resuelve mejor las necesidades. El motor de simetrías y los modelos persistentes deben permanecer independientes del framework visual.
+
+---
+
+## 3. Diseño de interfaz gráfica
+
+### 3.1 Referencia visual
+
+La principal referencia estética y de organización es:
+
+https://patturn.studio/#features
+
+La captura proporcionada de Patturn Studio establece la dirección visual del producto.
+
+Tomar como referencia sus conceptos de organización, **sin copiar logotipos, assets ni código propietario**.
+
+Características deseadas:
+
+- Interfaz minimalista, contemporánea y de aspecto profesional.
+- Fondo claro con tonos verdes grisáceos muy suaves.
+- Elementos gráficos negros y acentos verdes discretos.
+- Paneles redondeados.
+- Tipografía limpia y compacta.
+- Controles contextuales agrupados.
+- Sliders y parámetros numéricos próximos a su función.
+- Máximo protagonismo del área de dibujo.
+- Escasa utilización de diálogos modales.
+- Iconografía consistente y discreta.
+
+La aplicación debe sentirse como un estudio de diseño visual, no como un formulario técnico.
+
+### 3.2 Estructura principal
+
+La interfaz desktop MUST contener cinco zonas:
+
+**A. Barra superior**
+
+- Nombre del proyecto editable.
+- Indicador de modificaciones sin guardar.
+- Controles de guardado.
+- Conmutador de contexto de trabajo.
+- Menú principal.
+- Botón Exportar claramente visible.
+
+**B. Barra vertical angosta, extremo izquierdo**
+
+Herramientas disponibles mediante iconos con tooltip:
+
+- Selección.
+- Selección de nodos.
+- Pluma Bézier.
+- Dibujo libre.
+- Línea.
+- Rectángulo.
+- Elipse/círculo.
+- Polígono.
+- Transformaciones.
+- Operaciones geométricas.
+- Importación.
+- Capas.
+- Configuración.
+
+Las herramientas adicionales podrán agruparse en submenús.
+
+**C. Panel lateral contextual**
+
+Panel redondeado y plegable con secciones, según el contexto:
+
+- DESIGN
+- GEOMETRY
+- PATTERN
+- SYMMETRY
+- GENERATOR
+- APPLICATION
+- LAYERS
+
+Mostrar únicamente los controles relevantes para la herramienta o el objeto seleccionado.
+
+Los parámetros deben combinar sliders, entradas numéricas, selectores y controles gráficos.
+
+**D. Lienzo principal**
+
+Ocupará la mayor parte del espacio disponible.
+
+MOSTRAR:
+
+- Geometría editable.
+- Patrón resultante.
+- Guías de simetría opcionales.
+- Celda fundamental o celda de repetición.
+- Previsualización sobre perímetro.
+- Selecciones, nodos y controles de transformación.
+
+**E. Herramientas flotantes**
+
+- Selector de modo de visualización.
+- Controles de zoom.
+- Ajustar contenido.
+- Restablecer vista.
+- Mostrar/ocultar guías.
+- Acceso a la configuración de exportación.
+
+### 3.3 Modos de trabajo
+
+La interfaz MUST soportar tres modos principales:
+
+**EDIT / Diseño**
+
+Edición de la geometría fuente, con visualización simultánea de sus repeticiones.
+
+**PATTERN / Patrón**
+
+Ajuste de simetría, distribución, estructura y parámetros de la composición completa.
+
+**APPLY / Aplicación**
+
+Visualización y ajuste de patrones dentro de uno o más perímetros irregulares.
+
+Cambiar de modo MUST conservar el estado de todos los elementos.
+
+### 3.4 Visualización simultánea
+
+En EDIT debe ser posible elegir entre:
+
+1. Un único lienzo, con la geometría editada sobre el patrón completo.
+2. Vista dividida: editor de geometría a la izquierda y patrón completo a la derecha.
+
+Ambas vistas estarán sincronizadas.
+
+La segunda vista debe actualizarse durante la edición, sin esperar a finalizar el trazado.
+
+### 3.5 Interacción
+
+- Pan con mouse o trackpad.
+- Zoom centrado en el cursor.
+- Zoom mediante rueda modificadora o controles visibles.
+- Selección individual y múltiple.
+- Arrastre de objetos y nodos.
+- Atajos de teclado.
+- Undo/redo.
+- Duplicación.
+- Agrupación.
+- Ajuste a guías y grillas.
+- Ajuste a objetos.
+- Activación/desactivación de snapping.
+- Controles numéricos de precisión.
+
+El lienzo no debe reconstruirse íntegramente ante cada movimiento del mouse si eso afecta la fluidez.
+
+### 3.6 Adaptación responsive
+
+Prioridad desktop, resolución 1920 × 1080 y superiores.
+
+Debe funcionar correctamente desde 1366 × 768.
+
+En pantallas estrechas los paneles podrán plegarse, pero no se requiere una experiencia de edición móvil equivalente al desktop.
+
+---
+
+## 4. Motor de geometría vectorial
+
+### 4.1 Objetos editables
+
+MUST soportar:
+
+- Segmentos rectos.
+- Polilíneas.
+- Paths abiertos y cerrados.
+- Curvas Bézier cúbicas.
+- Rectángulos.
+- Rectángulos redondeados.
+- Círculos.
+- Elipses.
+- Polígonos regulares y libres.
+- Paths compuestos.
+- Grupos de objetos.
+- Objetos procedurales editables mediante parámetros.
+
+### 4.2 Edición
+
+Cada elemento MUST permitir, según su naturaleza:
+
+- Trasladar.
+- Rotar.
+- Escalar.
+- Reflejar.
+- Duplicar.
+- Modificar nodos.
+- Modificar tangentes Bézier.
+- Convertir segmentos rectos en curvas y viceversa.
+- Abrir y cerrar paths.
+- Insertar y eliminar nodos.
+- Cambiar propiedades de trazo y relleno.
+- Transformar objetos individuales o grupos.
+
+Para shapes paramétricas, conservar sus parámetros originales hasta que el usuario elija explícitamente convertirlas en paths.
+
+### 4.3 Operaciones booleanas
+
+Soportar para regiones cerradas:
+
+- Unión.
+- Intersección.
+- Diferencia.
+- Diferencia inversa.
+- Diferencia simétrica.
+
+Admitir paths compuestos y agujeros.
+
+Estas operaciones MUST producir geometría real cuando se solicite un resultado expandido.
+
+### 4.4 Edición no destructiva
+
+El documento mantiene una geometría fuente canónica.
+
+Las transformaciones del patrón no reemplazan ni destruyen esa geometría.
+
+Si un objeto se repite 500 veces, debe seguir existiendo un solo objeto fuente editable y un conjunto de transformaciones.
+
+No almacenar 500 copias independientes como modelo principal.
+
+### 4.5 Edición desde una instancia repetida
+
+El usuario debe poder seleccionar una instancia visible y editar el objeto fuente desde ella.
+
+Para ello, el sistema debe identificar la transformación asociada a esa instancia y utilizar su inversa para interpretar las operaciones de edición.
+
+La modificación debe propagarse inmediatamente a las demás instancias.
+
+Esto debe funcionar también con reflexiones y rotaciones, no solamente con traslaciones.
+
+---
+
+## 5. Motor de simetrías y teselaciones
+
+Este es uno de los componentes principales del proyecto.
+
+No implementar las simetrías como una colección de efectos gráficos aislados.
+
+Construir un motor geométrico reutilizable, basado en transformaciones y grupos matemáticos.
+
+### 5.1 Transformaciones fundamentales
+
+- Traslación.
+- Rotación respecto de un centro.
+- Reflexión respecto de una recta arbitraria.
+- Reflexión con deslizamiento.
+- Composición de transformaciones.
+- Transformación inversa.
+- Transformaciones afines 2D.
+
+Utilizar matrices homogéneas 3 × 3 o una representación matemáticamente equivalente.
+
+### 5.2 Grupos periódicos del plano
+
+MUST implementar los **17 wallpaper groups**:
+
+- p1
+- p2
+- pm
+- pg
+- cm
+- pmm
+- pmg
+- pgg
+- cmm
+- p4
+- p4m
+- p4g
+- p3
+- p3m1
+- p31m
+- p6
+- p6m
+
+Cada grupo debe tener:
+
+- Generadores matemáticos correctos.
+- Celda fundamental identificable.
+- Base de red apropiada.
+- Transformaciones reproducibles.
+- Vista previa de la simetría.
+- Ejemplo preconfigurado.
+- Pruebas de invariancia.
+
+Respetar restricciones geométricas de las redes, como relaciones entre ángulos, longitudes y centros de rotación.
+
+### 5.3 Grupos de friso
+
+Implementar los siete frieze groups, utilizando una nomenclatura documentada y consistente.
+
+Permitir repeticiones infinitas en una dirección y dimensiones configurables en la otra.
+
+### 5.4 Simetrías radiales
+
+Implementar:
+
+- Grupo cíclico Cn.
+- Grupo diédrico Dn.
+- Rosetas.
+- Reflexiones radiales.
+- Disposición caleidoscópica.
+
+Cantidad de sectores configurable, inicialmente entre 2 y 64.
+
+El centro puede moverse libremente.
+
+Estas construcciones no deben anunciarse como periódicas si no cumplen esa propiedad.
+
+### 5.5 Distribuciones y teselaciones adicionales
+
+Incorporar:
+
+- Grilla rectangular.
+- Grilla desplazada por filas o columnas.
+- Red oblicua.
+- Red triangular.
+- Red hexagonal.
+- Distribución circular.
+- Distribución elíptica.
+- Distribución libre.
+- Teselación aperiódica Penrose, como generador de regiones finitas.
+
+La distribución libre permite posicionar motivos manualmente, manteniendo sus referencias editables.
+
+**Diferenciar dos conceptos:**
+
+- Distribución de motivos.
+- Simetría matemática del patrón.
+
+No tratarlos como equivalentes.
+
+### 5.6 Reglas matemáticas de continuidad
+
+Una figura visualmente continua no es necesariamente un patrón periódico.
+
+El sistema MUST distinguir:
+
+- `PERIODIC_SEAMLESS`
+- `FINITE_NONPERIODIC`
+- `UNVERIFIED`
+
+Un patrón periódico debe definirse mediante una red de traslación y un conjunto de transformaciones compatibles.
+
+Las redes no ortogonales deben conservar su geometría verdadera.
+
+No deformar automáticamente una red oblicua para introducirla en una baldosa rectangular.
+
+Cuando una exportación rectangular seamless no sea matemáticamente válida, ofrecer la exportación mediante vectores de red o una región finita expandida, informando la diferencia.
+
+### 5.7 Warps y compatibilidad con simetría
+
+Las deformaciones deben preservar las condiciones necesarias para mantener la periodicidad cuando se solicite un patrón seamless.
+
+Para una red de vectores `a` y `b`, una deformación periódica debe cumplir las condiciones de compatibilidad por traslación.
+
+Las deformaciones arbitrarias pueden romper simetrías adicionales de reflexión o rotación.
+
+Por ello:
+
+- Un warp incompatible no debe presentarse como preservador de un wallpaper group determinado.
+- Para simetría estricta, restringir o adaptar las deformaciones permitidas.
+- Si el usuario elige una deformación libre incompatible, informar qué propiedad se pierde.
+- No introducir falsos cierres o uniones artificiales para ocultar discontinuidades.
+
+---
+
+## 6. Constructor de patrones paramétricos
+
+### 6.1 Concepto
+
+El editor debe permitir tanto construir un patrón desde geometría propia como partir de familias paramétricas predefinidas.
+
+El constructor no debe limitarse a repetir un SVG.
+
+### 6.2 Familias iniciales
+
+Implementar como módulos independientes:
+
+1. **Basic Grid:** repetición regular y escalonada.
+2. **Warp Grid:** variación paramétrica de una retícula.
+3. **Radial:** composición de motivos alrededor de un centro.
+4. **Rosette:** configuraciones circulares de líneas y formas.
+5. **Wave:** patrones basados en funciones ondulatorias.
+6. **Guilloché:** curvas combinadas paramétricamente.
+7. **Spirograph:** curvas trocoidales.
+8. **Lattice:** estructuras basadas en redes.
+9. **Tessellation:** distribución geométrica por reglas de teselación.
+10. **Freeform Arrangement:** colocación y transformación manual de motivos.
+11. **Penrose:** generación aperiódica mediante reglas de subdivisión o una metodología equivalente.
+
+Cada generador debe producir geometría o instrucciones geométricas reutilizables, no simplemente una imagen rasterizada.
+
+### 6.3 Parámetros
+
+Según el generador:
+
+- Tamaño.
+- Ancho.
+- Alto.
+- Relación de aspecto.
+- Cantidad de elementos.
+- Número de filas.
+- Número de columnas.
+- Espaciado.
+- Desfase.
+- Rotación.
+- Escala.
+- Relación de escala.
+- Redondez.
+- Amplitud.
+- Frecuencia.
+- Fase.
+- Intensidad de deformación.
+- Semilla aleatoria.
+- Orden de repetición.
+- Número de sectores.
+- Origen.
+- Densidad.
+
+Todos los parámetros deben poder ajustarse mediante controles visuales y valores exactos.
+
+Un parámetro que no aplica al generador seleccionado no debe mostrarse.
+
+### 6.4 Warp Grid
+
+Tomar como referencia el concepto mostrado en Patturn Studio.
+
+Distinguir explícitamente:
+
+- **Freeform:** distribución o modificación libre de posiciones.
+- **Rectangular:** distribución según ejes de una retícula.
+- **Circular:** distribución radial alrededor de un origen.
+
+El cambio de modo debe ser interactivo y no destructivo.
+
+Permitir deformaciones ondulatorias, desplazamientos y variaciones de escala mediante funciones parametrizadas.
+
+Cuando se requiera periodicidad, aplicar las restricciones de la sección 5.7.
+
+### 6.5 Semillas determinísticas
+
+Todos los generadores con aleatoriedad MUST aceptar una semilla explícita.
+
+Los mismos parámetros, semilla y versión del algoritmo deben producir la misma geometría.
+
+Guardar la versión del generador en el proyecto.
+
+La opción Randomize debe generar y guardar una nueva semilla; no introducir variaciones invisibles en el resultado.
+
+### 6.6 Composición
+
+Permitir utilizar una geometría propia como motivo de un generador.
+
+Por ejemplo:
+
+1. Dibujar tres formas.
+2. Agruparlas.
+3. Seleccionar Warp Grid.
+4. Cambiar distribución y spacing.
+5. Aplicar una simetría.
+6. Editar nuevamente cualquiera de las tres formas.
+
+El sistema debe preservar las relaciones entre el motivo fuente y la composición.
+
+---
+
+## 7. Visualización interactiva seamless
+
+### 7.1 Requisito fundamental
+
+**El patrón MUST actualizarse durante el trazado.**
+
+No esperar al evento de finalizar dibujo.
+
+Si el usuario comienza una línea y desplaza el cursor, sus instancias deben visualizarse en tiempo real.
+
+La misma regla se aplica a:
+
+- Movimiento de nodos.
+- Cambios de tangentes.
+- Modificación de parámetros.
+- Transformaciones.
+- Cambios de simetría.
+- Modificación de la celda.
+- Ajustes de distribución.
+
+### 7.2 Área de visualización
+
+El patrón puede extenderse virtualmente más allá del viewport.
+
+Calcular y dibujar solamente las instancias relevantes para la región visible, con margen suficiente para evitar aparición tardía de elementos durante el pan.
+
+No generar una cantidad infinita de objetos.
+
+### 7.3 Guías
+
+Permitir mostrar u ocultar:
+
+- Celda fundamental.
+- Celda de repetición.
+- Vectores de red.
+- Ejes de simetría.
+- Centros de rotación.
+- Centros de reflexión.
+- Límites del área visible.
+- Grilla de coordenadas.
+
+Las guías no forman parte de la exportación, salvo pedido explícito.
+
+### 7.4 Vista de continuidad
+
+Incluir un modo de inspección de bordes.
+
+Para patrones periódicos:
+
+- Mostrar varias celdas adyacentes.
+- Resaltar fronteras de la celda.
+- Detectar errores geométricos o discontinuidades no esperadas.
+- Permitir comprobar el comportamiento bajo ambas traslaciones de la red.
+
+La continuidad debe resultar de las transformaciones matemáticas, no de disimular costuras mediante rasterizado.
+
+---
+
+## 8. Aplicación del patrón a un perímetro irregular
+
+### 8.1 Objetivo
+
+Cualquier patrón disponible debe poder aplicarse a una región plana definida por un path vectorial cerrado.
+
+No incluir plantillas especializadas en objetos, industrias o productos físicos.
+
+### 8.2 Creación de perímetros
+
+El usuario podrá:
+
+- Dibujar un perímetro con pluma Bézier.
+- Dibujar un polígono irregular.
+- Importar un SVG con una o varias regiones cerradas.
+- Editar nodos del perímetro.
+- Modificar dimensiones.
+- Trasladar, rotar y escalar.
+- Crear regiones con agujeros internos mediante paths compuestos.
+
+Validar que la geometría pueda interpretarse como región cerrada.
+
+No cerrar silenciosamente paths abiertos importados.
+
+### 8.3 Aplicación del patrón
+
+Al elegir un perímetro:
+
+1. Seleccionar un patrón existente.
+2. Mostrarlo inmediatamente dentro de la región.
+3. Mantener el patrón original independiente.
+4. Permitir desplazar, rotar y escalar el patrón.
+5. Modificar su fase respecto del origen.
+6. Ajustar parámetros del patrón sin cambiar el perímetro.
+7. Editar el perímetro sin regenerar destructivamente el patrón.
+8. Permitir cambiar el patrón por otro.
+9. Mantener la vinculación entre fuente y aplicación.
+
+### 8.4 Controles
+
+- Escala X/Y.
+- Escala uniforme.
+- Rotación.
+- Traslación.
+- Origen/anclaje.
+- Fase.
+- Densidad, cuando corresponda.
+- Mostrar contorno.
+- Mostrar patrón fuera del contorno en modo de edición.
+- Ocultar geometría externa en previsualización.
+
+No calcular automáticamente una deformación para que el patrón siga los bordes del perímetro.
+
+**La operación inicial es un relleno geométrico 2D recortado.**
+
+No es un mapeo no lineal ni un ajuste de textura por curvatura.
+
+### 8.5 Recorte
+
+Soportar dos modalidades:
+
+**Visual no destructiva**
+
+El perímetro actúa como máscara y la geometría fuente permanece intacta.
+
+**Geometría expandida**
+
+Generar trazados reales limitados por el perímetro.
+
+Para trazos abiertos, aplicar un algoritmo de recorte de curvas o segmentos adecuado. Para regiones rellenas, aplicar operaciones geométricas robustas.
+
+Cuando el usuario solicite contornos cerrados, convertir primero los trazos en regiones con ancho y después efectuar las operaciones booleanas necesarias.
+
+El resultado expandido debe ser independiente del motor del programa.
+
+### 8.6 Múltiples aplicaciones
+
+Un proyecto puede contener:
+
+- Varios patrones.
+- Varios perímetros.
+- Varias aplicaciones de un mismo patrón.
+- Parámetros de colocación independientes por aplicación.
+
+Modificar el patrón fuente debe actualizar sus aplicaciones vinculadas.
+
+No alterar las aplicaciones desvinculadas o expresamente congeladas.
+
+---
+
+## 9. Medidas y precisión
+
+### 9.1 Sistema de coordenadas
+
+Utilizar unidades de documento independientes del zoom y de la resolución física de pantalla.
+
+Definir claramente la transformación entre:
+
+- Coordenadas del modelo.
+- Coordenadas de pantalla.
+- Coordenadas de archivo exportado.
+
+Unidad interna canónica recomendada: milímetros para documentos con dimensiones físicas.
+
+### 9.2 Unidades
+
+Soportar:
+
+- mm
+- cm
+- pulgadas
+- px
+
+Mostrar conversiones coherentes.
+
+Un cambio de unidad de presentación no debe modificar las dimensiones físicas.
+
+### 9.3 SVG importado
+
+Interpretar correctamente `viewBox`, unidades explícitas y transformaciones.
+
+Si un SVG no expresa dimensiones físicas inequívocas, permitir definirlas sin inventar una escala silenciosamente.
+
+### 9.4 Precisión
+
+- Coordenadas de doble precisión durante el cálculo.
+- Tolerancias geométricas centralizadas y documentadas.
+- Evitar redondeos acumulativos durante la edición.
+- No utilizar píxeles de pantalla como precisión geométrica.
+- Un ciclo guardar/abrir no debe modificar dimensiones ni nodos más allá de la tolerancia serializada.
+
+---
+
+## 10. Importación y exportación
+
+### 10.1 Importar
+
+MUST soportar:
+
+- SVG.
+- JSON nativo de proyecto.
+
+Para SVG:
+
+- Shapes y paths vectoriales.
+- Paths compuestos.
+- Transformaciones.
+- Grupos compatibles.
+- Dimensiones y `viewBox`.
+
+No prometer soporte universal de todas las características SVG. Detectar explícitamente filtros, imágenes incrustadas, texto u otras capacidades no soportadas y advertir cuando sea necesario.
+
+### 10.2 SVG — Patrón periódico
+
+Exportar:
+
+- Celda fundamental cuando corresponda.
+- Celda de repetición.
+- Patrón SVG mediante definiciones reutilizables cuando sea compatible.
+- Patrón expandido en una región finita configurable.
+
+La información geométrica del patrón debe conservarse.
+
+### 10.3 SVG — Patrón aplicado
+
+Exportar:
+
+- Previsualización con clipPath.
+- Geometría expandida y recortada.
+- Contorno de aplicación opcional.
+- Todo en dimensiones físicas correctas.
+
+Una exportación llamada **Expanded SVG** no puede depender de una máscara visual para ocultar geometría que supuestamente ya está recortada.
+
+### 10.4 Otros formatos
+
+**PNG**
+
+- Fondo transparente o sólido.
+- Resolución configurable.
+- DPI configurable.
+- Respeto de dimensiones físicas.
+- Exportación de celda o región aplicada.
+
+**JPEG**
+
+- Calidad configurable.
+- Fondo sólido.
+- Destinado a representación rasterizada, nunca como formato principal editable.
+
+**DXF**
+
+- Exportación 2D básica de líneas y polilíneas.
+- Curvas Bézier aproximadas mediante subdivisión controlada.
+- Tolerancia de aproximación configurable en unidades físicas.
+- No incluir entidades 3D.
+- Documentar limitaciones y preservar la escala.
+
+**JSON**
+
+- Proyecto editable y recuperable.
+- Versión de esquema explícita.
+- Todos los parámetros, vínculos y objetos fuente.
+
+### 10.5 Seguridad y validez
+
+Los SVG importados deben procesarse como contenido no confiable.
+
+Rechazar o sanitizar scripts, manejadores de eventos, contenido activo, referencias remotas peligrosas y elementos no permitidos.
+
+No ejecutar JavaScript importado.
+
+Los SVG exportados deben ser XML válido, autocontenido y visualizable sin depender de recursos externos.
+
+### 10.6 Previsualización de exportación
+
+El diálogo Exportar MUST permitir:
+
+- Elegir qué exportar.
+- Elegir formato.
+- Configurar dimensiones o resolución.
+- Seleccionar representación editable o expandida.
+- Ver una previsualización.
+- Informar el tamaño estimado de la exportación.
+- Advertir si el resultado no cumple las condiciones para exportación seamless rectangular.
+
+Las exportaciones costosas deben permitir cancelación.
+
+---
+
+## 11. Modelo de datos
+
+Implementar un modelo de proyecto serializable, versionado y separado de los objetos internos de Paper.js.
+
+Estructura conceptual:
+
+```text
+Project
+  schemaVersion
+  metadata
+  documentUnits
+  patterns[]
+    id
+    name
+    sourceGeometry
+    layers[]
+    generatorGraph
+    symmetry
+      family
+      group
+      generators
+      lattice
+    arrangement
+    warp
+    parameters
+    seed
+    algorithmVersions
+  regions[]
+    id
+    name
+    geometry
+    dimensions
+  applications[]
+    id
+    patternId
+    regionId
+    placementTransform
+    cropMode
+    linked
+  preferences
+```
+
+No utilizar la estructura de objetos de renderizado como único formato persistente.
+
+### 11.1 Modelo no destructivo
+
+La cadena conceptual de procesamiento será:
+
+**Geometría fuente → Generador → Simetrías → Distribución/repetición → Warp compatible → Aplicación al perímetro → Exportación**
+
+La compatibilidad de cada etapa debe verificarse.
+
+Un cambio de generador no debe borrar automáticamente la geometría fuente.
+
+### 11.2 Historial
+
+Implementar undo/redo para:
+
+- Creación de geometría.
+- Modificación de nodos.
+- Transformaciones.
+- Cambio de parámetros.
+- Cambios de simetría.
+- Operaciones booleanas.
+- Edición de perímetros.
+- Aplicaciones de patrones.
+
+Una operación continua de arrastre debe generar una acción coherente en el historial, no cientos de acciones individuales.
+
+### 11.3 Guardado
+
+- Autosave local en IndexedDB.
+- Guardar proyecto como archivo.
+- Abrir proyecto desde archivo.
+- Nuevo proyecto.
+- Duplicar proyecto.
+- Recuperar último proyecto local.
+- Exportar/importar presets.
+
+No depender exclusivamente del almacenamiento del navegador: el archivo JSON es la vía portable y recuperable de preservación de proyectos.
+
+Guardar transaccionalmente y advertir si falla el almacenamiento local.
+
+### 11.4 Versionado
+
+Implementar validación del esquema.
+
+Preparar un mecanismo de migración para versiones posteriores.
+
+Rechazar archivos inválidos con errores comprensibles, sin dejar el documento actual en estado corrupto.
+
+---
+
+## 12. Arquitectura de software
+
+Organizar el proyecto en módulos desacoplados.
+
+Estructura orientativa:
+
+```text
+src/
+  app/
+  ui/
+    shell/
+    toolbar/
+    panels/
+    controls/
+    dialogs/
+  editor/
+    tools/
+    selection/
+    handles/
+    viewport/
+    history/
+  geometry/
+    paths/
+    transforms/
+    boolean/
+    clipping/
+    units/
+  symmetry/
+    wallpaper/
+    frieze/
+    radial/
+    lattices/
+  generators/
+    grid/
+    warp/
+    radial/
+    curves/
+    tessellation/
+  patterns/
+    engine/
+    composition/
+    preview/
+  application/
+    regions/
+    placement/
+    clipping/
+  export/
+    svg/
+    dxf/
+    raster/
+  persistence/
+    schema/
+    migrations/
+    storage/
+  tests/
+```
+
+La estructura puede ajustarse si existe una alternativa más clara, pero MUST mantener estos límites conceptuales.
+
+### 12.1 Independencia del motor
+
+La lógica geométrica no debe depender directamente de componentes React.
+
+El motor de simetrías debe poder probarse mediante datos de entrada y salida sin montar la interfaz.
+
+### 12.2 Contratos explícitos
+
+Definir interfaces TypeScript para:
+
+- Geometría fuente.
+- Transformación.
+- Red de repetición.
+- Grupo de simetría.
+- Generador.
+- Parámetro.
+- Patrón.
+- Región de aplicación.
+- Resultado de exportación.
+
+### 12.3 Estado
+
+Mantener una única fuente de verdad para los datos editables.
+
+El canvas o la escena de Paper.js será una representación del modelo, no una segunda base de datos independiente.
+
+Evitar errores de sincronización entre sliders, viewport, geometría y exportación.
+
+---
+
+## 13. Performance
+
+### 13.1 Objetivo interactivo
+
+La experiencia debe mantenerse fluida durante:
+
+- Dibujo libre.
+- Manipulación Bézier.
+- Drag de objetos.
+- Cambios de sliders.
+- Zoom.
+- Pan.
+- Cambio de simetría.
+
+Objetivo de referencia:
+
+- Al menos 30 FPS durante interacciones habituales sobre un equipo desktop moderno.
+- Latencia visible de actualización idealmente inferior a 100 ms para escenas normales.
+- Sin bloqueo prolongado del hilo principal por exportaciones.
+
+Estos son objetivos medibles, no garantías para geometrías arbitrariamente grandes.
+
+### 13.2 Escena de prueba
+
+Preparar un benchmark con:
+
+- 100 objetos fuente.
+- 300 instancias de celda visibles.
+- Al menos un grupo con reflexiones y rotaciones.
+- Un generador con parámetros variables.
+- Un perímetro irregular.
+
+Medir la respuesta al arrastrar un nodo y cambiar un parámetro.
+
+### 13.3 Estrategias
+
+- Renderizar solo el área visible.
+- Cachear geometrías y transformaciones cuando corresponda.
+- Evitar duplicación innecesaria de paths.
+- Invalidar solamente las etapas afectadas.
+- Debounce para operaciones realmente costosas, sin comprometer la respuesta del trazo.
+- Web Worker para expansiones y exportaciones pesadas.
+- Límites configurables de complejidad y consumo de memoria.
+- Indicadores de procesamiento y cancelación.
+
+El resultado exportado debe obtenerse del modelo geométrico, no de una captura de baja resolución del viewport.
+
+---
+
+## 14. Pruebas y criterios de aceptación
+
+Crear pruebas unitarias, geométricas, funcionales y end-to-end.
+
+### AC-01 — Primera línea
+
+Con un proyecto vacío en modo periódico, empezar a dibujar una línea.
+
+**Esperado:** antes de soltar el mouse, sus copias aparecen en la vista del patrón.
+
+### AC-02 — Modificación de geometría
+
+Mover un nodo Bézier del motivo original.
+
+**Esperado:** todas las instancias se actualizan y la curva permanece editable.
+
+### AC-03 — Edición mediante instancia
+
+Seleccionar una copia reflejada o rotada y mover un nodo.
+
+**Esperado:** se modifica el nodo correspondiente de la geometría fuente y todas las copias permanecen consistentes.
+
+### AC-04 — Simetrías periódicas
+
+Probar los 17 wallpaper groups con motivos asimétricos.
+
+**Esperado:** las transformaciones cumplen las simetrías definidas y son invariantes bajo los vectores de la red.
+
+Incluir casos específicos para p4m, p4g, p6m, pg y pgg.
+
+### AC-05 — Frisos y rosetas
+
+Cambiar parámetros de repetición lineal y radial.
+
+**Esperado:** las instancias respetan las transformaciones correspondientes sin introducir traslaciones periódicas inexistentes.
+
+### AC-06 — Seamless
+
+Construir una geometría que atraviese el borde de la celda.
+
+**Esperado:** la unión con las celdas vecinas es geométricamente continua.
+
+Automatizar pruebas con traslaciones y, para exportaciones rasterizables periódicas rectangulares, comparación de mosaicos de varias celdas.
+
+### AC-07 — Deformación
+
+Aplicar un warp periódico compatible.
+
+**Esperado:** conserva continuidad por traslación.
+
+Aplicar uno incompatible con la simetría estricta elegida.
+
+**Esperado:** la aplicación restringe el warp o advierte claramente la pérdida de simetría.
+
+### AC-08 — Generador paramétrico
+
+Crear un Warp Grid, modificar grid size, spacing, scale ratio y modo de distribución.
+
+**Esperado:** actualización inmediata, determinística y recuperable mediante undo.
+
+### AC-09 — Aplicación a perímetro
+
+Importar o crear una región Bézier irregular.
+
+Aplicarle un patrón, moverlo, rotarlo y escalarlo.
+
+**Esperado:** solo aparece dentro de la región en el modo de previsualización recortada; la fuente sigue intacta.
+
+### AC-10 — Paths compuestos
+
+Crear una región externa con agujero interior.
+
+**Esperado:** el patrón no invade el agujero y la exportación expandida respeta ambas fronteras.
+
+### AC-11 — Exportación expandida
+
+Exportar el resultado aplicado a una región irregular.
+
+**Esperado:** el SVG expandido contiene geometría efectivamente recortada y no necesita un clipPath para producir ese recorte.
+
+### AC-12 — Medidas
+
+Crear un rectángulo de 100 × 50 mm, guardar, reabrir y exportar.
+
+**Esperado:** dimensiones físicas conservadas dentro de una tolerancia documentada.
+
+### AC-13 — Proyecto completo
+
+Guardar un proyecto con varias geometrías, simetrías, generadores, regiones y aplicaciones.
+
+Abrirlo nuevamente.
+
+**Esperado:** resultado y parámetros idénticos.
+
+### AC-14 — Determinismo
+
+Generar dos veces el mismo patrón con parámetros, semilla y versiones de algoritmo idénticos.
+
+**Esperado:** geometría equivalente dentro de la tolerancia matemática definida.
+
+### AC-15 — Exportación
+
+Abrir los SVG producidos en un renderizador externo y comprobar que mantienen geometría, dimensiones y apariencia.
+
+Comprobar también PNG y DXF con herramientas o validadores independientes.
+
+### AC-16 — SVG malicioso
+
+Importar SVG con scripts, atributos de evento y recursos externos.
+
+**Esperado:** ningún código se ejecuta y los elementos peligrosos son rechazados o sanitizados.
+
+### AC-17 — Despliegue estático
+
+Ejecutar el build de producción desde:
+
+1. Raíz de un servidor estático.
+2. Subdirectorio configurado.
+3. Servidor HTTP local accesible desde otra máquina.
+
+**Esperado:** todas las funciones operan sin backend y sin conexión a servicios externos.
+
+### AC-18 — Regresión visual
+
+Crear capturas automatizadas de los modos EDIT, PATTERN y APPLY con un proyecto de prueba.
+
+Verificar posición de paneles, visualización de controles y ausencia de superposiciones a resoluciones desktop.
+
+### AC-19 — Historial
+
+Dibujar, modificar y transformar una geometría, cambiar su simetría y aplicar un patrón.
+
+Ejecutar undo y redo.
+
+**Esperado:** recuperación correcta de cada estado, sin inconsistencias entre datos y pantalla.
+
+### AC-20 — Funcionalidad real
+
+Inspeccionar todos los controles visibles del editor.
+
+**Esperado:** ninguna herramienta presentada como funcional carece de comportamiento implementado.
+
+---
+
+## 15. Implementación por fases internas
+
+Estas fases organizan el trabajo de Codex. **No son entregables separados ni requieren nuevos prompts.**
+
+### Fase 1 — Fundación
+
+- Configurar proyecto.
+- Definir modelo de datos.
+- Crear sistema de unidades.
+- Crear motor de transformaciones.
+- Implementar interfaz base.
+- Configurar pruebas.
+
+### Fase 2 — Editor vectorial
+
+- Herramientas de dibujo.
+- Manipulación Bézier.
+- Selección.
+- Transformaciones.
+- Capas.
+- Historial.
+- Importación SVG.
+
+### Fase 3 — Simetrías y repetición
+
+- Redes de traslación.
+- Wallpaper groups.
+- Frieze groups.
+- Simetrías radiales.
+- Renderizado de instancias.
+- Edición desde instancias.
+- Verificación seamless.
+
+### Fase 4 — Generadores paramétricos
+
+- Familias definidas en la sección 6.
+- Paneles dinámicos.
+- Composición.
+- Warps.
+- Semillas.
+- Compatibilidad con simetrías.
+
+### Fase 5 — Aplicación a regiones
+
+- Editor de perímetros.
+- Importación de regiones.
+- Aplicación y colocación.
+- Máscaras.
+- Recorte geométrico expandido.
+- Vínculos entre patrones y aplicaciones.
+
+### Fase 6 — Persistencia y exportación
+
+- JSON versionado.
+- IndexedDB.
+- SVG.
+- PNG.
+- JPEG.
+- DXF.
+- Presets.
+- Opciones de expansión y dimensiones.
+
+### Fase 7 — Integración y calidad
+
+- Pruebas completas.
+- Benchmarks.
+- Revisión visual.
+- Corrección de errores.
+- Optimización.
+- Documentación.
+- Build estático.
+- Validación de despliegue.
+
+Cada fase debe dejar el repositorio en estado coherente. Evitar acumular componentes incompletos para integrarlos solamente al final.
+
+---
+
+## 16. Referencias técnicas obligatorias
+
+Codex MUST inspeccionar los proyectos y documentación siguientes antes de implementar las partes relevantes.
+
+La finalidad es aprovechar soluciones y conceptos existentes, no copiar interfaces completas.
+
+### 16.1 Patturn Studio
+
+https://patturn.studio/#features
+
+Referencia principal de interacción y presentación.
+
+Estudiar:
+
+- Pattern Generator.
+- Freeform / Rectangular / Circular.
+- Warp Grid.
+- Controles paramétricos.
+- Organización de paneles.
+- Flujo entre diseño, patrón y aplicación.
+- Edición contextual.
+
+Es una referencia funcional y visual, no una dependencia ni una fuente de código autorizada.
+
+### 16.2 Eschersketch
+
+https://github.com/levskaya/eschersketch
+
+Estudiar:
+
+- Wallpaper groups.
+- Rosette groups.
+- Repetición de geometría.
+- Dibujo en tiempo real.
+- Representación y exportación vectorial.
+
+### 16.3 Fractal Patterns / Wallpaper Studio
+
+https://github.com/guilbep/patterns
+
+Estudiar:
+
+- Implementación de los 17 wallpaper groups.
+- Modelo de patrones y capas.
+- Construcción de motivos.
+- Exportación SVG.
+- Repetición y composición.
+
+### 16.4 SVG Pattern Generator
+
+https://github.com/ratpi-studio/svg-pattern-generator
+
+Estudiar:
+
+- Arquitectura de generadores.
+- Guilloché.
+- Spirograph.
+- Rosette.
+- Lattice.
+- Tessellation.
+- Controles paramétricos.
+- Presets.
+
+### 16.5 Pattern Packing
+
+https://github.com/vladstudio/patterns
+
+Estudiar los algoritmos de distribución de formas SVG y generación de composiciones sin solapamiento, si su implementación y licencia permiten una reutilización conveniente.
+
+### 16.6 Paper.js
+
+https://paperjs.org/
+
+https://paperjs.org/reference/pathitem/
+
+https://paperjs.org/reference/project/
+
+Referencias para:
+
+- Manipulación de paths.
+- Bézier.
+- Hit testing.
+- Boolean operations.
+- Compound paths.
+- Importación/exportación SVG.
+- Integración con Canvas.
+
+### 16.7 Inkscape
+
+https://wiki.inkscape.org/wiki/Tiling_tool
+
+https://wiki.inkscape.org/wiki/OnCanvasSymmetryTool
+
+Examinar los conceptos de tiled clones, instancias vinculadas y edición de patrones mediante transformaciones.
+
+### 16.8 SVG
+
+https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/pattern
+
+https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/clipPath
+
+https://www.w3.org/TR/SVG/
+
+Utilizar la especificación SVG para fundamentar correctamente el comportamiento de patrones, transformaciones, recortes, escalas y exportaciones.
+
+### 16.9 Consideraciones de licencias
+
+- Verificar licencias actuales antes de incorporar código.
+- Mantener avisos exigidos por las dependencias utilizadas.
+- Evitar dependencias incompatibles con redistribución privada del proyecto.
+- No copiar código o assets propietarios de Patturn Studio.
+- Registrar dependencias y atribuciones relevantes.
+
+---
+
+## 17. Configuración inicial de la aplicación
+
+El primer arranque debe presentar un proyecto funcional sin configuración previa.
+
+Incluir varios ejemplos demostrativos:
+
+1. Patrón rectangular simple editable.
+2. Simetría p4m.
+3. Simetría p6m.
+4. Composición radial.
+5. Warp Grid paramétrico.
+6. Composición de curvas guilloché.
+7. Patrón aplicado a un perímetro irregular.
+8. Patrón no periódico, identificado correctamente.
+
+Los ejemplos deben poder editarse, no ser imágenes estáticas.
+
+Incluir un comando o mecanismo para restaurar los ejemplos sin borrar proyectos del usuario.
+
+### Valores iniciales
+
+- Documento en milímetros.
+- Fondo claro.
+- Lienzo centrado.
+- Repetición p1 predeterminada.
+- Grilla visible con intensidad discreta.
+- Snapping configurable.
+- Preview activo.
+- Undo/redo desde el inicio.
+- Autosave habilitado.
+
+---
+
+## 18. Requisitos de experiencia de usuario
+
+La aplicación debe ser utilizable sin conocimientos de teoría de grupos o geometría avanzada.
+
+### 18.1 Controles progresivos
+
+Mostrar primero las propiedades principales.
+
+Los parámetros avanzados deben estar disponibles en paneles expandibles.
+
+### 18.2 Simetrías comprensibles
+
+Cada grupo de simetría debe presentar:
+
+- Nombre matemático.
+- Miniatura de ejemplo.
+- Descripción breve.
+- Vista de su celda.
+- Controles relevantes.
+
+No es necesario enseñar teoría matemática completa dentro de la aplicación.
+
+### 18.3 Edición contextual
+
+Al seleccionar una línea, mostrar controles de línea.
+
+Al seleccionar un generador, mostrar sus parámetros.
+
+Al seleccionar un perímetro, mostrar controles de región.
+
+Al seleccionar una aplicación, mostrar controles de colocación.
+
+Evitar que todos los controles aparezcan simultáneamente.
+
+### 18.4 Acciones visibles
+
+No ocultar funciones críticas exclusivamente en atajos de teclado.
+
+Los atajos deben complementar los controles visuales.
+
+### 18.5 Feedback
+
+Informar:
+
+- Estado de guardado.
+- Errores de importación.
+- Límites matemáticos.
+- Complejidad excesiva.
+- Exportaciones en curso.
+- Fallos de almacenamiento.
+- Pérdida de periodicidad o simetría.
+
+Los mensajes deben explicar el problema y, cuando corresponda, ofrecer una acción concreta para resolverlo.
+
+---
+
+## 19. Restricciones de producto
+
+### MUST
+
+- 100% 2D.
+- Funcionar como aplicación web estática.
+- Edición vectorial real.
+- Actualización visual durante el dibujo.
+- Patrones paramétricos.
+- Simetrías matemáticas implementadas correctamente.
+- Edición no destructiva.
+- Aplicación a perímetros arbitrarios cerrados.
+- Exportación SVG.
+- Guardado recuperable.
+- Funcionar sin servicios externos.
+- Pruebas automatizadas.
+
+### MUST NOT
+
+- Introducir backend obligatorio.
+- Introducir modelado 3D.
+- Vincular el diseño a una industria específica.
+- Depender de APIs remotas para operaciones principales.
+- Convertir geometría vectorial en raster como paso interno irreversible.
+- Declarar seamless un patrón que no cumple las condiciones geométricas.
+- Utilizar clones independientes como única representación de patrones.
+- Introducir componentes visuales que simulen funcionalidades inexistentes.
+- Perder información paramétrica al guardar y abrir.
+- Copiar branding o código propietario de la aplicación de referencia.
+
+### SHOULD
+
+- Mantener interfaz compacta y elegante.
+- Aprovechar bibliotecas geométricas probadas.
+- Conservar trazabilidad de transformaciones.
+- Mantener el renderizador independiente del modelo.
+- Permitir ampliar generadores y simetrías mediante nuevos módulos.
+- Documentar decisiones arquitectónicas.
+
+---
+
+## 20. Entregables
+
+Al finalizar, el repositorio debe incluir:
+
+**Aplicación**
+
+- Código fuente.
+- Configuración de build.
+- Recursos locales.
+- Build estático funcional o instrucciones reproducibles para generarlo.
+
+**Documentación**
+
+- `README.md`: instalación, ejecución y despliegue.
+- `ARCHITECTURE.md`: módulos y decisiones principales.
+- `GEOMETRY.md`: coordenadas, tolerancias, grupos de simetría y periodicidad.
+- `PROJECT_FORMAT.md`: estructura y versionado de proyectos.
+- `TESTING.md`: pruebas y benchmarks.
+- `THIRD_PARTY_NOTICES.md`: atribuciones y licencias relevantes.
+
+**Pruebas**
+
+- Suite unitaria.
+- Pruebas de simetría.
+- Pruebas de continuidad.
+- Pruebas de importación/exportación.
+- Pruebas end-to-end.
+- Benchmarks básicos.
+
+**Scripts operativos**
+
+Como mínimo, proporcionar comandos documentados y funcionales para:
+
+- Instalar dependencias.
+- Ejecutar en desarrollo.
+- Ejecutar tests.
+- Ejecutar pruebas end-to-end.
+- Compilar producción.
+- Servir el build localmente.
+- Configurar la ruta base del despliegue.
+
+Usar un gestor de paquetes único y un lockfile reproducible.
+
+---
+
+## 21. Definición de terminado
+
+El proyecto se considera terminado solamente cuando:
+
+1. Existe una aplicación integrada y navegable.
+2. Se puede dibujar geometría propia.
+3. Las repeticiones se actualizan mientras se dibuja.
+4. Las simetrías especificadas están implementadas y verificadas.
+5. Los generadores paramétricos funcionan.
+6. Es posible modificar geometría fuente y conservar sus instancias relacionadas.
+7. Es posible importar o dibujar un perímetro irregular.
+8. Es posible aplicar y modificar un patrón dentro de ese perímetro.
+9. Las exportaciones contienen geometría válida y conservan la escala.
+10. Los proyectos pueden guardarse, cerrarse y recuperarse.
+11. El build estático funciona sin backend.
+12. Las pruebas automatizadas relevantes se ejecutaron satisfactoriamente.
+13. La interfaz fue revisada y no contiene controles falsamente funcionales.
+14. El repositorio incluye documentación suficiente para continuar el desarrollo.
+
+Si alguna prueba falla, corregir el problema y volver a ejecutarla.
+
+No sustituir la validación por una inspección superficial del código.
+
+---
+
+## 22. Auditoría final obligatoria de Codex
+
+Antes de concluir, realizar una revisión integral en cuatro dimensiones.
+
+**A. Matemática**
+
+¿Existen transformaciones incorrectas, reflexiones mal compuestas, discontinuidades de celda, pérdida de dimensiones o exportaciones declaradas seamless sin justificación?
+
+**B. Arquitectura**
+
+¿Hay duplicación innecesaria de estado, geometría destructiva, acoplamientos evitables o módulos cuya expansión obligaría a reescribir partes centrales?
+
+**C. Experiencia de usuario**
+
+¿La aplicación permite el flujo completo de crear, transformar, visualizar, aplicar y exportar sin operaciones manuales innecesarias?
+
+¿La interfaz se mantiene visualmente alineada con la referencia de Patturn Studio, conservando identidad propia?
+
+**D. Operación**
+
+¿Puede ejecutarse y desplegarse realmente en hosting estático o Debian headless?
+
+¿Los archivos generados son portables?
+
+¿La información se conserva después de reiniciar la aplicación?
+
+### Proceso de cierre
+
+1. Ejecutar auditoría.
+2. Identificar defectos reales.
+3. Incorporar las correcciones.
+4. Repetir pruebas afectadas.
+5. Revisar nuevamente.
+6. Continuar hasta que no queden defectos críticos conocidos ni discrepancias relevantes con los criterios de aceptación.
+
+Al finalizar, proporcionar un resumen técnico breve con los comandos para ejecutar, probar y desplegar, las funcionalidades verificadas y cualquier limitación residual comprobada.
+
+**No proponer una segunda fase como sustituto de las funcionalidades requeridas en este documento.**
+
+---
+
+# Resultado esperado
+
+Una herramienta de diseño vectorial 2D en la que el usuario pueda comenzar con una sola línea, observar inmediatamente su transformación en un patrón complejo, modificar libremente la geometría y sus parámetros, cambiar entre diferentes sistemas de simetría, aplicar el resultado a cualquier perímetro irregular y exportarlo sin perder precisión.
+
+La aplicación debe combinar la inmediatez y simplicidad visual de Patturn Studio con la flexibilidad de un editor vectorial no destructivo y un motor geométrico matemáticamente riguroso.
+
+**Este PRD es la especificación de implementación. Procedé con el desarrollo completo.**

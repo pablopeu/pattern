@@ -1,0 +1,15 @@
+{
+  "name": "pattern-studio-2d", "private": true, "version": "0.1.0", "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 4173 --strictPort",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 4173 --strictPort",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "monitor": "python3 scripts/work_monitor.py",
+    "check": "tsc -b && vitest run"
+  },
+  "dependencies": { "react": "^19.2.0", "react-dom": "^19.2.0", "paper": "^0.12.18", "idb": "^8.0.3", "zod": "^4.1.12", "lucide-react": "^0.468.0" },
+  "devDependencies": { "typescript": "~5.9.3", "vite": "^7.2.2", "@vitejs/plugin-react": "^5.1.1", "@types/react": "^19.2.0", "@types/react-dom": "^19.2.0", "@types/node": "^24.10.0", "vitest": "^4.0.8", "@playwright/test": "^1.56.1" }
+}
