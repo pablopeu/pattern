@@ -65,3 +65,7 @@ Fecha de implementación y revisión: 19 de noviembre de 2026. La evidencia se o
 - Se limita complejidad para evitar bloqueo/memoria excesiva. Rendimiento medido y picos documentados en TESTING.md; no se garantizan 30 FPS en toda composición arbitraria.
 - IndexedDB es por navegador/origen. Otra PC accede a la aplicación, pero intercambia proyectos mediante JSON.
 - El timer solicita continuar en el daemon local; necesita que la máquina y Codex permanezcan disponibles. No se puede comprobar desde esta máquina la conexión física del navegador de otra PC; sí se verifica escucha HTTP en interfaces LAN.
+
+## Resultado de la corrida de cierre
+
+`npm run check`: TypeScript y **57 pruebas correctas**. `npm run test:e2e`: **19 correctas**. `npm run test:monitor`: **4 correctas**. Dos pruebas adicionales del build estático correctas en raíz/subdirectorio. Build, instalación reproducible y validadores independientes correctos. Se conserva la aplicación servida por LAN para feedback posterior.

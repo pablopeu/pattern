@@ -1,21 +1,43 @@
 # Continuidad de trabajo
 
-Objetivo: completar `prd_v1.txt` con commits locales, documentación y feedback LAN.
+## Estado al cierre · 19/11/2026
 
-## Estado 2026-11-19
-Primera aplicación integrada funcionando en http://<IP_LOCAL>:4173. Monitor http://<IP_LOCAL>:4174.
-`npm run build` y 29 pruebas unitarias pasan. Todavía no se ha terminado el PRD.
+PRD implementado y auditado conforme a `docs/ACCEPTANCE.md`. No quedan tareas de implementación abiertas ni defectos críticos conocidos en los flujos comprobados. Los límites residuales de SVG, aproximación geométrica y rendimiento están documentados; no se promete soporte universal ni rendimiento para complejidad arbitraria.
 
-## Próximo trabajo concreto
-1. Ejecutar Playwright (se está instalando Chromium), revisar screenshots y corregir flujos reales.
-2. Probar dibujo antes de pointerup, edición de copias reflejadas/rotadas, paths/nodos, importación SVG física y segura, guardar/reabrir.
-3. Auditar recorte expandido con agujeros y trazos; exportación worker y DXF/raster con validadores independientes. Corregir escala de trazos en transformaciones y recorte de celda expandida.
-4. Completar biblioteca recuperable/presets importables, guías y vista de continuidad, benchmark 100 fuentes/300 celdas, pruebas de despliegue raíz/subdirectorio/offline.
-5. Revisar toda la interfaz, eliminar o completar cualquier control insuficiente, documentar matemáticas/arquitectura/formato/operación/licencias.
+### Evidencia final
 
-## Servicios
-Procesos persistentes iniciados con Popen/start_new_session; PIDs y logs en `.runtime/`.
-No duplicar. App Vite 0.0.0.0:4173; monitor Python 0.0.0.0:4174.
-El monitor lee exclusivamente telemetría del hilo original para el cupo, guarda estado/timer local y pide continuación en este mismo hilo tras reset +60s. Al 90% usado, terminar incremento, probar, documentar, commit y finalizar turno.
-Consultar `python3 scripts/work_monitor.py --status` y `.runtime/feedback.jsonl` entre incrementos.
-El panel de avances no es un requisito de backend de la aplicación: dist/ es estático e independiente.
+- TypeScript estricto y 57 pruebas unitarias correctas.
+- 19 flujos Playwright completos correctos.
+- 4 pruebas del monitor correctas.
+- Build de producción correcto; pruebas HTTP estáticas en raíz y `/pattern/`, también con `BASE_PATH=/pattern/`, sin recursos de Internet.
+- CairoSVG, Pillow y ezdxf validaron SVG aplicado, PNG/JPEG con DPI físicos y polilíneas DXF 2D en mm.
+- Instalación aislada `npm ci` correcta desde el lockfile.
+- Capturas reales revisadas y benchmark documentado en TESTING.md.
+- Git local, sin push ni hosting externo. Consultar `git log` para el commit vigente.
+
+## Acceso conservado para feedback
+
+- Estudio en vivo: http://<IP_LOCAL>:4173
+- Avances/cupo/registro de feedback: http://<IP_LOCAL>:4174
+- Interfaz alternativa de la máquina: <IP_LOCAL>.
+- Procesos/PIDs/logs en `.runtime/`; `npm run local:status` los inspecciona. No duplicar servicios.
+- `.runtime/feedback.jsonl` guarda comentarios de la LAN. Al cierre no había feedback pendiente.
+
+La aplicación sirve los proyectos del navegador cliente; para compartir documentos entre PCs se utiliza JSON. El panel de avances es independiente del producto estático.
+
+## Monitor y siguientes cambios
+
+El monitor usa telemetría real de la sesión, umbral 10%, cierre del incremento, timer al reset efectivo +60 s y solicitud de reanudación en el mismo hilo. Las decisiones se probaron con mocks; no hizo falta agotar una ventana real durante esta implementación.
+
+`.runtime/PROJECT_COMPLETE` cancela reanudaciones del encargo ya verificado. El panel y su proceso permanecen activos. Si el usuario solicita cambios nuevos, quitar ese marcador: el monitor retoma automáticamente la vigilancia. Leer feedback, revisar el estado Git y continuar dentro del alcance autorizado. Si cambia el hilo, conservar/reconfigurar su identidad explícitamente sin duplicar monitores.
+
+## Comandos principales
+
+- `npm run dev`: desarrollo LAN, puerto 4173.
+- `npm run check`: TypeScript y Vitest.
+- `npm run test:e2e`: navegador real.
+- `npm run test:monitor`: decisiones del timer sin mensajes reales.
+- `npm run build`: build estático con avisos de licencias.
+- `npm run serve:dist`: servir dist con Python en 4180.
+- `npm run benchmark`: mediciones reproducibles contra desarrollo.
+- `npm run local:start|local:status|local:stop`: administrar servicios propios.

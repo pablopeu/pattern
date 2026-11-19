@@ -62,3 +62,13 @@
 - Archivo fuente formateado para revisión y mantenimiento, con comando reproducible `npm run format`.
 - `npm ci` comprobado en una instalación aislada del lockfile, conservando el servidor de revisión activo.
 - Build de producción correcto, chunks separados y dependencias locales. Se mantiene dist/ generado en esta máquina.
+
+## 2026-11-19 · Cierre del PRD
+
+- Corrida final: **57 unitarias, 19 E2E y 4 del monitor correctas**. TypeScript y build correctos.
+- Build final probado en raíz y `/pattern/` con base explícita, por HTTP y bloqueando recursos de Internet. El worker funciona en ambos despliegues.
+- Validadores independientes volvieron a pasar: CairoSVG, PNG/JPEG 1522×1301 a 200 DPI, DXF 36 polilíneas 2D en mm.
+- Escucha LAN comprobada: HTTP 200 en estudio :4173 y monitor :4174. No es posible comprobar desde aquí la conexión física de la otra PC.
+- Auditoría AC-01…AC-20 y límites en `docs/ACCEPTANCE.md`; instalación, ejecución, pruebas y despliegue en README.md y TESTING.md.
+- No hubo feedback pendiente al cierre. Se conservan ambos servicios para revisión del usuario y Git exclusivamente local.
+- Se marca el encargo verificado para evitar una reanudación innecesaria al reset. El monitor vuelve a vigilar si se retira el marcador para cambios posteriores autorizados.
