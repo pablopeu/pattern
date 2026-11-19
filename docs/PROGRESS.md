@@ -149,3 +149,11 @@
 - Benchmark aislado y auditoría visual final registrados en TESTING.md; controles de guías detalladas desactivan la estructura completa para evitar estados contradictorios.
 - Logo icono.png comprobado cargado y legible a 1366/1440; bitmap original conservado y asset incluido en ambos builds estáticos.
 - Matriz completa v2.1 y restricciones constructivas documentadas en docs/ACCEPTANCE.md. No quedan funcionalidades requeridas pendientes; resta registrar el cierre en Git y conservar servicios LAN.
+
+
+## PRD v2.1 · Cierre en main
+
+- Incremento funcional y logo confirmados en GitHub mediante 1343761, precedido por c11008d. Historial completo preservado y sin cambios de dependencias.
+- Estado de continuidad reescrito con evidencia final, decisiones geométricas y operación del monitor. PRD v2.1 terminado y sin trabajo requerido pendiente.
+- Se conserva la aplicación en 4173 y el monitor/feedback en 4174. Se detiene sólo el servidor HTTP temporal de QA en 4180; artefactos locales permanecen disponibles.
+- Se marca PROJECT_COMPLETE después del push del cierre para evitar otra reanudación automática sin tarea pendiente. Cualquier feedback posterior autorizado reabre el ciclo.

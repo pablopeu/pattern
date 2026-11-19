@@ -16,11 +16,11 @@ Modelo opcional de tesela en Pattern, separado de generator/sourceGeometry/symme
 - Triángulo equilátero: 3 bordes con simetría central propia alrededor del punto medio. Editar primera mitad y derivar la segunda por media vuelta + recorrido inverso. Red u=(w,0), v=(w/2,sqrt(3)w/2); dos orientaciones por celda, relacionadas por H(x)=u+v-x. La restricción de borde es necesaria para que la misma curva coincida con la del triángulo vecino.
 - Hexágono regular: 3 bordes maestros y opuestos derivados por traslación con recorrido inverso. Red de centros con u=(3r/2,sqrt(3)r/2), v=(0,sqrt(3)r).
 
-Fijar vértices estructurales; permitir nodos y tangentes Bézier dentro de corredores de borde seguros. Verificar borde emparejado, área, ausencia de autointersección y cobertura/solapamiento con Paper.js. Rechazar cambios que pierdan encastre, con explicación. No clasificador universal.
+Se fijan vértices estructurales y se permiten nodos y tangentes Bézier dentro de corredores de borde seguros. Verificar borde emparejado, área, ausencia de autointersección y cobertura/solapamiento con Paper.js. Rechazar cambios que pierdan encastre, con explicación. No clasificador universal.
 
 Motivo canónico y contorno de tesela deben seguir siendo entidades distintas. La relación debe declararse en UI; las transformaciones de tesela se componen con la simetría local del motivo. Renderizar cada motivo recortado a su tesela y repetir mediante las colocaciones matemáticas de la partición. Extender captura a esa composición conservando C inversa fija; no elegir copias fuera de su clip.
 
-Reutilizar el exportador: preparar geometría vectorial del motivo recortado a la tesela en una etapa temporal, derivar copias sólo para la región solicitada y luego aplicar el recorte final de región. Exportar contornos únicamente con una opción explícita. Certificar celdas a partir de la red real de teselas, no del grupo local del motivo. Mantener linked/frozen.
+Se reutiliza el exportador: preparar geometría vectorial del motivo recortado a la tesela en una etapa temporal, derivar copias sólo para la región solicitada y luego aplicar el recorte final de región. Exportar contornos únicamente con una opción explícita. Certificar celdas a partir de la red real de teselas, no del grupo local del motivo. Mantener linked/frozen.
 
 ## Cierre verificado
 

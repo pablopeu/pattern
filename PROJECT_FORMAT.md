@@ -76,7 +76,7 @@ La importación utiliza la misma validación de patrones, conserva parámetros/s
 
 ## Presets y estado transitorio de v2
 
-Se leen presets `presetVersion:1` mediante la misma migración y presets `presetVersion:2`. Al exportar un conjunto heredado se resuelve y congela su simetría efectiva en modo propio, para que el preset sea autónomo. Al importar se regeneran IDs de fuentes y grupos.
+Se leen presets `presetVersion:1` mediante la misma migración y presets `presetVersion:2`/`presetVersion:3`. El formato de preset actual es 3. Al exportar un conjunto heredado se resuelve y congela su simetría efectiva en modo propio, para que el preset sea autónomo. Al importar se regeneran IDs de fuentes y grupos.
 
 Hover, miniaturas, identificadores de revisión, candidatos y matrices inversas de captura permanecen fuera del JSON. `preferences.sourceView` y `preferences.repetitionView` guardan únicamente las preferencias visuales. La versión de IndexedDB sigue siendo 1: no cambia su estructura de almacenes.
 

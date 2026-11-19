@@ -1,43 +1,31 @@
-# Continuidad activa · PRD v2.1
+# Continuidad · PRD v2.1 cerrado
 
-Implementar íntegramente `prd_v2.1.txt`: overlay matemático visible, captura en regiones vacías y teselas geométricas editables con encastre verificado. Mantener LAN, historial Git y push main autorizado.
+## Estado
+PRD v2.1 implementado y verificado sobre v2. El logo visible usa icono.png original, según el pedido adicional del usuario. Remoto autorizado: https://github.com/pablopeu/pattern, rama main.
 
-Baseline: commit `c6f6cb5`, v2 cerrada con 80 unitarias/31 E2E. Marcador PROJECT_COMPLETE retirado al comenzar este encargo.
+## Historial del incremento
+- c11008d: overlay matemático y captura desde regiones vacías.
+- 1343761: teselas editables/adyacencia, exportación, logo y verificaciones integradas.
+- El commit de documentación posterior registra este cierre sin cambios funcionales.
 
-Baseline v2 confirmado: 80 unitarias y 31 E2E. Auditoría en curso. Ventana anterior expirada; telemetría actual confirma reset y 1% usado; al umbral cerrar incremento y dejar que el monitor retome tras el reset real. No declarar completo este PRD mientras falte cualquiera de sus tres funcionalidades y verificaciones.
+## Evidencia de cierre
+- TypeScript estricto y 140 unitarias correctas.
+- 50 E2E correctos; conserva los 31 de v2, incluidos los 19 de v1.
+- 4 tests del monitor y build correctos.
+- 4 pruebas estáticas correctas en raíz y /pattern/, con Internet bloqueado: flujo previo y logo/tesela curva/worker v2.1.
+- CairoSVG/Pillow/ezdxf: exportación aplicada previa y hexágono Bézier, PNG/Cairo 787x630 y 58 polilíneas DXF 2D en mm.
+- Auditoría visual a 1440x900 y 1366x768: logo cargado, overlay tenue, tesela curva editable, sin desbordes ni errores de consola.
+- Benchmark aislado: pan sin/con overlay 33.19/33.33 ms de mediana, incluyendo protocolo/frame; cálculo p6m 1.6 ms. Datos y límites en TESTING.md.
+- HTTP LAN 200 para app 4173 y monitor 4174. Sin feedback pendiente al cierre.
 
-## Pedido adicional del usuario
-Al cerrar v2.1, reemplazar el logo visible actual por `icono.png` (archivo raíz presente). Integrarlo como asset, verificar escritorio/LAN y estático/subdirectorio. No perder este pedido.
+## Decisiones importantes
+- Esquema 3 y presets 3 con lectura v1/v2. Pattern.tiling opcional y versionado, separado de fuente/generador y simetría local.
+- Cinco construcciones verificadas; bordes opuestos acoplados, triángulos con simetría central por borde, vértices fijos y corredores seguros. No clasificador universal de polígonos.
+- El motivo se continúa por adyacencia antes del recorte; una sola fuente y captura inversa fija permiten cruzar bordes sin perder tinta.
+- Contornos deduplicados y optativos al exportar. Overlay siempre de edición. La simetría del motivo es local a la tesela; no se promete cualquier grupo global.
+- Penrose mantiene construcción aperiódica finita y suspende las teselas periódicas guardadas.
 
-## Incremento actual
-- Overlay y captura: esquema 3, grupo completo de isometrías testigo, preferencias y botón independiente. Checkpoint `c11008d` subido.
-- Teselas integradas (fuente/generador separados, motivo local, borde emparejado, recorte y continuidad al cruzar, contornos deduplicados). Archivos src/tiling/*, ui/TilePanel.tsx y engine/capture/export adaptados.
-- Último check: 138 unitarias correctas. Los 18 E2E v2.1 pasan con píxeles reales, sin helpers de selección en el raster. Los 31 de v2 deben repetirse sobre este incremento completo.
-- Logo pedido por el usuario ya integrado con import ../../icono.png; conservar el PNG original. Falta revisión visual final y build estático.
-- Pendiente: benchmark-structure.mjs aislado, auditoría visual/operativa y documentación final, regresión/build/estático/validadores, commit/push. Mantener PRD activo sin PROJECT_COMPLETE hasta terminar esos checks.
+## Operación
+No hay trabajo requerido pendiente. Conservar app http://<IP_LOCAL>:4173 y feedback/monitor http://<IP_LOCAL>:4174. El marcador .runtime/PROJECT_COMPLETE cancela reanudaciones innecesarias; retirarlo ante nuevo trabajo autorizado y revisar feedback/Git/cupo antes de continuar.
 
-## Referencia del cierre anterior
-
-# Continuidad de trabajo · PRD v2
-
-## Estado actual
-PRD v2 implementado y verificado. Se conservaron el motor y la regresión v1. Los cambios están en main; remoto autorizado `https://github.com/pablopeu/pattern`.
-
-## Verificación de cierre
-- TypeScript estricto y 80 unitarias correctas (57 de v1 conservadas).
-- 31 E2E correctos (19 de v1 conservados), incluidos teclado/toque, estilo, tres conjuntos editables, Pluma abierta, pointer capturado y undo del conjunto activo.
-- Build final correcto. Producción comprobada en raíz y `/pattern/` por HTTP, con recursos externos bloqueados; worker de exportación operativo.
-- Monitor 4/4. Validadores independientes CairoSVG, Pillow y ezdxf correctos.
-- Galería real inspeccionada a 1440×900 y 1366×768: miniaturas y primera fila completas, sin desbordes ni errores de consola.
-- Benchmark final aislado: motor .6 ms, parámetros 16.7 ms, cambio de grupo con dos frames 68.6 ms, tanda de miniaturas 1558.2 ms. Nodos 50 ms con protocolo Playwright; picos y límites registrados en TESTING.md.
-- Matriz AC-21…AC-42 y límites en docs/ACCEPTANCE.md. Formato 2 y ejemplos/migraciones en PROJECT_FORMAT.md.
-
-## Resultado funcional
-Libre explícito; perfiles por grupo; origen/orientación; adaptación por colocación separada; captura inversa fija; continuidad Diseño/Patrón; galería programada con hover transitorio y pausa durante gestos; composición propia/heredada/libre; exportación confirmada y snapshots efectivos. Ocho fixtures v1 reales conservan fuentes, IDs, geometría, generadores, regiones y aplicaciones.
-
-## Operación y siguientes intervenciones
-- App LAN `http://<IP_LOCAL>:4173`, monitor/feedback `http://<IP_LOCAL>:4174`. Conservar ambos procesos.
-- No hay trabajo requerido pendiente de este PRD. La siguiente intervención puede partir del feedback del usuario o de otro encargo.
-- `.runtime/PROJECT_COMPLETE` evita reanudaciones innecesarias. Ante cambios autorizados posteriores, retirarlo y revisar `.runtime/feedback.jsonl`.
-- Consultar el cupo real con `python3 scripts/work_monitor.py --status`. Si queda <=10% con trabajo pendiente, verificar/documentar/commit y finalizar el turno; el monitor retoma el mismo hilo después del reset real +60s.
-- No duplicar servicios, no alterar proyectos privados de navegadores. La revisión física desde la otra PC depende del usuario; las respuestas HTTP LAN están comprobadas.
+El monitor sigue el uso real; con <=10% y trabajo pendiente, verificar/documentar/commit y finalizar turno. El timer solicita reanudar el mismo hilo después del reset real +60s. No duplicar servicios ni modificar proyectos privados de navegadores. La comprobación física desde otra PC corresponde al usuario; la escucha LAN sí está verificada.
