@@ -1,5 +1,5 @@
 /** Pure, versioned migrations. V1 p1 always remains wallpaper p1. */
-export const LATEST_SCHEMA_VERSION = 2;
+export const LATEST_SCHEMA_VERSION = 3;
 type Versioned = { schemaVersion: number } & Record<string, unknown>;
 export function migratePatternV1(value: unknown): unknown {
   if (!value || typeof value !== 'object') return value;
@@ -16,6 +16,13 @@ export function migratePatternV1(value: unknown): unknown {
   };
 }
 const migrations: Record<number, (value: Versioned) => Versioned> = {
+  2: (doc) => {
+    const p = structuredClone(doc);
+    p.schemaVersion = 3;
+    if (p.preferences && typeof p.preferences === 'object')
+      p.preferences = { ...p.preferences, structureVisible: false, structureOpacity: 0.22 };
+    return p;
+  },
   1: (doc) => {
     const p = structuredClone(doc);
     p.schemaVersion = 2;

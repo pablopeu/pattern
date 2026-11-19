@@ -54,7 +54,7 @@ describe('PRD v2 · migración real', () => {
   oldExamples.forEach((old, i) =>
     it(`ejemplo v1 ${i + 1}: conserva fuentes, IDs, simetría, generador y regiones`, () => {
       const p = parseProject(JSON.stringify(old));
-      expect(p.schemaVersion).toBe(2);
+      expect(p.schemaVersion).toBe(3);
       expect(p.metadata).toEqual(old.metadata);
       expect(p.regions).toEqual(old.regions);
       expect(p.applications).toEqual(old.applications);

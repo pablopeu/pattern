@@ -1,3 +1,4 @@
+import { symmetryStructure, structureMarkup } from '../symmetry/structure';
 import { useEffect, useMemo, useRef, useState, memo } from 'react';
 import type { Studio } from '../app/useStudio';
 import type { Symmetry, Pattern } from '../app/model';
@@ -25,6 +26,7 @@ export function previewSVG(
   pattern: Pattern,
   bounds: Bounds,
   prepared?: ReturnType<typeof generate>,
+  structure = false,
 ): string {
   const scene = buildScene(pattern, bounds, prepared);
   const refs = scene.instances
@@ -35,7 +37,7 @@ export function previewSVG(
     )
     .join('');
   return svgDocument(
-    `<defs><g id="motif">${scene.generated.geometry.map(svgPath).join('')}</g></defs>${refs}`,
+    `${structure && pattern.generator.kind !== 'penrose' ? structureMarkup(symmetryStructure(pattern.symmetry, bounds), 0.15, 0.7) : ''}<defs><g id="motif">${scene.generated.geometry.map(svgPath).join('')}</g></defs>${refs}`,
     bounds,
     '#f8faf5',
   );
@@ -111,6 +113,7 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
           main: s.project.mainSymmetry,
           mainProfiles: s.project.mainSymmetryProfiles,
           comparison,
+          structure: s.project.preferences.structureVisible,
           target: s.galleryTarget,
         }),
       [
@@ -118,6 +121,7 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
         s.project.mainSymmetry,
         s.project.mainSymmetryProfiles,
         comparison,
+        s.project.preferences.structureVisible,
         s.galleryTarget,
       ],
     );
@@ -161,7 +165,7 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
             comparison === 'cell' && choice.family === 'wallpaper'
               ? frameBounds(resolved.symmetry)
               : { x: -60, y: -45, width: 120, height: 90 };
-          const svg = previewSVG(resolved, frame, prepared);
+          const svg = previewSVG(resolved, frame, prepared, s.project.preferences.structureVisible);
           if (!cancelled)
             setPreviews((old) => ({
               ...old,

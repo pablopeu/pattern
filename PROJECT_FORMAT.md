@@ -1,12 +1,12 @@
 # Formato de proyecto
 
-El archivo nativo es JSON UTF-8, extensión sugerida `.pattern.json`. Versión actual: **2**. El proyecto no almacena objetos Paper.js, píxeles del canvas ni cientos de clones del motivo.
+El archivo nativo es JSON UTF-8, extensión sugerida `.pattern.json`. Versión actual: **3**. El proyecto no almacena objetos Paper.js, píxeles del canvas ni cientos de clones del motivo.
 
 ## Estructura
 
 ```json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "metadata": { "id": "uuid", "name": "Mi estudio", "createdAt": "ISO-8601", "updatedAt": "ISO-8601" },
   "documentUnits": "mm",
   "mainSymmetry": { "family": "none", "group": "none", "width": 60, "height": 60, "angle": 90, "sectors": 8, "center": {"x": 0, "y": 0}, "origin": {"x": 0, "y": 0}, "orientation": 0 },
@@ -95,3 +95,7 @@ El fragmento equivalente v2 conserva p1 propio y añade los campos del marco:
 ```
 
 Estos fragmentos muestran sólo los campos afectados, no son documentos autónomos. Los ocho documentos v1 completos están en [fixtures/v1-examples.json](src/tests/fixtures/v1-examples.json); la suite los migra y comprueba su round-trip v2.
+
+## Esquema 3 · PRD v2.1 en curso
+
+La migración 2→3 agrega únicamente `preferences.structureVisible:false` y `preferences.structureOpacity:0.22`. No altera entidades existentes. La migración v1 continúa pasando por v2 y conserva p1 periódico. El overlay y su caché no se exportan como parte del diseño ni se almacenan como geometría. La visibilidad/opacidad son preferencias de edición.

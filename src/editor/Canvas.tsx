@@ -1,3 +1,4 @@
+import { symmetryStructure, structureMarkup } from '../symmetry/structure';
 import { resolvePattern, symmetryOrigin, frameBounds } from '../symmetry/config';
 import {
   chooseCapture,
@@ -108,6 +109,24 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     observer.observe(container.current);
     return () => observer.disconnect();
   }, []);
+  const structure = useMemo(
+    () =>
+      s.project.preferences.structureVisible &&
+      !editorOnly &&
+      s.mode !== 'apply' &&
+      activePattern.generator.kind !== 'penrose' &&
+      activePattern.symmetry.family !== 'none'
+        ? symmetryStructure(activePattern.symmetry, actualView)
+        : null,
+    [
+      s.project.preferences.structureVisible,
+      editorOnly,
+      s.mode,
+      activePattern.symmetry,
+      activePattern.generator.kind,
+      actualView,
+    ],
+  );
   const { scene, error } = useMemo(
     () => safeScene(activePattern, actualView),
     [activePattern, actualView],
@@ -1013,6 +1032,15 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
             pointerEvents="none"
           />
         )}
+        {structure && (
+          <g
+            aria-label="Estructura matemática de simetría"
+            pointerEvents="none"
+            dangerouslySetInnerHTML={{
+              __html: structureMarkup(structure, s.project.preferences.structureOpacity, scalePx),
+            }}
+          />
+        )}
         {s.mode !== 'apply' &&
           scene &&
           (editorOnly ? (
@@ -1138,7 +1166,8 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
                 ))}
             </g>
           ))}
-        {s.project.preferences.guides &&
+        {!s.project.preferences.structureVisible &&
+          s.project.preferences.guides &&
           !editorOnly &&
           s.mode !== 'apply' &&
           activePattern.symmetry.family === 'wallpaper' &&
@@ -1170,7 +1199,8 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
               </text>
             </g>
           )}
-        {s.project.preferences.guides &&
+        {!s.project.preferences.structureVisible &&
+          s.project.preferences.guides &&
           !editorOnly &&
           s.mode !== 'apply' &&
           sym.family === 'frieze' &&
@@ -1195,7 +1225,8 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
               </text>
             </g>
           )}
-        {s.project.preferences.guides &&
+        {!s.project.preferences.structureVisible &&
+          s.project.preferences.guides &&
           !editorOnly &&
           s.mode !== 'apply' &&
           activePattern.generator.kind !== 'penrose' &&
@@ -1218,7 +1249,8 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
               })}
             </g>
           )}
-        {s.project.preferences.guides &&
+        {!s.project.preferences.structureVisible &&
+          s.project.preferences.guides &&
           !editorOnly &&
           activePattern.generator.kind !== 'penrose' &&
           s.mode !== 'apply' && (
@@ -1426,6 +1458,11 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         </div>
       )}
       {error && <div className="canvas-warning">{error}</div>}
+      {structure?.limited && (
+        <div className="canvas-warning">
+          Estructura reducida por densidad. Acercá el zoom para ver todos los elementos.
+        </div>
+      )}
       {scene?.generated.geometry.length === 0 && s.mode !== 'apply' && (
         <div className="empty-canvas">
           <span>Todo empieza con una línea.</span>
@@ -1461,6 +1498,41 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
           <Scan size={17} />
         </button>
         <i />
+        {!editorOnly && s.mode !== 'apply' && (
+          <>
+            <button
+              aria-label="Mostrar/Ocultar estructura de simetría"
+              title="Mostrar/Ocultar estructura de simetría"
+              aria-pressed={s.project.preferences.structureVisible}
+              className={s.project.preferences.structureVisible ? 'active' : ''}
+              onClick={() =>
+                s.change((p) => {
+                  p.preferences.structureVisible = !p.preferences.structureVisible;
+                })
+              }
+            >
+              <span aria-hidden="true">◇</span>
+            </button>
+            {s.project.preferences.structureVisible && (
+              <label className="structure-opacity" title="Opacidad de la estructura">
+                Opacidad
+                <input
+                  type="range"
+                  aria-label="Opacidad de la estructura"
+                  min=".03"
+                  max=".8"
+                  step=".01"
+                  value={s.project.preferences.structureOpacity}
+                  onChange={(e) =>
+                    s.change((p) => {
+                      p.preferences.structureOpacity = Number(e.target.value);
+                    })
+                  }
+                />
+              </label>
+            )}
+          </>
+        )}
         <button
           title="Grilla"
           aria-label="Mostrar grilla"

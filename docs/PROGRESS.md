@@ -110,3 +110,13 @@
 - Formato nativo v2, fragmentos v1/v2 y fixtures completos, arquitectura de matrices/captura/preview, referencias y matriz AC-21…AC-42 documentados.
 - Benchmark aislado y limitaciones en TESTING.md. Escucha LAN 4173/4174 comprobada con HTTP 200; sin feedback pendiente.
 - Checkpoint funcional `b3113cd` ya subido. El cierre y la documentación se incorporan al mismo historial main autorizado. PRD v2 terminado; servicios de revisión se conservan.
+
+
+## PRD v2.1 · Overlay y captura integrados
+
+- Leído el nuevo PRD completo y retirado PROJECT_COMPLETE. Baseline v2: 80 unitarias/31 E2E correctas. Telemetría actual confirma reset; la muestra anterior al 88% estaba expirada.
+- Overlay matemático de viewport con isometrías testigo, ejes/centros deduplicados, centros de medias traslaciones, dominio fundamental repetido y celda primitiva diferenciada. Frisos sin red vertical; radial sin periodicidad ficticia. Botón independiente de grilla, opacidad persistida y ausencia en exportaciones.
+- Captura canónica independiente de las fuentes y del culling previo; mantiene prioridades explícitas y una inversa fija por gesto.
+- Esquema 3 con migración 2→3 sólo de preferencias; entidades v1/v2 conservadas.
+- **115 unitarias y 37 E2E correctas**, conservando la regresión v2. Cinco pruebas rasterizan el SVG real y verifican tinta bajo el cursor antes/después de soltar en dos posiciones vacías distantes: p6m, p4g, pg, friso p2mg y Dn.
+- Teselas editables todavía en desarrollo: el generador legado no prueba encastre. Decisiones y pendientes en docs/V21_IMPLEMENTATION.md. No se declara v2.1 completo.

@@ -1,3 +1,19 @@
+# Continuidad activa · PRD v2.1
+
+Implementar íntegramente `prd_v2.1.txt`: overlay matemático visible, captura en regiones vacías y teselas geométricas editables con encastre verificado. Mantener LAN, historial Git y push main autorizado.
+
+Baseline: commit `c6f6cb5`, v2 cerrada con 80 unitarias/31 E2E. Marcador PROJECT_COMPLETE retirado al comenzar este encargo.
+
+Baseline v2 confirmado: 80 unitarias y 31 E2E. Auditoría en curso. Ventana anterior expirada; telemetría actual confirma reset y 1% usado; al umbral cerrar incremento y dejar que el monitor retome tras el reset real. No declarar completo este PRD mientras falte cualquiera de sus tres funcionalidades y verificaciones.
+
+## Incremento actual
+- Overlay y captura implementados: 115 unitarias + 37 E2E correctas, incluidas posiciones rasterizadas bajo el cursor en escenas vacías.
+- Esquema 3 migra preferencias 2→3; el resto de entidades se conserva.
+- `src/tiling/tiles.ts` contiene una construcción inicial aún sin integrar/validar. Ver docs/V21_IMPLEMENTATION.md para decisiones matemáticas y próximos pasos: validación independiente, modelo/UI, renderer/captura, exportación/persistencia, E2E y performance.
+- Mantener el PRD activo; no escribir PROJECT_COMPLETE hasta completar teselas y cierre de auditorías.
+
+## Referencia del cierre anterior
+
 # Continuidad de trabajo · PRD v2
 
 ## Estado actual

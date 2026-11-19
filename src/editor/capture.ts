@@ -9,7 +9,7 @@ import {
   type Matrix,
   type Point,
 } from '../geometry/matrix';
-import { geometryBounds } from '../application/clipping';
+import { cosets, lattice } from '../symmetry/groups';
 import { paperPath, scope } from '../geometry/paper';
 export interface CaptureInstance {
   id: string;
@@ -27,8 +27,7 @@ export interface CaptureContext {
 }
 export const matrixId = (m: Matrix) => m.map((n) => n.toFixed(9)).join(',');
 export function captureCandidates(pattern: Pattern, scene: Scene, p: Point): CaptureInstance[] {
-  const b = geometryBounds(scene.generated.geometry),
-    center = { x: b.x + b.width / 2, y: b.y + b.height / 2 };
+  const center = captureReference(pattern);
   return scene.instances
     .flatMap((i) =>
       scene.generated.placements.map((m, k) => {
@@ -45,6 +44,48 @@ export function captureCandidates(pattern: Pattern, scene: Scene, p: Point): Cap
       }),
     )
     .sort((a, b) => a.distance - b.distance || a.id.localeCompare(b.id));
+}
+/** A generic orbit reference independent of existing source extents. */
+export function captureReference(pattern: Pattern): Point {
+  const s = pattern.symmetry;
+  if (s.family === 'none') return { x: 0, y: 0 };
+  if (s.family === 'radial')
+    return { x: s.center.x + s.width * 0.1732050807569, y: s.center.y + s.width * 0.2718281828459 };
+  const q = apply(lattice(s), { x: 0.1732050807569, y: 0.2718281828459 });
+  return { x: s.origin.x + q.x, y: s.origin.y + q.y };
+}
+export function canonicalCandidates(pattern: Pattern, scene: Scene, p: Point): CaptureInstance[] {
+  if (scene.generated.finite) return [];
+  const s = pattern.symmetry,
+    basis = lattice(s),
+    inv = inverse(basis),
+    center = captureReference(pattern),
+    out: CaptureInstance[] = [];
+  cosets(s).forEach((op, k) =>
+    scene.generated.placements.forEach((place, g) => {
+      const base = multiply(op, place),
+        reference = apply(base, center),
+        q = apply(inv, { x: p.x - reference.x, y: p.y - reference.y }),
+        periodic = s.family === 'wallpaper' || s.family === 'frieze';
+      const ix = periodic ? Math.round(q.x) : 0,
+        iy = s.family === 'wallpaper' ? Math.round(q.y) : 0;
+      for (const x of periodic ? [ix - 1, ix, ix + 1] : [0])
+        for (const y of s.family === 'wallpaper' ? [iy - 1, iy, iy + 1] : [0]) {
+          const shift = periodic ? apply(basis, { x, y }) : { x: 0, y: 0 },
+            matrix = multiply([1, 0, 0, 1, shift.x, shift.y], base),
+            ref = apply(matrix, center);
+          out.push({
+            id: `${pattern.id}/${periodic ? `${x}:${y}:${k}` : `radial-${k}`}/${g}`,
+            patternId: pattern.id,
+            matrix,
+            inverse: inverse(matrix),
+            reference: ref,
+            distance: distance(ref, p),
+          });
+        }
+    }),
+  );
+  return out;
 }
 export function hitCandidates(
   pattern: Pattern,
@@ -95,7 +136,20 @@ export function chooseCapture(
   tolerance: number,
   explicit?: Matrix,
 ): { chosen: CaptureInstance; candidates: CaptureInstance[] } {
-  const candidates = captureCandidates(pattern, scene, p);
+  const candidates = [
+    ...canonicalCandidates(pattern, scene, p),
+    ...captureCandidates(pattern, scene, p),
+  ];
+  const unique = new Map<string, CaptureInstance>();
+  for (const candidate of candidates)
+    if (!unique.has(matrixId(candidate.matrix))) unique.set(matrixId(candidate.matrix), candidate);
+  candidates.splice(
+    0,
+    candidates.length,
+    ...[...unique.values()].sort((a, b) =>
+      Math.abs(a.distance - b.distance) > 1e-8 ? a.distance - b.distance : a.id.localeCompare(b.id),
+    ),
+  );
   if (!candidates.length) {
     const one = {
       id: 'source',

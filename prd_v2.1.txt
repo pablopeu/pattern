@@ -1,0 +1,266 @@
+prd_v2.1
+## Overlay matemático de simetrías, dibujo desde cualquier posición y teselas editables
+
+Repositorio: https://github.com/pablopeu/pattern
+
+### Objetivo
+
+Extender el PRD v2 existente tomando como referencia funcional la captura de iOrnament proporcionada en esta conversación.
+
+La captura pertenece a iOrnament, no a Pattern Studio. Su característica relevante es mostrar una estructura geométrica de simetría repetida en todo el lienzo, mientras el usuario dibuja desde cualquier posición y observa instantáneamente las transformaciones equivalentes.
+
+Implementar tres funcionalidades integradas.
+
+## 1. Fondo matemático de simetría
+
+Agregar un botón independiente, visible y accesible en la barra del lienzo:
+
+**Mostrar/Ocultar estructura de simetría.**
+
+No debe confundirse con la cuadrícula cartesiana existente.
+
+Cuando está activado, dibujar un overlay tenue que explique visualmente las operaciones de la simetría seleccionada.
+
+Para los grupos wallpaper:
+
+- Representar la estructura de simetría a lo largo de todo el viewport.
+- Dibujar ejes de reflexión mediante líneas continuas finas.
+- Dibujar ejes de deslizamiento mediante líneas punteadas o discontinuas.
+- Marcar centros de rotación mediante símbolos geométricos diferenciados por orden.
+- Representar los límites relevantes del dominio fundamental, con líneas finas y discretas.
+- Permitir distinguir la celda primitiva de traslación del dominio fundamental.
+- Repetir las guías mediante las operaciones correctas del grupo.
+
+Para los siete frisos, representar la estructura repetida en una sola dirección, sin inventar periodicidad vertical.
+
+Para Cn/Dn, representar centros y ejes radiales. No dibujar una red periódica inexistente.
+
+En modo Libre, ocultar la estructura porque no existe grupo de repetición.
+
+Para Penrose, representar opcionalmente los límites de sus teselas generadas, no una red cristalográfica ficticia.
+
+### Requisitos visuales
+
+El overlay debe:
+
+- Usar colores tenues.
+- Tener opacidad configurable.
+- Permitir ver claramente los trazos del usuario.
+- Adaptarse al zoom y al desplazamiento.
+- Mantener grosor visual razonablemente constante en píxeles.
+- No interceptar eventos del puntero.
+- Actualizarse inmediatamente al cambiar grupo, origen, orientación o dimensiones de red.
+- No incorporarse por defecto a los archivos exportados.
+
+Conservar los controles actuales de guías detalladas, pero agregar un único botón que active o desactive la estructura completa.
+
+La referencia visual es iOrnament: una red matemática sutil que permite anticipar dónde y cómo se propagará cada trazo.
+
+No copiar literalmente su diseño ni sus iconos.
+
+### Implementación
+
+Reutilizar:
+
+- `src/symmetry/groups.ts`
+- `src/symmetry/guides.ts`
+- `src/editor/Canvas.tsx`
+
+Crear, si resulta conveniente, un renderer SVG específico para el overlay.
+
+Derivar los ejes y centros a partir de las isometrías reales del grupo. No dibujar guías decorativas aproximadas.
+
+Calcular solamente las operaciones visibles dentro del viewport, con un margen pequeño.
+
+Deduplicar ejes y centros coincidentes para evitar líneas superpuestas de opacidad acumulada.
+
+Verificar matemáticamente los overlays de los 17 grupos wallpaper, incluidos los grupos con reflexiones deslizantes y las diferencias entre p3m1 y p31m.
+
+## 2. Dibujo desde cualquier posición del patrón
+
+El usuario debe poder iniciar un trazo en cualquier punto visible del lienzo, independientemente de la celda o instancia que ocupe ese lugar.
+
+La geometría debe propagarse inmediatamente a todas las instancias equivalentes de la simetría seleccionada.
+
+No debe ser necesario:
+
+- Dibujar únicamente dentro del dominio fundamental.
+- Seleccionar una celda inicial.
+- Tener un objeto previo debajo del cursor.
+- Volver a la vista Fuente.
+- Elegir manualmente una transformación en condiciones normales.
+
+### Reglas de captura
+
+Extender el sistema de `src/editor/capture.ts`.
+
+Cuando se inicia un trazo:
+
+1. Determinar una instancia canónica de captura correspondiente a la posición del cursor.
+2. Elegirla de forma determinística, incluso en regiones vacías.
+3. Fijar su matriz inversa durante el gesto.
+4. Convertir los puntos del cursor a coordenadas canónicas.
+5. Mantener una única geometría fuente.
+6. Propagar el dibujo inmediatamente a las instancias visibles.
+
+La política debe funcionar para trazos libres, líneas, Bézier y formas.
+
+Al cruzar límites entre celdas, conservar el contexto de captura y la continuidad de la geometría.
+
+No producir saltos, duplicaciones ni cambios de orientación inesperados.
+
+Si el usuario inicia otro trazo en otra instancia, debe funcionar del mismo modo.
+
+Las reflexiones deben tratar correctamente la inversión de orientación y la manipulación de tangentes Bézier.
+
+En los puntos de frontera donde varias instancias son igualmente válidas, aplicar un desempate estable. Permitir cambiar de instancia explícitamente cuando sea necesario.
+
+### Prueba funcional crítica
+
+Con un wallpaper p6m y el overlay activado:
+
+1. Dibujar una línea en cualquier posición visible.
+2. Ver su propagación inmediata.
+3. Dibujar otra línea en otra celda distante.
+4. Comprobar que se propaga correctamente.
+5. Editar ambos trazos desde copias transformadas.
+6. Cambiar a p4m.
+7. Seguir dibujando sin perder las fuentes.
+8. Regresar a p6m.
+9. Verificar que todos los trazos originales y nuevos siguen siendo editables.
+
+Repetir el ensayo con grupos que incluyan reflexiones deslizantes y con frisos y simetrías radiales.
+
+## 3. Teselas geométricas editables
+
+Auditar primero el generador `tessellation` existente.
+
+Actualmente su implementación utiliza colocaciones escalonadas y rotaciones alternadas. No tratarlo como un sistema completo de teselas de formas libres.
+
+Agregar un sistema específico para crear y editar teselas geométricas encastrables.
+
+### 3.1. Formas básicas
+
+Admitir inicialmente:
+
+- Cuadrados.
+- Rectángulos.
+- Paralelogramos.
+- Triángulos equiláteros.
+- Hexágonos regulares.
+- Teselas irregulares obtenidas mediante modificación de bordes compatibles.
+
+### 3.2. Edición libre de bordes
+
+Permitir editar un borde mediante nodos y curvas Bézier.
+
+Cuando un borde tiene una pareja que debe encastrar, actualizar automáticamente el borde correspondiente utilizando la transformación geométrica correcta.
+
+No limitar la edición a líneas rectas.
+
+El sistema debe conservar las condiciones de encastre y no generar huecos ni superposiciones involuntarias.
+
+Para transformaciones con reflexión, respetar la orientación y parametrización de los bordes.
+
+No ofrecer cualquier polígono arbitrario como teselable si no se ha demostrado una construcción válida.
+
+### 3.3. Separación entre tesela y dibujo
+
+Una tesela define la partición o cobertura del plano.
+
+El dibujo vectorial contenido en ella es una entidad editable distinta.
+
+El usuario debe poder:
+
+- Cambiar la forma de la tesela.
+- Modificar el dibujo interior.
+- Activar o desactivar el contorno de las teselas.
+- Ver la cobertura completa.
+- Editar bordes manteniendo encastres.
+- Cambiar parámetros de teselado sin destruir las fuentes.
+
+La simetría de los motivos y la geometría de las teselas deben tener modelos separados y relaciones explícitas.
+
+No confundir el mosaico de teselas con la simple repetición de una imagen rectangular.
+
+### 3.4. Alcance matemático
+
+Implementar las familias indicadas con reglas verificables de emparejamiento y adyacencia.
+
+Mantener el soporte Penrose existente como construcción aperiódica finita, sin presentarlo como wallpaper.
+
+No prometer un clasificador universal de polígonos teselables.
+
+Cuando una operación no preserve el encastre, impedirla o explicar la restricción.
+
+## 4. Integración de interfaz
+
+Mantener la interfaz actual de Pattern Studio.
+
+Agregar el botón de overlay al grupo de controles visuales del lienzo, con estado activo claramente indicado.
+
+Conservar y adaptar los controles actuales de cuadrícula, guías, región fundamental, ejes y centros.
+
+No introducir controles duplicados que produzcan resultados contradictorios.
+
+En la galería de simetrías, mostrar también una representación tenue de la estructura matemática cuando ayude a entender cada grupo.
+
+Agregar las teselas editables como una familia geométrica de trabajo, diferenciada claramente de los grupos de simetría.
+
+No hacer que el usuario deba abandonar el dibujo para cambiar las opciones visuales.
+
+## 5. Persistencia, exportación y compatibilidad
+
+Extender el esquema versionado actual de manera compatible.
+
+Conservar proyectos v1 y v2, incluyendo fuentes, generadores, aplicaciones, unidades, capas y simetrías.
+
+Guardar la preferencia de visibilidad del overlay y los parámetros reales de las teselas.
+
+No guardar instancias derivadas como objetos independientes.
+
+Conservar las exportaciones SVG, DXF y raster existentes.
+
+El overlay de simetría se considera una ayuda de edición, no parte del diseño exportado.
+
+El contorno de las teselas podrá exportarse solamente cuando el usuario lo solicite.
+
+## 6. Validación obligatoria
+
+Agregar pruebas unitarias y E2E para:
+
+- Los 17 overlays wallpaper.
+- Los siete frisos.
+- Cn y Dn.
+- Centros de rotación y ejes geométricamente correctos.
+- Dibujo desde regiones sin geometría previa.
+- Dibujo desde instancias reflejadas y rotadas.
+- Cruce continuo de celdas.
+- Cambio de simetría durante el proceso creativo.
+- Edición de curvas desde cualquier instancia.
+- Teselas sin huecos ni solapamientos.
+- Correspondencia de bordes editables.
+- Exportación sin guías salvo solicitud explícita.
+- Persistencia y migraciones.
+- Rendimiento con overlay activo y desactivado.
+- Regresión completa del PRD v2.
+
+Usar Playwright para verificar que un trazo realizado en una celda distante aparece realmente bajo el cursor y se propaga a sus equivalentes.
+
+No considerar suficiente comprobar solamente que existen instancias en el DOM.
+
+Verificar posiciones geométricas y resultados renderizados.
+
+## 7. Criterio de éxito
+
+La aplicación debe reproducir las dos características funcionales de iOrnament que motivan este incremento:
+
+**Primera:** el usuario puede observar la estructura matemática de la simetría como un fondo tenue, continuo y opcional sobre el lienzo completo.
+
+**Segunda:** puede dibujar en cualquier lugar del patrón, sin preocuparse por la posición de la celda fundamental, y el dibujo aparece inmediatamente en todas las posiciones equivalentes.
+
+Adicionalmente, debe poder construir teselas irregulares editables que encastren matemáticamente, diferenciando la forma de la tesela del motivo que contiene.
+
+Mantener el motor actual, completar las pruebas y documentar los límites reales.
+
+No entregar únicamente una propuesta. Implementar y verificar el incremento completo.

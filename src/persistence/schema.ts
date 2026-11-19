@@ -133,7 +133,7 @@ const pattern = z.object({
   visible: z.boolean(),
 });
 export const projectSchema = z.object({
-  schemaVersion: z.literal(2),
+  schemaVersion: z.literal(3),
   mainSymmetry: symmetry,
   mainSymmetryProfiles: z.record(z.string(), symmetry),
   metadata: z.object({
@@ -162,6 +162,8 @@ export const projectSchema = z.object({
     )
     .max(100),
   preferences: z.object({
+    structureVisible: z.boolean(),
+    structureOpacity: z.number().min(0.03).max(0.8),
     grid: z.boolean(),
     snap: z.boolean(),
     guides: z.boolean(),

@@ -1824,3 +1824,16 @@ input[type='color']::-webkit-color-swatch {
   outline: 1px solid #78986a;
   outline-offset: -1px;
 }
+
+.structure-opacity {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  padding: 0 6px;
+  color: var(--muted);
+}
+.structure-opacity input {
+  width: 70px;
+  accent-color: #718b68;
+}

@@ -105,7 +105,7 @@ export interface Application {
   showOutline: boolean;
 }
 export interface Project {
-  schemaVersion: 2;
+  schemaVersion: 3;
   mainSymmetry: Symmetry;
   mainSymmetryProfiles: Record<string, Symmetry>;
   metadata: { id: string; name: string; createdAt: string; updatedAt: string };
@@ -114,6 +114,8 @@ export interface Project {
   regions: Region[];
   applications: Application[];
   preferences: {
+    structureVisible: boolean;
+    structureOpacity: number;
     grid: boolean;
     snap: boolean;
     guides: boolean;
@@ -213,7 +215,7 @@ export function newPattern(): Pattern {
 export function newProject(): Project {
   const now = new Date().toISOString();
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     mainSymmetry: newPattern().symmetry,
     mainSymmetryProfiles: {},
     metadata: { id: uid(), name: 'Estudio sin título', createdAt: now, updatedAt: now },
@@ -222,6 +224,8 @@ export function newProject(): Project {
     regions: [],
     applications: [],
     preferences: {
+      structureVisible: false,
+      structureOpacity: 0.22,
       grid: true,
       snap: true,
       guides: true,
