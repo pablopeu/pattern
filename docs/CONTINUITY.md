@@ -27,8 +27,13 @@ raíz/subcarpeta correctas. Corrida integrada completa con exit code0,198,5s:
 .runtime/p3-full-final.log y p3-full-final-result.json. Logs finales
 p3-final-{check,build,static-summary}.log; casos dirigidos p3-grid-final-targeted.
 Captura docs/images/new-study-p3.png real, escritorio y móvil inspeccionados.
-Pendiente push solicitado y comprobar ejecución FTP; no quedan criterios del
-incremento conocidos pendientes. Resultado externo final en .runtime/LAST_DEPLOY.json.
+Publicado e2ca8bef6181be4339cc4d15c92169efa20384fd en main. Deploy FTP44796746721
+terminó con success (206 unitarias/TypeScript,3 tests de despliegue,build y FTP).
+https://github.com/pablopeu/pattern/actions/runs/44796746721
+Hosting https://peu.net/pattern/ sirve el mismo bundle que dist/ verificado;
+evidencia .runtime/p3-published.html. No quedan criterios pendientes conocidos.
+El registro documental de cierre se publica también; comprobar su workflow y
+conservar resultado externo final en .runtime/LAST_DEPLOY.json.
 Servicios4173/4174 conservados. Publicar en GH al finalizar, por pedido explícito.
 
 ---

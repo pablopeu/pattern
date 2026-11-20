@@ -624,3 +624,14 @@
   AGENTS registra defaults explícitos. Fuente original caratula.jpg/favicon_io.zip
   intacta, sin seguimiento. Servicios LAN conservados.
 - Se procede al push pedido por Pablo y verificación del workflow FTP real.
+
+
+## Publicación de defaults P3 y grilla negra · Correcta
+
+- Commit e2ca8be publicado en main por autorización explícita. Deploy FTP
+  44796746721 success:206 unitarias/TypeScript,3 pruebas de despliegue,build y FTP.
+  https://github.com/pablopeu/pattern/actions/runs/44796746721.
+- https://peu.net/pattern/ entrega el bundle idéntico al build final comprobado;
+  registro .runtime/p3-published.html. README con captura de puntos negros reales.
+- Se publica este registro de cierre y se verifica su workflow; resultado en
+  .runtime/LAST_DEPLOY.json. Servicios4173/4174 conservados.
