@@ -439,3 +439,20 @@
   y scope/start_url correctos. Captura .runtime/footer-preview.png.
 - Todo queda en Git local para revisar en LAN. **NO PUSH** hasta aprobación
   explícita: cada push activaría el despliegue FTP. Servicios 4173/4174 conservados.
+
+
+## Metadatos y carátula · Entrega local para revisión
+
+- Por pedido de Pablo, caratula.jpg copiada sin modificaciones a public/:
+  JPEG1176×775 y ~141KiB. Se conserva el archivo fuente original sin seguimiento.
+- Descripción, autor, robots/canonical; Open Graph website/es_AR con título,
+  descripción, URL, imagen absoluta/tipo/dimensiones/alt; X/Twitter con tarjeta
+  summary_large_image, @peu_ar y textos coherentes. Todo en HTML estático.
+- URL https://peu.net/pattern/ comprobada por HTTP contra Pattern Studio
+  actualmente publicado. La carátula nueva se publicará al aprobar el push.
+- Build correcto y probe real Chromium sin JS en raíz y /pattern/: tags únicos,
+  coherencia título/descripción, imagen HTTP200 decodificada y dimensiones reales.
+  cmp confirma bytes idénticos. Evidencia .runtime/social-meta-{build,qa}.log.
+- Footer/iconos preservados en commit local 84d7415; esta entrega continúa
+  exclusivamente local. GitHub conserva 4bd8938; **sin push ni despliegue**.
+  Servicios LAN 4173/4174 activos, sin duplicados; pendiente revisión de Pablo.

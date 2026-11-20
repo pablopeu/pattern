@@ -117,6 +117,13 @@ se puede recorrer horizontalmente. Los iconos de pestaña, favoritos y pantalla
 de inicio usan los archivos aportados en favicon_io.zip; el manifest conserva
 rutas relativas para raíz y subcarpetas.
 
+Al compartir la página, las tarjetas de Open Graph y X/Twitter usan la
+carátula aportada por el autor, con título, descripción y texto alternativo.
+La imagen se publica como `caratula.jpg`; conserva el JPEG original de
+1176 × 775, sin recortes ni cambios en el logo del editor. La URL canónica
+es `https://peu.net/pattern/`; los enlaces de la imagen son absolutos para
+que las redes puedan leerlos sin ejecutar JavaScript.
+
 ## Guardado y privacidad
 
 El autosave transaccional usa IndexedDB y guarda cada proyecto por su ID. Los favoritos de simetría se guardan en este navegador y los recientes duran la sesión. Estas preferencias de navegación no cambian el JSON ni agregan undo. La biblioteca pertenece al navegador y al origen HTTP (host y puerto). Otra PC puede revisar la aplicación y sus ejemplos, pero no ve automáticamente los proyectos privados de tu navegador. Para intercambiarlos, guardá y abrí JSON.

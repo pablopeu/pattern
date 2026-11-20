@@ -1,4 +1,4 @@
-# Entrega local para revisión · Footer e iconos
+# Entrega local para revisión · Footer, iconos y metadatos
 
 **No hacer push hasta que Pablo apruebe esta vista previa LAN.** El workflow
 FTP publica con cada push, incluso si sólo cambia documentación. Esta petición
@@ -16,7 +16,21 @@ favicon_io.zip es el archivo fuente aportado por Pablo; se conserva intacto y
 sin incluir en Git. Se copiaron los seis iconos a public/icons y se adaptó
 public/site.webmanifest (nombre, colores, start_url/scope y rutas relativas).
 index.html declara ICO, PNG16/32, Apple180 y manifest Android192/512; el logo
-icono.png sigue intacto.
+icono.png sigue intacto. Footer e iconos guardados en commit local 84d7415.
+
+Pablo agregó caratula.jpg para tarjetas sociales: copia íntegra en public/,
+JPEG1176×775, texto alternativo de Penrose, metadatos descriptivos/autor/robots,
+Open Graph website/es_AR y Twitter summary_large_image con @peu_ar.
+URL pública https://peu.net/pattern/ verificada por HTTP contra el HTML de
+Pattern Studio publicado. Canonical/og:url e imagen absoluta usan ese origen;
+no se publican IPs LAN. Los metadatos están en HTML estático, sin depender de JS.
+La carátula y los metadatos aún no están publicados: requieren aprobar el push.
+Build final correcto; probe Chromium con JS deshabilitado sobre dist/ en raíz
+y /pattern/: canonical, Open Graph y Twitter únicos/coherentes, JPEG HTTP200,
+dimensiones reales y bytes idénticos al original. Logs social-meta-build.log y
+social-meta-qa.log, script de comprobación en .runtime/verify-social-meta.mjs.
+Los 203 tests y 13 E2E corresponden al incremento de footer/iconos; para este
+agregado estático se verificó build/HTML/imagen sin repetir la suite completa.
 
 Verificación: 203 unitarias/TypeScript, build y 13 E2E de disposición correctos.
 Probes reales a 1366×768,1440×900,1920×1080 y 390×844: pie al borde inferior,
