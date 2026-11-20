@@ -1,3 +1,4 @@
+import { ObjectProperties } from './ObjectProperties';
 import { useEffect, useState } from 'react';
 import { Pin, X, SlidersHorizontal } from 'lucide-react';
 import type { Studio } from '../app/useStudio';
@@ -112,7 +113,10 @@ export function StyleControls({
     u = s.project.documentUnits,
     [dash, setDash] = useState(v.strokeDash.join(' ')),
     [dashError, setDashError] = useState(''),
-    [paintTarget, setPaintTarget] = useState<'stroke' | 'fill'>('fill');
+    [paintTarget, setPaintTarget] = useState<'stroke' | 'fill'>('fill'),
+    [profilePoint, setProfilePoint] = useState(0),
+    [paletteGroup, setPaletteGroup] = useState('Frecuentes'),
+    [palettePage, setPalettePage] = useState(0);
   useEffect(() => setDash(v.strokeDash.join(' ')), [JSON.stringify(v.strokeDash)]);
   const numeric = (
     key: StyleField,
@@ -158,339 +162,382 @@ export function StyleControls({
   };
   return (
     <div className="style-controls">
-      <Paint
-        label="Trazo"
-        value={v.stroke}
-        opacity={v.strokeOpacity}
-        mixed={mixed.has('stroke')}
-        onChange={(stroke, alpha) =>
-          patch({ stroke, ...(alpha !== undefined ? { strokeOpacity: alpha } : {}) })
-        }
-      />
-      <div className={mixed.has('strokeWidth') ? 'style-mixed' : ''}>
-        <Field
-          label="Grosor de trazo"
-          value={fromMM(v.strokeWidth, u)}
-          unit={u}
-          min={0}
-          max={fromMM(50, u)}
-          step={fromMM(0.1, u)}
-          slider
-          onChange={(n) => patch({ strokeWidth: toMM(n, u) })}
+      <div hidden={s.stylePage !== 'colors'} className="compact-fields">
+        <Paint
+          label="Trazo"
+          value={v.stroke}
+          opacity={v.strokeOpacity}
+          mixed={mixed.has('stroke')}
+          onChange={(stroke, alpha) =>
+            patch({ stroke, ...(alpha !== undefined ? { strokeOpacity: alpha } : {}) })
+          }
         />
-        {mixed.has('strokeWidth') && <small>Mixto</small>}
+        <Paint
+          label="Relleno"
+          value={v.fill}
+          opacity={v.fillOpacity}
+          mixed={mixed.has('fill')}
+          onChange={(fill, alpha) =>
+            patch({ fill, ...(alpha !== undefined ? { fillOpacity: alpha } : {}) })
+          }
+        />
+        {numeric('fillOpacity', 'Opacidad de relleno', 0, 1, 0.01, true)}
       </div>
-      {numeric('strokeOpacity', 'Opacidad de trazo', 0, 1, 0.01, true)}
-      <Select
-        label="Extremos del trazo"
-        value={mixed.has('strokeCap') ? 'mixed' : v.strokeCap}
-        options={[
-          ...(mixed.has('strokeCap') ? [{ value: 'mixed', label: 'Mixto' }] : []),
-          { value: 'round', label: 'Redondos' },
-          { value: 'butt', label: 'Rectos' },
-          { value: 'square', label: 'Cuadrados' },
-        ]}
-        onChange={(n) => patch({ strokeCap: n as DrawingStyle['strokeCap'] })}
-      />
-      <Select
-        label="Uniones del trazo"
-        value={mixed.has('strokeJoin') ? 'mixed' : v.strokeJoin}
-        options={[
-          ...(mixed.has('strokeJoin') ? [{ value: 'mixed', label: 'Mixto' }] : []),
-          { value: 'round', label: 'Redondas' },
-          { value: 'miter', label: 'En inglete' },
-          { value: 'bevel', label: 'En bisel' },
-        ]}
-        onChange={(n) => patch({ strokeJoin: n as DrawingStyle['strokeJoin'] })}
-      />
-      {numeric('miterLimit', 'Límite de inglete', 1, 100, 0.5)}
-      <Select
-        label="Estilo de línea"
-        value={mixed.has('strokeDash') ? 'mixed' : linePatternName(v.strokeDash)}
-        options={[
-          ...(mixed.has('strokeDash') ? [{ value: 'mixed', label: 'Mixto' }] : []),
-          { value: 'solid', label: 'Continua' },
-          { value: 'dotted', label: 'Punteada' },
-          { value: 'dashed', label: 'Discontinua' },
-          { value: 'dashdot', label: 'Guion y punto' },
-          { value: 'long', label: 'Guiones largos' },
-          { value: 'custom', label: 'Personalizada' },
-        ]}
-        onChange={(n) => {
-          if (n in linePatterns)
-            patch({ strokeDash: [...linePatterns[n as keyof typeof linePatterns]] });
-          else if (n === 'custom') setDash(v.strokeDash.join(' '));
-        }}
-      />
-      <label className="select-field">
-        <span>Secuencia en mm</span>
-        <input
-          aria-label="Secuencia de guiones"
-          value={dash}
-          onChange={(e) => setDash(e.target.value)}
-          onBlur={() => {
-            const parts = dash.trim()
-              ? dash
-                  .trim()
-                  .split(/[ ,;]+/)
-                  .map(Number)
-              : [];
-            if (
-              parts.some((n) => !Number.isFinite(n) || n < 0) ||
-              parts.length > 64 ||
-              (parts.length && parts.reduce((a, b) => a + b, 0) < 0.001)
-            ) {
-              setDashError('Longitudes no negativas; período mínimo 0,001 mm.');
-              return;
-            }
-            setDashError('');
-            patch({ strokeDash: parts });
+      <div hidden={s.stylePage !== 'stroke'} className="compact-fields stroke-fields">
+        <div className={mixed.has('strokeWidth') ? 'style-mixed' : ''}>
+          <Field
+            label="Grosor de trazo"
+            value={fromMM(v.strokeWidth, u)}
+            unit={u}
+            min={0}
+            max={fromMM(50, u)}
+            step={fromMM(0.1, u)}
+            slider
+            onChange={(n) => patch({ strokeWidth: toMM(n, u) })}
+          />
+          {mixed.has('strokeWidth') && <small>Mixto</small>}
+        </div>
+        {numeric('strokeOpacity', 'Opacidad de trazo', 0, 1, 0.01, true)}
+        <Select
+          label="Extremos del trazo"
+          value={mixed.has('strokeCap') ? 'mixed' : v.strokeCap}
+          options={[
+            ...(mixed.has('strokeCap') ? [{ value: 'mixed', label: 'Mixto' }] : []),
+            { value: 'round', label: 'Redondos' },
+            { value: 'butt', label: 'Rectos' },
+            { value: 'square', label: 'Cuadrados' },
+          ]}
+          onChange={(n) => patch({ strokeCap: n as DrawingStyle['strokeCap'] })}
+        />
+        <Select
+          label="Uniones del trazo"
+          value={mixed.has('strokeJoin') ? 'mixed' : v.strokeJoin}
+          options={[
+            ...(mixed.has('strokeJoin') ? [{ value: 'mixed', label: 'Mixto' }] : []),
+            { value: 'round', label: 'Redondas' },
+            { value: 'miter', label: 'En inglete' },
+            { value: 'bevel', label: 'En bisel' },
+          ]}
+          onChange={(n) => patch({ strokeJoin: n as DrawingStyle['strokeJoin'] })}
+        />
+        {numeric('miterLimit', 'Límite de inglete', 1, 100, 0.5)}
+        <Select
+          label="Estilo de línea"
+          value={mixed.has('strokeDash') ? 'mixed' : linePatternName(v.strokeDash)}
+          options={[
+            ...(mixed.has('strokeDash') ? [{ value: 'mixed', label: 'Mixto' }] : []),
+            { value: 'solid', label: 'Continua' },
+            { value: 'dotted', label: 'Punteada' },
+            { value: 'dashed', label: 'Discontinua' },
+            { value: 'dashdot', label: 'Guion y punto' },
+            { value: 'long', label: 'Guiones largos' },
+            { value: 'custom', label: 'Personalizada' },
+          ]}
+          onChange={(n) => {
+            if (n in linePatterns)
+              patch({ strokeDash: [...linePatterns[n as keyof typeof linePatterns]] });
+            else if (n === 'custom') setDash(v.strokeDash.join(' '));
           }}
         />
-      </label>
-      {dashError && <small role="alert">{dashError}</small>}
-      {numeric('strokeDashOffset', 'Fase de guiones (mm)', -10000, 10000, 0.1)}
-      <Select
-        label="Perfil de grosor"
-        value={mixed.has('strokeProfile') ? 'mixed' : v.strokeProfile.kind}
-        options={[
-          ...(mixed.has('strokeProfile') ? [{ value: 'mixed', label: 'Mixto' }] : []),
-          { value: 'uniform', label: 'Uniforme' },
-          { value: 'taper-start', label: 'Afinar inicio' },
-          { value: 'taper-end', label: 'Afinar final' },
-          { value: 'taper-both', label: 'Afinar extremos' },
-          { value: 'custom', label: 'Personalizado' },
-        ]}
-        onChange={(n) =>
-          patch({
-            strokeProfile:
-              n === 'custom' ? { ...v.strokeProfile, kind: 'custom' } : profile(n as ProfileKind),
-          })
-        }
-      />
-      <svg
-        className="profile-preview"
-        viewBox="0 0 240 70"
-        role="img"
-        aria-label="Curva del perfil de grosor"
-      >
-        <path
-          d={
-            'M0 35 ' +
-            Array.from(
-              { length: 121 },
-              (_, i) => `L${i * 2} ${35 - profileWidth(v.strokeProfile, i / 120) * 8}`,
-            ).join(' ') +
-            ' ' +
-            Array.from(
-              { length: 121 },
-              (_, i) => `L${240 - i * 2} ${35 + profileWidth(v.strokeProfile, 1 - i / 120) * 8}`,
-            ).join(' ') +
-            ' Z'
-          }
-          fill="#55765b"
-        />
-        <path d="M0 35H240" stroke="#b3c5b5" strokeDasharray="3 3" />
-        {v.strokeProfile.points.map((p, i) => (
-          <circle
-            key={i}
-            cx={p.at * 240}
-            cy={35 - p.width * 8}
-            r="4"
-            fill="#233b2d"
-            tabIndex={0}
-            role="slider"
-            aria-label={`Control de perfil ${i + 1}`}
-            aria-valuemin={0}
-            aria-valuemax={4}
-            aria-valuenow={p.width}
-            style={{ cursor: 'grab', touchAction: 'none' }}
-            onPointerDown={(e) => {
-              e.preventDefault();
-              e.currentTarget.setPointerCapture(e.pointerId);
-              s.beginGesture();
-            }}
-            onPointerMove={(e) => {
-              if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
-              const svg = e.currentTarget.ownerSVGElement!,
-                ctm = svg.getScreenCTM();
-              if (!ctm) return;
-              const q = new DOMPoint(e.clientX, e.clientY).matrixTransform(ctm.inverse());
-              const at =
-                i === 0
-                  ? 0
-                  : i === v.strokeProfile.points.length - 1
-                    ? 1
-                    : Math.max(
-                        v.strokeProfile.points[i - 1].at + 0.001,
-                        Math.min(v.strokeProfile.points[i + 1].at - 0.001, q.x / 240),
-                      );
-              updateProfile(i, { at, width: Math.max(0, Math.min(4, (35 - q.y) / 8)) });
-            }}
-            onPointerUp={(e) => {
-              if (e.currentTarget.hasPointerCapture(e.pointerId))
-                e.currentTarget.releasePointerCapture(e.pointerId);
-              s.endGesture();
-            }}
-            onPointerCancel={() => s.endGesture()}
-            onKeyDown={(e) => {
-              if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-                e.preventDefault();
-                updateProfile(i, {
-                  width: Math.max(0, Math.min(4, p.width + (e.key === 'ArrowUp' ? 0.05 : -0.05))),
-                });
+        <label className="select-field">
+          <span>Secuencia en mm</span>
+          <input
+            aria-label="Secuencia de guiones"
+            value={dash}
+            onChange={(e) => setDash(e.target.value)}
+            onBlur={() => {
+              const parts = dash.trim()
+                ? dash
+                    .trim()
+                    .split(/[ ,;]+/)
+                    .map(Number)
+                : [];
+              if (
+                parts.some((n) => !Number.isFinite(n) || n < 0) ||
+                parts.length > 64 ||
+                (parts.length && parts.reduce((a, b) => a + b, 0) < 0.001)
+              ) {
+                setDashError('Longitudes no negativas; período mínimo 0,001 mm.');
+                return;
               }
+              setDashError('');
+              patch({ strokeDash: parts });
             }}
           />
-        ))}
-      </svg>
-      {v.strokeProfile.kind === 'custom' && (
-        <div className="profile-points">
-          {v.strokeProfile.points.map((p, i) => (
-            <div key={i}>
-              <Field
-                label={`Posición ${i + 1}`}
-                value={p.at}
-                min={i === 0 ? 0 : v.strokeProfile.points[i - 1].at + 0.001}
-                max={
-                  i === v.strokeProfile.points.length - 1
-                    ? 1
-                    : v.strokeProfile.points[i + 1].at - 0.001
-                }
-                step={0.01}
-                onChange={(at) => {
-                  if (i > 0 && i < v.strokeProfile.points.length - 1) updateProfile(i, { at });
-                }}
-              />
-              <Field
-                label={`Ancho ${i + 1}`}
-                value={p.width}
-                min={0}
-                max={4}
-                step={0.05}
-                onChange={(width) => updateProfile(i, { width })}
-              />
-              {i > 0 && i < v.strokeProfile.points.length - 1 && (
-                <button
-                  aria-label={`Eliminar punto ${i + 1}`}
-                  onClick={() =>
-                    patch({
-                      strokeProfile: {
-                        ...v.strokeProfile,
-                        points: v.strokeProfile.points.filter((_, k) => k !== i),
-                      },
-                    })
-                  }
-                >
-                  ×
-                </button>
-              )}
-            </div>
-          ))}
-          <button
-            onClick={() => {
-              const p = structuredClone(v.strokeProfile);
-              if (p.points.length >= 64) return;
-              let k = 0;
-              for (let i = 1; i < p.points.length - 1; i++)
-                if (p.points[i + 1].at - p.points[i].at > p.points[k + 1].at - p.points[k].at)
-                  k = i;
-              const at = (p.points[k].at + p.points[k + 1].at) / 2;
-              p.points.splice(k + 1, 0, { at, width: profileWidth(p, at) });
-              patch({ strokeProfile: p });
-            }}
-          >
-            Agregar punto al perfil
-          </button>
-        </div>
-      )}
-      <hr />
-      <Paint
-        label="Relleno"
-        value={v.fill}
-        opacity={v.fillOpacity}
-        mixed={mixed.has('fill')}
-        onChange={(fill, alpha) =>
-          patch({ fill, ...(alpha !== undefined ? { fillOpacity: alpha } : {}) })
-        }
-      />
-      {numeric('fillOpacity', 'Opacidad de relleno', 0, 1, 0.01, true)}
-      <Select
-        label="Regla de relleno"
-        value={mixed.has('fillRule') ? 'mixed' : v.fillRule}
-        options={[
-          ...(mixed.has('fillRule') ? [{ value: 'mixed', label: 'Mixto' }] : []),
-          { value: 'evenodd', label: 'Par / impar (huecos)' },
-          { value: 'nonzero', label: 'No cero (orientación)' },
-        ]}
-        onChange={(fillRule) => patch({ fillRule: fillRule as DrawingStyle['fillRule'] })}
-      />
-      {numeric('opacity', 'Opacidad', 0, 1, 0.01, true)}
-      <div className="button-row">
-        <button
-          onClick={() =>
+        </label>
+        {dashError && <small role="alert">{dashError}</small>}
+        {numeric('strokeDashOffset', 'Fase de guiones (mm)', -10000, 10000, 0.1)}
+      </div>
+      <div hidden={s.stylePage !== 'profile'} className="compact-fields">
+        <Select
+          label="Perfil de grosor"
+          value={mixed.has('strokeProfile') ? 'mixed' : v.strokeProfile.kind}
+          options={[
+            ...(mixed.has('strokeProfile') ? [{ value: 'mixed', label: 'Mixto' }] : []),
+            { value: 'uniform', label: 'Uniforme' },
+            { value: 'taper-start', label: 'Afinar inicio' },
+            { value: 'taper-end', label: 'Afinar final' },
+            { value: 'taper-both', label: 'Afinar extremos' },
+            { value: 'custom', label: 'Personalizado' },
+          ]}
+          onChange={(n) =>
             patch({
-              stroke: v.fill,
-              fill: v.stroke,
-              strokeOpacity: v.fillOpacity,
-              fillOpacity: v.strokeOpacity,
+              strokeProfile:
+                n === 'custom' ? { ...v.strokeProfile, kind: 'custom' } : profile(n as ProfileKind),
             })
           }
+        />
+        <svg
+          className="profile-preview"
+          viewBox="0 0 240 70"
+          role="img"
+          aria-label="Curva del perfil de grosor"
         >
-          Intercambiar trazo y relleno
-        </button>
-        <button onClick={() => patch(defaultDrawingStyle())}>Restablecer estilo</button>
-      </div>
-      <hr />
-      <Select
-        label="Aplicar color de paleta a"
-        value={paintTarget}
-        options={[
-          { value: 'stroke', label: 'Trazo' },
-          { value: 'fill', label: 'Relleno' },
-        ]}
-        onChange={(n) => setPaintTarget(n as 'stroke' | 'fill')}
-      />
-      {[
-        ['Frecuentes', frequent],
-        ['Recientes', palette.recent],
-        ['Favoritos', palette.favorites],
-        ['Proyecto', palette.colors],
-      ].map(([name, colors]) => (
-        <div key={name as string} className="palette-group">
-          <small>{name}</small>
-          <div className="palette-swatches">
-            {(colors as string[]).map((color) => (
-              <button
-                key={color}
-                title={color}
-                aria-label={`${name} ${color}`}
-                style={{ background: color }}
-                onClick={() => patch({ [paintTarget]: color })}
-              />
+          <path
+            d={
+              'M0 35 ' +
+              Array.from(
+                { length: 121 },
+                (_, i) => `L${i * 2} ${35 - profileWidth(v.strokeProfile, i / 120) * 8}`,
+              ).join(' ') +
+              ' ' +
+              Array.from(
+                { length: 121 },
+                (_, i) => `L${240 - i * 2} ${35 + profileWidth(v.strokeProfile, 1 - i / 120) * 8}`,
+              ).join(' ') +
+              ' Z'
+            }
+            fill="#55765b"
+          />
+          <path d="M0 35H240" stroke="#b3c5b5" strokeDasharray="3 3" />
+          {v.strokeProfile.points.map((p, i) => (
+            <circle
+              key={i}
+              cx={p.at * 240}
+              cy={35 - p.width * 8}
+              r="4"
+              fill="#233b2d"
+              tabIndex={0}
+              role="slider"
+              aria-label={`Control de perfil ${i + 1}`}
+              aria-valuemin={0}
+              aria-valuemax={4}
+              aria-valuenow={p.width}
+              style={{ cursor: 'grab', touchAction: 'none' }}
+              onPointerDown={(e) => {
+                e.preventDefault();
+                e.currentTarget.setPointerCapture(e.pointerId);
+                setProfilePoint(i);
+                s.beginGesture();
+              }}
+              onPointerMove={(e) => {
+                if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
+                const svg = e.currentTarget.ownerSVGElement!,
+                  ctm = svg.getScreenCTM();
+                if (!ctm) return;
+                const q = new DOMPoint(e.clientX, e.clientY).matrixTransform(ctm.inverse());
+                const at =
+                  i === 0
+                    ? 0
+                    : i === v.strokeProfile.points.length - 1
+                      ? 1
+                      : Math.max(
+                          v.strokeProfile.points[i - 1].at + 0.001,
+                          Math.min(v.strokeProfile.points[i + 1].at - 0.001, q.x / 240),
+                        );
+                updateProfile(i, { at, width: Math.max(0, Math.min(4, (35 - q.y) / 8)) });
+              }}
+              onPointerUp={(e) => {
+                if (e.currentTarget.hasPointerCapture(e.pointerId))
+                  e.currentTarget.releasePointerCapture(e.pointerId);
+                s.endGesture();
+              }}
+              onPointerCancel={() => s.endGesture()}
+              onKeyDown={(e) => {
+                if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                  e.preventDefault();
+                  updateProfile(i, {
+                    width: Math.max(0, Math.min(4, p.width + (e.key === 'ArrowUp' ? 0.05 : -0.05))),
+                  });
+                }
+              }}
+            />
+          ))}
+        </svg>
+        {v.strokeProfile.kind === 'custom' && (
+          <div className="profile-points">
+            <Select
+              label="Punto de perfil"
+              value={String(Math.min(profilePoint, v.strokeProfile.points.length - 1))}
+              onChange={(n) => setProfilePoint(Number(n))}
+              options={v.strokeProfile.points.map((_, i) => ({
+                value: String(i),
+                label: `Punto ${i + 1}`,
+              }))}
+            />
+            {v.strokeProfile.points.map((p, i) => (
+              <div key={i} hidden={i !== Math.min(profilePoint, v.strokeProfile.points.length - 1)}>
+                <Field
+                  label={`Posición ${i + 1}`}
+                  value={p.at}
+                  min={i === 0 ? 0 : v.strokeProfile.points[i - 1].at + 0.001}
+                  max={
+                    i === v.strokeProfile.points.length - 1
+                      ? 1
+                      : v.strokeProfile.points[i + 1].at - 0.001
+                  }
+                  step={0.01}
+                  onChange={(at) => {
+                    if (i > 0 && i < v.strokeProfile.points.length - 1) updateProfile(i, { at });
+                  }}
+                />
+                <Field
+                  label={`Ancho ${i + 1}`}
+                  value={p.width}
+                  min={0}
+                  max={4}
+                  step={0.05}
+                  onChange={(width) => updateProfile(i, { width })}
+                />
+                {i > 0 && i < v.strokeProfile.points.length - 1 && (
+                  <button
+                    aria-label={`Eliminar punto ${i + 1}`}
+                    onClick={() =>
+                      patch({
+                        strokeProfile: {
+                          ...v.strokeProfile,
+                          points: v.strokeProfile.points.filter((_, k) => k !== i),
+                        },
+                      })
+                    }
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
             ))}
+            <button
+              onClick={() => {
+                const p = structuredClone(v.strokeProfile);
+                if (p.points.length >= 64) return;
+                let k = 0;
+                for (let i = 1; i < p.points.length - 1; i++)
+                  if (p.points[i + 1].at - p.points[i].at > p.points[k + 1].at - p.points[k].at)
+                    k = i;
+                const at = (p.points[k].at + p.points[k + 1].at) / 2;
+                p.points.splice(k + 1, 0, { at, width: profileWidth(p, at) });
+                patch({ strokeProfile: p });
+              }}
+            >
+              Agregar punto al perfil
+            </button>
           </div>
+        )}
+      </div>
+      <div hidden={s.stylePage !== 'fill'} className="compact-fields">
+        <Select
+          label="Regla de relleno"
+          value={mixed.has('fillRule') ? 'mixed' : v.fillRule}
+          options={[
+            ...(mixed.has('fillRule') ? [{ value: 'mixed', label: 'Mixto' }] : []),
+            { value: 'evenodd', label: 'Par / impar (huecos)' },
+            { value: 'nonzero', label: 'No cero (orientación)' },
+          ]}
+          onChange={(fillRule) => patch({ fillRule: fillRule as DrawingStyle['fillRule'] })}
+        />
+      </div>
+      <div hidden={s.stylePage !== 'palette'} className="compact-fields">
+        <Select
+          label="Aplicar color de paleta a"
+          value={paintTarget}
+          options={[
+            { value: 'stroke', label: 'Trazo' },
+            { value: 'fill', label: 'Relleno' },
+          ]}
+          onChange={(n) => setPaintTarget(n as 'stroke' | 'fill')}
+        />
+        <Select
+          label="Paleta"
+          value={paletteGroup}
+          onChange={(v) => {
+            setPaletteGroup(v);
+            setPalettePage(0);
+          }}
+          options={['Frecuentes', 'Recientes', 'Favoritos', 'Proyecto']}
+        />
+        {[
+          ['Frecuentes', frequent],
+          ['Recientes', palette.recent],
+          ['Favoritos', palette.favorites],
+          ['Proyecto', palette.colors],
+        ].map(([name, colors]) => (
+          <div key={name as string} className="palette-group" hidden={paletteGroup !== name}>
+            <small>{name}</small>
+            <div className="palette-swatches">
+              {(colors as string[]).slice(palettePage * 16, (palettePage + 1) * 16).map((color) => (
+                <button
+                  key={color}
+                  title={color}
+                  aria-label={`${name} ${color}`}
+                  style={{ background: color }}
+                  onClick={() => patch({ [paintTarget]: color })}
+                />
+              ))}
+            </div>
+            {(colors as string[]).length > 16 && (
+              <div className="page-controls">
+                <button disabled={!palettePage} onClick={() => setPalettePage(palettePage - 1)}>
+                  Colores anteriores
+                </button>
+                <span>{palettePage + 1}</span>
+                <button
+                  disabled={(palettePage + 1) * 16 >= (colors as string[]).length}
+                  onClick={() => setPalettePage(palettePage + 1)}
+                >
+                  Más colores
+                </button>
+              </div>
+            )}
+          </div>
+        ))}
+        <div className="button-row">
+          {(['favorites', 'colors'] as const).map((key) => (
+            <button
+              key={key}
+              disabled={v[paintTarget] === 'none'}
+              onClick={() =>
+                s.change((p) => {
+                  const color = hexColor(v[paintTarget])?.color;
+                  if (!color) return;
+                  const list = p.palette[key];
+                  if (list.includes(color)) p.palette[key] = list.filter((c) => c !== color);
+                  else p.palette[key] = [...list, color].slice(-(key === 'colors' ? 128 : 64));
+                })
+              }
+            >
+              {palette[key].includes(v[paintTarget]) ? 'Quitar de' : 'Agregar a'}{' '}
+              {key === 'colors' ? 'proyecto' : 'favoritos'}
+            </button>
+          ))}
         </div>
-      ))}
-      <div className="button-row">
-        {(['favorites', 'colors'] as const).map((key) => (
+      </div>
+      <div hidden={s.stylePage !== 'options'} className="compact-fields">
+        {numeric('opacity', 'Opacidad', 0, 1, 0.01, true)}
+        <div className="button-row">
           <button
-            key={key}
-            disabled={v[paintTarget] === 'none'}
             onClick={() =>
-              s.change((p) => {
-                const color = hexColor(v[paintTarget])?.color;
-                if (!color) return;
-                const list = p.palette[key];
-                if (list.includes(color)) p.palette[key] = list.filter((c) => c !== color);
-                else p.palette[key] = [...list, color].slice(-(key === 'colors' ? 128 : 64));
+              patch({
+                stroke: v.fill,
+                fill: v.stroke,
+                strokeOpacity: v.fillOpacity,
+                fillOpacity: v.strokeOpacity,
               })
             }
           >
-            {palette[key].includes(v[paintTarget]) ? 'Quitar de' : 'Agregar a'}{' '}
-            {key === 'colors' ? 'proyecto' : 'favoritos'}
+            Intercambiar trazo y relleno
           </button>
-        ))}
+          <button onClick={() => patch(defaultDrawingStyle())}>Restablecer estilo</button>
+        </div>
       </div>
     </div>
   );
@@ -595,6 +642,42 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
           <X size={18} />
         </button>
       </header>
+      <div className="context-tabs style-tabs" role="tablist" aria-label="Estilos y propiedades">
+        {(
+          [
+            'colors',
+            'stroke',
+            'profile',
+            'fill',
+            'palette',
+            'presets',
+            'object',
+            'options',
+          ] as const
+        )
+          .filter((id) => id !== 'object' || !!s.styleSelection.length)
+          .map((id) => (
+            <button
+              key={id}
+              role="tab"
+              aria-selected={s.stylePage === id}
+              onClick={() => s.setStylePage(id)}
+            >
+              {
+                {
+                  colors: 'Colores',
+                  stroke: 'Trazo',
+                  profile: 'Perfil',
+                  fill: 'Fill',
+                  palette: 'Paleta',
+                  presets: 'Presets',
+                  object: 'Objeto',
+                  options: 'Opciones',
+                }[id]
+              }
+            </button>
+          ))}
+      </div>
       <div className="style-panel-body">
         <Select
           label="Editar estilo de"
@@ -610,180 +693,187 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
           ]}
           onChange={(v) => s.setStyleTarget(v as 'selection' | 'current')}
         />
-        <Toggle
-          label="Edición de selección actualiza estilo vigente"
-          checked={s.project.preferences.styleDefaultsFollowSelection}
-          onChange={(v) => s.updateViewPreferences({ styleDefaultsFollowSelection: v })}
-        />
         {!!mixed.size && (
           <p className="style-note">
             Selección mixta. Cada control modifica únicamente su atributo.
           </p>
         )}
         <StyleControls studio={s} target={s.styleTarget} />
-        <hr />
-        <strong>Fill · caras vectoriales</strong>
-        <Toggle
-          label="Nuevos rellenos vinculados a sus límites"
-          checked={s.project.preferences.fillLinkedDefault}
-          onChange={(v) => s.updateViewPreferences({ fillLinkedDefault: v })}
-        />
-        <Field
-          label="Tolerancia de cierre de Fill"
-          unit="mm"
-          value={s.project.preferences.fillCloseTolerance}
-          min={0}
-          max={5}
-          step={0.01}
-          onChange={(v) => s.updateViewPreferences({ fillCloseTolerance: v })}
-        />
-        <small>
-          {s.project.preferences.fillCloseTolerance > 0
-            ? 'Cierre aproximado explícito. No modifica los límites originales.'
-            : 'Cierre exacto: tolerancia numérica de 0,000001 mm.'}
-        </small>
-        {s.styleSelection
-          .filter((g) => g.fillRegion)
-          .map((g) => (
-            <div className="style-note" key={g.id}>
-              <strong>{g.name}</strong>
-              <p>
-                {g.fillRegion!.scope === 'orbit'
-                  ? `Órbita concreta · ${g.fillRegion!.orbitMatrices.length} copias`
-                  : g.fillRegion!.scope === 'tile'
-                    ? 'Interior de tesela'
-                    : 'Fuente canónica'}{' '}
-                ·{' '}
-                {g.fillRegion!.status === 'stale'
-                  ? 'Vínculo desactualizado'
-                  : g.fillRegion!.linked
-                    ? 'Vinculado'
-                    : 'Fijo'}
-              </p>
-              {g.fillRegion!.reason && <p>{g.fillRegion!.reason}</p>}
-              <div className="button-row">
-                <button
-                  disabled={g.locked || !!s.recalculatingId}
-                  onClick={() => s.recalculateFill(g.id)}
-                >
-                  Recalcular y vincular región
-                </button>
-                {s.recalculatingId === g.id && (
-                  <button onClick={s.cancelRecalculation}>Cancelar actualización</button>
-                )}
+        <div hidden={s.stylePage !== 'object'}>
+          <ObjectProperties studio={s} />
+        </div>
+        <div hidden={s.stylePage !== 'options'}>
+          {' '}
+          <Toggle
+            label="Edición de selección actualiza estilo vigente"
+            checked={s.project.preferences.styleDefaultsFollowSelection}
+            onChange={(v) => s.updateViewPreferences({ styleDefaultsFollowSelection: v })}
+          />
+        </div>
+        <div hidden={s.stylePage !== 'fill'} className="compact-fields">
+          <strong>Fill · caras vectoriales</strong>
+          <Toggle
+            label="Nuevos rellenos vinculados a sus límites"
+            checked={s.project.preferences.fillLinkedDefault}
+            onChange={(v) => s.updateViewPreferences({ fillLinkedDefault: v })}
+          />
+          <Field
+            label="Tolerancia de cierre de Fill"
+            unit="mm"
+            value={s.project.preferences.fillCloseTolerance}
+            min={0}
+            max={5}
+            step={0.01}
+            onChange={(v) => s.updateViewPreferences({ fillCloseTolerance: v })}
+          />
+          <small>
+            {s.project.preferences.fillCloseTolerance > 0
+              ? 'Cierre aproximado explícito. No modifica los límites originales.'
+              : 'Cierre exacto: tolerancia numérica de 0,000001 mm.'}
+          </small>
+          {s.styleSelection
+            .filter((g) => g.fillRegion)
+            .map((g) => (
+              <div className="style-note" key={g.id}>
+                <strong>{g.name}</strong>
+                <p>
+                  {g.fillRegion!.scope === 'orbit'
+                    ? `Órbita concreta · ${g.fillRegion!.orbitMatrices.length} copias`
+                    : g.fillRegion!.scope === 'tile'
+                      ? 'Interior de tesela'
+                      : 'Fuente canónica'}{' '}
+                  ·{' '}
+                  {g.fillRegion!.status === 'stale'
+                    ? 'Vínculo desactualizado'
+                    : g.fillRegion!.linked
+                      ? 'Vinculado'
+                      : 'Fijo'}
+                </p>
+                {g.fillRegion!.reason && <p>{g.fillRegion!.reason}</p>}
+                <div className="button-row">
+                  <button
+                    disabled={g.locked || !!s.recalculatingId}
+                    onClick={() => s.recalculateFill(g.id)}
+                  >
+                    Recalcular y vincular región
+                  </button>
+                  {s.recalculatingId === g.id && (
+                    <button onClick={s.cancelRecalculation}>Cancelar actualización</button>
+                  )}
+                </div>
+                <Toggle
+                  label={`Vincular ${g.name}`}
+                  checked={g.fillRegion!.linked}
+                  onChange={(linked) =>
+                    s.change((p) => {
+                      const shape = p.patterns
+                        .flatMap((p) => p.sourceGeometry)
+                        .find((x) => x.id === g.id);
+                      if (shape?.fillRegion) {
+                        shape.fillRegion.linked = linked;
+                        shape.fillRegion.status = linked ? 'linked' : 'fixed';
+                        shape.fillRegion.reason = linked
+                          ? undefined
+                          : 'Contorno fijado explícitamente.';
+                      }
+                    })
+                  }
+                />
               </div>
-              <Toggle
-                label={`Vincular ${g.name}`}
-                checked={g.fillRegion!.linked}
-                onChange={(linked) =>
-                  s.change((p) => {
-                    const shape = p.patterns
-                      .flatMap((p) => p.sourceGeometry)
-                      .find((x) => x.id === g.id);
-                    if (shape?.fillRegion) {
-                      shape.fillRegion.linked = linked;
-                      shape.fillRegion.status = linked ? 'linked' : 'fixed';
-                      shape.fillRegion.reason = linked
-                        ? undefined
-                        : 'Contorno fijado explícitamente.';
-                    }
-                  })
-                }
-              />
-            </div>
-          ))}
-
-        <hr />
-        <strong>Presets de estilo</strong>
-        <Select
-          label="Preset de estilo"
-          value={presetId}
-          options={[
-            { value: '', label: 'Elegir preset' },
-            ...s.project.stylePresets.map((p) => ({ value: p.id, label: p.name })),
-          ]}
-          onChange={(id) => {
-            setPresetId(id);
-            setName(s.project.stylePresets.find((p) => p.id === id)?.name ?? '');
-          }}
-        />
-        <input
-          aria-label="Nombre del preset de estilo"
-          value={name}
-          maxLength={120}
-          placeholder="Nombre del estilo"
-          onChange={(e) => setName(e.target.value)}
-        />
-        <div className="button-row">
-          <button
-            disabled={!name.trim() || mixed.size > 0 || s.project.stylePresets.length >= 128}
-            onClick={() => {
-              const id = uid();
-              s.change((p) =>
-                p.stylePresets.push({ id, name: name.trim(), style: drawingStyle(value) }),
-              );
+            ))}
+        </div>
+        <div hidden={s.stylePage !== 'presets'} className="compact-fields">
+          <strong>Presets de estilo</strong>
+          <Select
+            label="Preset de estilo"
+            value={presetId}
+            options={[
+              { value: '', label: 'Elegir preset' },
+              ...s.project.stylePresets.map((p) => ({ value: p.id, label: p.name })),
+            ]}
+            onChange={(id) => {
               setPresetId(id);
+              setName(s.project.stylePresets.find((p) => p.id === id)?.name ?? '');
             }}
-          >
-            Guardar nuevo
-          </button>
-          <button
-            disabled={!preset}
-            onClick={() => preset && s.applyStyle(drawingStyle(preset.style))}
-          >
-            Aplicar preset
-          </button>
-          <button
-            disabled={!preset || !name.trim()}
-            onClick={() =>
-              s.change((p) => {
-                const v = p.stylePresets.find((p) => p.id === presetId);
-                if (v) v.name = name.trim();
-              })
-            }
-          >
-            Renombrar
-          </button>
-          <button
-            disabled={!preset || s.project.stylePresets.length >= 128}
-            onClick={() => {
-              if (!preset) return;
-              const id = uid();
-              s.change((p) =>
-                p.stylePresets.push({
-                  ...structuredClone(preset),
-                  id,
-                  name: (preset.name + ' copia').slice(0, 120),
-                }),
-              );
-              setPresetId(id);
-              setName((preset.name + ' copia').slice(0, 120));
-            }}
-          >
-            Duplicar preset
-          </button>
-          <button
-            disabled={!preset || mixed.size > 0}
-            onClick={() =>
-              s.change((p) => {
-                const v = p.stylePresets.find((p) => p.id === presetId);
-                if (v) v.style = drawingStyle(value);
-              })
-            }
-          >
-            Actualizar valores
-          </button>
-          <button
-            disabled={!preset}
-            onClick={() => {
-              s.change((p) => {
-                p.stylePresets = p.stylePresets.filter((p) => p.id !== presetId);
-              });
-              setPresetId('');
-            }}
-          >
-            Eliminar preset
-          </button>
+          />
+          <input
+            aria-label="Nombre del preset de estilo"
+            value={name}
+            maxLength={120}
+            placeholder="Nombre del estilo"
+            onChange={(e) => setName(e.target.value)}
+          />
+          <div className="button-row">
+            <button
+              disabled={!name.trim() || mixed.size > 0 || s.project.stylePresets.length >= 128}
+              onClick={() => {
+                const id = uid();
+                s.change((p) =>
+                  p.stylePresets.push({ id, name: name.trim(), style: drawingStyle(value) }),
+                );
+                setPresetId(id);
+              }}
+            >
+              Guardar nuevo
+            </button>
+            <button
+              disabled={!preset}
+              onClick={() => preset && s.applyStyle(drawingStyle(preset.style))}
+            >
+              Aplicar preset
+            </button>
+            <button
+              disabled={!preset || !name.trim()}
+              onClick={() =>
+                s.change((p) => {
+                  const v = p.stylePresets.find((p) => p.id === presetId);
+                  if (v) v.name = name.trim();
+                })
+              }
+            >
+              Renombrar
+            </button>
+            <button
+              disabled={!preset || s.project.stylePresets.length >= 128}
+              onClick={() => {
+                if (!preset) return;
+                const id = uid();
+                s.change((p) =>
+                  p.stylePresets.push({
+                    ...structuredClone(preset),
+                    id,
+                    name: (preset.name + ' copia').slice(0, 120),
+                  }),
+                );
+                setPresetId(id);
+                setName((preset.name + ' copia').slice(0, 120));
+              }}
+            >
+              Duplicar preset
+            </button>
+            <button
+              disabled={!preset || mixed.size > 0}
+              onClick={() =>
+                s.change((p) => {
+                  const v = p.stylePresets.find((p) => p.id === presetId);
+                  if (v) v.style = drawingStyle(value);
+                })
+              }
+            >
+              Actualizar valores
+            </button>
+            <button
+              disabled={!preset}
+              onClick={() => {
+                s.change((p) => {
+                  p.stylePresets = p.stylePresets.filter((p) => p.id !== presetId);
+                });
+                setPresetId('');
+              }}
+            >
+              Eliminar preset
+            </button>
+          </div>
         </div>
       </div>
     </aside>

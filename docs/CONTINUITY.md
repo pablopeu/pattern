@@ -74,3 +74,11 @@ hover/clic real, Escape/foco y undo.203 unitarias/TypeScript y2 E2E dirigidos
 correctos. Continúan pendientes propiedades/estilos compactos, comandos y
 regresión completa. La nota de winding_down anterior corresponde a la ventana
 previa, ya reiniciada.
+
+## Tercer incremento
+
+Propiedades a la derecha, estilos por pestañas, paginación de paletas/perfiles
+y comandos Ctrl+K implementados.203 unitarias/TypeScript, build y12 E2E de v2.3
+aprobados, incluyendo cuatro resoluciones con todas las tabs derechas sin scroll.
+Pendientes de la lista inicial: compactar otros contextos, adaptar regresiones,
+exportación/menús/teclado completos y documentación final. No declarar completo.

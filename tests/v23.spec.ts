@@ -78,7 +78,6 @@ test('v2.3 polígono paramétrico identificado, controles y estilo vigente', asy
   expect(created.parameters?.width).toBe(42);
   expect(created.stroke).toBe(before!.drawingStyle.stroke);
   await expect(page.getByLabel('Vista previa de forma')).toBeVisible();
-  await page.getByRole('button', { name: 'Abrir panel de estilos', exact: true }).click();
   const style = page.getByRole('complementary', { name: 'Panel de estilos' });
   await expect(style).toBeVisible();
   const box = await style.boundingBox();
@@ -123,7 +122,13 @@ for (const viewport of [
       page.getByRole('button', { name: 'Explorar todas las simetrías · 27' }),
     ).toBeFocused();
     const changed = (await project(page))!;
-    expect(changed.patterns[0].symmetryMode === 'inherit' ? changed.mainSymmetry.family : changed.patterns[0].symmetry.family).toBe('radial');
+    expect(
+      changed.patterns[0].symmetryMode === 'inherit'
+        ? changed.mainSymmetry.family
+        : changed.patterns[0].symmetry.family,
+    ).toBe('radial');
+    if (viewport.width < 900)
+      await page.getByRole('button', { name: 'Plegar panel', exact: true }).click();
     await page.getByRole('button', { name: 'Deshacer', exact: true }).click();
     expect((await project(page))!.patterns[0].symmetry.family).toBe(
       before!.patterns[0].symmetry.family,
@@ -138,3 +143,63 @@ for (const viewport of [
     ).toBeVisible();
   });
 }
+
+for (const width of [1366, 1440, 1920, 390]) {
+  test(`v2.3 propiedades y estilos compactos sin scroll ${width}`, async ({ page }) => {
+    await page.setViewportSize({
+      width,
+      height: width === 1366 ? 768 : width === 1920 ? 1080 : 900,
+    });
+    await page.goto('/');
+    await project(page);
+    await page.getByRole('button', { name: 'Crear polígono regular', exact: true }).click();
+    const right = page.getByRole('complementary', { name: 'Panel de estilos' });
+    for (const label of ['Lados', 'Ancho', 'Alto', 'Rotación', 'Tipo de relleno'])
+      await expect(right.getByLabel(label, { exact: true })).toBeInViewport();
+    const before = await project(page);
+    for (const name of [
+      'Colores',
+      'Trazo',
+      'Perfil',
+      'Fill',
+      'Paleta',
+      'Presets',
+      'Opciones',
+      'Objeto',
+    ]) {
+      await right.getByRole('tab', { name, exact: true }).click();
+      expect(
+        await right
+          .locator('.style-panel-body')
+          .evaluate((el) => el.scrollHeight <= el.clientHeight + 1),
+        name,
+      ).toBe(true);
+    }
+    expect(await project(page)).toEqual(before);
+    await right.getByRole('tab', { name: 'Transformar', exact: true }).click();
+    await right.getByLabel('Posición X', { exact: true }).fill('5');
+    await right.getByLabel('Posición Y', { exact: true }).focus();
+    expect((await project(page))!.patterns[0].sourceGeometry[0].transform[4]).toBe(5);
+  });
+}
+
+test('v2.3 comandos usan herramientas reales, foco, teclado y exportación', async ({ page }) => {
+  await page.goto('/');
+  await project(page);
+  await page.keyboard.press('Control+k');
+  const dialog = page.getByRole('dialog', { name: 'Buscar comandos' });
+  await dialog.getByRole('combobox').fill('polígono paramétrico');
+  await page.keyboard.press('Enter');
+  await expect(dialog).toBeHidden();
+  expect((await project(page))!.patterns[0].sourceGeometry).toHaveLength(1);
+  await page.keyboard.press('Control+k');
+  await dialog.getByRole('combobox').fill('grosor');
+  await page.keyboard.press('Enter');
+  await expect(page.getByLabel('Grosor de trazo', { exact: true })).toBeFocused();
+  await page.getByLabel('Grosor de trazo', { exact: true }).fill('2');
+  await page.keyboard.press('Control+k');
+  await dialog.getByRole('combobox').fill('exportar svg');
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('dialog', { name: 'Exportar patrón' })).toBeVisible();
+  await expect(page.getByLabel('Formato', { exact: true })).toHaveValue('svg');
+});

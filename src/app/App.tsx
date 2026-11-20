@@ -1,9 +1,12 @@
+import { CommandPalette, type Command } from '../ui/CommandPalette';
+import { symmetryCatalog } from '../symmetry/config';
 import { StylePanel, StyleIndicator } from '../ui/StylePanel';
 import logo from '../../icono.png';
 import { commonRectangularCell, resolvePattern } from '../symmetry/config';
 import { useState, useRef, useEffect } from 'react';
 import { categories, toolCategory, type Category } from '../ui/navigation';
 import {
+  Search,
   PaintBucket,
   MousePointer2,
   PenTool,
@@ -62,6 +65,7 @@ const tools: { id: Tool; label: string; shortcut?: string; icon: typeof MousePoi
 export default function App() {
   const s = useStudio(),
     [exportOpen, setExportOpen] = useState(false),
+    [commandOpen, setCommandOpen] = useState(false),
     [collapsed, setCollapsed] = useState(false),
     [category, setCategory] = useState<Category>('drawing'),
     [help, setHelp] = useState(false),
@@ -73,13 +77,34 @@ export default function App() {
     presetRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     setCategory(toolCategory(s.tool));
+    if (s.tool === 'pencil') {
+      s.setStylePage('stroke');
+      s.setStyleTarget('current');
+      s.setStyleOpen(true);
+    }
+    if (s.tool === 'nodes') {
+      s.setStylePage('object');
+      s.setObjectTab('nodes');
+      s.setStyleOpen(true);
+    }
   }, [s.tool]);
   useEffect(() => {
     if (s.mode === 'apply') setCategory('application');
   }, [s.mode]);
+  useEffect(() => {
+    if (s.selected.length && (s.tool === 'select' || s.tool === 'nodes')) {
+      s.setStylePage('object');
+      s.setStyleTarget('selection');
+      s.setStyleOpen(true);
+    }
+  }, [s.selected.join(','), s.tool]);
+  useEffect(() => {
+    if (s.styleOpen && innerWidth <= 900) setCollapsed(true);
+  }, [s.styleOpen]);
   const openCategory = (next: Category) => {
     setCategory(next);
     setCollapsed(false);
+    if (innerWidth <= 900) s.setStyleOpen(false);
   };
   const createRegular = () => {
     openCategory('shapes');
@@ -95,6 +120,10 @@ export default function App() {
     } else s.editObjects((gs) => gs.push(g));
     s.setInstance(IDENTITY);
     s.setSelected([g.id]);
+    s.setObjectTab('shape');
+    s.setStylePage('object');
+    s.setStyleTarget('selection');
+    s.setStyleOpen(true);
   };
   const save = async () => {
     const project = s.projectRef.current;
@@ -113,6 +142,75 @@ export default function App() {
     s.setFileSaved(true);
     s.setMessage('Proyecto guardado como archivo JSON editable.');
   };
+  const commands: Command[] = [
+    ...tools.map((t) => ({
+      id: `tool-${t.id}`,
+      label: t.label,
+      keywords: t.id === 'fill' ? 'rellenar fill color' : t.shortcut,
+      run: () => {
+        openCategory(toolCategory(t.id));
+        s.setTool(t.id);
+      },
+    })),
+    ...categories.map((c) => ({
+      id: `category-${c.id}`,
+      label: `Abrir ${c.label}`,
+      run: () => openCategory(c.id),
+    })),
+    ...symmetryCatalog.map((choice) => ({
+      id: `symmetry-${choice.family}-${choice.group}`,
+      label: `Simetría ${choice.group === 'none' ? 'Libre' : choice.group}`,
+      keywords: choice.family,
+      run: () => {
+        openCategory('symmetry');
+        s.changeSymmetryChoice(choice);
+      },
+    })),
+    {
+      id: 'regular',
+      label: 'Polígono paramétrico',
+      keywords: 'forma regular lados',
+      run: createRegular,
+    },
+    {
+      id: 'catalog',
+      label: 'Explorar catálogo de simetrías',
+      run: () => {
+        openCategory('symmetry');
+        s.setCatalogOpen(true);
+      },
+    },
+    {
+      id: 'width',
+      label: 'Cambiar grosor de trazo',
+      run: () => {
+        s.setStylePage('stroke');
+        s.setStyleOpen(true);
+        requestAnimationFrame(() =>
+          document.querySelector<HTMLInputElement>('input[aria-label="Grosor de trazo"]')?.focus(),
+        );
+      },
+    },
+    { id: 'export-svg', label: 'Exportar SVG', run: () => setExportOpen(true) },
+    {
+      id: 'save',
+      label: 'Guardar proyecto JSON',
+      run: () => {
+        void save();
+      },
+    },
+    { id: 'import', label: 'Importar SVG', run: () => svgRef.current?.click() },
+  ];
+  useEffect(() => {
+    const key = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        if (!document.querySelector('dialog[open],.modal-shade')) setCommandOpen((open) => !open);
+      }
+    };
+    window.addEventListener('keydown', key);
+    return () => window.removeEventListener('keydown', key);
+  }, []);
   const open = async (file: File | undefined) => {
     if (!file) return;
     try {
@@ -222,6 +320,14 @@ export default function App() {
           ))}
         </div>
         <div className="top-actions">
+          <button
+            className="command-trigger icon-button"
+            title="Buscar comandos (Ctrl+K)"
+            aria-label="Buscar comandos"
+            onClick={() => setCommandOpen(true)}
+          >
+            <Search size={18} />
+          </button>
           <span className={`save-indicator ${s.saved.includes('Error') ? 'error' : ''}`}>
             <Check size={13} />
             {s.saved}
@@ -353,6 +459,7 @@ export default function App() {
                 aria-label={label}
                 aria-pressed={s.tool === id}
                 onClick={() => {
+                  openCategory(toolCategory(id));
                   s.setTool(id);
                 }}
               >
@@ -403,7 +510,6 @@ export default function App() {
           studio={s}
           category={category}
           collapsed={collapsed}
-          onCategory={openCategory}
           onCreateRegular={createRegular}
           onImport={() => svgRef.current?.click()}
         />
@@ -607,6 +713,7 @@ export default function App() {
           </button>
         </div>
       )}
+      {commandOpen && <CommandPalette commands={commands} onClose={() => setCommandOpen(false)} />}
       {exportOpen && <ExportDialog studio={s} onClose={() => setExportOpen(false)} />}
       {importText !== null && (
         <div className="modal-shade">

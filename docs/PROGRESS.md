@@ -289,3 +289,19 @@
 -203 unitarias/TypeScript y2 E2E dirigidos correctos (1366×768 y390×844):
   recorren27 opciones, hover sin modificar proyecto, radial/sectores, favoritos,
   cierre/restauración de foco y undo. Logs .runtime/v23-gallery-*.log.
+
+## PRD v2.3 · Propiedades, estilos compactos y comandos
+
+- Geometría extraída a ObjectProperties en el panel derecho: Forma, Transformar,
+  Nodos y Acciones conservan edición, Bézier, booleanas, grupos y transformaciones.
+  Polígono muestra lados/tamaño/rotación/tipo de relleno/trazo/preview sin scroll.
+- Apariencia por tabs Colores/Trazo/Perfil/Fill/Paleta/Presets/Objeto/Opciones.
+  Puntos de perfil y paletas extensas tienen selección/paginación explícita.
+  Lápiz abre trazo; Fill abre sus opciones; nodos y selección muestran propiedades.
+- Buscador Ctrl+K con nombres/acentos, flechas, Enter/Escape, conectado a handlers
+  existentes (herramientas, categorías, grupos, polígono, grosor, SVG y archivo).
+-203 unitarias/TypeScript, build y12 E2E nuevos correctos. Cuatro resoluciones
+  verifican los controles principales de todas las tabs derechas sin scroll,
+  documento intacto al navegar y edición real. Log v23-properties-*.log.
+- Pendiente aún: compactar teselas/generador/aplicación, exportación accesible,
+  adaptar y ejecutar todas las regresiones anteriores y cerrar la auditoría.

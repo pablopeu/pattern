@@ -113,7 +113,7 @@ const MathematicalIcon = memo(function MathematicalIcon({ choice }: { choice: Sy
 });
 export function SymmetryGallery({ studio: s }: { studio: Studio }) {
   const [capturing, setCapturing] = useState(false),
-    [expanded, setExpanded] = useState(false),
+    [expanded, setExpanded] = [s.catalogOpen, s.setCatalogOpen],
     [page, setPage] = useState(0),
     [pageSize, setPageSize] = useState(28),
     [recent, setRecent] = useState<string[]>(() => {

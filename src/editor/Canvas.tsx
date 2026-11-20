@@ -742,7 +742,12 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     }
     if (d.type === 'draw' && s.mode === 'apply') discardInvalidRegion(d.id!);
     if (d.type === 'draw' && s.mode !== 'apply') s.finishDrawing(d.id!);
-    else if (d.type !== 'penhandle' && d.type !== 'pan' && d.type !== 'marquee') s.commit();
+    if (d.type === 'draw' && ['rectangle', 'ellipse'].includes(d.capture?.tool ?? s.tool)) {
+      s.setObjectTab('shape');
+      s.setStylePage('object');
+      s.setStyleTarget('selection');
+      s.setStyleOpen(true);
+    } else if (d.type !== 'penhandle' && d.type !== 'pan' && d.type !== 'marquee') s.commit();
     if (!pathDraft.current) {
       captureContext.current = null;
       setCaptureLabel('');

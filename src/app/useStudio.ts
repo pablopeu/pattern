@@ -37,7 +37,19 @@ export type Tool =
   | 'fill'
   | 'region'
   | 'pan';
+export type StylePage =
+  | 'colors'
+  | 'stroke'
+  | 'profile'
+  | 'fill'
+  | 'palette'
+  | 'presets'
+  | 'object'
+  | 'options';
 export function useStudio() {
+  const [catalogOpen, setCatalogOpen] = useState(false);
+  const [stylePage, setStylePage] = useState<StylePage>('colors'),
+    [objectTab, setObjectTab] = useState<'shape' | 'transform' | 'nodes' | 'actions'>('shape');
   const [tileEditing, setTileEditing] = useState(false),
     [tileEdge, setTileEdge] = useState(0),
     [tileNode, setTileNode] = useState(1);
@@ -59,6 +71,8 @@ export function useStudio() {
   useEffect(() => {
     if (tool === 'fill') {
       setStyleTarget('current');
+      setStylePage('fill');
+      setStyleOpen(true);
       if (ref.current.drawingStyle.fill === 'none') setStyleOpen(true);
     }
   }, [tool]);
@@ -659,6 +673,12 @@ export function useStudio() {
     return () => clearTimeout(timer);
   }, [message]);
   return {
+    catalogOpen,
+    setCatalogOpen,
+    stylePage,
+    setStylePage,
+    objectTab,
+    setObjectTab,
     styleOpen,
     setStyleOpen,
     styleTarget,

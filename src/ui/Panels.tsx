@@ -20,7 +20,7 @@ import {
   Scissors,
 } from 'lucide-react';
 import type { Studio } from '../app/useStudio';
-import { newPattern, uid, type Generator, type Geometry } from '../app/model';
+import { newPattern, uid, type Generator } from '../app/model';
 import {
   fromMM,
   toMM,
@@ -31,14 +31,8 @@ import {
   translate,
   type Matrix,
 } from '../geometry/matrix';
-import {
-  booleanGeometry,
-  editablePaths,
-  insertNode,
-  smoothNodes,
-  type BooleanOperation,
-} from '../geometry/paper';
-import { geometryBounds, hasClosedGeometry } from '../application/clipping';
+
+import { hasClosedGeometry } from '../application/clipping';
 import { generatorLabels, generatorParameters, generate } from '../generators';
 
 import { pathData } from '../geometry/paths';
@@ -82,58 +76,29 @@ export function Panels({
   onImport,
   category,
   collapsed,
-  onCategory,
   onCreateRegular,
 }: {
   studio: Studio;
   onImport: () => void;
   category: Category;
   collapsed: boolean;
-  onCategory: (category: Category) => void;
   onCreateRegular: () => void;
 }) {
   const [tabs, setTabs] = useState<Partial<Record<Category, string>>>({});
   const tab = tabs[category] ?? (category === 'layers' ? 'layers' : 'design');
   const setTab = (next: string) => setTabs((old) => ({ ...old, [category]: next }));
-  const { nodeIndex, setNodeIndex } = s;
   const u = s.project.documentUnits,
     selected = s.objects.filter((g) => s.selected.includes(g.id)),
     shape = selected[0];
   const updatePattern = (recipe: (p: Studio['pattern']) => void) =>
     s.change((p) => recipe(p.patterns.find((x) => x.id === s.pattern.id)!));
-  const updateShape = (recipe: (g: Geometry) => void) =>
-    s.editObjects((gs) => gs.filter((g) => s.selected.includes(g.id)).forEach(recipe));
   const units = (value: number) => fromMM(value, u),
     mm = (value: number) => toMM(value, u);
-  const bool = (op: BooleanOperation) => {
-    try {
-      const result = booleanGeometry(selected, op);
-      s.editObjects((gs) => {
-        for (let i = gs.length - 1; i >= 0; i--) if (s.selected.includes(gs[i].id)) gs.splice(i, 1);
-        gs.push(result);
-      });
-      s.setSelected([result.id]);
-    } catch (e) {
-      s.setMessage((e as Error).message);
-    }
-  };
-  const group = () => {
-    const id = uid();
-    updateShape((g) => {
-      g.groupId = id;
-    });
-  };
   const changeApplication = (recipe: (a: NonNullable<Studio['application']>) => void) =>
     s.change((p) => {
       const a = p.applications.find((a) => a.id === s.applicationId);
       if (a) recipe(a);
     });
-  const bounds = shape ? geometryBounds(selected) : null,
-    center = bounds
-      ? { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 }
-      : { x: 0, y: 0 };
-  const around = (matrix: Matrix) =>
-    multiply(translate(center.x, center.y), multiply(matrix, translate(-center.x, -center.y)));
   const addApplication = () => {
     if (!s.region) {
       s.setMessage('Dibujá o importá un perímetro cerrado antes de aplicar el patrón.');
@@ -159,338 +124,6 @@ export function Panels({
     s.setSelected([]);
     s.setTool('select');
   };
-  const geometryPanel = shape ? (
-    <Section
-      title={`GEOMETRY · ${selected.length > 1 ? `${selected.length} OBJETOS` : shape.kind.toUpperCase()}`}
-    >
-      <label className="text-field">
-        <span>Nombre</span>
-        <input
-          aria-label="Nombre del objeto"
-          value={shape.name}
-          onChange={(e) =>
-            updateShape((g) => {
-              g.name = e.target.value;
-            })
-          }
-        />
-      </label>
-      <div className="two-fields">
-        <Field
-          label="Posición X"
-          value={units(shape.transform[4])}
-          step={0.1}
-          unit={u}
-          onChange={(v) =>
-            updateShape((g) => {
-              g.transform = multiply(translate(mm(v) - shape.transform[4], 0), g.transform);
-            })
-          }
-        />
-        <Field
-          label="Posición Y"
-          value={units(shape.transform[5])}
-          step={0.1}
-          unit={u}
-          onChange={(v) =>
-            updateShape((g) => {
-              g.transform = multiply(translate(0, mm(v) - shape.transform[5]), g.transform);
-            })
-          }
-        />
-      </div>
-      {shape.parameters && selected.length === 1 ? (
-        <>
-          <div className="two-fields">
-            <Field
-              label="Ancho"
-              value={units(shape.parameters.width)}
-              min={0.01}
-              step={0.1}
-              unit={u}
-              onChange={(v) =>
-                updateShape((g) => {
-                  if (g.parameters) g.parameters.width = mm(v);
-                })
-              }
-            />
-            <Field
-              label="Alto"
-              value={units(shape.parameters.height)}
-              min={0.01}
-              step={0.1}
-              unit={u}
-              onChange={(v) =>
-                updateShape((g) => {
-                  if (g.parameters) g.parameters.height = mm(v);
-                })
-              }
-            />
-          </div>
-          {shape.kind === 'rectangle' && (
-            <Field
-              label="Redondez"
-              value={units(shape.parameters.radius)}
-              min={0}
-              unit={u}
-              step={0.1}
-              onChange={(v) =>
-                updateShape((g) => {
-                  if (g.parameters) g.parameters.radius = mm(v);
-                })
-              }
-            />
-          )}{' '}
-          {shape.kind === 'polygon' && (
-            <Field
-              integer
-              label="Lados"
-              value={shape.parameters.sides}
-              min={3}
-              max={128}
-              onChange={(v) =>
-                updateShape((g) => {
-                  if (g.parameters) g.parameters.sides = v;
-                })
-              }
-            />
-          )}
-        </>
-      ) : (
-        bounds && (
-          <p className="help-text">
-            Dimensiones: {units(bounds.width).toFixed(2)} × {units(bounds.height).toFixed(2)} {u}
-          </p>
-        )
-      )}
-      <Field
-        label="Rotación"
-        value={(Math.atan2(shape.transform[1], shape.transform[0]) * 180) / Math.PI}
-        min={-180}
-        max={180}
-        unit="°"
-        onChange={(v) =>
-          updateShape((g) => {
-            const delta = v - (Math.atan2(shape.transform[1], shape.transform[0]) * 180) / Math.PI;
-            g.transform = multiply(rotate(delta, center), g.transform);
-          })
-        }
-      />
-      <Field
-        label="Escala"
-        value={Math.hypot(shape.transform[0], shape.transform[1])}
-        min={0.01}
-        max={100}
-        step={0.05}
-        onChange={(v) =>
-          updateShape((g) => {
-            const old = Math.hypot(shape.transform[0], shape.transform[1]);
-            g.transform = multiply(around(scale(v / old)), g.transform);
-          })
-        }
-      />
-      <div className="button-row">
-        <button
-          onClick={() =>
-            updateShape((g) => {
-              g.transform = multiply(around(scale(-1, 1)), g.transform);
-            })
-          }
-        >
-          Reflejar X
-        </button>
-        <button
-          onClick={() =>
-            updateShape((g) => {
-              g.transform = multiply(around(scale(1, -1)), g.transform);
-            })
-          }
-        >
-          Reflejar Y
-        </button>
-      </div>
-      <button
-        className="wide-button"
-        onClick={() => {
-          s.setStyleTarget('selection');
-          s.setStyleOpen(true);
-        }}
-      >
-        <SlidersHorizontal size={15} /> Editar apariencia en panel derecho
-      </button>
-      {shape.kind !== 'path' ? (
-        <button
-          className="wide-button"
-          onClick={() => {
-            s.editObjects((gs) => {
-              const out = gs.flatMap((g) => (s.selected.includes(g.id) ? editablePaths(g) : [g]));
-              gs.splice(0, gs.length, ...out);
-            });
-            s.setTool('nodes');
-          }}
-        >
-          Convertir a paths editables
-        </button>
-      ) : (
-        <>
-          <Toggle
-            label="Path cerrado"
-            checked={shape.closed}
-            onChange={(v) => {
-              if (s.mode === 'apply' && !v) {
-                s.setMessage('Un perímetro aplicado debe permanecer cerrado.');
-                return;
-              }
-              updateShape((g) => {
-                g.closed = v;
-              });
-            }}
-          />
-          <Field
-            integer
-            label="Nodo activo"
-            value={Math.min(nodeIndex + 1, shape.nodes.length)}
-            min={1}
-            max={Math.max(1, shape.nodes.length)}
-            onChange={(v) => setNodeIndex(v - 1)}
-          />
-          {shape.nodes[Math.min(nodeIndex, shape.nodes.length - 1)] && (
-            <div className="two-fields">
-              {(['x', 'y'] as const).map((axis) => (
-                <Field
-                  key={axis}
-                  label={`Nodo ${axis.toUpperCase()}`}
-                  value={units(shape.nodes[Math.min(nodeIndex, shape.nodes.length - 1)][axis])}
-                  unit={u}
-                  step={0.1}
-                  onChange={(v) =>
-                    updateShape((g) => {
-                      g.nodes[Math.min(nodeIndex, g.nodes.length - 1)][axis] = mm(v);
-                    })
-                  }
-                />
-              ))}
-            </div>
-          )}
-          <div className="button-row">
-            <button
-              onClick={() => {
-                s.editObjects((gs) => {
-                  const i = gs.findIndex((g) => g.id === shape.id);
-                  gs[i] = insertNode(shape, Math.min(nodeIndex, shape.nodes.length - 1));
-                });
-              }}
-            >
-              Insertar nodo
-            </button>
-            <button
-              disabled={shape.nodes.length <= 2}
-              onClick={() =>
-                updateShape((g) => {
-                  g.nodes.splice(Math.min(nodeIndex, g.nodes.length - 1), 1);
-                })
-              }
-            >
-              Eliminar nodo
-            </button>
-          </div>
-          <div className="button-row">
-            <button
-              onClick={() =>
-                updateShape((g) => {
-                  const i = Math.min(nodeIndex, g.nodes.length - 1),
-                    a = g.nodes[i],
-                    b = g.nodes[(i + 1) % g.nodes.length];
-                  a.out = { x: (b.x - a.x) / 3, y: (b.y - a.y) / 3 + 5 };
-                  b.in = { x: (a.x - b.x) / 3, y: (a.y - b.y) / 3 + 5 };
-                })
-              }
-            >
-              Curvar segmento
-            </button>
-            <button
-              onClick={() =>
-                updateShape((g) => {
-                  const i = Math.min(nodeIndex, g.nodes.length - 1);
-                  g.nodes[i].out = { x: 0, y: 0 };
-                  g.nodes[(i + 1) % g.nodes.length].in = { x: 0, y: 0 };
-                })
-              }
-            >
-              Segmento recto
-            </button>
-          </div>
-          <div className="button-row">
-            <button
-              onClick={() =>
-                updateShape((g) => {
-                  g.nodes = smoothNodes(g.nodes, g.closed);
-                })
-              }
-            >
-              Suavizar
-            </button>
-            <button
-              onClick={() =>
-                updateShape((g) => {
-                  const n = g.nodes[Math.min(nodeIndex, g.nodes.length - 1)];
-                  n.in = { x: 0, y: 0 };
-                  n.out = { x: 0, y: 0 };
-                })
-              }
-            >
-              Nodo angular
-            </button>
-          </div>
-        </>
-      )}
-      <div className="button-row">
-        <button onClick={s.duplicate}>
-          <Copy size={14} /> Duplicar
-        </button>
-        {selected.length > 1 ? (
-          <button onClick={group}>Agrupar</button>
-        ) : shape.groupId ? (
-          <button
-            onClick={() =>
-              s.editObjects((gs) =>
-                gs
-                  .filter((g) => g.groupId === shape.groupId)
-                  .forEach((g) => {
-                    delete g.groupId;
-                  }),
-              )
-            }
-          >
-            Desagrupar
-          </button>
-        ) : null}
-        <button title="Eliminar selección" onClick={s.deleteSelected}>
-          <Trash2 size={15} />
-        </button>
-      </div>
-      {selected.length > 1 && (
-        <>
-          <div className="section-caption">OPERACIONES GEOMÉTRICAS</div>
-          <div className="boolean-buttons">
-            {(
-              [
-                ['union', 'Unión'],
-                ['intersection', 'Intersección'],
-                ['difference', 'Diferencia'],
-                ['reverse-difference', 'Diferencia inversa'],
-                ['xor', 'XOR'],
-              ] as [BooleanOperation, string][]
-            ).map(([op, label]) => (
-              <button key={op} onClick={() => bool(op)}>
-                {label}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-    </Section>
-  ) : null;
   return (
     <aside className="context-panel" aria-label="Panel contextual" hidden={collapsed}>
       <header className="context-heading">
@@ -588,7 +221,7 @@ export function Panels({
           </button>
         </div>
       )}
-      <div className="panel-scroll">
+      <div className={`panel-scroll context-${category}`}>
         {category === 'symmetry' && tab !== 'generator' && <SymmetryGallery studio={s} />}
         {category === 'tiles' && <TilePanel studio={s} expanded />}
         {category === 'layers' && tab === 'layers' ? (
@@ -690,8 +323,8 @@ export function Panels({
                   Polígono paramétrico · crear
                 </button>
                 <p>
-                  Creá una figura regular; ajustá lados, ancho, alto y rotación debajo. El color y
-                  el trazo usan el estilo vigente.
+                  Creá una figura regular; ajustá lados, tamaño y rotación en Objeto, a la derecha.
+                  El color y el trazo usan el estilo vigente.
                 </p>
                 {shape?.parameters && (
                   <svg
@@ -709,7 +342,17 @@ export function Panels({
                 )}
               </div>
             )}
-            {(category === 'drawing' || category === 'shapes') && geometryPanel}
+            {(category === 'drawing' || category === 'shapes') && shape && (
+              <button
+                className="wide-button"
+                onClick={() => {
+                  s.setStyleOpen(true);
+                  s.setStylePage('object');
+                }}
+              >
+                Propiedades de la selección · panel derecho
+              </button>
+            )}
             {(category === 'drawing' || category === 'shapes') && !shape && (
               <p className="context-hint">
                 {category === 'shapes'
@@ -1355,10 +998,47 @@ export function Panels({
                 Colores y trazo · panel derecho
               </button>
             )}
-            {category === 'shapes' && shape && (
-              <button className="wide-button" onClick={() => onCategory('drawing')}>
-                Edición de nodos y geometría
-              </button>
+            {category === 'drawing' && (
+              <div className="context-hint">
+                <strong>
+                  {
+                    {
+                      select: 'Seleccionar',
+                      nodes: 'Editar nodos Bézier',
+                      pen: 'Pluma Bézier',
+                      pencil: 'Dibujo libre',
+                      line: 'Línea',
+                      fill: 'Rellenar región',
+                      pan: 'Desplazar vista',
+                      region: 'Dibujar perímetro',
+                      rectangle: 'Rectángulo',
+                      ellipse: 'Elipse',
+                      polygon: 'Polígono libre',
+                    }[s.tool]
+                  }
+                </strong>
+                <p>
+                  {s.tool === 'fill'
+                    ? 'Hacé clic o tocá una región cerrada. El color queda aplicado; la tolerancia y los vínculos están en Fill, a la derecha.'
+                    : s.tool === 'nodes'
+                      ? 'Seleccioná un nodo o una tangente en el lienzo. Alt separa tangentes; Objeto → Nodos ofrece edición numérica.'
+                      : s.tool === 'pen'
+                        ? 'Clic crea un nodo; arrastrá para dar tangentes. Enter termina, Shift+Enter cierra y Escape cancela.'
+                        : s.tool === 'pencil'
+                          ? 'Arrastrá para dibujar. Ajustá el grosor en Trazo y la variación de anchura en Perfil.'
+                          : 'Las herramientas de la barra actúan directamente en el lienzo. Los parámetros aparecen a la derecha.'}
+                </p>
+                <button
+                  onClick={() => {
+                    s.setStylePage(
+                      s.tool === 'fill' ? 'fill' : s.tool === 'nodes' ? 'object' : 'stroke',
+                    );
+                    s.setStyleOpen(true);
+                  }}
+                >
+                  Abrir opciones de la herramienta
+                </button>
+              </div>
             )}
           </>
         )}
