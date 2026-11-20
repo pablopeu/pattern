@@ -1,0 +1,1620 @@
+prd_v3.0
+## Advanced Symmetry, Tessellation, Escher-Inspired Composition & Animated Geometry
+
+**Repositorio:** https://github.com/pablopeu/pattern  
+**Base:** PRD v2.3 y desarrollos posteriores existentes en la rama de trabajo  
+**Tipo de trabajo:** ampliación incremental y no destructiva  
+**Plataforma:** aplicación web estática, ejecutable en navegador y en hosting básico  
+**Estado:** especificación de implementación integral para Codex
+
+---
+
+# 0. INSTRUCCIONES OBLIGATORIAS PARA CODEX
+
+Implementar el presente PRD como evolución del proyecto existente.
+
+Este documento es la instrucción de trabajo completa. No requiere un prompt adicional.
+
+## 0.1. Primera acción
+
+Antes de modificar archivos:
+
+1. Leer `AGENTS.md`.
+2. Revisar `git status`, rama activa, últimos commits y trabajo pendiente.
+3. Leer `README.md`, `ARCHITECTURE.md`, `GEOMETRY.md`, `PROJECT_FORMAT.md`, `TESTING.md`.
+4. Revisar `docs/UX_V23_INVENTORY.md` y documentos de aceptación existentes.
+5. Inspeccionar los motores de simetría, teselación, generación, Fill, exportación, persistencia y navegación.
+6. Identificar los avances existentes que ya cubren requisitos de este PRD.
+7. Reutilizar implementaciones válidas.
+8. Conservar las instrucciones operativas vigentes del repositorio, incluidos sus servicios de desarrollo y monitorización.
+
+El contenido actual del repositorio tiene prioridad para determinar nombres de funciones, estructuras de datos y rutas de implementación.
+
+No sobrescribir ni descartar trabajo posterior a la versión inspeccionada para este PRD.
+
+## 0.2. Objetivo principal
+
+Convertir Pattern Studio en un entorno de exploración y creación de:
+
+- Teselaciones figurativas tipo Escher.
+- Teselaciones isoédricas.
+- Composiciones recursivas autosimilares.
+- Simetrías espirales y semejanzas.
+- Teselaciones aperiódicas adicionales.
+- Patrones Girih y entrelazados.
+- Representaciones hiperbólicas.
+- Representaciones esféricas.
+- Animaciones geométricas exportables.
+- Ejemplos artísticos editables y matemáticamente documentados.
+
+**Restricción arquitectónica:** conservar el motor euclidiano existente y no desarrollar un editor completo de geometría hiperbólica o esférica.
+
+**Restricción UX:** ninguna función nueva justifica deteriorar la navegación, introducir paneles interminables o reducir innecesariamente el espacio del lienzo.
+
+## 0.3. Política de ejecución
+
+Implementar por etapas, siguiendo las dependencias indicadas.
+
+Cada etapa MUST incluir:
+
+- Funcionalidad utilizable.
+- Validaciones geométricas.
+- Integración con la UI existente.
+- Persistencia, cuando corresponda.
+- Exportación, cuando corresponda.
+- Pruebas unitarias y E2E.
+- Ejemplos reproducibles.
+- Documentación y commits coherentes.
+
+No declarar completada una etapa por tener solamente un renderer o una pantalla demostrativa.
+
+No usar implementaciones ficticias para satisfacer controles visibles.
+
+No reescribir módulos estables por preferencia estética o arquitectónica.
+
+---
+
+# 1. PRINCIPIOS MATEMÁTICOS
+
+## 1.1. Separar cuatro conceptos
+
+El programa MUST distinguir:
+
+**A. Motivo:** geometría fuente vectorial editable.
+
+**B. Tesela:** región geométrica que puede participar en un recubrimiento mediante reglas definidas.
+
+**C. Disposición:** construcción que determina dónde se coloca cada copia del motivo o tesela.
+
+**D. Representación:** forma de visualizar o proyectar el resultado, que puede no preservar todas sus propiedades geométricas originales.
+
+La distinción MUST mantenerse en datos, interfaz, documentación y exportaciones.
+
+## 1.2. Clasificación matemática
+
+No confundir:
+
+- Grupo wallpaper con tipo isoédrico.
+- Tesela monoédrica con tesela isoédrica.
+- Recursión visual con periodicidad.
+- Autosimilitud con isometría.
+- Teselación aperiódica con distribución aleatoria.
+- Deformación visual con isometría hiperbólica.
+- Textura sobre esfera con teselación esférica.
+- Transformación conforme con preservación de distancias.
+- Simetrías discretas con grupos continuos.
+
+El sistema MUST clasificar los resultados según propiedades verificadas.
+
+## 1.3. Modos de validez
+
+Toda construcción nueva MUST indicar, cuando corresponda:
+
+- `EXACT`: construcción geométrica validada.
+- `APPROXIMATED`: aproximación numérica controlada de una construcción definida.
+- `ARTISTIC`: transformación visual sin garantía de preservar la simetría.
+- `INVALID`: configuración que incumple sus restricciones.
+- `UNVERIFIED`: configuración para la cual no se ha podido certificar la propiedad requerida.
+
+No usar la etiqueta «seamless», «hiperbólica exacta», «esférica exacta» o «aperiódica» sin respaldo del método de generación.
+
+La clasificación debe ser específica de la propiedad: una representación SVG puede ser aproximada numéricamente y representar una construcción hiperbólica matemáticamente exacta.
+
+---
+
+# 2. ARQUITECTURA: CAMBIOS MÍNIMOS
+
+## 2.1. Componentes que se conservan
+
+MUST conservar, salvo correcciones puntuales justificadas:
+
+- `src/app/model.ts`
+- `src/app/useStudio.ts`
+- `src/editor/Canvas.tsx`
+- `src/editor/capture.ts`
+- `src/symmetry/groups.ts`
+- `src/symmetry/config.ts`
+- `src/patterns/engine.ts`
+- `src/tiling/`
+- `src/generators/`
+- `src/fill/`
+- `src/export/`
+- `src/persistence/`
+- `src/ui/`
+
+Mantener React, TypeScript, SVG, Paper.js y las dependencias existentes cuando resulten adecuadas.
+
+## 2.2. Extensión por módulos
+
+Agregar módulos independientes cuando la funcionalidad lo justifique. Una organización posible:
+
+```text
+src/
+  tessellations/
+    isohedral/
+    figurative/
+    aperiodic/
+    girih/
+  composition/
+    recursive/
+    spiral/
+  projections/
+    common/
+    hyperbolic/
+    spherical/
+    artistic/
+  animation/
+    timeline/
+    playback/
+    encoding/
+  examples/
+    catalog/
+    assets/
+```
+
+Los nombres definitivos MUST adaptarse a la arquitectura encontrada.
+
+No duplicar estructuras que ya existan.
+
+## 2.3. Contrato entre motores
+
+Utilizar un contrato de salida común para los generadores euclidianos:
+
+- Geometría canónica.
+- Transformaciones afines.
+- IDs estables de instancias.
+- Regiones y adyacencias.
+- Clasificación de periodicidad.
+- Bounds.
+- Información de procedencia y validez.
+
+Las nuevas representaciones hiperbólicas y esféricas MUST consumir una fuente preparada y producir un resultado derivado, sin alterar el motor de instancias euclidianas.
+
+No extender el tipo actual de matriz afín de seis componentes para simular isometrías no afines.
+
+Las transformaciones no lineales deben quedar encapsuladas en los módulos de proyección.
+
+## 2.4. Documento canónico
+
+Las fuentes originales MUST permanecer intactas al:
+
+- Cambiar el tipo de teselación.
+- Generar una composición recursiva.
+- Proyectar sobre un disco.
+- Proyectar sobre una esfera.
+- Iniciar una animación.
+- Exportar una visualización.
+- Regresar al editor plano.
+
+Las representaciones derivadas MUST guardar referencias y parámetros suficientes para reproducirse.
+
+No guardar miles de clones independientes como geometría editable.
+
+---
+
+# 3. UX — REQUISITO TRANSVERSAL Y PRIORITARIO
+
+Esta sección tiene el mismo nivel de obligatoriedad que las secciones matemáticas.
+
+## 3.1. Preservar la navegación actual
+
+La aplicación existente utiliza:
+
+- Barra izquierda de herramientas y categorías.
+- Panel contextual izquierdo.
+- Lienzo central.
+- Panel derecho de estilos y propiedades.
+- Galería ampliada de simetrías.
+- Búsqueda de comandos.
+
+MUST conservar esa organización.
+
+No crear otra barra lateral permanente para cada familia nueva.
+
+No colocar todas las funcionalidades de este PRD dentro de un único menú «Avanzado» con scrollbar.
+
+No añadir paneles que se abran simultáneamente sin necesidad.
+
+## 3.2. Navegación progresiva
+
+Las funcionalidades MUST distribuirse según su propósito:
+
+| Contexto existente | Incorporaciones |
+|---|---|
+| Simetrías | Familias, composición recursiva, espirales y semejanzas |
+| Teselas | Figurativas, isoédricas, aperiódicas y Girih |
+| Capas | Motivos y geometrías originales, sin cambios disruptivos |
+| Panel derecho | Parámetros de la operación seleccionada y estilos |
+| Lienzo | Edición normal y visualizaciones derivadas |
+| Exportar | Nuevos formatos y animaciones |
+| Archivo / Ejemplos | Nueva galería artística y matemática |
+
+Crear un acceso visible a **Visualizaciones**, preferentemente como selector contextual del espacio de trabajo, no como una barra vertical adicional.
+
+Los modos de visualización pueden organizarse en:
+
+- Plano.
+- Hiperbólico.
+- Esférico.
+- Artístico.
+
+No ofrecer esos modos como si fueran grupos wallpaper.
+
+## 3.3. Descubrimiento por tarjetas visuales
+
+La selección de familias MUST usar tarjetas con:
+
+- Miniatura.
+- Nombre comprensible.
+- Clasificación matemática.
+- Breve descripción.
+- Parámetros principales.
+- Disponibilidad según el contexto.
+
+Ejemplos:
+
+- «Escher · Tesela figurativa».
+- «Isoédrica · IH37».
+- «Autosimilar · Square Limit».
+- «Espiral logarítmica».
+- «Aperiódica · Spectre».
+- «Girih · Estrellas decagonales».
+- «Hiperbólica · Disco de Poincaré».
+- «Esférica · Icosaédrica».
+
+La clasificación técnica debe estar disponible, pero no debe ser la única forma de descubrir una herramienta.
+
+## 3.4. Evitar scrollbars
+
+MUST reutilizar el criterio establecido en v2.3:
+
+- Paneles contextuales.
+- Tabs.
+- Grupos de parámetros.
+- Páginas cortas.
+- Controles que aparecen sólo cuando son relevantes.
+- Galerías ampliadas para catálogos extensos.
+
+No ocultar scrollbars mediante CSS si el contenido sigue siendo inaccesible.
+
+Las galerías extensas pueden tener paginación, búsqueda y filtros.
+
+En pantallas pequeñas se permite scroll vertical cuando sea realmente necesario y no comprometa la accesibilidad.
+
+## 3.5. Flujo de trabajo preferente
+
+El flujo principal MUST ser:
+
+1. Dibujar un motivo.
+2. Elegir una construcción.
+3. Ver el resultado inmediatamente.
+4. Ajustar los parámetros relevantes.
+5. Regresar al dibujo si se quiere modificar el motivo.
+6. Ver automáticamente la construcción actualizada.
+7. Guardar o exportar.
+
+El usuario no debe necesitar comprender detalles internos del motor para realizar este recorrido.
+
+## 3.6. Parámetros y controles
+
+Los parámetros MUST estar agrupados por significado.
+
+Ejemplo para hiperbólicas:
+
+**Construcción**
+- `{p,q}`.
+- Tipo de repetición.
+- Variante matemática.
+
+**Vista**
+- Centro.
+- Zoom.
+- Orientación.
+
+**Movimiento**
+- Reproducir/pausar.
+- Velocidad.
+- Dirección.
+
+**Salida**
+- Imagen.
+- Animación.
+- Resolución.
+
+No presentar todos simultáneamente si la altura disponible no lo permite.
+
+## 3.7. Ayuda contextual
+
+Las opciones matemáticas avanzadas SHOULD mostrar una explicación breve y un enlace a una descripción más completa.
+
+Ejemplos:
+
+- «El patrón es periódico en dos direcciones».
+- «Esta construcción no tiene celda de repetición».
+- «El borde circular representa el infinito hiperbólico».
+- «Esta proyección es artística y puede alterar las simetrías».
+
+No mostrar mensajes permanentes que tapen el lienzo.
+
+## 3.8. Reglas de interacción
+
+- Cambiar categorías MUST conservar herramientas y selecciones.
+- Abrir una visualización MUST conservar el proyecto.
+- La vista derivada MUST indicar que no es editable.
+- La acción «Volver al dibujo» MUST ser visible.
+- Los controles MUST responder sin requerir un botón adicional de confirmación para cada cambio ordinario.
+- Las operaciones costosas MUST mostrar progreso y permitir cancelación.
+- Ninguna operación de vista debe incorporarse al historial de edición geométrica.
+- Ctrl+K MUST permitir encontrar las nuevas funciones.
+
+## 3.9. Pruebas UX obligatorias
+
+Probar 1366×768, 1440×900, 1920×1080 y una pantalla móvil estrecha.
+
+Verificar que un usuario pueda:
+
+1. Crear un pez figurativo encastrable.
+2. Elegir una composición recursiva.
+3. Activar una vista hiperbólica.
+4. Reproducir la animación.
+5. Exportar un GIF.
+6. Volver al dibujo original.
+
+Sin navegar por menús ocultos ni perder el contexto.
+
+---
+
+# 4. TESELACIONES FIGURATIVAS TIPO ESCHER
+
+## 4.1. Objetivo
+
+Permitir que una tesela se convierta en una silueta figurativa cuyos bordes encastren correctamente con los vecinos.
+
+Ejemplos de motivos:
+
+- Peces.
+- Aves.
+- Reptiles.
+- Figuras abstractas.
+- Siluetas orgánicas.
+
+La figura MUST ser editable mediante las herramientas vectoriales existentes.
+
+## 4.2. Aprovechar el editor de teselas existente
+
+Reutilizar:
+
+- Bordes emparejados.
+- Transformaciones afines.
+- Nodos Bézier.
+- Reglas de adyacencia.
+- Validación de huecos y superposiciones.
+- Fill.
+- Simetrías dinámicas.
+
+Ampliar las reglas de relación entre bordes.
+
+Admitir pares de bordes relacionados por:
+
+- Traslación.
+- Rotación.
+- Reflexión.
+- Reflexión con deslizamiento.
+- Composiciones de isometrías compatibles.
+
+## 4.3. Edición de siluetas
+
+El usuario MUST poder:
+
+- Empezar con una tesela geométrica válida.
+- Deformar uno de sus lados.
+- Ver cómo se modifica el lado correspondiente.
+- Añadir y eliminar nodos.
+- Ajustar tangentes.
+- Dibujar detalles interiores independientes.
+- Aplicar colores y estilos.
+- Comprobar encastre en tiempo real.
+
+No exigir que las curvas queden dentro de corredores excesivamente restrictivos si el motor puede validar una región más amplia.
+
+Cuando una deformación cause autointersección, inversión de orientación o superposición, mostrar el problema y conservar el último estado válido.
+
+## 4.4. Figuras y fondos
+
+Separar la silueta exterior de:
+
+- Ojos.
+- Aletas.
+- Plumas.
+- Escamas.
+- Detalles interiores.
+- Colores alternados.
+
+Modificar la silueta no debe destruir los detalles interiores.
+
+Permitir recolocar automáticamente los detalles cuando sea razonable, pero no deformarlos silenciosamente de forma destructiva.
+
+---
+
+# 5. TESELACIONES ISOÉDRICAS
+
+## 5.1. Alcance
+
+Incorporar la clasificación de **93 tipos isoédricos**, IH1–IH93.
+
+No implementarlos como 93 algoritmos independientes.
+
+Diseñar un sistema de definiciones basado en:
+
+- Tipo combinatorio.
+- Vértices.
+- Relaciones entre bordes.
+- Isometrías de adyacencia.
+- Parámetros geométricos.
+- Dominio generador.
+- Restricciones de validez.
+
+## 5.2. Implementación por etapas internas
+
+**Etapa inicial:** familias representativas de las transformaciones principales.
+
+**Etapa intermedia:** ampliar las familias mediante un motor de relaciones de bordes basado en datos.
+
+**Etapa final:** catálogo completo IH1–IH93 con pruebas individuales.
+
+La cobertura MUST reflejar cuáles tipos están implementados y verificados.
+
+No marcar la familia completa como terminada hasta validar los 93 tipos.
+
+## 5.3. Validación
+
+Para cada tipo:
+
+- Verificar emparejamiento de bordes.
+- Verificar cierre de ciclos alrededor de vértices.
+- Verificar área positiva.
+- Verificar ausencia de huecos.
+- Verificar ausencia de superposiciones interiores.
+- Verificar transformaciones y orientaciones.
+- Verificar comportamiento en una región suficiente del plano.
+
+Cuando sea posible, utilizar pruebas matemáticas basadas en la construcción y no depender únicamente de capturas de pantalla.
+
+## 5.4. Catálogo
+
+La interfaz MUST ofrecer:
+
+- Filtro por familia.
+- Búsqueda por identificador IH.
+- Miniatura de la tesela.
+- Miniatura del teselado.
+- Indicadores de reflexión y rotación.
+- Presets editables.
+
+---
+
+# 6. COMPOSICIÓN RECURSIVA TIPO SQUARE LIMIT
+
+## 6.1. Base conceptual
+
+Utilizar las ideas de geometría funcional presentes en:
+
+https://mapio.github.io/programming-with-escher/
+
+Incorporar operadores equivalentes a:
+
+- Rotate.
+- Flip.
+- Beside.
+- Above.
+- Over.
+- Quartet.
+- Cycle.
+- Scale.
+- Translate.
+- Recursive subdivision.
+
+No copiar código GPL de la referencia sin evaluar sus obligaciones de licencia.
+
+## 6.2. Generador recursivo
+
+Crear un generador determinístico que construya un árbol acotado de composición.
+
+Cada nodo debe representar:
+
+- Una referencia a un motivo.
+- Un operador geométrico.
+- Sus parámetros.
+- Sus hijos.
+- Su transformación afín acumulada.
+
+El resultado MUST continuar utilizando las geometrías fuente existentes.
+
+## 6.3. Funcionalidades
+
+Permitir:
+
+- Profundidad de recursión.
+- Escala por nivel.
+- Rotación por nivel.
+- Reflexiones.
+- Distribución espacial.
+- Composición por cuadrantes.
+- Coloración por nivel.
+- Variaciones de orientación.
+- Recetas guardadas.
+
+Ofrecer recetas visuales predefinidas sin exigir que el usuario programe.
+
+## 6.4. Límites
+
+Las composiciones potencialmente infinitas MUST representarse mediante profundidad finita y culling.
+
+Detener subdivisiones que produzcan detalles por debajo de un umbral de tamaño en pantalla o exportación, sin alterar el documento original.
+
+No asumir que una composición recursiva es una teselación exacta.
+
+## 6.5. Ejemplo obligatorio
+
+Crear una composición original de peces que se reduzcan progresivamente hacia los bordes de un cuadrado.
+
+El ejemplo MUST permitir modificar los peces originales y regenerar automáticamente la composición.
+
+---
+
+# 7. ESPIRALES Y SIMETRÍAS DE SEMEJANZA
+
+## 7.1. Objetivo
+
+Implementar patrones basados en combinaciones de:
+
+- Rotación.
+- Traslación.
+- Escala uniforme.
+- Reflexión cuando corresponda.
+
+Utilizar las matrices afines actuales.
+
+## 7.2. Generadores
+
+Incorporar:
+
+- Espiral discreta.
+- Espiral logarítmica visual.
+- Rosetas autosimilares.
+- Composiciones con escala progresiva.
+- Repeticiones geométricas hacia un punto fijo.
+- Patrones de semejanza con reglas explícitas.
+
+No confundir una espiral generada geométricamente con una simetría isométrica.
+
+## 7.3. Parámetros
+
+- Centro.
+- Rotación por repetición.
+- Factor de escala.
+- Número máximo de instancias.
+- Dirección.
+- Desplazamiento.
+- Tamaño mínimo visible.
+- Colores por nivel.
+
+No generar instancias de tamaño cero.
+
+Controlar acumulación de errores numéricos y transformaciones degeneradas.
+
+## 7.4. Ejemplo
+
+Crear una espiral original de aves o peces que disminuyan progresivamente de tamaño hacia un punto central.
+
+---
+
+# 8. TESELACIONES APERIÓDICAS
+
+## 8.1. Conservar Penrose
+
+No modificar destructivamente el generador Penrose actual.
+
+Mantener su representación como parche aperiódico finito.
+
+## 8.2. Hat
+
+Incorporar la familia Hat mediante reglas de sustitución o ensamblado documentadas.
+
+Respetar el uso necesario de orientaciones reflejadas cuando corresponda al sistema empleado.
+
+No generar una textura simplemente aleatoria y etiquetarla como Hat.
+
+## 8.3. Spectre
+
+Incorporar Spectre con las reglas de sustitución y quiralidad pertinentes.
+
+No usar reflexiones si contradicen las restricciones de la variante seleccionada.
+
+## 8.4. Interfaz
+
+Agregar una categoría «Aperiódicas» dentro de Teselas, con:
+
+- Penrose.
+- Hat.
+- Spectre.
+
+Cada familia tendrá su propia configuración contextual.
+
+## 8.5. Ejemplos
+
+Crear al menos:
+
+- Penrose con dos tipos de tesela coloreados.
+- Hat con jerarquía visible.
+- Spectre con coloración por generación de sustitución.
+
+Los ejemplos MUST mostrar qué propiedades son globales y cuáles pertenecen a un parche finito.
+
+---
+
+# 9. GIRIH Y ENTRELAZADOS
+
+## 9.1. Objetivo
+
+Agregar patrones ornamentales basados en familias de polígonos y relaciones de adyacencia.
+
+## 9.2. Funciones
+
+- Catálogo de teselas Girih.
+- Reglas verificadas de compatibilidad.
+- Patrones de estrellas.
+- Líneas ornamentales interiores.
+- Distribución de colores.
+- Transformación y repetición.
+- Construcciones jerárquicas cuando estén definidas.
+
+No afirmar que cualquier colección de polígonos produce un teselado Girih válido.
+
+## 9.3. Entrelazados
+
+Crear un sistema que pueda convertir intersecciones de líneas ornamentales en cruces alternados over/under.
+
+Debe:
+
+- Identificar intersecciones reales.
+- Definir orden superior/inferior.
+- Mantener un ancho de banda configurable.
+- Construir regiones vectoriales.
+- Respetar el patrón repetido.
+- Permitir resolver conflictos globales de alternancia.
+
+Cuando la alternancia sea imposible bajo las restricciones elegidas, informar el conflicto y ofrecer una corrección explícita.
+
+No producir entrelazados que sólo parezcan correctos a escala pequeña.
+
+---
+
+# 10. VISUALIZACIONES HIPERBÓLICAS
+
+## 10.1. Restricción principal
+
+La geometría hiperbólica será una **visualización derivada no editable**.
+
+El usuario MUST crear o modificar el motivo en el editor plano existente.
+
+El programa MUST permitir regresar al dibujo y actualizar posteriormente la representación hiperbólica.
+
+No implementar dibujo libre, nodos, Fill o edición directa sobre el disco.
+
+## 10.2. Dos modalidades
+
+### A. Hiperbólica geométrica
+
+Generar teselaciones hiperbólicas regulares `{p,q}` matemáticamente definidas.
+
+Admitir configuraciones que cumplan:
+
+`p >= 3`
+
+`q >= 3`
+
+`(p - 2) × (q - 2) > 4`
+
+Construir:
+
+- Polígonos hiperbólicos.
+- Aristas geodésicas.
+- Adyacencias.
+- Isometrías.
+- Regiones fundamentales.
+- Transformaciones de visualización.
+
+Usar el disco de Poincaré como primera representación.
+
+La estructura geométrica debe ser correcta, aunque el motivo utilizado en cada región sea una adaptación del dibujo plano.
+
+### B. Proyección artística
+
+Permitir transformar visualmente un dibujo plano hacia una composición circular inspirada en Circle Limit.
+
+No garantizar que conserve la simetría euclidiana original.
+
+Mostrar explícitamente que se trata de una deformación artística.
+
+## 10.3. Adaptación del motivo
+
+La adaptación MUST distinguir:
+
+- Construcción exacta de la teselación hiperbólica.
+- Mapeo numérico del dibujo euclidiano dentro de sus regiones.
+- Correspondencia de bordes.
+- Precisión visual del resultado.
+
+No llamar exacto a un mapeo de contenido que no preserve las propiedades reclamadas.
+
+Para teselas con bordes emparejados, transformar los bordes compartidos mediante una representación canónica común, evitando discrepancias entre vecinos.
+
+## 10.4. Parámetros
+
+- `p`.
+- `q`.
+- Rotaciones/reflexiones según la construcción.
+- Escala visual.
+- Centro de vista.
+- Orientación.
+- Profundidad o límite de detalle.
+- Coloración por tesela o clase de orientación.
+- Mostrar/ocultar estructura.
+
+Validar las combinaciones antes de renderizar.
+
+## 10.5. Rendimiento y precisión
+
+Utilizar generación visible y límites adaptativos de detalle.
+
+Las teselas próximas al borde del disco pueden hacerse arbitrariamente pequeñas.
+
+Implementar:
+
+- Culling.
+- Umbral de tamaño proyectado.
+- Deduplicación de instancias.
+- Cálculos numéricamente estables.
+- Protección frente al borde del disco.
+- Límites de recursos.
+
+No continuar recursiones indefinidamente.
+
+No aceptar artefactos grandes en los bordes por errores de precisión.
+
+## 10.6. Referencias
+
+Estudiar:
+
+https://github.com/looeee/hyperbolic-tiling
+
+https://github.com/pisan-labs/poincare-paint
+
+El primer repositorio ofrece una referencia para teselaciones regulares hiperbólicas y motivos transformados.
+
+El segundo ofrece una referencia de geometría interactiva y tratamiento del disco.
+
+Inspeccionar licencias y algoritmos antes de reutilizar componentes.
+
+No incorporar automáticamente sus aplicaciones ni sustituir Pattern Studio por ellas.
+
+---
+
+# 11. VISUALIZACIONES ESFÉRICAS
+
+## 11.1. Restricción principal
+
+La visualización esférica también será derivada y no editable.
+
+La geometría fuente continúa siendo plana.
+
+## 11.2. Modos
+
+### A. Teselación esférica geométrica
+
+Incorporar configuraciones basadas en:
+
+- Tetraedro.
+- Cubo.
+- Octaedro.
+- Dodecaedro.
+- Icosaedro.
+
+Admitir construcciones y subdivisiones matemáticamente definidas.
+
+No llamar regular a subdivisiones que ya no cumplen esa condición.
+
+### B. Aplicación artística sobre esfera
+
+Permitir adaptar un motivo euclidiano a una superficie esférica mediante una proyección o parametrización visual.
+
+Advertir que una textura deformada no implica simetría esférica exacta.
+
+## 11.3. Vista
+
+Implementar una esfera rotatoria con:
+
+- Orientación.
+- Zoom.
+- Dirección de giro.
+- Iluminación configurable cuando sea pertinente.
+- Fondo configurable.
+- Mostrar/ocultar bordes de teselas.
+
+Se permite Canvas 2D, WebGL o una biblioteca de renderizado de tamaño razonable si se justifica técnicamente.
+
+No exigir un motor 3D complejo para el resto de la aplicación.
+
+## 11.4. Exportación
+
+Permitir exportar una imagen de la vista proyectada.
+
+Para la superficie esférica, admitir una representación raster de alta calidad y exportación vectorial solamente cuando pueda describirse correctamente la proyección 2D resultante.
+
+No prometer un modelo 3D editable ni formatos CAD tridimensionales.
+
+---
+
+# 12. TRANSFORMACIONES ENTRE REPRESENTACIONES
+
+## 12.1. Objetivo
+
+Permitir alternar fluidamente entre:
+
+- Plano.
+- Hiperbólico.
+- Esférico.
+- Proyección artística.
+
+No destruir la fuente.
+
+## 12.2. Correspondencias
+
+Guardar explícitamente:
+
+- Construcción origen.
+- Construcción destino.
+- Región origen.
+- Región destino.
+- Función de mapeo.
+- Parámetros.
+- Nivel de validez.
+- Tolerancia geométrica.
+
+No asumir que cualquier grupo wallpaper se corresponde exactamente con cualquier `{p,q}`.
+
+## 12.3. Interpolación
+
+Permitir una transición animada entre dos representaciones cuando se pueda definir una correspondencia continua.
+
+Distinguir entre:
+
+- Estados extremos matemáticamente válidos.
+- Estados intermedios que conservan las propiedades requeridas.
+- Estados intermedios puramente visuales.
+
+Una interpolación de coordenadas puede ser artísticamente útil sin ser una familia de isometrías.
+
+El programa MUST comunicar esa diferencia.
+
+---
+
+# 13. SISTEMA DE ANIMACIONES
+
+## 13.1. Objetivo
+
+Animar las representaciones sin modificar la geometría fuente.
+
+Incorporar un controlador común de reproducción.
+
+## 13.2. Tipos iniciales
+
+**Hiperbólica**
+- Desplazamiento mediante isometrías hiperbólicas.
+- Rotación.
+- Recentramiento.
+- Recorridos predefinidos dentro del disco.
+
+**Esférica**
+- Rotación alrededor de ejes.
+- Movimiento de cámara.
+- Giro continuo uniforme.
+
+**Recursiva**
+- Aparición progresiva por nivel.
+- Escala.
+- Rotación.
+- Revelado de la estructura.
+
+**Espirales**
+- Rotación.
+- Avance por nivel.
+- Variación cíclica de escala.
+
+**Artística**
+- Transición entre plano y representación deformada.
+- Cambios visuales de parámetros compatibles.
+
+## 13.3. Controles
+
+Incorporar:
+
+- Play.
+- Pause.
+- Stop.
+- Reiniciar.
+- Velocidad.
+- Dirección.
+- Duración.
+- Loop.
+- Selección de preset.
+- Posición en la línea temporal.
+
+La reproducción MUST ser fluida y no alterar el historial geométrico.
+
+## 13.4. Animación determinística
+
+Definir cada cuadro mediante:
+
+`frame = render(source, animationParameters, normalizedTime)`
+
+Los resultados no deben depender de la velocidad real de la máquina.
+
+La duración y los cuadros deben estar gobernados por una línea temporal determinística.
+
+Evitar acumulación de errores por integrar transformaciones sucesivas cuadro tras cuadro.
+
+## 13.5. Loops perfectos
+
+Ofrecer presets cíclicos matemáticamente adecuados.
+
+Una animación de giro completo puede cerrar naturalmente.
+
+Un desplazamiento hiperbólico arbitrario no necesariamente vuelve al estado inicial.
+
+No prometer bucles perfectos en movimientos que no sean periódicos.
+
+Para movimientos no periódicos, permitir reproducción de ida y vuelta o una trayectoria cerrada explícita, sin simular continuidad donde existe un salto.
+
+---
+
+# 14. EXPORTACIÓN DE VIDEO, GIF E IMÁGENES
+
+## 14.1. Arquitectura
+
+Separar:
+
+1. Evaluación geométrica.
+2. Renderizado de frame.
+3. Codificación.
+4. Descarga.
+
+No utilizar el estado de reproducción en tiempo real como única fuente para exportar una animación.
+
+## 14.2. Exportación de imágenes
+
+Mantener PNG, JPEG y SVG donde sean compatibles con la representación.
+
+En vistas no afines, generar geometría proyectada con subdivisión adaptativa controlada para SVG cuando corresponda.
+
+Los trazos Bézier proyectados no deben asumirse automáticamente Bézier equivalentes.
+
+Preservar agujeros y rellenos.
+
+## 14.3. Exportación de video
+
+Implementar al menos un formato de video descargable y reproducible en navegadores o reproductores habituales, preferentemente WebM cuando el soporte del navegador lo permita.
+
+MP4 MAY incorporarse si existe una ruta local confiable de codificación y empaquetado.
+
+No depender de una API remota.
+
+No declarar soporte MP4 sin validar el archivo generado.
+
+## 14.4. GIF
+
+Implementar exportación GIF animada con:
+
+- Resolución.
+- FPS.
+- Duración.
+- Loop.
+- Control de calidad.
+- Dithering y cuantización cuando corresponda.
+
+Respetar las limitaciones del formato, especialmente la paleta de colores.
+
+## 14.5. Parámetros
+
+Presets iniciales:
+
+- 1080×1080.
+- 1920×1080.
+- 1080×1920.
+- Resolución personalizada.
+
+FPS seleccionables según capacidad y formato.
+
+Permitir fondo sólido o transparencia sólo cuando el formato y el pipeline la soporten correctamente.
+
+## 14.6. Rendimiento
+
+Las exportaciones complejas MUST:
+
+- Mostrar progreso.
+- Permitir cancelación.
+- Evitar bloquear permanentemente la interfaz.
+- Limitar consumo excesivo de memoria.
+- Liberar recursos temporales.
+- Verificar errores.
+- Ofrecer una reducción explícita de resolución o detalle.
+
+Usar Workers cuando sea conveniente.
+
+No descargar automáticamente un archivo incompleto.
+
+## 14.7. Determinismo
+
+Dos exportaciones con idéntico proyecto, parámetros, renderizador y configuración deben producir la misma secuencia visual de frames dentro de tolerancias definidas.
+
+No exigir identidad binaria entre diferentes encoders, navegadores o GPUs.
+
+---
+
+# 15. EJEMPLOS INSPIRADOS EN ESCHER
+
+## 15.1. Categorías
+
+Crear una galería de ejemplos que incluya:
+
+**Teselaciones figurativas**
+- Aves.
+- Peces.
+- Reptiles.
+- Figuras abstractas.
+
+**Composiciones recursivas**
+- Square Limit inspirado.
+- Cuadrantes recursivos.
+- Motivos autosimilares.
+
+**Hiperbólicas**
+- Circle Limit inspirado.
+- `{5,4}`.
+- `{7,3}`.
+- Variantes cromáticas.
+
+**Esféricas**
+- Teselación tetraédrica.
+- Teselación cúbica.
+- Teselación icosaédrica.
+
+**Espirales**
+- Peces en espiral.
+- Aves autosimilares.
+
+**Aperiódicas**
+- Penrose.
+- Hat.
+- Spectre.
+
+**Girih**
+- Estrella decagonal.
+- Entrecruzado ornamental.
+
+## 15.2. Requisitos de los ejemplos
+
+Cada ejemplo MUST tener:
+
+- Nombre.
+- Categoría.
+- Descripción.
+- Geometría fuente.
+- Parámetros.
+- Miniatura.
+- Clasificación matemática.
+- Estado de validación.
+- Referencias bibliográficas cuando corresponda.
+
+Los ejemplos de construcciones euclidianas deben ser editables.
+
+Los ejemplos hiperbólicos/esféricos deben permitir editar su fuente plana y regenerar su visualización.
+
+Los ejemplos con animación deben incluir un preset reproducible.
+
+## 15.3. Reproducciones fieles de Escher
+
+Se autorizan como objetivo de producto únicamente cuando exista una base de derechos suficiente.
+
+La implementación MUST distinguir:
+
+**A. Obra de inspiración original:** creada para el proyecto, sin copiar la expresión gráfica protegida de una obra concreta.
+
+**B. Reconstrucción matemática:** reproduce una construcción geométrica o composición sin reproducir necesariamente la ilustración original.
+
+**C. Reproducción fiel:** reproduce la obra visual identificable y requiere verificar si está en dominio público en la jurisdicción aplicable o si existe licencia o autorización suficiente.
+
+Antes de integrar un original protegido:
+
+- Identificar obra y autor.
+- Documentar fuente.
+- Verificar derechos y jurisdicción relevante.
+- Verificar condiciones de uso, reproducción y redistribución.
+- Registrar evidencia.
+- Agregar atribución cuando corresponda.
+- No incorporar el asset si faltan derechos.
+
+La disponibilidad de una imagen en Internet no constituye autorización.
+
+No copiar archivos gráficos de bibliotecas públicas, repositorios o notebooks sin revisar sus licencias.
+
+No bloquear la implementación si no se obtienen derechos: usar ejemplos originales y registrar las reproducciones pendientes.
+
+## 15.4. Galería UX
+
+Organizar los ejemplos mediante una galería visual con filtros, búsqueda y miniaturas.
+
+No agregarlos como una lista vertical interminable dentro de Archivo.
+
+La apertura MUST crear o cargar un proyecto de ejemplo sin modificar irreversiblemente el proyecto actual.
+
+---
+
+# 16. PERSISTENCIA Y COMPATIBILIDAD
+
+## 16.1. Versionado
+
+Inspeccionar el esquema vigente y crear únicamente las migraciones necesarias.
+
+No cambiar el schema global sin requerimiento real.
+
+## 16.2. Datos nuevos
+
+Persistir:
+
+- Definiciones de familias de teselas.
+- Parámetros de composición recursiva.
+- Parámetros de semejanza.
+- Construcciones aperiódicas.
+- Presets Girih.
+- Definiciones de visualización derivada.
+- Selección de modo.
+- Parámetros hiperbólicos/esféricos.
+- Configuración de animación.
+- Referencias y metadatos de ejemplos.
+
+Evitar persistir caches geométricos regenerables cuando no aporten valor al documento.
+
+## 16.3. Compatibilidad
+
+Los proyectos anteriores MUST abrirse sin pérdidas.
+
+El proyecto nuevo debe conservar el comportamiento predeterminado existente, incluidos P3, zoom, estructura y herramienta inicial, salvo instrucción explícita posterior del usuario.
+
+No sustituir la vista plana como modo inicial.
+
+No activar animaciones automáticamente al abrir proyectos heredados.
+
+Undo/redo y autosave deben seguir funcionando.
+
+---
+
+# 17. RENDIMIENTO
+
+## 17.1. Interactividad
+
+El sistema MUST priorizar:
+
+- Dibujo fluido.
+- Zoom y pan.
+- Cambios rápidos de parámetros.
+- Respuesta inmediata de controles.
+- Renderizado incremental.
+
+## 17.2. Presupuestos
+
+Definir umbrales medidos para:
+
+- Número de instancias.
+- Número de vértices proyectados.
+- Profundidad recursiva.
+- Complejidad de bordes.
+- Número de teselas.
+- Tiempo por frame.
+- Memoria de exportación.
+
+No adoptar límites arbitrarios sin verificar su impacto.
+
+## 17.3. Degradación controlada
+
+Si una visualización supera el presupuesto:
+
+- Reducir detalle proyectado.
+- Aplicar culling.
+- Diferir cálculos no visibles.
+- Mostrar estado de cálculo.
+- Ofrecer cancelación.
+
+No corromper el documento ni congelar la interfaz sin salida.
+
+---
+
+# 18. FASES DE IMPLEMENTACIÓN
+
+Las fases son obligatorias y siguen un orden de dependencias. Ninguna requiere un nuevo PRD.
+
+## Fase 0 — Auditoría y línea base
+
+- Inventario de capacidades actuales.
+- Inventario UX.
+- Tests baseline.
+- Arquitectura incremental.
+- Riesgos y dependencias.
+- Revisión de licencias.
+
+**Salida:** baseline verificado.
+
+## Fase 1 — Composición recursiva y espirales
+
+Implementar:
+
+- Operadores afines recursivos.
+- Autosimilitud.
+- Espirales.
+- Presets.
+- Ejemplos.
+- Integración UX.
+
+**Salida:** dos familias nuevas funcionales sin modificar el editor central.
+
+## Fase 2 — Teselas figurativas e isoédricas
+
+Implementar:
+
+- Edición avanzada de siluetas.
+- Relaciones de bordes.
+- Catálogo isoédrico.
+- IH1–IH93 verificados.
+- Ejemplos figurativos.
+
+**Salida:** editor de teselas figurativas completo.
+
+## Fase 3 — Aperiódicas y Girih
+
+Implementar:
+
+- Hat.
+- Spectre.
+- Catálogo Girih.
+- Entrelazados.
+- Ejemplos.
+- Validaciones.
+
+**Salida:** nuevas familias de teselación completas.
+
+## Fase 4 — Visualización hiperbólica
+
+Implementar:
+
+- `{p,q}`.
+- Disco de Poincaré.
+- Construcción geométrica.
+- Adaptación de motivos.
+- Proyección artística.
+- Precisión y culling.
+- Ejemplos.
+
+**Salida:** visualización derivada hiperbólica sin edición directa.
+
+## Fase 5 — Visualización esférica
+
+Implementar:
+
+- Construcciones esféricas.
+- Proyección de motivos.
+- Vista rotatoria.
+- Modo artístico.
+- Ejemplos.
+
+**Salida:** visualización derivada esférica sin edición directa.
+
+## Fase 6 — Animaciones y exportación
+
+Implementar:
+
+- Sistema temporal determinístico.
+- Movimiento hiperbólico.
+- Rotación esférica.
+- Animación recursiva y espiral.
+- Transiciones visuales.
+- GIF.
+- Video.
+- Presets de loop.
+
+**Salida:** animaciones reproducibles y exportables.
+
+## Fase 7 — Integración UX y regresiones generales
+
+Realizar:
+
+- Auditoría de navegación.
+- Auditoría de controles.
+- Revisión de paneles y scrollbars.
+- Revisión de ejemplos.
+- Pruebas de principio a fin.
+- Validación de exportaciones.
+- Pruebas de compatibilidad.
+- Documentación final.
+
+**Salida:** producto integrado sin regresiones.
+
+La UX debe validarse al finalizar cada fase. La Fase 7 es una auditoría integral adicional, no una autorización para posponer problemas de usabilidad.
+
+---
+
+# 19. CRITERIOS DE ACEPTACIÓN
+
+## AC-01 — Compatibilidad
+
+Los proyectos previos mantienen su geometría, simetría, colores, rellenos, teselas y exportación.
+
+## AC-02 — Navegación
+
+Todas las familias nuevas son accesibles desde categorías existentes o un selector integrado y comprensible.
+
+## AC-03 — Scrollbars
+
+Las nuevas opciones no generan paneles anidados con scroll innecesario.
+
+## AC-04 — Edición
+
+Las familias euclidianas utilizan las herramientas vectoriales existentes.
+
+## AC-05 — Simetría
+
+Las transformaciones geométricas declaradas exactas superan sus pruebas matemáticas.
+
+## AC-06 — Isoédricas
+
+Los 93 tipos IH disponen de definiciones verificadas y tests propios.
+
+## AC-07 — Escher figurativo
+
+Modificar un borde de la tesela actualiza los bordes relacionados sin huecos ni superposiciones inválidas.
+
+## AC-08 — Recursión
+
+Los resultados son determinísticos y conservan la fuente editable.
+
+## AC-09 — Espirales
+
+La repetición utiliza transformaciones afines correctas y límites de detalle estables.
+
+## AC-10 — Aperiódicas
+
+Hat y Spectre implementan reglas de construcción documentadas, no distribución aleatoria.
+
+## AC-11 — Girih
+
+Los patrones verifican adyacencias y los entrelazados conservan las relaciones de cruce.
+
+## AC-12 — Hiperbólica
+
+Los parámetros `{p,q}` se validan, las geodésicas y adyacencias son correctas y el disco representa una teselación hiperbólica real.
+
+## AC-13 — Artístico
+
+Las deformaciones visuales se identifican explícitamente como tales.
+
+## AC-14 — Esférica
+
+Las construcciones declaradas exactas verifican su geometría y la vista puede rotarse.
+
+## AC-15 — Fuente intacta
+
+Entrar y salir de una visualización derivada no modifica la fuente canónica.
+
+## AC-16 — Animación
+
+La reproducción utiliza tiempo normalizado, con controles de pausa, velocidad y dirección.
+
+## AC-17 — Loop
+
+Los presets cíclicos regresan al estado geométrico inicial sin saltos visibles.
+
+## AC-18 — GIF
+
+El programa genera un GIF válido, reproducible y descargable.
+
+## AC-19 — Video
+
+El programa genera al menos un formato de video válido y descargable, con cancelación y progreso.
+
+## AC-20 — Exportación
+
+Las salidas representan fielmente los resultados de las construcciones dentro de tolerancias declaradas.
+
+## AC-21 — Ejemplos
+
+Cada familia implementada posee ejemplos reproducibles y documentados.
+
+## AC-22 — Derechos
+
+Los ejemplos fieles de Escher sólo se incluyen cuando existen derechos documentados suficientes.
+
+## AC-23 — Accesibilidad
+
+Las funciones nuevas pueden encontrarse mediante la interfaz y la búsqueda de comandos, sin depender de iconos desconocidos.
+
+## AC-24 — Rendimiento
+
+Las escenas extensas utilizan límites adaptativos y no bloquean indefinidamente la aplicación.
+
+## AC-25 — Regresiones
+
+Las pruebas existentes v1–v2.3 y posteriores continúan aprobadas, salvo cambios justificados y documentados.
+
+---
+
+# 20. PRUEBAS AUTOMATIZADAS
+
+## 20.1. Unitarias
+
+Cubrir:
+
+- Transformaciones afines recursivas.
+- Relaciones isoédricas.
+- Cierre de bordes.
+- Intersecciones.
+- Recubrimiento.
+- Sustituciones aperiódicas.
+- Reglas de quiralidad.
+- Intersecciones Girih.
+- Clasificación de `{p,q}`.
+- Geodésicas hiperbólicas.
+- Isometrías.
+- Proyecciones esféricas.
+- Normalización temporal.
+- Cierre de animaciones.
+- Migraciones.
+
+## 20.2. E2E
+
+Playwright MUST cubrir los recorridos representativos de cada familia.
+
+Ejemplo completo:
+
+1. Crear proyecto.
+2. Dibujar motivo.
+3. Cambiar colores.
+4. Crear tesela figurativa.
+5. Abrir composición recursiva.
+6. Seleccionar vista hiperbólica.
+7. Reproducir animación.
+8. Exportar GIF.
+9. Volver al dibujo.
+10. Editar una curva.
+11. Confirmar que la visualización se actualiza.
+12. Guardar JSON.
+13. Reabrir.
+14. Comparar el resultado reproducido.
+
+Las pruebas deben verificar geometría o archivos reales, no solamente que los botones existen.
+
+## 20.3. Validación visual
+
+Generar capturas de:
+
+- Todas las familias principales.
+- Paneles abiertos y cerrados.
+- Galerías.
+- Ejemplos.
+- Disco hiperbólico.
+- Esfera.
+- Editor plano recuperado.
+- Exportación.
+
+Evitar aprobar una interfaz que sólo se vea bien a 1920×1080.
+
+---
+
+# 21. DOCUMENTACIÓN
+
+Actualizar:
+
+- README.
+- Arquitectura.
+- Geometría.
+- Formato de proyecto.
+- Pruebas.
+- Guía UX.
+- Inventario de funciones.
+- Ejemplos.
+
+Documentar claramente:
+
+- Qué es editable.
+- Qué es una visualización derivada.
+- Qué construcciones son exactas.
+- Qué transformaciones son artísticas.
+- Qué formatos se pueden exportar.
+- Qué limitaciones existen.
+- Cómo volver al dibujo original.
+
+Las referencias técnicas y matemáticas deben incorporarse en documentación apropiada, respetando licencias.
+
+---
+
+# 22. REFERENCIAS DE INVESTIGACIÓN
+
+Investigar y utilizar críticamente:
+
+1. Functional Geometry / Programming with Escher  
+   https://mapio.github.io/programming-with-escher/
+
+2. EscherSketch: Hyperbolic Tiling Generator  
+   https://github.com/looeee/hyperbolic-tiling
+
+3. Poincaré Paint  
+   https://github.com/pisan-labs/poincare-paint
+
+4. Isohedral tilings  
+   https://isohedral.ca/isohedral-tiles-tilings-and-notations/
+
+5. Aperiodic monotiles y Spectre  
+   https://cs.uwaterloo.ca/~csk/spectre/
+
+6. Craig Kaplan — publicaciones sobre Escherization, teselaciones y patrones ornamentales  
+   https://cs.uwaterloo.ca/~csk/publications/
+
+No asumir que las referencias son implementaciones completas de los requisitos.
+
+Comprobar licencias, exactitud, compatibilidad y alcance.
+
+---
+
+# 23. CRITERIO GLOBAL DE FINALIZACIÓN
+
+El PRD está completo cuando Pattern Studio puede:
+
+- Crear teselas figurativas encastrables.
+- Explorar la clasificación isoédrica implementada y verificada.
+- Construir composiciones recursivas.
+- Generar espirales y patrones autosimilares.
+- Generar Hat, Spectre y Girih.
+- Mostrar teselaciones hiperbólicas auténticas.
+- Producir representaciones esféricas auténticas.
+- Generar deformaciones artísticas claramente identificadas.
+- Animar esas representaciones.
+- Exportar imágenes, GIF y video.
+- Abrir ejemplos artísticos y matemáticos.
+- Conservar siempre la geometría fuente.
+- Mantener la navegación clara y el espacio de trabajo despejado.
+- Reabrir proyectos anteriores sin pérdidas.
+
+**Condición final:** no considerar suficiente que todas las capacidades existan técnicamente. Deben resultar descubribles, comprensibles y utilizables sin que el usuario tenga que explorar sistemáticamente menús largos o recurrir a documentación para encontrar cada herramienta.
+
+La implementación debe ampliar el potencial creativo de Pattern Studio sin convertir su interfaz en un obstáculo.
+
+**FIN DEL PRD v3.0.**

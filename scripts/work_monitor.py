@@ -36,14 +36,36 @@ def read_limits(path):
                 latest = dict(limits=limits, observed_at=row.get('timestamp'))
     return latest
 
+def primary_reset(limits, now):
+    """Use only the observed, unexpired five-hour reset for resuming work."""
+    window = limits.get('primary') or {}
+    reset = window.get('resets_at', 0)
+    return reset + 60 if reset > now else None
+
 def decision(limits, now):
-    """Only act on unexpired, observed windows. Do not invent a fresh quota."""
-    low = []
-    for name in ('primary', 'secondary'):
-        w = limits.get(name) or {}
-        if w.get('used_percent', 0) >= 90 and w.get('resets_at', 0) > now:
-            low.append(w['resets_at'])
-    return max(low) + 60 if low else None
+    """Secondary quota alerts belong to Pablo; they never delay this cycle."""
+    window = limits.get('primary') or {}
+    return primary_reset(limits, now) if window.get('used_percent', 0) >= 90 else None
+
+def primary_timer(timer, limits, now):
+    # Migrate an older weekly timer without inventing a new quota or duplicating
+    # a resume already sent. Explicit pending timers remain valid below90% usage.
+    reset = primary_reset(limits, now)
+    if reset and not timer.get('sent') and timer.get('resume_at', 0) > reset + 120:
+        return dict(timer, resume_at=reset, reason='primary_reset', sent=False)
+    return timer
+
+def warn_secondary(thread_id, limits, now):
+    window = limits.get('secondary') or {}
+    path = RUNTIME / 'secondary-alert.json'
+    if window.get('used_percent', 0) < 90 or window.get('resets_at', 0) <= now:
+        if path.exists(): atomic_json(path, {})
+        return
+    previous = read_json(path, {})
+    if previous.get('sent') and previous.get('resets_at') == window.get('resets_at'):
+        return
+    ok = queue(thread_id, 'Aviso de cupo secundario de Pattern Studio: queda10% o menos. Pablo decide si utiliza un banked reset. Este aviso no pausa automáticamente el trabajo ni posterga el timer: la pausa y reanudación automática se rigen exclusivamente por la ventana de5horas. No cambies el timer al reset semanal.')
+    atomic_json(path, dict(resets_at=window.get('resets_at'), sent=ok))
 
 def queue(thread_id, message, resume=False, accept_resume_warning=False):
     args = ['codex', 'queue', '--thread', thread_id, '--message', message]
@@ -109,10 +131,16 @@ def watch(thread_id, session):
             if sample:
                 now = time.time()
                 limits = sample['limits']
+                adjusted = primary_timer(timer, limits, now)
+                if adjusted != timer:
+                    timer = adjusted
+                    atomic_json(timer_file, timer)
+                    event('timer_primary_reset', resume_at=timer['resume_at'])
+                warn_secondary(thread_id, limits, now)
                 resume_at = decision(limits, now)
                 state = dict(updated_at=dt.datetime.now(dt.timezone.utc).isoformat(), observed_at=sample['observed_at'],
                              primary=limits.get('primary'), secondary=limits.get('secondary'),
-                             threshold_remaining=10, status='working', resume_at=timer.get('resume_at'),
+                             threshold_remaining=10, cycle_window='primary', secondary_policy='notify_only', status='working', resume_at=timer.get('resume_at'),
                              resume_result=timer.get('result'))
                 if resume_at:
                     state['status'] = 'winding_down'
@@ -121,12 +149,12 @@ def watch(thread_id, session):
                         atomic_json(timer_file, timer)
                         event('timer_scheduled', resume_at=resume_at)
                     if not timer.get('close_requested'):
-                        ok = queue(thread_id, 'Monitor de cupo de Pattern Studio: queda 10% o menos en una ventana vigente. Terminá el incremento actual, ejecutá los checks necesarios, actualizá docs/CONTINUITY.md y docs/PROGRESS.md, hacé commit local y finalizá el turno. Hay un timer de reanudación después del reset real; no inicies otro incremento.')
+                        ok = queue(thread_id, 'Monitor de cupo de Pattern Studio: queda 10% o menos en la ventana de5horas vigente. Terminá el incremento actual, ejecutá los checks necesarios, actualizá docs/CONTINUITY.md y docs/PROGRESS.md, hacé commit local y finalizá el turno. Hay un timer de reanudación después del reset real; no inicies otro incremento.')
                         timer['close_requested'] = ok
                         atomic_json(timer_file, timer)
                     state['resume_at'] = timer['resume_at']
                 if timer.get('resume_at') and not timer.get('sent') and now >= timer['resume_at']:
-                    ok = queue(thread_id, 'Reanudación programada por Pablo tras el reset del cupo. Continuá el PRD de /home/pablo/pattern. Leé AGENTS.md, docs/CONTINUITY.md, docs/PROGRESS.md, feedback y estado Git. Comprobá el uso real antes de continuar y no dupliques servicios. Implementá, verificá, documentá y hacé commits locales hasta completar los criterios pendientes.', resume=True)
+                    ok = queue(thread_id, 'Reanudación programada por Pablo tras el reset del cupo. Continuá prd_v3.0.txt de /home/pablo/pattern, incluidos sus ejemplos. Leé AGENTS.md, docs/CONTINUITY.md, docs/PROGRESS.md, feedback y estado Git. Comprobá el uso real antes de continuar y no dupliques servicios. El ciclo automático vigila la ventana de5horas; el secundario sólo avisa y Pablo decide banked resets. Implementá, verificá, documentá y hacé commits locales hasta completar los criterios pendientes.', resume=True)
                     timer.update(sent=True, result='requested' if ok else 'resume_failed_inspect_events')
                     atomic_json(timer_file, timer)
                     state['status'] = 'resume_requested' if ok else 'resume_failed'

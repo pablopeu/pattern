@@ -7,8 +7,18 @@ class QuotaTests(unittest.TestCase):
     def test_threshold_and_real_reset(self):
         self.assertIsNone(monitor.decision({'primary':{'used_percent':89,'resets_at':1000}},100))
         self.assertEqual(monitor.decision({'primary':{'used_percent':90,'resets_at':1000}},100),1060)
-    def test_weekly_window_can_delay_resume(self):
-        self.assertEqual(monitor.decision({'primary':{'used_percent':95,'resets_at':1000},'secondary':{'used_percent':91,'resets_at':5000}},100),5060)
+    def test_secondary_does_not_delay_primary_resume(self):
+        self.assertEqual(monitor.decision({'primary':{'used_percent':95,'resets_at':1000},'secondary':{'used_percent':91,'resets_at':5000}},100),1060)
+    def test_secondary_alone_never_pauses(self):
+        self.assertIsNone(monitor.decision({'secondary':{'used_percent':99,'resets_at':5000}},100))
+    def test_pending_weekly_timer_moves_to_real_primary_reset(self):
+        timer={'resume_at':5060,'sent':False,'close_requested':True}
+        moved=monitor.primary_timer(timer,{'primary':{'used_percent':88,'resets_at':1000}},100)
+        self.assertEqual(moved['resume_at'],1060)
+        self.assertTrue(moved['close_requested'])
+        self.assertEqual(monitor.primary_timer(moved,{},100),moved)
+        sent=dict(timer,sent=True)
+        self.assertEqual(monitor.primary_timer(sent,{'primary':{'resets_at':1000}},100),sent)
     def test_expired_and_unknown_windows_do_not_invent_quota(self):
         self.assertIsNone(monitor.decision({'primary':{'used_percent':99,'resets_at':50}},100))
         self.assertIsNone(monitor.decision({},100))
@@ -32,6 +42,15 @@ class FeedbackTests(unittest.TestCase):
         row = dict(time='2026-11-20T00:00:00Z', message=message, **extra)
         with (self.runtime/'feedback.jsonl').open('a') as f: f.write(json.dumps(row)+'\n')
         return row
+    @patch.object(monitor, 'queue', return_value=True)
+    def test_secondary_warns_once_and_rearms_after_banked_reset(self, queue):
+        low={'secondary':{'used_percent':90,'resets_at':5000}}
+        monitor.warn_secondary('thread',low,100)
+        monitor.warn_secondary('thread',low,101)
+        self.assertEqual(queue.call_count,1)
+        monitor.warn_secondary('thread',{'secondary':{'used_percent':5,'resets_at':5000}},102)
+        monitor.warn_secondary('thread',low,103)
+        self.assertEqual(queue.call_count,2)
     @patch.object(monitor, 'queue', return_value=True)
     def test_delivery_works_while_active_and_after_completion_without_duplicates(self, queue):
         for status in ('working', 'waiting_reset', 'complete'):

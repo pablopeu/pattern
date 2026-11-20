@@ -1,8 +1,8 @@
 # Pattern Studio 2D
 
-Implementar `prd_v2.3.txt` como evolución no destructiva de v2.2; conservar las regresiones v1/v2/v2.1/v2.2 y el logo icono.png. Trabajar con Git local. El usuario autorizó el push del historial a `https://github.com/pablopeu/pattern` en la rama `main`. La revisión de la aplicación se mantiene en LAN. Pablo autorizó también producción por FTP mediante GitHub Actions en cada push; conservar ambos servicios LAN.
+Implementar `prd_v3.0.txt` como evolución no destructiva del estado actual; conservar las regresiones v1/v2/v2.1/v2.2/v2.3 y el feedback posterior y el logo icono.png. Trabajar con Git local. El usuario autorizó el push del historial a `https://github.com/pablopeu/pattern` en la rama `main`. La revisión de la aplicación se mantiene en LAN. Pablo autorizó también producción por FTP mediante GitHub Actions en cada push; conservar ambos servicios LAN.
 
-- Comprobar `python3 scripts/work_monitor.py --status` al comenzar y entre entregas. Si queda menos del 10% en una ventana vigente, cerrar el incremento: verificar, documentar, commit y finalizar el turno para esperar el reset. El monitor solicita la reanudación en esta misma conversación después del reset real.
+- Comprobar `python3 scripts/work_monitor.py --status` al comenzar y entre entregas. Si queda 10% o menos en la ventana primaria de 5 horas, cerrar el incremento: verificar, documentar, commit y finalizar el turno para esperar el reset. El monitor solicita la reanudación en esta misma conversación después del reset real.
 - Consultar `docs/CONTINUITY.md`, `docs/PROGRESS.md` y feedback pendiente en `.runtime/feedback.jsonl` antes de continuar. No duplicar servicios activos.
 - Mantener vista LAN en puerto 4173 y monitor en 4174. El usuario revisa desde otra PC; mantener los servicios en funcionamiento.
 - Commits pequeños por avances coherentes; actualizar documentación con verificaciones reales y pendientes explícitos. No declarar completo el PRD sin auditar sus criterios.
@@ -21,3 +21,9 @@ Implementar `prd_v2.3.txt` como evolución no destructiva de v2.2; conservar las
   del orden igual. Usar newStudy para UI; conservar newProject neutro para motor,
   fixtures e importaciones. Recuperación no sobreescribe configuraciones guardadas.
   Grilla: puntos negros5mm alineados con Snap, control de visibilidad independiente.
+
+- Aclaración vigente de Pablo: el cupo secundario/semanal sólo dispara un aviso;
+  Pablo decide si usa un banked reset. No pausa automáticamente ni retrasa el
+  timer al reset semanal. Reanudación basada en el reset real primario+60s.
+  Próxima tarea: prd_v3.0.txt, incluidos los ejemplos, desde Fase0 sin implementar
+  antes del reset primario solicitado.

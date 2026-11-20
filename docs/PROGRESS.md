@@ -733,3 +733,15 @@
 - Monitor indica10% restante secundario, winding_down. Cierre del incremento sin
   iniciar implementación nueva; timer del monitor apunta al reset real+60s.
   PROJECT_COMPLETE ausente; servicios4173/4174 conservados para revisión/feedback.
+
+
+## PRD v3.0 y ciclo de 5 horas · Preparados para reanudar
+
+- prd_v3.0.txt recibido; incluye ejemplos. Pendiente Fase0 y todas sus fases;
+  no se inició implementación antes del reset solicitado por Pablo.
+- Regla aclarada: sólo primaria5h pausa/reanuda. Secundaria sólo avisa y Pablo
+  decide banked resets. Timer corregido a20/11/2026 20:24:46 Argentina, basado en
+  reset primario real+60s; ya no espera25/11. AGENTS/README/dashboard actualizados.
+- 12 pruebas Python correctas; monitor reiniciado sin duplicar y app conservada.
+  API real confirma política y timer. Servicios4173/4174 activos; PROJECT_COMPLETE
+  ausente. Commit de preparación, sin comenzar PRD3.0 durante esta ventana.

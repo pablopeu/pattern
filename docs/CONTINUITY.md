@@ -1,3 +1,28 @@
+# PRD v3.0 recibido · Reanudación en ventana primaria
+
+Archivo correcto subido por Pablo: prd_v3.0.txt; se conserva el original y pasa
+al seguimiento Git. Incluye el pedido de ejemplos nuevos; no duplicarlo como
+encargo aislado. Próximo trabajo: Fase0 del PRD (lecturas/auditoría/baseline),
+luego sus fases en orden, conservando v1–v2.3 y todos los ajustes posteriores.
+No se inició implementación v3.0 durante esta espera. Revisar especialmente
+sus requisitos UX, exactitud matemática, compatibilidad y derechos de ejemplos.
+
+**Aclaración operativa de Pablo:** pausa/resume se rigen sólo por la ventana de
+5 horas. El secundario/semanal sólo avisa; Pablo decide banked resets. Esto
+reemplaza la espera al reset secundario registrada en el cierre histórico de abajo.
+Monitor ajustado y12 pruebas Python correctas (incluidos aviso secundario sin
+pausa, migración del timer, deduplicación y rearmado tras banked reset). Monitor
+reiniciado una sola vez, app conservada. API real confirma primary/notify_only;
+servicios4173/4174 activos. No se envió feedback de prueba al hilo real.
+
+Timer migrado al reset primario observado1795217026+60:20/11/2026 a20:24:46
+Argentina (23:24:46UTC), resume_at1795217086. PROJECT_COMPLETE sigue ausente;
+reanudar este mismo hilo leyendo prd_v3.0.txt/AGENTS/continuidad/progreso/feedback/
+Git y uso real, sin duplicar servicios. Evidencia .runtime/primary-monitor-tests.log
+y usage.json/timer.json. El reset semanal no debe sustituir este timer.
+
+---
+
 # Celda fija en split y Patrón → Una celda · Verificado
 
 La cámara de una celda periódica mantiene su centro. Bloqueados Espacio+arrastre,
