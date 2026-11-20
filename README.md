@@ -110,6 +110,13 @@ Las pestañas del panel derecho ofrecen colores HEX/alfa, grosor, extremos y uni
 
 **Capas** permite ocultar, bloquear y ordenar objetos; **Objeto → Forma** permite nombrarlos. En **Aplicar**, creá o importá un perímetro cerrado y colocá el conjunto sobre él. Una aplicación congelada conserva su simetría efectiva aunque cambie la principal. El exportador permite elegir el conjunto activo o la composición visible; sólo ofrece una celda común cuando su periodicidad está verificada.
 
+El pie de página reúne los enlaces del autor en una línea: **Patterns — Hecho
+con pasión por un cuchillero. ¿Te gustan los cuchillos? Seguime en:**, con
+Instagram, X, Facebook, WhatsApp, Telegram y PEU.NET. En pantallas estrechas
+se puede recorrer horizontalmente. Los iconos de pestaña, favoritos y pantalla
+de inicio usan los archivos aportados en favicon_io.zip; el manifest conserva
+rutas relativas para raíz y subcarpetas.
+
 ## Guardado y privacidad
 
 El autosave transaccional usa IndexedDB y guarda cada proyecto por su ID. Los favoritos de simetría se guardan en este navegador y los recientes duran la sesión. Estas preferencias de navegación no cambian el JSON ni agregan undo. La biblioteca pertenece al navegador y al origen HTTP (host y puerto). Otra PC puede revisar la aplicación y sus ejemplos, pero no ve automáticamente los proyectos privados de tu navegador. Para intercambiarlos, guardá y abrí JSON.

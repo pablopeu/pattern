@@ -405,7 +405,7 @@
 - Node 24, npm ci, tres pruebas de despliegue, TypeScript +203 unitarias y build
   antes de subir. Actions fijadas por SHA; permisos de lectura y transferencias
   serializadas, sin limpieza total de la carpeta. README al final documenta
-  configuración y uso. App4173 y monitor 4174 conservados.
+  configuración y uso. App 4173 y monitor 4174 conservados.
 - Verificación local:3 tests de despliegue, 203 unitarias/TypeScript, build y
   actionlint 1.7.12 correctos. Pendiente publicar el commit y observar la primera
   ejecución real de FTP en GitHub.
@@ -420,3 +420,22 @@
 - README documenta cada push, cuatro secrets, destino public_html/subcarpeta/,
  barra final automática y revisión en Actions. El push documental de cierre
  dispara una segunda sincronización que se comprueba antes de finalizar.
+
+## Footer de autor e iconos · Vista previa LAN, sin publicación
+
+- Por pedido de Pablo, footer basado en el contenido de FutureForge local:
+  Patterns — Hecho con pasión por un cuchillero. ¿Te gustan los cuchillos?
+  Seguime en:, con seis enlaces originales del autor. Una línea, verdes y
+  tipografía del editor; teclado protegido de atajos del lienzo. En móvil,
+  desplazamiento horizontal sólo del footer para conservar legibilidad.
+- La nueva altura requería compactar espacios de Generador en pantallas bajas;
+  se preservan tamaños de campos y se recupera ausencia de scroll en 1366×768.
+- favicon_io.zip aplicado: ICO/PNG16/32, Apple180 y Android192/512; manifest con
+  nombre/colores de la app y rutas relativas. Archivo ZIP original intacto y
+  sin seguimiento; icono.png y el motor no se alteran.
+- 203 unitarias/TypeScript, build y 13 E2E de disposición correctos. Inspección
+  de las cuatro resoluciones; seis enlaces con apertura segura y Enter operativo.
+  Assets/manifest verificados por HTTP en raíz y /pattern/, PNG decodificados
+  y scope/start_url correctos. Captura .runtime/footer-preview.png.
+- Todo queda en Git local para revisar en LAN. **NO PUSH** hasta aprobación
+  explícita: cada push activaría el despliegue FTP. Servicios 4173/4174 conservados.

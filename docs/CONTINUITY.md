@@ -1,3 +1,36 @@
+# Entrega local para revisión · Footer e iconos
+
+**No hacer push hasta que Pablo apruebe esta vista previa LAN.** El workflow
+FTP publica con cada push, incluso si sólo cambia documentación. Esta petición
+posterior limita la autorización anterior para esta entrega. App 4173 y
+monitor 4174 continúan activos, sin duplicados.
+
+Footer implementado con el texto pedido en una línea y enlaces de FutureForge
+(Instagram/X/Facebook/WhatsApp/Telegram/PEU.NET), usando estilos e iconos propios
+de Pattern Studio. No se copió código externo sin licencia: se reutiliza Lucide
+ya instalado. En móvil, sólo la franja del pie admite desplazamiento horizontal.
+En altura de 800px o menos se compactan los espacios del generador para mantener
+sus controles sin scroll pese a la altura ocupada por el nuevo footer.
+
+favicon_io.zip es el archivo fuente aportado por Pablo; se conserva intacto y
+sin incluir en Git. Se copiaron los seis iconos a public/icons y se adaptó
+public/site.webmanifest (nombre, colores, start_url/scope y rutas relativas).
+index.html declara ICO, PNG16/32, Apple180 y manifest Android192/512; el logo
+icono.png sigue intacto.
+
+Verificación: 203 unitarias/TypeScript, build y 13 E2E de disposición correctos.
+Probes reales a 1366×768,1440×900,1920×1080 y 390×844: pie al borde inferior,
+sin overflow de página y enlaces accesibles con Tab. Se verificó Enter en un
+enlace sin navegar a sitios externos ni modificar el dibujo. Assets/manifest
+con HTTP200 y PNG decodificables en producción raíz y /pattern/. Capturas
+.runtime/footer-{ancho}.png y .runtime/footer-preview.png. Logs footer-*.log.
+Servidor temporal de QA detenido; servicios LAN se mantienen.
+
+Pendiente únicamente revisión del usuario y su autorización para publicar este
+incremento. No ejecutar push ni reanudar publicación por un timer viejo.
+
+---
+
 # Continuidad · PRD v2.3 verificado
 
 ## Estado y alcance
