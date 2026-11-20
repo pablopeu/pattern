@@ -766,3 +766,81 @@ test('celda de referencia recorta también selección y nodos de un garabato ini
   await page.getByRole('button', { name: 'Rehacer', exact: true }).click();
   expect((await project(page))!.patterns).toEqual(original);
 });
+
+for (const mode of ['split', 'single'] as const) {
+  test(`celda fija permite zoom y bloquea todos los gestos de pan: ${mode}`, async ({ page }) => {
+    await page.goto('/');
+    const original = (await project(page))!.patterns;
+    if (mode === 'split')
+      await page.getByRole('button', { name: 'Vista dividida', exact: true }).click();
+    else {
+      await page.getByRole('tab', { name: 'Patrón', exact: true }).click();
+      await page.getByRole('button', { name: 'Una celda', exact: true }).click();
+    }
+    const reference = page.locator('.studio-canvas').first();
+    const camera = () => reference.getAttribute('viewBox');
+    const centered = async () => {
+      const delta = await reference.evaluate((el) => {
+        const svg = el as SVGSVGElement,
+          rect = svg.getBoundingClientRect(),
+          b = (
+            svg.querySelector('[aria-label="Límite de la celda"]') as SVGGraphicsElement
+          ).getBBox();
+        const p = new DOMPoint(b.x + b.width / 2, b.y + b.height / 2).matrixTransform(
+          svg.getScreenCTM()!,
+        );
+        return Math.hypot(p.x - rect.x - rect.width / 2, p.y - rect.y - rect.height / 2);
+      });
+      expect(delta).toBeLessThan(1);
+    };
+    await centered();
+    const before = await camera();
+    const drag = async (button: 'left' | 'middle' = 'left') => {
+      const r = (await reference.boundingBox())!,
+        x = r.x + r.width / 2,
+        y = r.y + r.height / 2;
+      await page.mouse.move(x, y);
+      await page.mouse.down({ button });
+      await page.mouse.move(x + 55, y + 25, { steps: 5 });
+      await page.mouse.up({ button });
+    };
+    await drag('middle');
+    expect(await camera()).toBe(before);
+    await reference.focus();
+    await page.keyboard.down('Space');
+    await drag();
+    await page.keyboard.up('Space');
+    expect(await camera()).toBe(before);
+    const r = (await reference.boundingBox())!;
+    await page.mouse.move(r.x + 20, r.y + 50);
+    await page.mouse.wheel(80, 100);
+    await page.waitForTimeout(100);
+    expect(await camera()).toBe(before);
+    await page.getByRole('button', { name: 'Desplazar vista', exact: true }).click();
+    await drag();
+    expect(await camera()).toBe(before);
+    await page.mouse.move(r.x + 20, r.y + 50);
+    await page.keyboard.down('Control');
+    await page.mouse.wheel(0, -80);
+    await page.keyboard.up('Control');
+    await expect.poll(camera).not.toBe(before);
+    await centered();
+    const zoomed = await camera();
+    await page.getByRole('button', { name: 'Alejar', exact: true }).first().click();
+    await expect.poll(camera).not.toBe(zoomed);
+    await centered();
+    await page.getByRole('button', { name: 'Restablecer vista', exact: true }).first().click();
+    await centered();
+    if (mode === 'split') {
+      const scales = await page
+        .locator('.studio-canvas')
+        .evaluateAll((els) => els.map((el) => (el as SVGSVGElement).getScreenCTM()!.a));
+      expect(scales[0]).toBeCloseTo(scales[1], 3);
+      await page.getByRole('button', { name: 'Vista dividida', exact: true }).click();
+    } else await page.getByRole('button', { name: 'Una celda', exact: true }).click();
+    const repeated = await camera();
+    await drag();
+    await expect.poll(camera).not.toBe(repeated);
+    expect((await project(page))!.patterns).toEqual(original);
+  });
+}

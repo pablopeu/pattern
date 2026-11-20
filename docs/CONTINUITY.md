@@ -1,3 +1,22 @@
+# Celda fija en split y Patrón → Una celda · Verificado
+
+La cámara de una celda periódica mantiene su centro. Bloqueados Espacio+arrastre,
+botón central, herramienta Desplazar y rueda sin modificadores. Zoom con botones/
+Ctrl+rueda y Restablecer vista conservan el centro, también en Patrón → Una celda.
+El patrón repetido mantiene pan; escenas sin celda periódica/Fuente pura conservan
+navegación libre. Cámara de sesión: sin cambios de fuente, esquema ni geometría.
+206 unitarias/TypeScript, build,4 E2E dirigidas,111/111 integradas (203.8s,
+exit0) y6 estáticas correctos. Evidencia .runtime/cell-fixed-{check,build,targeted,
+full}* y cell-fixed-static-summary.log. README actualizado. Servicios4173/4174
+conservados; commit/push autorizado sin consultar Actions/FTP.
+
+**Nuevo pedido pendiente:** Pablo solicita buscar referencias de Escher y patrones
+interesantes en la web, recrearlos como ejemplos editables de mayor calidad.
+Al terminar el incremento de cámara, comprobar cupo antes de iniciar ejemplos.
+No registrar PROJECT_COMPLETE mientras este pedido esté pendiente.
+
+---
+
 # Celda: recorte de selección y nodos · Verificado
 
 Pablo reprodujo un garabato iniciado fuera de la celda que reaparecía suelto en

@@ -711,3 +711,14 @@
   197.4s (exit0),6 estáticas raíz/subcarpeta correctos. Logs cell-clip-*
   en .runtime. README/captura nueva del caso actualizados e inspeccionados.
 - Servicios LAN conservados; push autorizado sin consultar Actions/FTP.
+
+
+## Cámara fija al ver una celda · Verificado
+
+- Split y Patrón → Una celda mantienen el centro. Bloqueo de pan por Espacio,
+  botón central, herramienta Desplazar y rueda. Zoom/restablecer centrados.
+  Volver al patrón repetido recupera pan; fuente y geometría conservadas.
+- 206 unitarias/TypeScript, build,4 dirigidas,111/111 E2E en203.8s,
+  exit0,6 estáticas correctos. Logs cell-fixed-* en .runtime. README actualizado.
+- Nuevo pedido posterior: referencias web de Escher/otros patrones y ejemplos
+  editables mejores. Pendiente después de este cierre; comprobar cupo real.

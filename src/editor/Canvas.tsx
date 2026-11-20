@@ -227,6 +227,7 @@ export function Canvas({
       !editorOnly &&
       s.mode !== 'apply' &&
       s.project.preferences.repetitionView === 'single');
+  const fixedCell = focusCell && periodic;
   const cellPolygon = useMemo(() => {
     if (!periodic || activePattern.symmetry.family === 'frieze') return '';
     const tile = activePattern.tiling,
@@ -641,6 +642,7 @@ export function Canvas({
     lastPointer.current = p;
     if (event.button === 1 || space.current || s.tool === 'pan') {
       event.preventDefault();
+      if (fixedCell) return;
       event.currentTarget.setPointerCapture(event.pointerId);
       drag.current = {
         type: 'pan',
@@ -791,6 +793,7 @@ export function Canvas({
       return;
     }
     if (d.type === 'pan') {
+      if (fixedCell) return;
       const ratio = d.view!.width / (d.viewPixelWidth ?? size.width);
       setView({
         ...d.view!,
@@ -924,15 +927,15 @@ export function Canvas({
     freshView.current = false;
     const width = Math.max(10, Math.min(10000, view.width * factor)),
       f = width / view.width;
-    const anchor = cellOnly
+    const anchor = fixedCell
       ? { x: cellBounds.x + cellBounds.width / 2, y: cellBounds.y + cellBounds.height / 2 }
       : center;
     setView({
       ...view,
       width,
       height: (width * size.height) / size.width,
-      x: cellOnly ? anchor.x - width / 2 : anchor.x + (view.x - anchor.x) * f,
-      y: cellOnly
+      x: fixedCell ? anchor.x - width / 2 : anchor.x + (view.x - anchor.x) * f,
+      y: fixedCell
         ? anchor.y - (width * size.height) / size.width / 2
         : anchor.y + (view.y - anchor.y) * f,
     });
@@ -945,7 +948,7 @@ export function Canvas({
       freshView.current = false;
       e.preventDefault();
       if (e.ctrlKey || e.metaKey) zoom(Math.exp(e.deltaY * 0.002), point(e));
-      else
+      else if (!fixedCell)
         setView((v) => ({
           ...v,
           x: v.x + (e.deltaX * v.width) / size.width,
@@ -1915,7 +1918,7 @@ export function Canvas({
             freshView.current = true;
             const rect = svgRef.current!.getBoundingClientRect();
             const centered = centeredView(rect.width, rect.height);
-            if (cellOnly) {
+            if (fixedCell) {
               centered.x += cellBounds.x + cellBounds.width / 2;
               centered.y += cellBounds.y + cellBounds.height / 2;
               freshView.current = false;
@@ -1992,7 +1995,10 @@ export function Canvas({
         </button>
       </div>
       <div className="coordinate">
-        <Hand size={12} /> Espacio + arrastrar · Ctrl + rueda para zoom{' '}
+        {fixedCell ? <Scan size={12} /> : <Hand size={12} />}{' '}
+        {fixedCell
+          ? 'Celda centrada · Ctrl + rueda para zoom'
+          : 'Espacio + arrastrar · Ctrl + rueda para zoom'}{' '}
         <span>
           {cursor.x.toFixed(1)}, {cursor.y.toFixed(1)} mm
         </span>
