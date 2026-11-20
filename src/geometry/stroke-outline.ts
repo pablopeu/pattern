@@ -4,6 +4,13 @@ import { geometry } from '../app/model';
 import { profileWidth } from '../app/styles';
 import { IDENTITY, multiply, type Matrix, type Point } from './matrix';
 import { paperPath, paperData, pathToGeometry, flattened, scope } from './paper';
+export const STROKE_LIMITS = {
+  samples: 24000,
+  polygons: 100000,
+  vertices: 400000,
+  curves: 4096,
+  paintedAxes: 2048,
+} as const;
 function bevelOutline(
   paths: ReturnType<typeof flattened>,
   radius: number,
@@ -186,6 +193,10 @@ export function paintedAxes(shape: Geometry): Geometry[] {
       for (const [a, b] of dashIntervals(path.length, shape.strokeDash, shape.strokeDashOffset)) {
         if (b - a <= 1e-9) continue;
         const p = piece(path, a, b);
+        if (out.length >= STROKE_LIMITS.paintedAxes)
+          throw Error(
+            `El trazo supera ${STROKE_LIMITS.paintedAxes} segmentos pintados. Simplificá la secuencia.`,
+          );
         out.push({
           ...shape,
           pathData: paperData(p),
@@ -211,7 +222,24 @@ function variableStrokeRegion(shape: Geometry, matrix: Matrix, tolerance: number
     source = paperPath({ ...shape, transform: IDENTITY }),
     polygons: ClipperLib.Paths = [],
     factor = 100000;
+  let totalSamples = 0,
+    totalVertices = 0;
   const add = (points: Point[]) => {
+    totalVertices += points.length;
+    if (polygons.length >= STROKE_LIMITS.polygons || totalVertices > STROKE_LIMITS.vertices)
+      throw Error(
+        'El contorno excede el presupuesto de polígonos. Simplificá el perfil o aumentá la tolerancia.',
+      );
+    if (
+      points.some(
+        (p) =>
+          !Number.isFinite(p.x) ||
+          !Number.isFinite(p.y) ||
+          Math.abs(p.x) > 1e9 ||
+          Math.abs(p.y) > 1e9,
+      )
+    )
+      throw Error('El contorno excede el rango numérico de coordenadas.');
     const p = points.map((p) => ({ X: Math.round(p.x * factor), Y: Math.round(p.y * factor) }));
     if (p.length < 3) return;
     if (!ClipperLib.Clipper.Orientation(p)) p.reverse();
@@ -251,6 +279,8 @@ function variableStrokeRegion(shape: Geometry, matrix: Matrix, tolerance: number
     for (const item of source instanceof scope.CompoundPath ? source.children : [source]) {
       const path = item as paper.Path,
         length = path.length;
+      if (path.curves.length > STROKE_LIMITS.curves)
+        throw Error(`El trazo variable supera ${STROKE_LIMITS.curves} curvas. Simplificá el eje.`);
       if (length < 1e-9) continue;
       const radius = (d: number) =>
         (shape.strokeWidth / 2) * profileWidth(shape.strokeProfile, d / length);
@@ -279,7 +309,8 @@ function variableStrokeRegion(shape: Geometry, matrix: Matrix, tolerance: number
           const d = p.at * length;
           if (d > start && d < end) knots.add(d);
         }
-        for (let i = 1; i < 8; i++) knots.add(start + ((end - start) * i) / 8);
+        if (path.curves.some((c) => !c.isStraight()))
+          for (let i = 1; i < 8; i++) knots.add(start + ((end - start) * i) / 8);
         const samples: { p: Point; r: number }[] = [];
         const at = (d: number) => ({
           p: path.getPointAt(Math.min(length, Math.max(0, d)))!,
@@ -303,12 +334,20 @@ function variableStrokeRegion(shape: Geometry, matrix: Matrix, tolerance: number
             const mid = (a + b) / 2;
             refine(a, mid, depth + 1);
             refine(mid, b, depth + 1);
-          } else samples.push(vb);
+          } else {
+            samples.push(vb);
+            totalSamples++;
+          }
+          if (totalSamples > STROKE_LIMITS.samples)
+            throw Error(
+              `El contorno supera ${STROKE_LIMITS.samples} muestras totales. Simplificá el perfil o aumentá la tolerancia.`,
+            );
           if (samples.length > 16000)
             throw Error('El contorno supera 16000 muestras; aumentá la tolerancia.');
         };
         const sorted = [...knots].sort((a, b) => a - b);
         samples.push(at(start));
+        totalSamples++;
         for (let i = 1; i < sorted.length; i++) refine(sorted[i - 1], sorted[i], 0);
         const normals: Point[] = [],
           directions: Point[] = [];
@@ -408,6 +447,8 @@ export function strokeRegion(
   matrix: Matrix = IDENTITY,
   tolerance = 0.02,
 ): Geometry {
+  if (!Number.isFinite(tolerance) || tolerance <= 0)
+    throw Error('La tolerancia de contorno debe ser positiva y finita.');
   const key = JSON.stringify([shape, matrix, tolerance]);
   const cached = contourCache.get(key);
   if (cached) return structuredClone(cached);

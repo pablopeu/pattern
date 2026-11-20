@@ -1,3 +1,4 @@
+import { profile, drawingStyle } from '../app/styles';
 import { sceneLayers } from '../patterns/layers';
 import { strokeRegion } from '../geometry/stroke-outline';
 import {
@@ -58,6 +59,43 @@ export const escapeXML = (text: string) =>
   );
 export function svgPath(shape: Geometry): string {
   return svgPathAtTolerance(shape, 0.02);
+}
+const previewCache = new Map<string, string>();
+let previewCacheBytes = 0;
+/** Preview may show a clearly marked axis; strict export never uses this fallback. */
+export function previewSVGPath(shape: Geometry): string {
+  if (shape.strokeProfile.kind === 'uniform' || shape.stroke === 'none' || shape.strokeWidth <= 0)
+    return svgPath(shape);
+  const key = JSON.stringify([shape.id, pathData(shape), shape.transform, drawingStyle(shape)]),
+    cached = previewCache.get(key);
+  if (cached !== undefined) return cached;
+  let markup: string;
+  try {
+    markup = svgPath(shape);
+  } catch (error) {
+    const message =
+      'Contorno no disponible: ' + (error as Error).message + ' Eje provisional en naranja.';
+    const axis = {
+      ...shape,
+      stroke: '#b86b20',
+      strokeWidth: 0.6,
+      strokeDash: [],
+      strokeDashOffset: 0,
+      strokeProfile: profile(),
+    };
+    markup = `<g data-stroke-error="${escapeXML(message)}" data-stroke-error-shape="${escapeXML(shape.id)}"><title>${escapeXML(message)}</title>${svgPath(axis)}</g>`;
+  }
+  const bytes = key.length + markup.length;
+  while (previewCache.size && (previewCache.size >= 32 || previewCacheBytes + bytes > 8000000)) {
+    const oldest = previewCache.keys().next().value!;
+    previewCacheBytes -= oldest.length + previewCache.get(oldest)!.length;
+    previewCache.delete(oldest);
+  }
+  if (bytes <= 8000000) {
+    previewCache.set(key, markup);
+    previewCacheBytes += bytes;
+  }
+  return markup;
 }
 export function svgPathAtTolerance(shape: Geometry, tolerance: number): string {
   if (shape.strokeProfile.kind !== 'uniform' && shape.stroke !== 'none' && shape.strokeWidth > 0) {

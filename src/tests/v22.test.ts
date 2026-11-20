@@ -10,7 +10,7 @@ import {
 } from '../app/styles';
 import { parseProject, serialize } from '../persistence/schema';
 import { dashIntervals, strokeRegion } from '../geometry/stroke-outline';
-import { svgPath } from '../export/svg';
+import { svgPath, previewSVGPath, prepareExport } from '../export/svg';
 import { exportDXF } from '../export/dxf';
 import { paperPath, scope } from '../geometry/paper';
 import { scale } from '../geometry/matrix';
@@ -209,4 +209,44 @@ describe('v2.2 · contornos derivados', () => {
     expect(Math.abs((p as paper.CompoundPath).area)).toBeGreaterThan(20);
     p.remove();
   });
+});
+
+it('un contorno demasiado denso deja preview corregible y export falla explícitamente', () => {
+  const g = { ...line(), strokeDash: [0.001, 0.001], strokeProfile: profile('taper-start') },
+    before = structuredClone(g);
+  expect(() => svgPath(g)).toThrow(/2048/);
+  expect(previewSVGPath(g)).toContain('data-stroke-error=');
+  expect(previewSVGPath(g)).toContain('Eje provisional en naranja');
+  expect(g).toEqual(before);
+  const second = { ...g, id: 'otro-eje' };
+  expect(previewSVGPath(second)).toContain('data-stroke-error-shape="otro-eje"');
+  const p = newProject();
+  p.patterns[0].sourceGeometry = [g];
+  expect(() =>
+    prepareExport(p, {
+      target: 'view',
+      format: 'svg',
+      representation: 'editable',
+      width: 100,
+      height: 100,
+      dpi: 100,
+      background: '#ffffff',
+      transparent: true,
+      quality: 1,
+      tolerance: 0.02,
+      outlineStrokes: true,
+      patternId: p.patterns[0].id,
+    }),
+  ).toThrow(/2048/);
+  expect(previewSVGPath({ ...g, strokeDash: [] })).not.toContain('data-stroke-error');
+});
+it('el presupuesto total de vértices limita patrones puntuales complejos antes de Clipper', () => {
+  const g = {
+    ...geometry('path', [node(0, 0), node(1000, 0)]),
+    strokeWidth: 1000,
+    strokeDash: [0, 1],
+    strokeProfile: profile('custom'),
+  };
+  expect(() => strokeRegion(g, undefined, 0.00001)).toThrow(/presupuesto/);
+  expect(() => strokeRegion(line(), undefined, 0)).toThrow(/positiva/);
 });

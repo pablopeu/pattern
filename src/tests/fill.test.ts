@@ -189,3 +189,35 @@ it('Fill entre conjuntos conserva una órbita concreta y respeta el orden de cap
   expect(result.geometries.at(-1)?.fill).toBe('#ef3344');
   expect(parseProject(serialize(p))).toEqual(p);
 });
+
+it('región excesiva se rechaza antes de añadir una entidad incompatible con el archivo', () => {
+  const { p, pattern } = prepared(),
+    effective = resolvePattern(pattern, p),
+    scene = buildScene(effective, bounds),
+    inputs = collectFillInputs([{ pattern: effective, scene }], bounds),
+    arrangement = buildArrangement(inputs),
+    face = facesAt(arrangement, { x: 10, y: 10 })[0];
+  expect(() =>
+    createFaceFill(
+      p,
+      effective,
+      scene,
+      { ...face, key: 'x'.repeat(200001) },
+      arrangement,
+      inputs,
+      style,
+    ),
+  ).toThrow(/almacenamiento/);
+  expect(() =>
+    createFaceFill(
+      p,
+      effective,
+      scene,
+      { ...face, refs: Array.from({ length: 10001 }, () => face.refs[0]) },
+      arrangement,
+      inputs,
+      style,
+    ),
+  ).toThrow(/almacenamiento/);
+  expect(pattern.sourceGeometry).toHaveLength(5);
+});

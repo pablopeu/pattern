@@ -241,3 +241,35 @@ test('feedback LAN: apariencia exclusivamente a la derecha, acceso desde inspect
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: 'test-results/v22-right-only-closed-768.png' });
 });
+
+test('trazo excesivo muestra aviso corregible y no desmonta lienzo ni galería', async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await setup(page);
+  await page.evaluate(async () => {
+    const { newProject, geometry, node } = await import('/src/app/model.ts');
+    const { profile } = await import('/src/app/styles.ts');
+    const { autosave } = await import('/src/persistence/storage.ts');
+    const p = newProject();
+    p.patterns[0].sourceGeometry = [
+      {
+        ...geometry('path', [node(0, 0), node(100, 0)]),
+        strokeDash: [0.01, 0.01],
+        strokeProfile: profile('taper-start'),
+      },
+    ];
+    await autosave(p);
+  });
+  await page.reload();
+  await saved(page);
+  await expect(page.getByRole('alert')).toContainText('Eje provisional en naranja');
+  await expect(page.locator('.studio-canvas')).toBeVisible();
+  await expect(page.locator('.symmetry-gallery')).toBeVisible();
+  await page.getByRole('button', { name: 'Corregir trazo', exact: true }).click();
+  await panel(page).getByLabel('Estilo de línea', { exact: true }).selectOption('solid');
+  await expect(page.getByRole('alert')).not.toBeVisible();
+  expect((await model(page)).patterns[0].sourceGeometry[0].strokeDash).toEqual([]);
+  expect(errors).toEqual([]);
+});

@@ -6,7 +6,7 @@ import type { Studio } from '../app/useStudio';
 import type { Symmetry, Pattern } from '../app/model';
 import { generate } from '../generators';
 import { buildScene } from '../patterns/engine';
-import { svgDocument, svgPath } from '../export/svg';
+import { svgDocument, previewSVGPath as svgPath } from '../export/svg';
 import { matrixString, multiply, translate } from '../geometry/matrix';
 import {
   cosets,

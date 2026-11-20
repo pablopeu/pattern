@@ -3,7 +3,7 @@ import { useFill } from '../fill/useFill';
 import { TileEditor } from '../tiling/TileEditor';
 import { tiledMarkup } from '../tiling/render';
 import { tileBounds, tileBasis, tileFrame, tileWorldBounds } from '../tiling/tiles';
-import { svgPath } from '../export/svg';
+import { previewSVGPath as svgPath } from '../export/svg';
 import { cachedStructure, structureMarkup } from '../symmetry/structure';
 import { resolvePattern, symmetryOrigin, frameBounds } from '../symmetry/config';
 import {
@@ -101,6 +101,14 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     [captureCount, setCaptureCount] = useState(0);
   const alternatives = useRef<CaptureInstance[]>([]),
     captureContext = useRef<CaptureContext | null>(null);
+  const [strokeWarning, setStrokeWarning] = useState({ message: '', shapeId: '' });
+  useEffect(() => {
+    const warning = svgRef.current?.querySelector('[data-stroke-error]'),
+      message = warning?.getAttribute('data-stroke-error') ?? '',
+      shapeId = warning?.getAttribute('data-stroke-error-shape') ?? '';
+    if (message !== strokeWarning.message || shapeId !== strokeWarning.shapeId)
+      setStrokeWarning({ message, shapeId });
+  });
   const prefix = useId().replace(/:/g, ''),
     scalePx = size.width / view.width;
   const actualView = useMemo(
@@ -1139,6 +1147,26 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
             Otra región ({fill.count ? fill.index + 1 : 0}/{fill.count})
           </button>
           <button onClick={fill.cancel}>Cancelar cálculo</button>
+        </div>
+      )}
+      {strokeWarning.message && (
+        <div className="stroke-preview-warning" role="alert">
+          <span>{strokeWarning.message}</span>
+          <button
+            onClick={() => {
+              const pat = s.project.patterns.find((p) =>
+                p.sourceGeometry.some((g) => g.id === strokeWarning.shapeId),
+              );
+              if (pat) {
+                s.setPatternId(pat.id);
+                s.setSelected([strokeWarning.shapeId]);
+                s.setStyleTarget('selection');
+              } else s.setStyleTarget('current');
+              s.setStyleOpen(true);
+            }}
+          >
+            Corregir trazo
+          </button>
         </div>
       )}
       <svg

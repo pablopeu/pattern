@@ -185,3 +185,11 @@
 - Se conservan el estilo vigente, pin, autocierre al interactuar con lienzo y escala documental. El indicador compacto mantiene muestras/unidad/patrón visibles también por debajo de900px.
 - **175 unitarias correctas**, dos E2E dirigidos correctos: flujo de feedback con ubicación real a la derecha/autocierre/768px, y regresión de lápiz/estilo al recorrer grupos (adaptada para usar panel derecho). Capturas v22-right-only-1440.png y v22-right-only-closed-768.png.
 - El usuario autorizó explícitamente continuar durante los últimos minutos de la ventana previa al reset. Se respeta esa indicación y no se duplica el monitor.
+
+## PRD v2.2 · Límites geométricos y recuperación de preview
+
+- Preview de contorno variable con fallback explícito: si excede límites se muestra eje provisional naranja, motivo del fallo y acceso a corregir su estilo. No se desmontan lienzo ni galería. SVG/export siguen usando el cálculo estricto, sin exportar ese eje provisional.
+- Presupuesto acumulado de 24000 muestras, 100000 polígonos, 400000 vértices, 4096 curvas y2048 segmentos pintados; coordenadas locales acotadas y tolerancia positiva finita. Caché de preview acotada por tamaño/cantidad. Rectas no necesitan ocho subdivisiones artificiales por guion; mantienen refinamiento adaptativo de anchura.
+- createFaceFill rechaza keys, referencias, paths y contexto que excedan los límites del archivo antes de añadir la entidad. Se evita guardar un documento inválido tras una operación excesiva.
+- **178 unitarias y build correctos**. E2E real de secuencia excesiva: aviso visible, galería/lienzo vivos, corrección desde panel derecho sin errores de página. Unitarias verifican fallo explícito de export, presupuesto acumulado y rechazo de relleno excesivo.
+- Reset real confirmado por telemetría del ciclo nuevo, inicialmente1% usado; monitor persistente retomó working. Continúa auditoría del PRD.

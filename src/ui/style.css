@@ -1877,3 +1877,5 @@ input[type='color']::-webkit-color-swatch {
 .fill-actions { position:absolute; top:8px; left:12px; right:12px; z-index:15; display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:7px 10px; background:#f9fcf3ee; border:1px solid #dce3d8; border-radius:7px; font-size:11px; }
 .fill-actions span { flex:1; } .fill-actions button { padding:5px; border:1px solid #d3dec9; border-radius:4px; }
 .tool-fill { cursor:crosshair; }
+.stroke-preview-warning { position:absolute; left:12px; right:12px; bottom:65px; z-index:20; display:flex; gap:10px; align-items:center; padding:9px 12px; border:1px solid #bd8d49; border-radius:6px; background:#fff6e4f5; color:#765022; font-size:12px; }
+.stroke-preview-warning span { flex:1; } .stroke-preview-warning button { padding:5px; border:1px solid #bd8d49; border-radius:4px; }

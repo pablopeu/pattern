@@ -238,6 +238,15 @@ export function createFaceFill(
   inputs: CapturedBoundary[],
   style: DrawingStyle,
 ): Geometry {
+  if (
+    face.refs.length > 10000 ||
+    face.key.length > 200000 ||
+    face.pathData.length > 2000000 ||
+    inputs.length > 1200
+  )
+    throw Error(
+      'La cara excede los límites de almacenamiento vectorial. Acercá el zoom o simplificá los límites.',
+    );
   const dependencies = [...new Set(face.refs.map((r) => r.patternId))],
     captured = face.refs.find((r) => r.patternId === target.id)?.matrix ?? IDENTITY,
     g = {
@@ -310,6 +319,12 @@ export function createFaceFill(
     orbitMatrices: matrices,
     closeTolerance: arrangement.closeTolerance,
   };
+  if (
+    (g.pathData?.length ?? 0) > 2000000 ||
+    g.fillRegion.context.length > 1000000 ||
+    g.fillRegion.topologyKey.length > 200000
+  )
+    throw Error('El relleno excede los límites del documento; no se agregó la región.');
   return g;
 }
 export function createTileFill(
