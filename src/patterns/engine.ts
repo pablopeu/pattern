@@ -10,7 +10,7 @@ import {
 import type { Geometry } from '../app/model';
 import type { Pattern } from '../app/model';
 import { generate, type Generated } from '../generators';
-import { IDENTITY, multiply, apply, type Matrix } from '../geometry/matrix';
+import { IDENTITY, multiply, apply, linearScaleBound, type Matrix } from '../geometry/matrix';
 import { visibleInstances, type Bounds, type Instance, type Periodicity } from '../symmetry/groups';
 import { geometryBounds, clipGeometry } from '../application/clipping';
 export interface Scene {
@@ -194,4 +194,11 @@ export function expandedTransforms(scene: Scene): Matrix[] {
   return scene.instances.flatMap((i) =>
     scene.generated.placements.map((p) => multiply(i.matrix, p)),
   );
+}
+
+/** Product bound keeps shared motif contours within world-space tolerance. */
+export function sceneScaleBound(scene: Scene, placement: Matrix = IDENTITY): number {
+  const a = scene.instances.reduce((max, i) => Math.max(max, linearScaleBound(i.matrix)), 1),
+    b = scene.generated.placements.reduce((max, m) => Math.max(max, linearScaleBound(m)), 1);
+  return Math.max(1, linearScaleBound(placement) * a * b);
 }

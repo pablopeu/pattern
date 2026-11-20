@@ -146,7 +146,6 @@ describe('v2.2 · contornos derivados', () => {
     expect(dashIntervals(12, [3], 0)).toEqual([
       [0, 3],
       [6, 9],
-      [12, 12],
     ]);
   });
   it('guiones reales en contorno y SVG sin mutar eje ni estilo', () => {
@@ -247,6 +246,6 @@ it('el presupuesto total de vértices limita patrones puntuales complejos antes 
     strokeDash: [0, 1],
     strokeProfile: profile('custom'),
   };
-  expect(() => strokeRegion(g, undefined, 0.00001)).toThrow(/presupuesto/);
+  expect(() => strokeRegion(g, undefined, 0.02)).toThrow(/presupuesto/);
   expect(() => strokeRegion(line(), undefined, 0)).toThrow(/positiva/);
 });

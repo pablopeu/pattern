@@ -2,7 +2,7 @@ import ClipperLib from 'clipper-lib';
 import type { Geometry } from '../app/model';
 import { geometry } from '../app/model';
 import { profileWidth } from '../app/styles';
-import { IDENTITY, multiply, type Matrix, type Point } from './matrix';
+import { IDENTITY, multiply, linearScaleBound, type Matrix, type Point } from './matrix';
 import { paperPath, paperData, pathToGeometry, flattened, scope } from './paper';
 export const STROKE_LIMITS = {
   samples: 24000,
@@ -11,6 +11,52 @@ export const STROKE_LIMITS = {
   curves: 4096,
   paintedAxes: 2048,
 } as const;
+function strokePrecision(tolerance: number, full: Matrix) {
+  const scale = Math.max(1, linearScaleBound(full)),
+    local = tolerance / scale,
+    factor = Math.max(100000, Math.ceil(16 / local));
+  if (!Number.isFinite(factor) || factor > 1e9)
+    throw Error(
+      'La precisión solicitada excede el rango numérico; aumentá la tolerancia o reducí la escala.',
+    );
+  return { local, factor };
+}
+function roundSteps(radius: number, sweep: number, tolerance: number, min: number): number {
+  const angle = 2 * Math.acos(Math.max(-1, 1 - tolerance / radius)),
+    wanted = Math.max(min, Math.ceil(Math.abs(sweep) / angle));
+  if (!Number.isFinite(wanted) || wanted > 4096)
+    throw Error(
+      'La precisión del arco requiere más de4096 segmentos; aumentá la tolerancia o reducí el grosor.',
+    );
+  return wanted;
+}
+function checkIntegerRange(points: Point[], factor: number, padding = 0) {
+  if (
+    points.some(
+      (p) =>
+        !Number.isFinite(p.x) ||
+        !Number.isFinite(p.y) ||
+        (Math.max(Math.abs(p.x), Math.abs(p.y)) + padding) * factor > 1e14,
+    )
+  )
+    throw Error('El contorno excede el rango numérico de coordenadas para esta tolerancia.');
+}
+function checkSourceRange(source: paper.PathItem, factor: number, padding: number) {
+  const bounds = source.bounds,
+    paths = source instanceof scope.CompoundPath ? source.children : [source];
+  if (paths.reduce((n, p) => n + (p as paper.Path).curves.length, 0) > STROKE_LIMITS.curves)
+    throw Error(
+      `El trazo supera ${STROKE_LIMITS.curves} curvas para expansión. Simplificá el eje.`,
+    );
+  checkIntegerRange(
+    [
+      { x: bounds.left, y: bounds.top },
+      { x: bounds.right, y: bounds.bottom },
+    ],
+    factor,
+    padding,
+  );
+}
 function bevelOutline(
   paths: ReturnType<typeof flattened>,
   radius: number,
@@ -69,10 +115,7 @@ function bevelOutline(
             { x: p.x - n.x, y: p.y - n.y },
           ]);
         if (cap === 'round') {
-          const steps = Math.min(
-            4096,
-            Math.max(8, Math.ceil(Math.PI / Math.acos(Math.max(-1, 1 - tolerance / radius)))),
-          );
+          const steps = roundSteps(radius, 2 * Math.PI, tolerance, 8);
           add(
             Array.from({ length: steps }, (_, i) => ({
               x: p.x + radius * Math.cos((i * 2 * Math.PI) / steps),
@@ -99,11 +142,26 @@ function uniformStrokeRegion(
   tolerance = 0.02,
 ): Geometry {
   const full = multiply(matrix, shape.transform),
-    maxScale = Math.max(1, Math.hypot(full[0], full[1], full[2], full[3])),
-    localTolerance = tolerance / maxScale;
-  const paths = flattened({ ...shape, transform: IDENTITY }, localTolerance),
-    factor = 100000;
-  const offset = new ClipperLib.ClipperOffset(shape.miterLimit, localTolerance * factor),
+    { local: localTolerance, factor } = strokePrecision(tolerance, full);
+  const raw = paperPath({ ...shape, transform: IDENTITY });
+  let curved = false;
+  try {
+    checkSourceRange(raw, factor, shape.strokeWidth * Math.max(1, shape.miterLimit));
+    curved = (raw instanceof scope.CompoundPath ? raw.children : [raw]).some(
+      (p) =>
+        (p as paper.Path).curves.some((c) => !c.isStraight()) ||
+        ((p as paper.Path).curves.length > 0 && (p as paper.Path).length < 1e-9),
+    );
+  } finally {
+    raw.remove();
+  }
+  if (curved) return variableStrokeRegion(shape, matrix, tolerance);
+  const paths = flattened({ ...shape, transform: IDENTITY }, localTolerance * 0.4);
+  if (paths.reduce((n, p) => n + p.points.length, 0) > STROKE_LIMITS.samples)
+    throw Error('La expansión supera el presupuesto de puntos; aumentá la tolerancia.');
+  for (const path of paths)
+    checkIntegerRange(path.points, factor, shape.strokeWidth * Math.max(1, shape.miterLimit));
+  const offset = new ClipperLib.ClipperOffset(shape.miterLimit, localTolerance * 0.25 * factor),
     solution: ClipperLib.Paths = [];
   // Construct the stroke in the path's own coordinate system before the affine transform.
   // This preserves anisotropic scaling, including elliptical caps and joins.
@@ -126,7 +184,7 @@ function uniformStrokeRegion(
       );
   if (shape.strokeJoin === 'bevel')
     solution.push(
-      ...bevelOutline(paths, shape.strokeWidth / 2, shape.strokeCap, localTolerance, factor),
+      ...bevelOutline(paths, shape.strokeWidth / 2, shape.strokeCap, localTolerance * 0.25, factor),
     );
   else offset.Execute(solution, (shape.strokeWidth / 2) * factor);
   const g = geometry('compound', [], true);
@@ -151,13 +209,18 @@ export function dashIntervals(length: number, dash: number[], phase: number): [n
     throw Error('Secuencia de guiones inválida.');
   let offset = ((phase % period) + period) % period,
     index = 0;
-  while (index < d.length - 1 && offset >= d[index]) {
+  while (
+    index < d.length - 1 &&
+    offset >= d[index] &&
+    !(offset === 0 && d[index] === 0 && index % 2 === 0)
+  ) {
     offset -= d[index];
     index++;
   }
+  const endpointEpsilon = Math.max(1e-12, Number.EPSILON * Math.abs(length) * 16);
   let position = -offset;
   const result: [number, number][] = [];
-  for (let steps = 0; position <= length && steps < 8192; steps++) {
+  for (let steps = 0; position < length - endpointEpsilon && steps < 8192; steps++) {
     const end = position + d[index];
     if (index % 2 === 0 && end >= 0) result.push([Math.max(0, position), Math.min(length, end)]);
     position = end;
@@ -217,11 +280,9 @@ export function paintedAxes(shape: Geometry): Geometry[] {
 }
 function variableStrokeRegion(shape: Geometry, matrix: Matrix, tolerance: number): Geometry {
   const full = multiply(matrix, shape.transform),
-    maxScale = Math.max(1, Math.hypot(full[0], full[1], full[2], full[3])),
-    tol = tolerance / maxScale,
+    { local: tol, factor } = strokePrecision(tolerance, full),
     source = paperPath({ ...shape, transform: IDENTITY }),
-    polygons: ClipperLib.Paths = [],
-    factor = 100000;
+    polygons: ClipperLib.Paths = [];
   let totalSamples = 0,
     totalVertices = 0;
   const add = (points: Point[]) => {
@@ -230,16 +291,7 @@ function variableStrokeRegion(shape: Geometry, matrix: Matrix, tolerance: number
       throw Error(
         'El contorno excede el presupuesto de polígonos. Simplificá el perfil o aumentá la tolerancia.',
       );
-    if (
-      points.some(
-        (p) =>
-          !Number.isFinite(p.x) ||
-          !Number.isFinite(p.y) ||
-          Math.abs(p.x) > 1e9 ||
-          Math.abs(p.y) > 1e9,
-      )
-    )
-      throw Error('El contorno excede el rango numérico de coordenadas.');
+    checkIntegerRange(points, factor);
     const p = points.map((p) => ({ X: Math.round(p.x * factor), Y: Math.round(p.y * factor) }));
     if (p.length < 3) return;
     if (!ClipperLib.Clipper.Orientation(p)) p.reverse();
@@ -247,10 +299,7 @@ function variableStrokeRegion(shape: Geometry, matrix: Matrix, tolerance: number
   };
   const disk = (p: Point, r: number) => {
     if (r < 1e-8) return;
-    const steps = Math.min(
-      1024,
-      Math.max(12, Math.ceil(Math.PI / Math.acos(Math.max(-1, 1 - tol / r)))),
-    );
+    const steps = roundSteps(r, 2 * Math.PI, tol * 0.25, 12);
     add(
       Array.from({ length: steps }, (_, i) => ({
         x: p.x + r * Math.cos((i * 2 * Math.PI) / steps),
@@ -260,13 +309,7 @@ function variableStrokeRegion(shape: Geometry, matrix: Matrix, tolerance: number
   };
   const arc = (p: Point, r: number, start: number, sweep: number) => {
     if (r < 1e-8 || Math.abs(sweep) < 1e-10) return;
-    const steps = Math.min(
-      1024,
-      Math.max(
-        1,
-        Math.ceil(Math.abs(sweep) / Math.max(0.001, 2 * Math.acos(Math.max(-1, 1 - tol / r)))),
-      ),
-    );
+    const steps = roundSteps(r, sweep, tol * 0.25, 1);
     add([
       p,
       ...Array.from({ length: steps + 1 }, (_, i) => ({
@@ -275,46 +318,78 @@ function variableStrokeRegion(shape: Geometry, matrix: Matrix, tolerance: number
       })),
     ]);
   };
+  const square = (p: Point, r: number, tangent: Point) => {
+    if (r < 1e-12) return;
+    const len = Math.hypot(tangent.x, tangent.y),
+      d = len > 1e-12 ? { x: tangent.x / len, y: tangent.y / len } : { x: 1, y: 0 },
+      n = { x: -d.y, y: d.x };
+    add([
+      { x: p.x + r * (d.x + n.x), y: p.y + r * (d.y + n.y) },
+      { x: p.x + r * (d.x - n.x), y: p.y + r * (d.y - n.y) },
+      { x: p.x - r * (d.x + n.x), y: p.y - r * (d.y + n.y) },
+      { x: p.x - r * (d.x - n.x), y: p.y - r * (d.y - n.y) },
+    ]);
+  };
   try {
+    checkSourceRange(source, factor, shape.strokeWidth * Math.max(1, shape.miterLimit));
     for (const item of source instanceof scope.CompoundPath ? source.children : [source]) {
       const path = item as paper.Path,
         length = path.length;
       if (path.curves.length > STROKE_LIMITS.curves)
         throw Error(`El trazo variable supera ${STROKE_LIMITS.curves} curvas. Simplificá el eje.`);
-      if (length < 1e-9) continue;
+      if (length < 1e-9) {
+        if (
+          path.curves.length &&
+          (!shape.strokeDash.length ||
+            dashIntervals(1e-6, shape.strokeDash, shape.strokeDashOffset).some(([a]) => a === 0))
+        ) {
+          const p = path.firstSegment.point,
+            r = shape.strokeWidth * 0.5 * profileWidth(shape.strokeProfile, 0);
+          if (shape.strokeCap === 'round') disk(p, r);
+          if (shape.strokeCap === 'square') square(p, r, { x: 1, y: 0 });
+        }
+        continue;
+      }
       const radius = (d: number) =>
         (shape.strokeWidth / 2) * profileWidth(shape.strokeProfile, d / length);
+      let rangeOffset = 0;
+      const ranges = path.curves.map((curve) => {
+        const start = rangeOffset;
+        rangeOffset += curve.length;
+        return { curve, start, end: rangeOffset };
+      });
+      const rangeAt = (offset: number) => {
+        let low = 0,
+          high = ranges.length - 1;
+        while (low < high) {
+          const mid = (low + high) >> 1;
+          if (offset > ranges[mid].end) low = mid + 1;
+          else high = mid;
+        }
+        return ranges[low];
+      };
       for (const [start, end] of dashIntervals(length, shape.strokeDash, shape.strokeDashOffset)) {
         if (end - start < 1e-9) {
           const p = path.getPointAt(start);
           if (!p) continue;
           const r = radius(start);
           if (shape.strokeCap === 'round') disk(p, r);
-          if (shape.strokeCap === 'square')
-            add([
-              { x: p.x - r, y: p.y - r },
-              { x: p.x + r, y: p.y - r },
-              { x: p.x + r, y: p.y + r },
-              { x: p.x - r, y: p.y + r },
-            ]);
+          if (shape.strokeCap === 'square') square(p, r, path.getTangentAt(start));
           continue;
         }
         const knots = new Set<number>([start, end]);
-        let cursor = 0;
-        for (const c of path.curves) {
-          cursor += c.length;
-          if (cursor > start && cursor < end) knots.add(cursor);
-        }
+        for (const range of ranges) if (range.end > start && range.end < end) knots.add(range.end);
         for (const p of shape.strokeProfile.points) {
           const d = p.at * length;
           if (d > start && d < end) knots.add(d);
         }
         if (path.curves.some((c) => !c.isStraight()))
           for (let i = 1; i < 8; i++) knots.add(start + ((end - start) * i) / 8);
-        const samples: { p: Point; r: number }[] = [];
+        const samples: { p: Point; r: number; offset: number }[] = [];
         const at = (d: number) => ({
           p: path.getPointAt(Math.min(length, Math.max(0, d)))!,
           r: radius(d),
+          offset: d,
         });
         const refine = (a: number, b: number, depth: number) => {
           const va = at(a),
@@ -330,7 +405,37 @@ function variableStrokeRegion(shape: Geometry, matrix: Matrix, tolerance: number
               ) + Math.abs(v.r - va.r - (vb.r - va.r) * t),
             );
           }
-          if (error > tol / 2 && depth < 18) {
+          const range = rangeAt((a + b) / 2),
+            normal = (d: number) =>
+              range.curve.getNormalAt(Math.max(0, Math.min(range.curve.length, d - range.start))),
+            na = normal(a),
+            nb = normal(b);
+          if (na && nb)
+            for (const t of [0.25, 0.5, 0.75]) {
+              const d = a + (b - a) * t,
+                v = at(d),
+                n = normal(d);
+              if (!n) continue;
+              for (const sign of [-1, 1])
+                error = Math.max(
+                  error,
+                  Math.hypot(
+                    v.p.x +
+                      sign * n.x * v.r -
+                      (va.p.x + sign * na.x * va.r) * (1 - t) -
+                      (vb.p.x + sign * nb.x * vb.r) * t,
+                    v.p.y +
+                      sign * n.y * v.r -
+                      (va.p.y + sign * na.y * va.r) * (1 - t) -
+                      (vb.p.y + sign * nb.y * vb.r) * t,
+                  ),
+                );
+            }
+          if (error > tol * 0.4 && depth >= 18)
+            throw Error(
+              'El perfil requiere demasiada precisión cerca de una cúspide; aumentá la tolerancia o dividí la curva.',
+            );
+          if (error > tol * 0.4 && depth < 18) {
             const mid = (a + b) / 2;
             refine(a, mid, depth + 1);
             refine(mid, b, depth + 1);
@@ -350,27 +455,43 @@ function variableStrokeRegion(shape: Geometry, matrix: Matrix, tolerance: number
         totalSamples++;
         for (let i = 1; i < sorted.length; i++) refine(sorted[i - 1], sorted[i], 0);
         const normals: Point[] = [],
-          directions: Point[] = [];
+          endNormals: Point[] = [],
+          directions: Point[] = [],
+          endDirections: Point[] = [];
         for (let i = 0; i < samples.length - 1; i++) {
           const a = samples[i],
             b = samples[i + 1],
-            len = Math.hypot(b.p.x - a.p.x, b.p.y - a.p.y) || 1,
-            d = { x: (b.p.x - a.p.x) / len, y: (b.p.y - a.p.y) / len },
-            n = { x: -d.y, y: d.x };
-          normals.push(n);
-          directions.push(d);
-          const leftA = { x: a.p.x + n.x * a.r, y: a.p.y + n.y * a.r },
-            leftB = { x: b.p.x + n.x * b.r, y: b.p.y + n.y * b.r },
-            rightA = { x: a.p.x - n.x * a.r, y: a.p.y - n.y * a.r },
-            rightB = { x: b.p.x - n.x * b.r, y: b.p.y - n.y * b.r };
+            range = rangeAt((a.offset + b.offset) / 2),
+            length = Math.hypot(b.p.x - a.p.x, b.p.y - a.p.y) || 1,
+            fallback = { x: (b.p.x - a.p.x) / length, y: (b.p.y - a.p.y) / length },
+            direction = (offset: number) => {
+              const t = range.curve.getTangentAt(
+                Math.max(0, Math.min(range.curve.length, offset - range.start)),
+              );
+              return t && Math.hypot(t.x, t.y) > 1e-12 ? t : fallback;
+            },
+            da = direction(a.offset),
+            db = direction(b.offset),
+            na = { x: -da.y, y: da.x },
+            nb = { x: -db.y, y: db.x };
+          normals.push(na);
+          endNormals.push(nb);
+          directions.push(da);
+          endDirections.push(db);
+          const leftA = { x: a.p.x + na.x * a.r, y: a.p.y + na.y * a.r },
+            leftB = { x: b.p.x + nb.x * b.r, y: b.p.y + nb.y * b.r },
+            rightA = { x: a.p.x - na.x * a.r, y: a.p.y - na.y * a.r },
+            rightB = { x: b.p.x - nb.x * b.r, y: b.p.y - nb.y * b.r };
           add([leftA, leftB, rightA]);
           add([rightA, leftB, rightB]);
         }
-        const closed = path.closed && !shape.strokeDash.length;
+        const closed =
+          path.closed && !shape.strokeDash.length && Math.abs(radius(0) - radius(length)) < 1e-10;
         for (let i = closed ? 0 : 1; i < (closed ? samples.length - 1 : samples.length - 1); i++) {
-          const a = normals[(i - 1 + normals.length) % normals.length],
+          const a = endNormals[(i - 1 + normals.length) % normals.length],
             b = normals[i % normals.length],
             v = samples[i];
+          if (Math.hypot(a.x - b.x, a.y - b.y) < 1e-12) continue;
           if (shape.strokeJoin === 'round') {
             const turn = Math.atan2(a.x * b.y - a.y * b.x, a.x * b.x + a.y * b.y),
               sign = turn > 0 ? -1 : 1;
@@ -396,8 +517,8 @@ function variableStrokeRegion(shape: Geometry, matrix: Matrix, tolerance: number
         if (!closed)
           for (const endIndex of [0, 1]) {
             const v = samples[endIndex ? samples.length - 1 : 0],
-              d = directions[endIndex ? directions.length - 1 : 0],
-              n = normals[endIndex ? normals.length - 1 : 0],
+              d = endIndex ? endDirections[endDirections.length - 1] : directions[0],
+              n = endIndex ? endNormals[endNormals.length - 1] : normals[0],
               sign = endIndex ? 1 : -1;
             if (shape.strokeCap === 'round')
               arc(v.p, v.r, Math.atan2(n.y, n.x), endIndex ? -Math.PI : Math.PI);
@@ -440,7 +561,8 @@ function variableStrokeRegion(shape: Geometry, matrix: Matrix, tolerance: number
   g.fillOpacity = shape.strokeOpacity;
   return pathToGeometry(paperPath(g, full), g);
 }
-const contourCache = new Map<string, Geometry>();
+const contourCache = new Map<string, { geometry: Geometry; cost: number }>();
+let contourCacheCost = 0;
 /** Single derived contour shared by editor, clipping, SVG and DXF. Axis stays editable. */
 export function strokeRegion(
   shape: Geometry,
@@ -451,7 +573,7 @@ export function strokeRegion(
     throw Error('La tolerancia de contorno debe ser positiva y finita.');
   const key = JSON.stringify([shape, matrix, tolerance]);
   const cached = contourCache.get(key);
-  if (cached) return structuredClone(cached);
+  if (cached) return structuredClone(cached.geometry);
   let result: Geometry;
   if (shape.strokeProfile.kind === 'uniform' && !shape.strokeDash.length)
     result = uniformStrokeRegion(shape, matrix, tolerance);
@@ -465,7 +587,15 @@ export function strokeRegion(
     result.fillOpacity = shape.strokeOpacity;
     result.fillRule = 'nonzero';
   } else result = variableStrokeRegion(shape, matrix, tolerance);
-  if (contourCache.size >= 128) contourCache.delete(contourCache.keys().next().value!);
-  contourCache.set(key, structuredClone(result));
+  const cost = key.length + JSON.stringify(result).length;
+  while (contourCache.size && (contourCache.size >= 128 || contourCacheCost + cost > 16000000)) {
+    const oldest = contourCache.keys().next().value!;
+    contourCacheCost -= contourCache.get(oldest)!.cost;
+    contourCache.delete(oldest);
+  }
+  if (cost <= 16000000) {
+    contourCache.set(key, { geometry: structuredClone(result), cost });
+    contourCacheCost += cost;
+  }
   return result;
 }

@@ -50,3 +50,6 @@ for entity in tile_entities:
   assert abs(point.z)<1e-9
   assert abs(point.x)<=50.02 and abs(point.y)<=40.02
 print('Curved hex tile DXF:',len(tile_entities),'clipped 2D polylines in mm')
+
+import runpy
+runpy.run_path('scripts/validate_v22_exports.py',run_name='__main__')

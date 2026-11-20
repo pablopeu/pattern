@@ -3,7 +3,7 @@ import { useFill } from '../fill/useFill';
 import { TileEditor } from '../tiling/TileEditor';
 import { tiledMarkup } from '../tiling/render';
 import { tileBounds, tileBasis, tileFrame, tileWorldBounds } from '../tiling/tiles';
-import { previewSVGPath as svgPath } from '../export/svg';
+import { previewSVGPathAtTolerance } from '../export/svg';
 import { cachedStructure, structureMarkup } from '../symmetry/structure';
 import { resolvePattern, symmetryOrigin, frameBounds } from '../symmetry/config';
 import {
@@ -33,6 +33,7 @@ import {
   multiply,
   translate,
   matrixString,
+  linearScaleBound,
   sub,
   distance,
   type Matrix,
@@ -40,7 +41,7 @@ import {
 } from '../geometry/matrix';
 import { pathData, simplifyPoints } from '../geometry/paths';
 import { paperPath, scope, smoothNodes } from '../geometry/paper';
-import { buildScene, type Scene } from '../patterns/engine';
+import { buildScene, sceneScaleBound, type Scene } from '../patterns/engine';
 import { lattice, latticeVectors, fundamentalDomain, type Bounds } from '../symmetry/groups';
 import { symmetryGuides, verifyPeriodicity } from '../symmetry/guides';
 import { geometryBounds, regionData, hasClosedGeometry } from '../application/clipping';
@@ -829,9 +830,10 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       height: (width * size.height) / size.width,
     });
   };
-  const renderShape = (g: Geometry) => (
-    <g key={g.id} dangerouslySetInnerHTML={{ __html: svgPath(g) }} />
+  const renderShapeAtTolerance = (g: Geometry, tolerance: number) => (
+    <g key={g.id} dangerouslySetInnerHTML={{ __html: previewSVGPathAtTolerance(g, tolerance) }} />
   );
+  const renderShape = (g: Geometry) => renderShapeAtTolerance(g, 0.02);
   const selectCached = (e: RPointerEvent, sc: Scene, placement: Matrix) => {
     if (s.mode !== 'apply') {
       selectAcrossLayers(e);
@@ -874,7 +876,10 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     interactive = true,
     pat = activePattern,
     decorations = true,
+    templateTolerance = 0.02,
   ) => {
+    const markup = (g: Geometry) => previewSVGPathAtTolerance(g, templateTolerance),
+      draw = (g: Geometry) => renderShapeAtTolerance(g, templateTolerance);
     if (sc.tiling) {
       const underlay =
         decorations &&
@@ -895,7 +900,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
           dangerouslySetInnerHTML={{
             __html: tiledMarkup(
               sc,
-              svgPath,
+              markup,
               id,
               placement,
               decorations && sc.tiling.definition.showOutline,
@@ -936,7 +941,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       return (
         <>
           <defs>
-            <g id={id}>{sc.generated.geometry.map(renderShape)}</g>
+            <g id={id}>{sc.generated.geometry.map(draw)}</g>
             <pattern
               id={`${id}-repeat`}
               width={1}
@@ -974,7 +979,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     return (
       <>
         <defs>
-          <g id={id}>{sc.generated.geometry.map(renderShape)}</g>
+          <g id={id}>{sc.generated.geometry.map(draw)}</g>
         </defs>
         {sc.instances.map((i) => (
           <g key={i.id}>
@@ -1003,6 +1008,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     pat = activePattern,
   ) => {
     let decorated = false;
+    const templateTolerance = 0.02 / sceneScaleBound(sc, placement);
     return (
       <>
         {sceneLayers(sc, pat).map((layer, index) => {
@@ -1015,7 +1021,10 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
               >
                 {layer.matrices.map((m, i) => (
                   <g key={i} transform={matrixString(multiply(placement, m))}>
-                    {renderShape(layer.geometry)}
+                    {renderShapeAtTolerance(
+                      layer.geometry,
+                      0.02 / Math.max(1, linearScaleBound(multiply(placement, m))),
+                    )}
                   </g>
                 ))}
               </g>
@@ -1031,6 +1040,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
                 interactive,
                 pat,
                 decorations,
+                templateTolerance,
               )}
             </g>
           );

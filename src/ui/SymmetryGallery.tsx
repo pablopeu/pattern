@@ -6,8 +6,8 @@ import { useEffect, useMemo, useRef, useState, memo } from 'react';
 import type { Studio } from '../app/useStudio';
 import type { Symmetry, Pattern } from '../app/model';
 import { generate } from '../generators';
-import { buildScene } from '../patterns/engine';
-import { svgDocument, previewSVGPath as svgPath } from '../export/svg';
+import { buildScene, sceneScaleBound } from '../patterns/engine';
+import { svgDocument, previewSVGPath, previewSVGPathAtTolerance } from '../export/svg';
 import { IDENTITY, matrixString, multiply, translate } from '../geometry/matrix';
 import {
   cosets,
@@ -31,14 +31,16 @@ export function previewSVG(
   prepared?: ReturnType<typeof generate>,
   structure = false,
 ): string {
-  const scene = buildScene(pattern, bounds, prepared);
+  const scene = buildScene(pattern, bounds, prepared),
+    tolerance = 0.02 / sceneScaleBound(scene),
+    renderMotif = (g: import('../app/model').Geometry) => previewSVGPathAtTolerance(g, tolerance);
   let decorated = false;
   const content = sceneLayers(scene, pattern)
     .map((layer, index) => {
       if (layer.kind === 'fill')
         return layer.matrices
           .map((m) =>
-            svgPath({ ...layer.geometry, transform: multiply(m, layer.geometry.transform) }),
+            previewSVGPath({ ...layer.geometry, transform: multiply(m, layer.geometry.transform) }),
           )
           .join('');
       const decorations = !decorated;
@@ -47,7 +49,7 @@ export function previewSVG(
       if (scene.tiling)
         return tiledMarkup(
           subset,
-          svgPath,
+          renderMotif,
           'preview-tile-' + index,
           IDENTITY,
           decorations && scene.tiling.definition.showOutline,
@@ -67,7 +69,7 @@ export function previewSVG(
             ),
           )
           .join('');
-      return `${decorations && structure && pattern.generator.kind !== 'penrose' ? structureMarkup(cachedStructure(pattern.symmetry, bounds), 0.15, 0.7) : ''}<defs><g id="${id}">${layer.geometry.map(svgPath).join('')}</g></defs>${refs}`;
+      return `${decorations && structure && pattern.generator.kind !== 'penrose' ? structureMarkup(cachedStructure(pattern.symmetry, bounds), 0.15, 0.7) : ''}<defs><g id="${id}">${layer.geometry.map(renderMotif).join('')}</g></defs>${refs}`;
     })
     .join('');
   return svgDocument(content, bounds, '#f8faf5');

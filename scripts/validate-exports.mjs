@@ -111,3 +111,4 @@ await writeFile('.runtime/exports/tile.dxf', files.tileDXF);
 await writeFile('.runtime/exports/tile.png', Buffer.from(files.tilePNG, 'base64'));
 await browser.close();
 console.log('Artifacts in .runtime/exports');
+await import('./validate-v22-exports.mjs');

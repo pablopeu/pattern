@@ -21,7 +21,7 @@ import {
 } from '../app/model';
 import { IDENTITY, matrixString, multiply, inverse, type Matrix } from '../geometry/matrix';
 import { pathData } from '../geometry/paths';
-import { buildScene, expandedTransforms } from '../patterns/engine';
+import { buildScene, expandedTransforms, sceneScaleBound } from '../patterns/engine';
 import { geometryBounds, clipGeometry, regionData } from '../application/clipping';
 import {
   rectangularCell,
@@ -64,14 +64,27 @@ const previewCache = new Map<string, string>();
 let previewCacheBytes = 0;
 /** Preview may show a clearly marked axis; strict export never uses this fallback. */
 export function previewSVGPath(shape: Geometry): string {
-  if (shape.strokeProfile.kind === 'uniform' || shape.stroke === 'none' || shape.strokeWidth <= 0)
-    return svgPath(shape);
-  const key = JSON.stringify([shape.id, pathData(shape), shape.transform, drawingStyle(shape)]),
+  return previewSVGPathAtTolerance(shape, 0.02);
+}
+export function previewSVGPathAtTolerance(shape: Geometry, tolerance: number): string {
+  if (
+    (shape.strokeProfile.kind === 'uniform' && !shape.strokeDash.includes(0)) ||
+    shape.stroke === 'none' ||
+    shape.strokeWidth <= 0
+  )
+    return svgPathAtTolerance(shape, tolerance);
+  const key = JSON.stringify([
+      shape.id,
+      tolerance,
+      pathData(shape),
+      shape.transform,
+      drawingStyle(shape),
+    ]),
     cached = previewCache.get(key);
   if (cached !== undefined) return cached;
   let markup: string;
   try {
-    markup = svgPath(shape);
+    markup = svgPathAtTolerance(shape, tolerance);
   } catch (error) {
     const message =
       'Contorno no disponible: ' + (error as Error).message + ' Eje provisional en naranja.';
@@ -98,7 +111,11 @@ export function previewSVGPath(shape: Geometry): string {
   return markup;
 }
 export function svgPathAtTolerance(shape: Geometry, tolerance: number): string {
-  if (shape.strokeProfile.kind !== 'uniform' && shape.stroke !== 'none' && shape.strokeWidth > 0) {
+  if (
+    (shape.strokeProfile.kind !== 'uniform' || shape.strokeDash.includes(0)) &&
+    shape.stroke !== 'none' &&
+    shape.strokeWidth > 0
+  ) {
     return (
       svgPathAtTolerance({ ...shape, stroke: 'none' }, tolerance) +
       svgPathAtTolerance(strokeRegion(shape, IDENTITY, tolerance), tolerance)
@@ -241,6 +258,8 @@ function preparePatternExport(
     warnings.push(
       'Región fundamental: requiere las operaciones del grupo para reconstruir el patrón; no es una baldosa rectangular de traslación.',
     );
+  const motifTolerance = options.tolerance / sceneScaleBound(scene, placement),
+    renderMotifPath = (g: Geometry) => svgPathAtTolerance(g, motifTolerance);
   const layers = sceneLayers(scene, pattern);
   if (expanded) {
     let count = 0;
@@ -295,7 +314,7 @@ function preparePatternExport(
     if (scene.tiling)
       return tiledMarkup(
         subset,
-        renderPath,
+        renderMotifPath,
         index === 0 ? 'export-tile' : 'export-tile-' + index,
         placement,
         decorations && (options.includeTileOutlines ?? false),
@@ -310,7 +329,7 @@ function preparePatternExport(
           ),
         )
         .join('');
-    motifDefs.push(`<g id="${id}">${layer.geometry.map(renderPath).join('')}</g>`);
+    motifDefs.push(`<g id="${id}">${layer.geometry.map(renderMotifPath).join('')}</g>`);
     return transforms
       .map(
         (t) =>

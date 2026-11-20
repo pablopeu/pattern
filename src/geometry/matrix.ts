@@ -58,3 +58,18 @@ export const unitFactor = { mm: 1, cm: 10, in: 25.4, px: 25.4 / 96 };
 export type Unit = keyof typeof unitFactor;
 export const fromMM = (value: number, unit: Unit) => value / unitFactor[unit];
 export const toMM = (value: number, unit: Unit) => value * unitFactor[unit];
+
+/** Largest singular value of the linear affine part, with overflow-safe normalization. */
+export function linearScaleBound(m: Matrix): number {
+  const factor = Math.max(Math.abs(m[0]), Math.abs(m[1]), Math.abs(m[2]), Math.abs(m[3]));
+  if (factor === 0) return 0;
+  if (!Number.isFinite(factor)) return Infinity;
+  const a = m[0] / factor,
+    b = m[1] / factor,
+    c = m[2] / factor,
+    d = m[3] / factor,
+    x = a * a + b * b,
+    y = c * c + d * d,
+    z = a * c + b * d;
+  return factor * Math.sqrt((x + y + Math.hypot(x - y, 2 * z)) / 2);
+}
