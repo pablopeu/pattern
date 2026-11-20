@@ -1,108 +1,66 @@
-# Continuidad · PRD v2.3 en curso
+# Continuidad · PRD v2.3 · cierre en verificación final
 
-## Alcance y estado
+## Estado y alcance
 
-Pablo autorizó explícitamente implementar prd_v2.3.txt después del cierre
-verificado de v2.2 (c2083a1). Se retiró PROJECT_COMPLETE para reactivar la
-vigilancia de cupo. PRD v2.3 NO completo. Se preservan motor, esquema 4,
-logo icono.png y handlers de la aplicación. Main con push autorizado.
+Implementado prd_v2.3.txt como evolución no destructiva de v2.2. Se conservan
+las regresiones v1/v2/v2.1/v2.2, icono.png y schemaVersion 4. Main local con
+push autorizado a https://github.com/pablopeu/pattern. Sin criterios pendientes
+conocidos: matriz en docs/ACCEPTANCE_V23.md e inventario en UX_V23_INVENTORY.md.
 
-## Primer incremento
+## Distribución final
 
-- Auditoría del baseline y cobertura de funciones en docs/UX_V23_INVENTORY.md.
-- Rail con siete categorías nombradas: Dibujo, Formas, Simetrías, Teselas,
-  Capas, Aplicación, Preferencias. Herramientas directas en dos columnas.
-- Panel izquierdo muestra sólo el contexto activo; Simetrías separa Grupo
-  y red de Generador, Capas separa lista de objetos de Conjuntos. Las
-  pestañas se recuerdan por categoría durante la sesión; plegar no desmonta
-  el panel. Navegar no cambia el documento ni agrega undo.
-- Formas tiene acción explícita Polígono paramétrico, preview y parámetros
-  de la forma creada. Usa el mismo handler del rail y ahora toma drawStyle.
-- Se eliminó el cierre en capture del panel derecho para todos los trazos:
-  pointerDown captura el punto antes del cambio de tamaño, como ya hacía Fill.
-- El panel derecho conserva su ubicación y funcionamiento independiente.
+- Rail con categorías Dibujo/Formas/Simetrías/Teselas/Capas/Aplicación/Preferencias
+  y herramientas frecuentes directas. Un contexto por vez, plegado completo,
+  tabs recordadas por categoría durante la sesión, sin agregar undo al navegar.
+- Derecha: Colores/Trazo/Perfil/Fill/Paleta/Presets/Objeto/Opciones. Objeto separa
+  Forma/Transformar/Nodos/Acciones y conserva handlers geométricos originales.
+  Polígono identificado con parámetros, relleno/trazo y preview inmediatos.
+- Selector compacto con activo/recientes/favoritos y catálogo modal de 27 opciones,
+  filtros, miniaturas vivas y paginación adaptable. Red y colocación separadas.
+- Teselas Forma/Colocación/Bordes/Tangentes; generador por páginas de 4 parámetros;
+  aplicación Perímetro/Transformar/Vínculo. Un scroll de respaldo por superficie.
+- Ctrl+K conecta a handlers reales; modales nativos con foco/inert/Escape. Resize
+  alterna overlays para no tapar ambos lados. Capturar punto antes del autocierre
+  conserva dibujo/Fill. Lápiz respeta el destino de estilo que eligió el usuario.
 
-## Verificación y límites
+## Verificación final real
 
-Logs del incremento en .runtime/v23-navigation-{check,build,e2e,regressions}.log.
-La última corrida dirigida previa al cierre aprobó cinco E2E nuevos (cuatro
-viewports 1366×768,1440×900,1920×1080,390×844 más polígono). La regresión de
-estilo vigente/tinta y Fill rápido aprobó 2/2 tras la corrección de capture.
-Verificación final después del cambio de Canvas: 203 unitarias y TypeScript,
-build y cinco nuevos E2E aprobados.
-Captura .runtime/v23-shapes-1366.png inspeccionada: sin overflow horizontal,
-rail y accesos visibles. Persiste scroll en geometría extensa: no se
-considera aceptada la UX final.
+- 203 unitarias + TypeScript estricto: .runtime/v23-final-check.log.
+- 94/94 E2E en corrida final de 4,2 min:75 anteriores +19 nuevos. Log
+  .runtime/v23-full-regression-final.log. Cuatro resoluciones solicitadas,
+  tinta/modelo/undo reales, catálogo/foco/teclado y todas las tabs sin scroll.
+- 9 pruebas Python del monitor; sin mensajes de prueba al hilo real.
+-Builds raíz/subdirectorio correctos;3+3 estáticas con orígenes externos
+  bloqueados: .runtime/v23-static-root.log y v23-static-subdir.log.
+-Exportación independiente completa nuevamente correcta: CairoSVG/Pillow/ezdxf,
+  regresiones previas y seis escenarios v2.2. Log v23-export-independent.log.
+-Benchmarks adaptados y ejecutados; referencias locales, no garantías de FPS.
+-Cinco capturas reales inspeccionadas y cuatro JSON descargables validados
+  en README; node scripts/capture-readme.mjs reproduce estos artefactos.
 
-## Próximo incremento pendiente
+## Servicios y feedback
 
-1. Galería compacta con recientes/favoritos y galería ampliada adaptable;
-   conservar hover, nombres, preview, familias, cambio inmediato y undo.
-2. Propiedades del objeto a la derecha y tabs compactas de estilo; Formas
-   debe mostrar inmediatamente lados/tamaño/rotación sin scroll. Terminar
-   contextos compactos de dibujo, Fill, nodos, teselas y generador.
-3. Buscador de comandos conectado a handlers reales; foco, Escape, teclado,
-   tooltips/atajos, menús y overlays estrechos sin superposiciones.
-4. Adaptar recorridos E2E v1–v2.2 a las categorías sin quitar aserciones y
-   ejecutar regresión completa. No afirmar 75/75 sobre la UI nueva: sólo se
-   verificaron las dos regresiones dirigidas de este incremento.
-5. Completar ubicación final de cada fila del inventario, matriz de criterios,
-   auditoría visual/funcional de cuatro resoluciones, builds estáticos raíz y
-   subdirectorio, README con capturas finales (explicaciones primero,
-   instalación/trabajo al final). Ninguna función inventariada puede perderse.
+Mantener app 4173 y monitor 4174 vivos; no duplicarlos. npm run local:status
+verifica sus PIDs. Los dos feedback históricos siguen revisados y atendidos;
+no hubo nuevos durante este incremento. La entrega independiente sigue
+activa incluso con PROJECT_COMPLETE.
 
-## Servicios y monitor
+PROJECT_COMPLETE registra este cierre y cancela timers de reanudación de un
+PRD ya terminado. Ante una nueva solicitud real de cambios: retirar el marcador,
+leer AGENTS.md/continuidad/progreso/feedback/Git y comprobar cupo real. No borrar
+el marcador como prueba ni reiniciar trabajo por una reanudación vieja sin
+pendientes. Con10% o menos en ventana vigente, verificar/documentar/commit y
+finalizar; el monitor solicita continuar tras reset real +60s.
 
-Mantener app 4173 (PID1046850) y monitor 4174 (PID2324731), sin duplicarlos.
-Los dos feedback históricos siguen revisados, sin feedback nuevo al inicio.
-Consultar status y feedback al reanudar. Al llegar a 10% restante en ventana
-vigente: verificar/documentar/commit y finalizar; el monitor pide reanudación
-tras reset real +60s. No crear PROJECT_COMPLETE hasta auditar todo v2.3.
-No publicar IP concretas: sólo <IP_LOCAL>; runtime ignorado. No ejecutar dos
-suites Playwright con outputDir compartido ni editar código durante una suite.
+## Convenciones persistentes
 
-Cierre por cupo: telemetría real 90% usado (10% restante), reset primario
-2026-11-20 06:47:54 UTC; reanudación del monitor a partir de06:48:54 UTC
-(03:48:54 Argentina). Estado winding_down, resume_at1795157334. No iniciar
-otro incremento en esta ventana. Se conserva vigilancia independiente de feedback.
+Git local y push main autorizados. Documentación pública sólo con <IP_LOCAL>;
+no publicar IP concretas ni datos de .runtime. README: explicaciones/imágenes
+primero, instalación y trabajo al final. No editar módulos activos ni generar
+notices durante E2E; no ejecutar suites con el mismo outputDir simultáneamente.
+El scroll de respaldo es admisible para ventanas menores/zoom/listas extensas;
+no se promete ausencia absoluta en cualquier contenido o resolución.
 
-## Reanudación y segundo incremento
-
-Reset confirmado por telemetría nueva (0% usado). Catálogo ampliado implementado:
-selector compacto, recientes/favoritos,27 opciones paginadas según ancho,
-hover/clic real, Escape/foco y undo.203 unitarias/TypeScript y2 E2E dirigidos
-correctos. Continúan pendientes propiedades/estilos compactos, comandos y
-regresión completa. La nota de winding_down anterior corresponde a la ventana
-previa, ya reiniciada.
-
-## Tercer incremento
-
-Propiedades a la derecha, estilos por pestañas, paginación de paletas/perfiles
-y comandos Ctrl+K implementados.203 unitarias/TypeScript, build y12 E2E de v2.3
-aprobados, incluyendo cuatro resoluciones con todas las tabs derechas sin scroll.
-Pendientes de la lista inicial: compactar otros contextos, adaptar regresiones,
-exportación/menús/teclado completos y documentación final. No declarar completo.
-
-## Cuarto incremento
-
-Contextos de teselas, simetrías, generador y aplicación compactados; exportación
-con tabs y diálogos nativos con foco/inert/Escape.203 unitarias/TypeScript,
-21 E2E de propiedades/estilos y4 nuevos de contextos sin scroll correctos.
-Los helpers tests/navigation.ts recorren la UI real y conservan aserciones.
-Próximo paso inmediato: regresión completa y corrección de recorridos/defectos,
-auditoría de cobertura, builds estáticos y documentación/capturas finales.
-
-## Auditoría de regresión
-
-Primera corrida:85/91 correctos;4 aserciones de título y1 apertura de catálogo
-adaptadas; regresión real de destino de estilo en Lápiz corregida. Las6
-repeticiones dirigidas y3 coberturas secundarias pasaron.9 tests del monitor
-correctos. Preparada corrida completa final de94; pendiente estático y cierre.
-
-## Último ajuste antes del cierre
-
-94 E2E completos correctos. Después se corrigió clipping de texto en selects,
-Corregir trazo→Trazo, acceso explícito al color de Fill y foco SVG al cerrar
-modal.9 repeticiones dirigidas correctas. No cambiar más fuentes durante las
-próximas suites. Falta producción raíz/subdirectorio, corrida completa final,
-regenerar/inspeccionar capturas ajustadas y cerrar docs/README con evidencia.
+Última auditoría: cabecera móvil en dos filas con bounds de acciones comprobados;
+el nombre del proyecto se ofrece también en Preferencias para móvil. Se repiten
+builds/estático y94 E2E antes de registrar PROJECT_COMPLETE.

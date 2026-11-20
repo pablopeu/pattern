@@ -286,7 +286,7 @@
   adaptable para pantalla estrecha. Todas las27 opciones disponibles sin scroll
   de galerías anidadas. Hover no confirma; clic usa changeSymmetryChoice y undo.
 - Modal con fondo inerte, foco acotado, Escape y retorno al botón de apertura.
--203 unitarias/TypeScript y2 E2E dirigidos correctos (1366×768 y390×844):
+- 203 unitarias/TypeScript y2 E2E dirigidos correctos (1366×768 y390×844):
   recorren27 opciones, hover sin modificar proyecto, radial/sectores, favoritos,
   cierre/restauración de foco y undo. Logs .runtime/v23-gallery-*.log.
 
@@ -300,7 +300,7 @@
   Lápiz abre trazo; Fill abre sus opciones; nodos y selección muestran propiedades.
 - Buscador Ctrl+K con nombres/acentos, flechas, Enter/Escape, conectado a handlers
   existentes (herramientas, categorías, grupos, polígono, grosor, SVG y archivo).
--203 unitarias/TypeScript, build y12 E2E nuevos correctos. Cuatro resoluciones
+- 203 unitarias/TypeScript, build y12 E2E nuevos correctos. Cuatro resoluciones
   verifican los controles principales de todas las tabs derechas sin scroll,
   documento intacto al navegar y edición real. Log v23-properties-*.log.
 - Pendiente aún: compactar teselas/generador/aplicación, exportación accesible,
@@ -315,7 +315,7 @@
 - Exportación separa Contenido/Tamaño/Precisión y usa diálogo modal nativo;
   importación, biblioteca y ayuda también conservan foco y fondo inerte.
   Archivo cierra al actuar fuera/Escape; el panel izquierdo tiene cierre y Escape.
--203 unitarias/TypeScript,21 E2E de propiedades/estilos/regresiones dirigidas y
+- 203 unitarias/TypeScript,21 E2E de propiedades/estilos/regresiones dirigidas y
   cuatro recorridos adicionales sin scroll correctos (1366×768,1440×900,
   1920×1080,390×844). Incluyen todas las tabs de teselas, p1, generador warp,
   preferencias, aplicación y exportación/foco. Logs v23-contexts-*.log y
@@ -337,17 +337,47 @@
 - Tres E2E nuevos correctos: geometría/nodos/reflexión/grupos/booleana+undo,
   CRUD completo de presets/paleta y resize/Escape con selección conservada.
   Scripts de benchmark adaptados a las categorías sin cambiar las métricas.
--9 pruebas del monitor correctas; no se enviaron feedback de prueba. Pendiente
+- 9 pruebas del monitor correctas; no se enviaron feedback de prueba. Pendiente
   corrida completa final de94 E2E y producción estática sobre el resultado.
 
 ## PRD v2.3 · Verificación visual final
 
-- Corrida completa de94 E2E aprobada (4,2min), con los75 recorridos previos.
+- Corrida completa de94 E2E aprobada (4,2min), con los 75 recorridos previos.
 - Inspección de las cinco capturas reales detectó padding excesivo que cortaba
   texto en selects compactos. Se conserva su altura y se corrige la línea útil.
 - Corregir trazo abre directamente Trazo y respeta la intención explícita al
   seleccionar el objeto. Fill muestra un acceso con el color a Colores.
   Los modales restituyen foco también si el disparador era el SVG del lienzo.
--9 E2E dirigidos posteriores correctos, incluidos textos completos y ausencia
+- 9 E2E dirigidos posteriores correctos, incluidos textos completos y ausencia
   de scroll en las cuatro resoluciones. Se prepara build raíz/subdirectorio,
   verificación estática y una corrida completa sobre el último ajuste visual.
+
+## Cierre auditado · PRD v2.3
+
+- **203 unitarias/TypeScript,94/94 E2E en corrida final de 4,2 min,9 pruebas del
+  monitor y6 estáticas correctas**. Conservados los 75 recorridos anteriores.
+  Builds raíz y `/pattern/` correctos; validación CairoSVG/Pillow/ezdxf de
+  regresiones previas y los seis escenarios v2.2 correcta.
+- Matriz final en ACCEPTANCE_V23.md e inventario A01–E06 con ruta de todas las
+  funciones. Categorías y tabs, propiedades derechas, catálogo completo,
+  comandos y contextos compactos comprobados en las cuatro resoluciones.
+- Se corrigieron recorridos de QA estático (exportar contornos sin salir del
+  modal; probes después del ajuste de cámara). Servidor temporal reiniciado
+  desacoplado al detectar su cierre de sesión; ambas rutas repetidas3/3.
+- README actualizado: explicaciones/navegación/ejemplos primero, cinco capturas
+  reales inspeccionadas y cuatro JSON validados; instalación/trabajo al final.
+  Arquitectura, formato4 y pruebas documentados. Benchmarks adaptados y ejecutados.
+- No se cambian motor, matemáticas, schemaVersion 4, dependencias ni icono.png.
+  Sin criterios pendientes conocidos del PRD; se conservan los servicios LAN
+  y la vigilancia independiente de feedback. Se registra cierre verificado.
+
+## PRD v2.3 · Cabecera estrecha comprobada visualmente
+
+- La inspección a390px detectó Archivo/Exportar fuera del ancho visible aunque
+  el documento no tenía overflow. La cabecera se distribuye en dos filas con
+  logo/acciones arriba y modos debajo; Archivo conserva una etiqueta visible.
+- El E2E de navegación ahora comprueba los bounds completos de Archivo,
+  Buscar comandos y Exportar en las cuatro resoluciones. Se inspeccionaron
+  capturas reales1366×768,1440×900,1920×1080 y390×844, además de las del README.
+- Se repiten compilación, estático y regresión con este último ajuste; las
+  afirmaciones de cierre quedan sujetas a esos resultados finales.

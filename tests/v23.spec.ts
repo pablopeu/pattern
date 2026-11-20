@@ -21,6 +21,16 @@ for (const viewport of [
     await page.setViewportSize(viewport);
     await page.goto('/');
     const before = await project(page);
+    for (const action of [
+      page.getByRole('button', { name: 'Buscar comandos', exact: true }),
+      page.getByRole('button', { name: 'Exportar', exact: true }),
+      page.locator('.main-menu summary'),
+    ]) {
+      await expect(action).toBeInViewport();
+      const box = (await action.boundingBox())!;
+      expect(box.x).toBeGreaterThanOrEqual(0);
+      expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 1);
+    }
     for (const name of [
       'Dibujo',
       'Formas',
@@ -258,6 +268,10 @@ for (const viewport of [
     }
     await page.getByRole('button', { name: 'Abrir Preferencias', exact: true }).click();
     await noScroll();
+    await left
+      .getByLabel('Nombre del documento', { exact: true })
+      .fill(`Proyecto ${viewport.width}`);
+    expect((await project(page))!.metadata.name).toBe(`Proyecto ${viewport.width}`);
     await page.getByRole('tab', { name: 'Aplicar', exact: true }).click();
     await page.getByRole('button', { name: 'Crear polígono regular', exact: true }).click();
     await page.getByRole('button', { name: 'Abrir Aplicación', exact: true }).click();

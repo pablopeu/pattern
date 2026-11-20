@@ -1032,6 +1032,18 @@ export function Panels({
 
             {category === 'preferences' && (
               <Section title="VIEW">
+                <label className="text-field">
+                  <span>Nombre del proyecto</span>
+                  <input
+                    aria-label="Nombre del documento"
+                    value={s.project.metadata.name}
+                    onChange={(e) =>
+                      s.change((p) => {
+                        p.metadata.name = e.target.value;
+                      })
+                    }
+                  />
+                </label>
                 <Toggle
                   label="Ajustar a grilla y nodos"
                   checked={s.project.preferences.snap}

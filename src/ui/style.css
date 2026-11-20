@@ -2445,3 +2445,13 @@ input[type='color']::-webkit-color-swatch {
 .context-heading > button { width:24px; height:24px; font-size:19px; color:#657858; border-radius:5px; }
 /* Compact heights must retain a full text line, including native select padding. */
 .compact-fields select { padding:4px 25px 4px 8px; line-height:18px; }
+
+/* A second header row keeps every file action inside narrow viewports. */
+@media(max-width:650px) {
+  .topbar { display:grid; grid-template-columns:112px minmax(0,1fr); grid-template-rows:52px 38px; height:96px; min-height:96px; flex-basis:96px; padding:0 10px 6px; gap:0; }
+  .topbar .brand { grid-column:1; grid-row:1; min-width:0; }
+  .topbar .brand img { width:100px; height:48px; object-fit:contain; }
+  .topbar .top-actions { grid-column:2; grid-row:1; justify-content:flex-end; gap:6px; margin:0; min-width:0; }
+  .topbar .mode-switch { grid-column:1 / -1; grid-row:2; position:static; transform:none; left:auto; width:100%; margin:0; justify-content:center; }
+}
+@media(max-width:650px) { .topbar .main-menu > summary { font-size:11px; gap:4px; } }
