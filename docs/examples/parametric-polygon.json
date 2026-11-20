@@ -1,0 +1,203 @@
+{
+  "schemaVersion": 4,
+  "drawingStyle": {
+    "stroke": "#233b2d",
+    "fill": "#dfc48d",
+    "strokeWidth": 0.65,
+    "strokeCap": "round",
+    "strokeJoin": "round",
+    "miterLimit": 10,
+    "opacity": 1,
+    "fillOpacity": 1,
+    "strokeOpacity": 1,
+    "fillRule": "evenodd",
+    "strokeDash": [],
+    "strokeDashOffset": 0,
+    "strokeProfile": {
+      "version": 1,
+      "kind": "uniform",
+      "points": [
+        {
+          "at": 0,
+          "width": 1
+        },
+        {
+          "at": 1,
+          "width": 1
+        }
+      ]
+    }
+  },
+  "stylePresets": [],
+  "palette": {
+    "colors": [],
+    "recent": [],
+    "favorites": []
+  },
+  "mainSymmetry": {
+    "family": "none",
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "orientation": 0,
+    "group": "none",
+    "width": 60,
+    "height": 60,
+    "angle": 90,
+    "sectors": 8,
+    "center": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "mainSymmetryProfiles": {},
+  "metadata": {
+    "id": "b2b40421-e199-4d47-bf1c-11f29b59dd3a",
+    "name": "Polígono paramétrico",
+    "createdAt": "2026-11-20T07:24:41.098Z",
+    "updatedAt": "2026-11-20T07:24:42.136Z"
+  },
+  "documentUnits": "mm",
+  "patterns": [
+    {
+      "id": "77d982c9-48a9-4840-b67a-7b447a1422e2",
+      "name": "Patrón 01",
+      "sourceGeometry": [
+        {
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "id": "6dbbaacb-20e4-496c-af23-36a5b36785d9",
+          "name": "Polígono",
+          "kind": "polygon",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#233b2d",
+          "fill": "#dfc48d",
+          "strokeWidth": 0.65,
+          "visible": true,
+          "locked": false,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "parameters": {
+            "x": 0,
+            "y": 0,
+            "width": 42,
+            "height": 42,
+            "radius": 0,
+            "sides": 8
+          }
+        }
+      ],
+      "generator": {
+        "kind": "motif",
+        "version": 1,
+        "seed": 42,
+        "count": 12,
+        "rows": 4,
+        "columns": 4,
+        "spacing": 22,
+        "offset": 0.5,
+        "aspectRatio": 1,
+        "staggerAxis": "rows",
+        "rotation": 0,
+        "scale": 1,
+        "scaleRatio": 0.9,
+        "amplitude": 6,
+        "frequency": 3,
+        "phase": 0,
+        "radius": 28,
+        "ratio": 0.35,
+        "distribution": "rectangular",
+        "periodicWarp": true,
+        "placements": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        ]
+      },
+      "symmetry": {
+        "family": "none",
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "orientation": 0,
+        "group": "none",
+        "width": 60,
+        "height": 60,
+        "angle": 90,
+        "sectors": 8,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "symmetryMode": "inherit",
+      "symmetryProfiles": {},
+      "placementTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "visible": true
+    }
+  ],
+  "regions": [],
+  "applications": [],
+  "preferences": {
+    "styleDefaultsFollowSelection": true,
+    "stylePanelPinned": false,
+    "fillCloseTolerance": 0,
+    "fillLinkedDefault": true,
+    "structureVisible": false,
+    "structureOpacity": 0.22,
+    "grid": false,
+    "snap": false,
+    "guides": true,
+    "split": false,
+    "background": "#f8faf5",
+    "fundamental": false,
+    "axes": false,
+    "centers": false,
+    "continuity": false,
+    "outside": false,
+    "sourceView": false,
+    "repetitionView": "extended"
+  }
+}

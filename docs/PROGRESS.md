@@ -263,7 +263,7 @@
   y plegado sin desmontar; navegación sin cambios geométricos ni undo.
 - Formas identifica Polígono paramétrico con acción, preview y edición de
   parámetros; comparte handler con el acceso del rail y toma estilo vigente.
-- Cinco E2E nuevos aprobados en 1366×768,1440×900,1920×1080 y390×844. Prueban
+- Cinco E2E nuevos aprobados en 1366×768,1440×900,1920×1080 y 390×844. Prueban
   documento intacto al navegar, accesos visibles, pestañas/plegado y polígono.
 - Regresión de tinta detectó cierre prematuro en capture del panel derecho:
   se elimina para capturar primero el punto en todos los trazos. Repetición
@@ -286,7 +286,7 @@
   adaptable para pantalla estrecha. Todas las27 opciones disponibles sin scroll
   de galerías anidadas. Hover no confirma; clic usa changeSymmetryChoice y undo.
 - Modal con fondo inerte, foco acotado, Escape y retorno al botón de apertura.
-- 203 unitarias/TypeScript y2 E2E dirigidos correctos (1366×768 y390×844):
+- 203 unitarias/TypeScript y2 E2E dirigidos correctos (1366×768 y 390×844):
   recorren27 opciones, hover sin modificar proyecto, radial/sectores, favoritos,
   cierre/restauración de foco y undo. Logs .runtime/v23-gallery-*.log.
 
@@ -373,11 +373,23 @@
 
 ## PRD v2.3 · Cabecera estrecha comprobada visualmente
 
-- La inspección a390px detectó Archivo/Exportar fuera del ancho visible aunque
+- La inspección a 390px detectó Archivo/Exportar fuera del ancho visible aunque
   el documento no tenía overflow. La cabecera se distribuye en dos filas con
   logo/acciones arriba y modos debajo; Archivo conserva una etiqueta visible.
 - El E2E de navegación ahora comprueba los bounds completos de Archivo,
   Buscar comandos y Exportar en las cuatro resoluciones. Se inspeccionaron
-  capturas reales1366×768,1440×900,1920×1080 y390×844, además de las del README.
+  capturas reales1366×768,1440×900,1920×1080 y 390×844, además de las del README.
 - Se repiten compilación, estático y regresión con este último ajuste; las
   afirmaciones de cierre quedan sujetas a esos resultados finales.
+
+### Cierre posterior a la auditoría móvil
+
+- 94/94 E2E correctos en 4,3 min sobre el ajuste final, exit_code 0 registrado
+  por el runner independiente.203 unitarias/TypeScript y ambos builds correctos;
+  repetición estática3/3 raíz y3/3 subdirectorio con Internet bloqueado.
+- Inspección visual de las cuatro resoluciones y bounds de todas las acciones
+  principales de cabecera. Nombre del documento accesible en Preferencias
+  también en móvil; ninguna función del inventario queda sin ruta.
+- Se cierra v2.3 sin criterios pendientes conocidos. README con cinco imágenes
+  y cuatro JSON, instrucciones de uso primero e instalación/trabajo al final.
+  Servidor temporal de QA detenido; app 4173 y monitor 4174 se conservan vivos.

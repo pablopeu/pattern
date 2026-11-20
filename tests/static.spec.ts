@@ -163,6 +163,9 @@ test('v2.2 estático: panel derecho, Fill vectorial, perfiles/preset y workers s
     await line(a, b);
   await saved();
   await page.getByRole('button', { name: 'Rellenar región', exact: true }).click();
+  await page.evaluate(
+    () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+  );
   const center = await point(0, 0);
   await page.mouse.move(center.x, center.y);
   await expect(page.locator('[data-fill-preview]')).toBeVisible();

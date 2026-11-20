@@ -30,10 +30,10 @@ global y los resultados de regresión se registran en ACCEPTANCE_V23.md.
 
 | ID | Funciones inventariadas v2.2 | Ubicación implementada v2.3 |
 | --- | --- | --- |
-| A01 | Nombre de proyecto, estado de guardado, guardar JSON | Cabecera |
+| A01 | Nombre de proyecto, estado de guardado, guardar JSON | Cabecera; nombre también en Preferencias (disponible en móvil) |
 | A02 | Nuevo, abrir JSON, duplicar proyecto | Archivo |
 | A03 | Biblioteca local, abrir proyecto anterior | Archivo → biblioteca |
-| A04 | Siete ejemplos editables | Archivo → ejemplos |
+| A04 | Ocho ejemplos editables | Archivo → ejemplos |
 | A05 | Importar/exportar preset de patrón | Archivo |
 | A06 | Ayuda, atajos, avances/feedback LAN en desarrollo | Archivo y pie del rail |
 | A07 | Importar SVG, ancho físico, destino fuente/perímetro, cancelar | Rail → diálogo de importación |

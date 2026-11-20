@@ -4,7 +4,7 @@ Estudio vectorial para dibujar motivos, explorar simetrías y construir patrones
 
 Funciona en el navegador, procesa toda la geometría localmente y se puede desplegar como archivos estáticos. No requiere cuentas, APIs ni conexión a servicios externos.
 
-![Pattern Studio con simetría hexagonal, miniaturas del motivo y panel de estilos derecho](docs/images/studio-symmetry.png)
+![Pattern Studio con categorías, simetría hexagonal y panel de estilos derecho](docs/images/studio-symmetry.png)
 
 ## Qué podés crear
 
@@ -25,19 +25,60 @@ Funciona en el navegador, procesa toda la geometría localmente y se puede despl
 
 La pluma termina con Enter, se cierra con Shift+Enter o un clic sobre el primer nodo y se cancela con Esc. Espacio permite arrastrar la vista; Ctrl + rueda controla el zoom.
 
-La navegación v2.3 está en desarrollo: la barra izquierda separa **Dibujo,
-Formas, Simetrías, Teselas, Capas, Aplicación y Preferencias**. En **Formas**,
-**Polígono paramétrico · crear** muestra los parámetros editables. El panel
-derecho conserva colores y trazos. Las capturas siguientes corresponden a
-v2.2; los proyectos descargables siguen siendo compatibles.
+## Encontrar herramientas y opciones
+
+La barra izquierda abre un contexto a la vez. Las herramientas de dibujo
+siguen disponibles directamente; los iconos muestran su nombre y atajo al
+pasar el cursor. Cada panel se puede plegar. Las pestañas se recuerdan
+durante la sesión y cambiar de contexto conserva el documento y la selección.
+
+| Contexto | Qué contiene |
+| --- | --- |
+| Dibujo | Herramienta activa, instrucciones de pluma/lápiz/Fill/nodos y acceso a sus opciones |
+| Formas | Polígono paramétrico con nombre y preview; figuras directas en la barra |
+| Simetrías | Selector activo, recientes/favoritos, catálogo completo, red, colocación y generadores |
+| Teselas | Forma, colocación, bordes y tangentes |
+| Capas | Objetos y conjuntos, visibilidad, bloqueo y orden |
+| Aplicación | Perímetro, transformación y vínculo del patrón aplicado |
+| Preferencias | Nombre del documento, guías, snap, unidades y fondo |
+
+A la derecha están **Colores, Trazo, Perfil, Fill, Paleta, Presets, Objeto y
+Opciones**. Al seleccionar un objeto aparecen sus propiedades; sin selección,
+se edita el estilo vigente. **Objeto** separa forma, transformación, nodos y
+acciones geométricas. En ventanas estrechas los paneles funcionan como overlays
+temporales y se alternan para dejar disponible el lienzo.
+
+**Ctrl+K** abre la búsqueda: probá «polígono», «rellenar», «simetría p6m»,
+«teselas», «grosor» o «exportar SVG». Flechas y Enter eligen una acción;
+Escape cierra el buscador. La búsqueda usa las mismas acciones del editor.
 
 ## Ejemplos de uso
 
 ### Explorar un motivo sin perder el dibujo original
 
-En **Archivo → Ejemplos editables**, abrí **Hexagonal · p6m** para obtener la escena de la primera imagen. Pasá por p1, p4m y p6m y confirmá una opción. Las miniaturas se actualizan con tu motivo; la selección, la herramienta y las fuentes siguen disponibles. [Descargar este proyecto de ejemplo](docs/examples/studio-symmetry.json).
+En **Archivo → Ejemplos editables**, abrí **Hexagonal · p6m** para obtener la escena de la primera imagen. Entrá en **Simetrías → Explorar todas las simetrías**. Pasá por p1, p4m y p6m y confirmá una opción. Las miniaturas se actualizan con tu motivo; la selección, la herramienta y las fuentes siguen disponibles. [Descargar este proyecto de ejemplo](docs/examples/studio-symmetry.json).
 
 Diseño y Patrón son vistas de énfasis del mismo documento. **Fuente pura**, **Una celda** y la vista dividida ayudan a entender cómo se construye la repetición. Los conjuntos pueden heredar la simetría principal, tener una propia o permanecer libres.
+
+
+El catálogo ampliado muestra las 27 opciones con sus nombres matemáticos,
+iconos y una vista de tu motivo. Filtrá por plano, friso o radial; en móvil,
+las páginas mantienen accesible el catálogo completo. Las estrellas guardan
+favoritos locales. Hover previsualiza; clic confirma y se puede deshacer.
+
+![Catálogo ampliado de simetrías con las 27 opciones y favoritos](docs/images/symmetry-catalog.png)
+
+### Crear y ajustar un polígono regular
+
+Abrí **Formas → Polígono paramétrico · crear**. En el panel derecho,
+**Objeto → Forma** muestra lados, ancho, alto, rotación, relleno y trazo.
+Por ejemplo, elegí ocho lados y 42 × 42 mm; cada valor cambia la figura real.
+Para moverla o reflejarla usá **Transformar**; para convertirla a paths,
+**Nodos**. Las operaciones conservan undo/redo.
+
+![Polígono regular de ocho lados con sus parámetros a la derecha](docs/images/parametric-polygon.png)
+
+[Descargar el polígono paramétrico editable](docs/examples/parametric-polygon.json).
 
 ### Pintar una región formada por varias curvas
 
@@ -53,7 +94,7 @@ Por defecto se exige cierre geométrico dentro del epsilon numérico. Para peque
 
 ### Construir teselas con bordes curvos
 
-Abrí **Teselas encastrables**, elegí una forma y activá **Editar bordes de tesela**. Al mover nodos y tangentes, los bordes correspondientes cambian juntos para conservar el encastre. Pintá el interior con Fill y seguí dibujando sobre las copias.
+Abrí **Teselas → Forma** y elegí una familia. Entrá en **Bordes** para editar nodos y en **Tangentes** para ajustar las curvas. Al mover nodos y tangentes, los bordes correspondientes cambian juntos para conservar el encastre. Pintá el interior con Fill y seguí dibujando sobre las copias.
 
 ![Teselas hexagonales con borde curvo, fondo vectorial y motivos verdes repetidos](docs/images/curved-tiles.png)
 
@@ -65,13 +106,13 @@ El dibujo interior y el contorno de tesela son entidades diferentes. Ajustar al 
 
 ### Ajustar apariencia, guardar estilos y componer
 
-El panel derecho ofrece colores HEX, alfa, grosores, extremos, uniones, secuencias discontinuas y un editor visual de perfiles de ancho. Guardá un estilo con nombre para reutilizar sus valores sin modificar retroactivamente los objetos anteriores. El indicador compacto sigue visible al cerrar el panel; podés fijarlo abierto o dejar que se autocierre al volver al lienzo.
+Las pestañas del panel derecho ofrecen colores HEX/alfa, grosor, extremos y uniones en **Trazo**, y curva de anchura en **Perfil**. Las paletas y los presets tienen sus propias pestañas. Guardá un estilo con nombre para reutilizar sus valores sin modificar retroactivamente los objetos anteriores. El indicador compacto sigue visible al cerrar el panel; podés fijarlo abierto o dejar que se autocierre al volver al lienzo.
 
-**Capas** permite nombrar, ocultar, bloquear y ordenar objetos. En **Aplicar**, creá o importá un perímetro cerrado y colocá el conjunto sobre él. Una aplicación congelada conserva su simetría efectiva aunque cambie la principal. El exportador permite elegir el conjunto activo o la composición visible; sólo ofrece una celda común cuando su periodicidad está verificada.
+**Capas** permite ocultar, bloquear y ordenar objetos; **Objeto → Forma** permite nombrarlos. En **Aplicar**, creá o importá un perímetro cerrado y colocá el conjunto sobre él. Una aplicación congelada conserva su simetría efectiva aunque cambie la principal. El exportador permite elegir el conjunto activo o la composición visible; sólo ofrece una celda común cuando su periodicidad está verificada.
 
 ## Guardado y privacidad
 
-El autosave transaccional usa IndexedDB y guarda cada proyecto por su ID. La biblioteca pertenece al navegador y al origen HTTP (host y puerto). Otra PC puede revisar la aplicación y sus ejemplos, pero no ve automáticamente los proyectos privados de tu navegador. Para intercambiarlos, guardá y abrí JSON.
+El autosave transaccional usa IndexedDB y guarda cada proyecto por su ID. Los favoritos de simetría se guardan en este navegador y los recientes duran la sesión. Estas preferencias de navegación no cambian el JSON ni agregan undo. La biblioteca pertenece al navegador y al origen HTTP (host y puerto). Otra PC puede revisar la aplicación y sus ejemplos, pero no ve automáticamente los proyectos privados de tu navegador. Para intercambiarlos, guardá y abrí JSON.
 
 El guardado explícito descarga un archivo completo y también intenta completar la escritura local. Si el navegador rechaza IndexedDB, la aplicación informa el error y el JSON sigue disponible. Un perímetro a medio dibujar no reemplaza el último autosave válido.
 
@@ -148,11 +189,11 @@ npm run test:e2e
 npm run benchmark
 ```
 
-Cierre v2.2 verificado: **203 pruebas unitarias, 75 flujos E2E, 9 pruebas del monitor y 6 pruebas estáticas**; ambos builds y los seis escenarios de exportación independiente correctos.
+V2.3 verificado: **203 pruebas unitarias, 94 flujos E2E, 9 pruebas del monitor y 6 pruebas estáticas**. Se conservan los 75 recorridos anteriores. Builds raíz/subdirectorio y validación independiente de exportaciones correctos.
 
-El benchmark necesita el servidor de desarrollo. Las pruebas estáticas y la validación independiente de archivos se explican en [TESTING.md](TESTING.md). Resultados medidos y aceptación: [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md).
+El benchmark necesita el servidor de desarrollo. Las pruebas estáticas y la validación independiente de archivos se explican en [TESTING.md](TESTING.md). Resultados anteriores: [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md). Auditoría UX: [docs/ACCEPTANCE_V23.md](docs/ACCEPTANCE_V23.md) e [inventario de funciones](docs/UX_V23_INVENTORY.md).
 
-Para regenerar las tres capturas y los JSON de ejemplo de este README con el servidor local activo: `node scripts/capture-readme.mjs`. Se usa un navegador aislado; no se modifican los proyectos del navegador del usuario.
+Para regenerar las cinco capturas y los cuatro JSON de ejemplo de este README con el servidor local activo: `node scripts/capture-readme.mjs`. Se usa un navegador aislado; no se modifican los proyectos del navegador del usuario.
 
 ### Monitor de cupo y feedback
 

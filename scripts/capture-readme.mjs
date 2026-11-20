@@ -23,6 +23,10 @@ async function load(kind) {
     p.preferences.grid = false;
     p.preferences.structureVisible = false;
     const pat = p.patterns[0];
+    if (kind === 'polygon') {
+      p.metadata.name = 'Polígono paramétrico';
+      p.drawingStyle.fill = '#dfc48d';
+    }
     if (kind === 'fill') {
       p.metadata.name = 'Cuatro curvas y un hueco';
       p.mainSymmetry = {
@@ -75,13 +79,14 @@ async function load(kind) {
   await page.reload();
   await page.locator('.save-indicator').filter({ hasText: 'Guardado local' }).waitFor();
 }
-async function shoot(name) {
+async function shoot(name, portable = true) {
   const close = page.getByRole('button', { name: 'Cerrar mensaje' });
   if (await close.count()) await close.click();
   await page.mouse.move(10, 10);
   // Finish the brief panel transition and let saved-state/toast settle.
   await page.waitForTimeout(600);
   await page.screenshot({ path: `docs/images/${name}.png` });
+  if (!portable) return;
   const project = await page.evaluate(async () => {
     const { recover } = await import('/src/persistence/storage.ts');
     const { serialize, parseProject } = await import('/src/persistence/schema.ts');
@@ -91,6 +96,9 @@ async function shoot(name) {
 }
 async function fillAt(x, y) {
   await page.getByRole('button', { name: 'Rellenar región', exact: true }).click();
+  await page.evaluate(
+    () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))),
+  );
   const q = await page.locator('.studio-canvas').evaluate(
     (el, p) => {
       const q = new DOMPoint(p.x, p.y).matrixTransform(el.getScreenCTM());
@@ -103,14 +111,28 @@ async function fillAt(x, y) {
   await page.locator('.save-indicator').filter({ hasText: 'Guardado local' }).waitFor();
 }
 await load('overview');
+await page.getByRole('button', { name: 'Abrir Simetrías', exact: true }).click();
 await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
 await shoot('studio-symmetry');
+await page.getByRole('button', { name: 'Explorar todas las simetrías · 27' }).click();
+await page
+  .locator('.dynamic-symmetry-grid[data-preview-completed="27"][data-preview-pending="false"]')
+  .waitFor();
+await shoot('symmetry-catalog', false);
+await page.getByRole('button', { name: 'Cerrar catálogo', exact: true }).click();
 await load('fill');
 await fillAt(10, 0);
 await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
 await shoot('vector-fill');
 await load('tiles');
 await fillAt(30, 20);
+await page.getByRole('button', { name: 'Abrir Teselas', exact: true }).click();
 await shoot('curved-tiles');
+await load('polygon');
+await page.getByRole('button', { name: 'Crear polígono regular', exact: true }).click();
+await page.getByLabel('Lados', { exact: true }).fill('8');
+await page.getByLabel('Ancho', { exact: true }).fill('42');
+await page.getByLabel('Alto', { exact: true }).fill('42');
+await shoot('parametric-polygon');
 await browser.close();
-console.log('README: 3 screenshots of the running application saved in docs/images/.');
+console.log('README: 5 screenshots of the running application saved in docs/images/.');

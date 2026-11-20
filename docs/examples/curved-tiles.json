@@ -53,10 +53,10 @@
   },
   "mainSymmetryProfiles": {},
   "metadata": {
-    "id": "25bb423b-3a9e-4b84-aa72-3b77329995cd",
+    "id": "006fe2ce-8fef-468c-bc2d-b48d1314a3c7",
     "name": "Teselas hexagonales curvas",
-    "createdAt": "2026-11-20T03:21:16.435Z",
-    "updatedAt": "2026-11-20T03:21:17.890Z"
+    "createdAt": "2026-11-20T07:24:38.094Z",
+    "updatedAt": "2026-11-20T07:24:39.469Z"
   },
   "documentUnits": "mm",
   "patterns": [
@@ -190,7 +190,7 @@
           ]
         ]
       },
-      "id": "01e00108-b14b-4bca-898b-c44623f1456e",
+      "id": "d8f5c0bb-8429-4d6f-8f3d-07c27c0306ac",
       "name": "Patrón 01",
       "sourceGeometry": [
         {
@@ -200,11 +200,11 @@
             "scope": "tile",
             "linked": true,
             "status": "linked",
-            "faceKey": "tile/01e00108-b14b-4bca-898b-c44623f1456e",
+            "faceKey": "tile/d8f5c0bb-8429-4d6f-8f3d-07c27c0306ac",
             "topologyKey": "tile-interior",
             "refs": [],
             "inputs": [],
-            "context": "[{\"id\":\"01e00108-b14b-4bca-898b-c44623f1456e\",\"kind\":\"hexagon\"}]",
+            "context": "[{\"id\":\"d8f5c0bb-8429-4d6f-8f3d-07c27c0306ac\",\"kind\":\"hexagon\"}]",
             "captureMatrix": [
               1,
               0,
@@ -241,7 +241,7 @@
               }
             ]
           },
-          "id": "220e5310-3886-4827-8b2c-144d6be6ec53",
+          "id": "ec3db560-3297-4bf0-82a5-1ba19cceced5",
           "name": "Relleno de tesela",
           "kind": "path",
           "nodes": [
@@ -429,7 +429,7 @@
               }
             ]
           },
-          "id": "ecbe1165-0644-47a6-9156-1a67419ce4e9",
+          "id": "4fd06f87-d890-4f9a-8c90-a976b71a2b41",
           "name": "Elipse",
           "kind": "ellipse",
           "nodes": [],
@@ -480,7 +480,7 @@
               }
             ]
           },
-          "id": "622bbb0f-fbcc-43cf-8bea-9decd064eb23",
+          "id": "a0b7e09d-2161-4db9-a57d-5d79e24b1470",
           "name": "Trazado",
           "kind": "path",
           "nodes": [

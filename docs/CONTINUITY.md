@@ -1,4 +1,4 @@
-# Continuidad · PRD v2.3 · cierre en verificación final
+# Continuidad · PRD v2.3 verificado
 
 ## Estado y alcance
 
@@ -26,7 +26,7 @@ conocidos: matriz en docs/ACCEPTANCE_V23.md e inventario en UX_V23_INVENTORY.md.
 ## Verificación final real
 
 - 203 unitarias + TypeScript estricto: .runtime/v23-final-check.log.
-- 94/94 E2E en corrida final de 4,2 min:75 anteriores +19 nuevos. Log
+- 94/94 E2E en corrida final de 4,3 min:75 anteriores +19 nuevos. Log
   .runtime/v23-full-regression-final.log. Cuatro resoluciones solicitadas,
   tinta/modelo/undo reales, catálogo/foco/teclado y todas las tabs sin scroll.
 - 9 pruebas Python del monitor; sin mensajes de prueba al hilo real.
@@ -61,6 +61,9 @@ notices durante E2E; no ejecutar suites con el mismo outputDir simultáneamente.
 El scroll de respaldo es admisible para ventanas menores/zoom/listas extensas;
 no se promete ausencia absoluta en cualquier contenido o resolución.
 
-Última auditoría: cabecera móvil en dos filas con bounds de acciones comprobados;
-el nombre del proyecto se ofrece también en Preferencias para móvil. Se repiten
-builds/estático y94 E2E antes de registrar PROJECT_COMPLETE.
+Auditoría final: cabecera móvil en dos filas con bounds completos de Archivo,
+Buscar comandos y Exportar comprobados. El nombre del proyecto también está
+en Preferencias. Capturas de las cuatro resoluciones inspeccionadas. Corrida
+posterior 94/94 correcta en 4,3 min, estado de salida 0 registrado en
+.runtime/v23-full-regression-final.status.json. Ambos builds y3+3 estáticas
+repetidos correctamente. Se registra PROJECT_COMPLETE al publicar este cierre.

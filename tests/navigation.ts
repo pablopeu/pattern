@@ -89,7 +89,7 @@ export async function field(page: Page, label: string) {
       await next.click();
     }
   }
-  if (/tesela|borde|Entrante|Saliente/.test(label)) {
+  if (/tesela|borde|Entrante|Saliente/.test(label) && !label.startsWith('Exportar ')) {
     await context(page, 'Teselas');
     const tab = /Entrante|Saliente/.test(label)
       ? 'Tangentes'

@@ -163,3 +163,44 @@ Las imágenes del README y sus JSON se generan en un contexto de navegador aisla
 Monitor: **9 pruebas Python**, incluyendo POST HTTP real con cola simulada, entrega en trabajo/espera/completado, persistencia del estado, reintento y exclusión mutua. No se envían mensajes de prueba a la conversación real ni se altera su marcador PROJECT_COMPLETE.
 
 Regresión completa: **75/75 flujos correctos** en una sola corrida (6,7 minutos), conservando los 50 de v1/v2/v2.1. Resultado y matriz de aceptación en docs/ACCEPTANCE.md y docs/PROGRESS.md.
+
+
+## PRD v2.3 · Navegación contextual
+
+TypeScript y203 unitarias correctos. La corrida final aprueba **94/94 E2E**
+en 4,3 min: los 75 recorridos anteriores, adaptados a categorías/tabs mediante
+`tests/navigation.ts`, y19 nuevos en `tests/v23.spec.ts`. Se conservan sus
+aserciones de geometría/tinta/exportación/persistencia/undo. Los nuevos
+cubren cuatro resoluciones (1366×768,1440×900,1920×1080,390×844), documento
+intacto al navegar, todos los contextos sin scroll de configuración,
+polígono, catálogo completo/favoritos/hover/undo, propiedades/nodos/booleana,
+presets/paletas, comandos, foco/Escape y resize sin overlays simultáneos.
+
+La comprobación de selects compactos incluye que padding y línea de texto
+quepan dentro del control. Se inspeccionaron las cinco capturas regeneradas
+del README. Las colecciones extensas se paginan o seleccionan explícitamente;
+listas inherentemente largas mantienen un scroll de respaldo accesible.
+
+Ambos builds aprobaron y hay **6 pruebas estáticas correctas**,3 en raíz y3
+con base `/pattern/`, bloqueando orígenes externos. La prueba espera que la
+cámara termine de ajustar el ancho antes de convertir un probe a coordenadas
+de pantalla. No confunde opciones de exportación con el panel de teselas.
+El servidor temporal de QA se inicia como proceso independiente para que
+la vida de una llamada de herramienta no interrumpa las pruebas.
+
+Se reejecutó la validación independiente completa: escenarios v1/v2.1 y los
+seis v2.2 correctos en CairoSVG/Pillow/ezdxf. Los scripts de benchmark usan
+las nuevas rutas de navegación y se ejecutaron correctamente. Sus datos son
+referencias locales (con otras verificaciones concurrentes); no se afirma una
+mejora de FPS. Core100 fuentes: mediana 0,7 ms/p95 1,2 ms;27 miniaturas completas
+en 1707 ms. El tiempo de nodos incluye protocolo y presentación y varía con carga.
+
+Logs `.runtime/v23-*`; matriz final en `docs/ACCEPTANCE_V23.md` e inventario
+con rutas por función en `docs/UX_V23_INVENTORY.md`. Monitor:9 pruebas correctas,
+sin feedback de prueba ni modificación del marcador real de cierre.
+
+La última auditoría visual encontró acciones fuera del ancho de la cabecera
+a 390px. Se corrigieron con dos filas y una etiqueta Archivo visible. El E2E
+comprueba los bounds completos de esas acciones, y el nombre del documento
+se puede editar desde Preferencias también en móvil. Sobre este ajuste final
+pasaron nuevamente 94 E2E,203 unitarias y ambos builds con 6 estáticas.
