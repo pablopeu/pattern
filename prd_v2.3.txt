@@ -1,0 +1,285 @@
+prd_v2.3
+## Reorganización integral de UX y navegación contextual
+
+**Repositorio:** https://github.com/pablopeu/pattern  
+**Base:** PRD v2.2 finalizado  
+**Objetivo:** transformar la interfaz actual en un editor visual claro, con herramientas descubribles, navegación predecible y mínima necesidad de scroll.
+
+### 1. Premisa principal
+
+La funcionalidad importante debe ser accesible sin tener que recorrer verticalmente listas extensas de controles.
+
+**Prioridad absoluta: evitar los scrollbars en los paneles de herramientas y configuración siempre que sea razonablemente posible.**
+
+No solucionar el problema ocultando visualmente las barras de desplazamiento mientras el contenido sigue fuera de la pantalla.
+
+Resolverlo mediante arquitectura de navegación, categorización, paneles contextuales, tabs y revelación progresiva.
+
+El scroll queda permitido como mecanismo excepcional para contenido inherentemente extenso, como una lista de cientos de capas, pero no debe ser el mecanismo principal para descubrir herramientas.
+
+### 2. Auditoría inicial obligatoria
+
+Inspeccionar toda la aplicación existente, especialmente:
+
+- `src/app/App.tsx`
+- `src/ui/Panels.tsx`
+- `src/ui/SymmetryGallery.tsx`
+- `src/ui/TilePanel.tsx`
+- Componentes de estilos incorporados en v2.2.
+- `src/ui/style.css`
+- Las interfaces de edición y exportación.
+
+Crear un inventario de todas las funciones accesibles desde la UI, incluyendo botones, parámetros, herramientas, comandos, preferencias y acciones secundarias.
+
+Comprobar si existen funciones escondidas por scroll, controles poco identificables, duplicaciones o acciones con nombres ambiguos.
+
+**Ninguna función existente puede desaparecer durante la reorganización.**
+
+### 3. Nueva arquitectura de navegación
+
+Implementar tres zonas principales:
+
+**A. Barra izquierda de categorías y herramientas**
+
+Reutilizar la barra vertical existente.
+
+Organizar sus botones mediante agrupaciones visuales y etiquetas accesibles.
+
+Debe permitir abrir directamente los contextos principales:
+
+- Dibujo.
+- Formas.
+- Simetrías.
+- Teselas.
+- Capas.
+- Aplicación.
+- Preferencias.
+
+Mantener las herramientas de uso frecuente accesibles en uno o dos clics, sin recorrer menús anidados extensos.
+
+**B. Panel contextual izquierdo**
+
+El panel debe presentar exclusivamente las opciones de la categoría activa.
+
+Al seleccionar otra categoría, reemplazar su contenido.
+
+No colocar verticalmente todas las categorías una debajo de otra.
+
+Permitir plegarlo completamente.
+
+Usar toda la altura útil del navegador, desde debajo del encabezado hasta el pie del workspace.
+
+Organizar cada categoría mediante controles compactos, tabs internas y secciones de aparición contextual.
+
+Evitar múltiples contenedores con scroll independiente.
+
+**C. Panel derecho de estilos y propiedades**
+
+Conservar el panel derecho de v2.2.
+
+Dedicarlo a:
+
+- Colores.
+- Trazo.
+- Relleno.
+- Grosor.
+- Perfil.
+- Presets.
+- Propiedades del objeto seleccionado.
+
+No moverlo al panel izquierdo.
+
+Al seleccionar un objeto, mostrar sus propiedades relevantes.
+
+Sin selección, mostrar los parámetros vigentes de dibujo.
+
+Permitir plegarlo independientemente del panel izquierdo.
+
+### 4. Revelación progresiva
+
+Los controles deben aparecer cuando sean pertinentes.
+
+Ejemplos obligatorios:
+
+- Al elegir Polígono paramétrico, mostrar inmediatamente lados, radio/tamaño y rotación.
+- Al elegir Lápiz, mostrar los ajustes necesarios de trazo.
+- Al elegir Fill, mostrar las opciones de relleno y tolerancia.
+- Al elegir una simetría radial, mostrar sectores y centro.
+- Al elegir wallpaper, mostrar parámetros de red.
+- Al editar una tesela, mostrar sus bordes y controles geométricos.
+- Al seleccionar nodos Bézier, mostrar las herramientas de edición de tangentes.
+
+Evitar controles deshabilitados que ocupen espacio sin aportar información.
+
+Cuando una opción no sea aplicable, ocultarla o explicarla en un contexto apropiado.
+
+### 5. Polígono paramétrico y otras herramientas poco visibles
+
+Revisar particularmente el polígono paramétrico, actualmente representado por un pequeño icono hexadecimal con un símbolo adicional.
+
+Debe estar claramente identificado en la categoría Formas.
+
+Al activarlo, mostrar un contexto compacto con:
+
+- Cantidad de lados.
+- Tamaño.
+- Rotación.
+- Tipo de relleno.
+- Trazo vigente.
+- Vista previa.
+
+El usuario debe poder entender cómo utilizarlo sin consultar documentación ni recorrer el inspector.
+
+Aplicar el mismo principio a todas las herramientas que actualmente dependen de iconos ambiguos.
+
+### 6. Galería de simetrías
+
+Evitar que las 17 simetrías wallpaper, siete frisos y familias radiales obliguen a recorrer una lista estrecha mediante scrollbar.
+
+Diseñar dos vistas complementarias:
+
+**Selector compacto:** muestra la simetría activa, las más recientes y los favoritos.
+
+**Galería ampliada:** muestra todas las opciones disponibles en una superficie flotante o expandida con una cuadrícula adaptable.
+
+La galería ampliada puede utilizar el espacio central del editor temporalmente, sin cambiar el documento.
+
+Mantener:
+
+- Previsualización dinámica.
+- Hover.
+- Nombres matemáticos.
+- Iconos.
+- Cambio inmediato.
+- Undo/redo.
+- Distinción de familias.
+
+El usuario debe poder descubrir todo el catálogo sin tener que desplazarse por varias regiones verticales anidadas.
+
+### 7. Accesibilidad y descubrimiento
+
+Todo icono de herramienta debe tener:
+
+- Nombre comprensible.
+- Tooltip visible al pasar el cursor.
+- Estado activo identificable.
+- Atajo de teclado cuando exista.
+- Acción clara y consistente.
+
+Agregar etiquetas visibles a las herramientas menos conocidas cuando se abre su contexto.
+
+No depender de que el usuario conozca previamente su significado.
+
+Distinguir claramente entre seleccionar una herramienta y abrir sus opciones.
+
+La acción principal debe ser accesible de manera directa.
+
+### 8. Gestión del espacio
+
+El lienzo debe conservar la mayor superficie posible.
+
+Los paneles laterales pueden:
+
+- Estar abiertos.
+- Estar plegados.
+- Sustituir su contenido por otro contexto.
+- Mostrar un popover temporal cuando una acción necesita más espacio.
+
+Evitar abrir múltiples paneles permanentes con funciones superpuestas.
+
+El tamaño de la ventana debe gobernar la distribución.
+
+En escritorio, los paneles abiertos no deben provocar desbordamiento horizontal.
+
+En resoluciones pequeñas, permitir overlays temporales y priorizar el lienzo.
+
+No modificar coordenadas del dibujo al abrir o cerrar paneles.
+
+### 9. Estado de la interfaz
+
+Conservar el contexto de trabajo al cambiar de categoría.
+
+No perder:
+
+- Herramienta activa.
+- Objetos seleccionados.
+- Simetría.
+- Parámetros de estilo.
+- Zoom.
+- Posición del lienzo.
+- Geometría en edición.
+
+Recordar la última pestaña utilizada dentro de cada categoría durante la sesión.
+
+Las preferencias de disposición que resulten relevantes pueden persistirse localmente.
+
+No introducir estos cambios de navegación en el historial geométrico de undo/redo.
+
+### 10. Navegación mediante teclado
+
+Incorporar un mecanismo de acceso a las herramientas mediante búsqueda de comandos, si la arquitectura existente lo permite sin duplicar funciones.
+
+El buscador debe permitir encontrar acciones por su nombre, por ejemplo:
+
+- Polígono.
+- Rellenar.
+- Simetría p6m.
+- Teselas.
+- Cambiar grosor.
+- Exportar SVG.
+
+La búsqueda debe abrir el contexto apropiado o ejecutar una acción segura y reversible.
+
+No crear un sistema de comandos independiente de los handlers reales de la aplicación.
+
+### 11. Restricciones
+
+No reescribir el motor geométrico.
+
+No modificar el comportamiento matemático de las simetrías o teselas.
+
+No alterar innecesariamente el formato de proyecto.
+
+No eliminar funcionalidades existentes.
+
+No introducir dependencias externas de runtime que impidan el hosting estático.
+
+Conservar el sistema de dibujo, estilos, Fill, exportaciones, persistencia y LAN.
+
+### 12. Pruebas y auditoría UX
+
+Realizar pruebas visuales y funcionales con Playwright a resoluciones:
+
+- 1366 × 768.
+- 1440 × 900.
+- 1920 × 1080.
+- Un viewport estrecho representativo de pantalla móvil.
+
+Comprobar:
+
+1. Todas las herramientas principales se encuentran sin scroll.
+2. Polígono paramétrico es identificable y sus controles se muestran al activarlo.
+3. El selector ampliado de simetrías permite descubrir todas las familias.
+4. El panel derecho sigue anclado a la derecha.
+5. Abrir y cerrar paneles no altera geometría ni selección.
+6. Los menús no se superponen accidentalmente.
+7. Ninguna acción queda inaccesible por estar fuera del viewport.
+8. No aparecen scrollbars anidados innecesarios.
+9. Los controles conservan accesibilidad con teclado.
+10. Toda la funcionalidad v2.2 sigue disponible.
+
+Incorporar una auditoría de cobertura entre el inventario inicial de funciones y su ubicación final.
+
+Ninguna función inventariada debe quedar sin acceso.
+
+### 13. Criterio de éxito
+
+Un usuario nuevo debe poder encontrar y utilizar las herramientas principales sin explorar sistemáticamente múltiples paneles mediante scroll.
+
+Las funciones deben aparecer donde intuitivamente se esperan.
+
+El editor debe tener una navegación coherente, categorías claramente diferenciadas y controles contextuales que no compitan por el espacio.
+
+**El objetivo no es simplemente una interfaz más limpia: es que toda la funcionalidad acumulada de Pattern Studio sea realmente fácil de descubrir y utilizar.**
+
+Implementar la reorganización, validar los recorridos completos, documentar la distribución final y corregir todos los problemas encontrados antes de dar por terminado el PRD.

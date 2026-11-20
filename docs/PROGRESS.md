@@ -249,3 +249,31 @@
 - README: explicaciones y ejemplos primero, tres capturas inspeccionadas con proyectos JSON descargables; instalación/despliegue/seguimiento al final. scripts/capture-readme.mjs reproduce imágenes y valida el round-trip de los JSON desde un navegador aislado.
 - Privacidad: documentación y todo el historial publicado de main con placeholders de IP. Se vuelve a comprobar el historial público tras el push de cierre. Servicios app 4173 y monitor 4174 mantenidos; el feedback permanece vigilado incluso con PROJECT_COMPLETE.
 - prd_v2.3.txt aportado en el árbol de trabajo se conserva sin incorporar a este alcance. No se implementó ni se declara completado.
+
+
+## PRD v2.3 · Auditoría y primera navegación contextual
+
+- Nueva autorización explícita de Pablo: continuar prd_v2.3.txt con monitor.
+  Retirado PROJECT_COMPLETE; servicios LAN existentes conservados.
+- Inventario inicial en docs/UX_V23_INVENTORY.md: funciones de archivo,
+  dibujo/edición, simetrías, generadores, teselas, composición/capas,
+  aplicación, vista, estilos/Fill y exportación, con ubicación y pendientes.
+- Siete categorías con etiquetas visibles; rail de herramientas compacto;
+  paneles dejan de apilar todas las categorías. Tabs por categoría en sesión
+  y plegado sin desmontar; navegación sin cambios geométricos ni undo.
+- Formas identifica Polígono paramétrico con acción, preview y edición de
+  parámetros; comparte handler con el acceso del rail y toma estilo vigente.
+- Cinco E2E nuevos aprobados en 1366×768,1440×900,1920×1080 y390×844. Prueban
+  documento intacto al navegar, accesos visibles, pestañas/plegado y polígono.
+- Regresión de tinta detectó cierre prematuro en capture del panel derecho:
+  se elimina para capturar primero el punto en todos los trazos. Repetición
+  de tinta/guiones y Fill rápido:2/2 correctos. 203 unitarias/TypeScript y
+  build correctos; verificación final del incremento registrada en continuidad.
+- Captura real .runtime/v23-shapes-1366.png inspeccionada sin desbordamiento
+  horizontal. PRD sigue pendiente: galería ampliada, propiedades/estilos por
+  tabs, controles compactos, comandos, auditoría completa y regresiones.
+
+- Cierre de ventana:90% usado real; monitor programó reanudación después del
+  reset06:47:54 UTC +60s. Verificación final posterior al ajuste de Canvas:
+  203 unitarias/TypeScript, build y5 E2E nuevos correctos. Se cierra el
+  incremento y se conservan los servicios para revisión LAN.

@@ -10,6 +10,7 @@ export default defineConfig({
         '**/v21.spec.ts',
         '**/v22.spec.ts',
         '**/v22-fill.spec.ts',
+        '**/v23.spec.ts',
       ],
   timeout: 45000,
   expect: { timeout: 8000 },

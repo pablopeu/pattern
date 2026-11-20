@@ -2,7 +2,7 @@ import type { Studio } from '../app/useStudio';
 import { newTiling, tileNames, constrainTiling, type TileKind } from '../tiling/tiles';
 import { node } from '../app/model';
 import { Field, Select, Toggle } from './Controls';
-export function TilePanel({ studio: s }: { studio: Studio }) {
+export function TilePanel({ studio: s, expanded = false }: { studio: Studio; expanded?: boolean }) {
   const tile = s.pattern.tiling,
     e = tile ? Math.min(s.tileEdge, tile.edges.length - 1) : 0,
     edge = tile?.edges[e],
@@ -13,7 +13,7 @@ export function TilePanel({ studio: s }: { studio: Studio }) {
     s.setInstanceExplicit(false);
   };
   return (
-    <details className="tile-panel">
+    <details className="tile-panel" open={expanded}>
       <summary>
         <span>TESELAS ENCASTRABLES</span>
         <strong>{tile ? tileNames[tile.kind] : 'Desactivadas'}</strong>

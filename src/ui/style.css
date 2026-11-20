@@ -1881,3 +1881,26 @@ input[type='color']::-webkit-color-swatch {
 .stroke-preview-warning span { flex:1; } .stroke-preview-warning button { padding:5px; border:1px solid #bd8d49; border-radius:4px; }
 .panel-style-summary { display:none; }
 @media(max-width:1200px) { .style-panel>header>strong { display:none; } .panel-style-summary { display:block; flex:1; min-width:0; } .panel-style-summary .style-indicator { padding:0; } .workspace:has(> .style-panel) .workspace-actions>.style-indicator { visibility:hidden; } }
+
+/* v2.3: categories replace stacked inspectors; frequent tools remain direct. */
+.tool-rail { width: 82px; gap: 3px; }
+.category-rail { display: grid; gap: 2px; width: 76px; }
+.category-rail button { min-height: 29px; border-radius: 6px; font-size: 10px; }
+.rail-tools { display: grid; grid-template-columns: repeat(2, 32px); gap: 2px; }
+.rail-tools > button { width: 32px; height: 31px; border-radius: 6px; position: relative; }
+.rail-tools .tool-gap { margin: 0; }
+.rail-tools .rail-divider { grid-column: 1 / -1; margin: 3px auto; }
+.rail-bottom { flex-direction: row; gap: 0; }
+.rail-bottom button { width: 32px; height: 30px; }
+.context-panel[hidden] { display: none; }
+.context-heading { padding: 12px 18px; font-weight: 600; border-bottom: 1px solid var(--line); }
+.context-hint { margin: 14px; font-size: 12px; line-height: 1.6; }
+.context-hint button { padding: 8px; border: 1px solid var(--line); border-radius: 6px; }
+@media(max-width:650px) { .context-panel { left: 82px; max-width: calc(100vw - 94px); } }
+
+.context-panel .symmetry-gallery, .context-panel .tile-panel { max-height: none; overflow: visible; }
+.context-panel .dynamic-symmetry-grid { max-height: none; overflow: visible; }
+.context-panel { min-height: 0; }
+.context-heading, .context-panel > .panel-tabs { flex-shrink: 0; }
+
+.shape-context-preview { width: 100%; height: 64px; background: #f1f5e9; }

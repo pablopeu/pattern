@@ -1,7 +1,8 @@
 import { StylePanel, StyleIndicator } from '../ui/StylePanel';
 import logo from '../../icono.png';
 import { commonRectangularCell, resolvePattern } from '../symmetry/config';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { categories, toolCategory, type Category } from '../ui/navigation';
 import {
   PaintBucket,
   MousePointer2,
@@ -62,6 +63,7 @@ export default function App() {
   const s = useStudio(),
     [exportOpen, setExportOpen] = useState(false),
     [collapsed, setCollapsed] = useState(false),
+    [category, setCategory] = useState<Category>('drawing'),
     [help, setHelp] = useState(false),
     [importText, setImportText] = useState<string | null>(null),
     [importWidth, setImportWidth] = useState(100),
@@ -69,6 +71,31 @@ export default function App() {
   const openRef = useRef<HTMLInputElement>(null),
     svgRef = useRef<HTMLInputElement>(null),
     presetRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    setCategory(toolCategory(s.tool));
+  }, [s.tool]);
+  useEffect(() => {
+    if (s.mode === 'apply') setCategory('application');
+  }, [s.mode]);
+  const openCategory = (next: Category) => {
+    setCategory(next);
+    setCollapsed(false);
+  };
+  const createRegular = () => {
+    openCategory('shapes');
+    const g = geometry('polygon', [], true);
+    Object.assign(g, s.drawStyle);
+    g.parameters = { x: 0, y: 0, width: 30, height: 30, radius: 0, sides: 6 };
+    if (s.mode === 'apply' && !s.region) {
+      const id = uid();
+      s.change((p) =>
+        p.regions.push({ id, name: `Perímetro ${p.regions.length + 1}`, geometry: [g] }),
+      );
+      s.setRegionId(id);
+    } else s.editObjects((gs) => gs.push(g));
+    s.setInstance(IDENTITY);
+    s.setSelected([g.id]);
+  };
   const save = async () => {
     const project = s.projectRef.current;
     try {
@@ -302,57 +329,63 @@ export default function App() {
         </div>
       </header>
       <main className={`workspace ${collapsed ? 'panel-collapsed' : ''}`}>
-        <nav className="tool-rail" aria-label="Herramientas de dibujo">
-          {tools.map(({ id, label, shortcut, icon: Icon }, i) => (
+        <nav className="tool-rail" aria-label="Herramientas y categorías">
+          <div className="category-rail" role="group" aria-label="Categorías">
+            {categories.map(({ id, label }) => (
+              <button
+                key={id}
+                title={label}
+                aria-label={`Abrir ${label}`}
+                aria-pressed={!collapsed && category === id}
+                className={!collapsed && category === id ? 'active' : ''}
+                onClick={() => openCategory(id)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <div className="rail-tools" role="group" aria-label="Herramientas de dibujo">
+            {tools.map(({ id, label, shortcut, icon: Icon }, i) => (
+              <button
+                key={id}
+                className={`${s.tool === id ? 'active' : ''} ${i === 2 || i === 8 ? 'tool-gap' : ''}`}
+                title={`${label}${shortcut ? ' (' + shortcut + ')' : ''}`}
+                aria-label={label}
+                aria-pressed={s.tool === id}
+                onClick={() => {
+                  s.setTool(id);
+                }}
+              >
+                <Icon size={20} strokeWidth={1.6} />
+              </button>
+            ))}
+            <div className="rail-divider" />
             <button
-              key={id}
-              className={`${s.tool === id ? 'active' : ''} ${i === 2 || i === 8 ? 'tool-gap' : ''}`}
-              title={`${label}${shortcut ? ' (' + shortcut + ')' : ''}`}
-              aria-label={label}
-              aria-pressed={s.tool === id}
+              title="Polígono regular paramétrico"
+              aria-label="Crear polígono regular"
               onClick={() => {
-                s.setTool(id);
+                createRegular();
               }}
             >
-              <Icon size={20} strokeWidth={1.6} />
+              <Hexagon size={19} />
+              <small>+</small>
             </button>
-          ))}
-          <div className="rail-divider" />
-          <button
-            title="Polígono regular paramétrico"
-            aria-label="Crear polígono regular"
-            onClick={() => {
-              const g = geometry('polygon', [], true);
-              g.parameters = { x: 0, y: 0, width: 30, height: 30, radius: 0, sides: 6 };
-              if (s.mode === 'apply' && !s.region) {
-                const id = uid();
-                s.change((p) =>
-                  p.regions.push({ id, name: `Perímetro ${p.regions.length + 1}`, geometry: [g] }),
-                );
-                s.setRegionId(id);
-              } else s.editObjects((gs) => gs.push(g));
-              s.setInstance(IDENTITY);
-              s.setSelected([g.id]);
-            }}
-          >
-            <Hexagon size={19} />
-            <small>+</small>
-          </button>
-          <button
-            title="Importar SVG"
-            aria-label="Importar SVG"
-            onClick={() => svgRef.current?.click()}
-          >
-            <Upload size={19} />
-          </button>
-          <button
-            title="Eliminar selección"
-            aria-label="Eliminar selección"
-            disabled={!s.selected.length}
-            onClick={s.deleteSelected}
-          >
-            <Trash2 size={18} />
-          </button>
+            <button
+              title="Importar SVG"
+              aria-label="Importar SVG"
+              onClick={() => svgRef.current?.click()}
+            >
+              <Upload size={19} />
+            </button>
+            <button
+              title="Eliminar selección"
+              aria-label="Eliminar selección"
+              disabled={!s.selected.length}
+              onClick={s.deleteSelected}
+            >
+              <Trash2 size={18} />
+            </button>
+          </div>
           <div className="rail-bottom">
             <button
               title="Panel de propiedades"
@@ -366,7 +399,14 @@ export default function App() {
             </button>
           </div>
         </nav>
-        {!collapsed && <Panels studio={s} onImport={() => svgRef.current?.click()} />}
+        <Panels
+          studio={s}
+          category={category}
+          collapsed={collapsed}
+          onCategory={openCategory}
+          onCreateRegular={createRegular}
+          onImport={() => svgRef.current?.click()}
+        />
         <section className="drawing-area">
           {s.mode !== 'apply' && (
             <div className="continuous-view-controls">

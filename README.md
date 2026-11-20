@@ -19,11 +19,17 @@ Funciona en el navegador, procesa toda la geometría localmente y se puede despl
 
 1. Empezá en **Libre** y dibujá un motivo. Usá línea, pluma, lápiz, rectángulo, elipse o polígono.
 2. Abrí el indicador de estilo para elegir trazo, grosor y relleno en el panel derecho. **Vigente · nuevos objetos** controla lo que vas a dibujar; **Selección** modifica los objetos seleccionados. La opción visible de actualizar el estilo vigente define cómo se relacionan ambos.
-3. Pasá por las miniaturas de **Simetría viva** para explorar. Clic, Enter o Espacio confirman el grupo y conservan tus fuentes. Podés seguir dibujando desde cualquier copia.
+3. Abrí **Simetrías → Grupo y red** en la barra izquierda. Pasá por las miniaturas de **Simetría viva** para explorar. Clic, Enter o Espacio confirman el grupo y conservan tus fuentes. Podés seguir dibujando desde cualquier copia.
 4. Elegí **Rellenar región** y hacé clic dentro de una zona cerrada. El color queda aplicado al retirar el puntero; en una pantalla táctil alcanza un toque. Deshacer revierte la operación. No hace falta un botón de confirmación.
 5. Guardá el proyecto en JSON para continuar editándolo o usá **Exportar** para obtener el resultado final.
 
 La pluma termina con Enter, se cierra con Shift+Enter o un clic sobre el primer nodo y se cancela con Esc. Espacio permite arrastrar la vista; Ctrl + rueda controla el zoom.
+
+La navegación v2.3 está en desarrollo: la barra izquierda separa **Dibujo,
+Formas, Simetrías, Teselas, Capas, Aplicación y Preferencias**. En **Formas**,
+**Polígono paramétrico · crear** muestra los parámetros editables. El panel
+derecho conserva colores y trazos. Las capturas siguientes corresponden a
+v2.2; los proyectos descargables siguen siendo compatibles.
 
 ## Ejemplos de uso
 

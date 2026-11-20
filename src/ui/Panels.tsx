@@ -2,6 +2,7 @@ import { TilePanel } from './TilePanel';
 import { SymmetryGallery } from './SymmetryGallery';
 import { freezePattern } from '../symmetry/config';
 import { useState } from 'react';
+import { categories, type Category } from './navigation';
 import {
   Eye,
   EyeOff,
@@ -76,8 +77,24 @@ const ranges: Partial<Record<keyof Generator, [number, number, number]>> = {
   seed: [0, 2147483647, 1],
   aspectRatio: [0.1, 3, 0.05],
 };
-export function Panels({ studio: s, onImport }: { studio: Studio; onImport: () => void }) {
-  const [tab, setTab] = useState<'design' | 'layers'>('design');
+export function Panels({
+  studio: s,
+  onImport,
+  category,
+  collapsed,
+  onCategory,
+  onCreateRegular,
+}: {
+  studio: Studio;
+  onImport: () => void;
+  category: Category;
+  collapsed: boolean;
+  onCategory: (category: Category) => void;
+  onCreateRegular: () => void;
+}) {
+  const [tabs, setTabs] = useState<Partial<Record<Category, string>>>({});
+  const tab = tabs[category] ?? (category === 'layers' ? 'layers' : 'design');
+  const setTab = (next: string) => setTabs((old) => ({ ...old, [category]: next }));
   const { nodeIndex, setNodeIndex } = s;
   const u = s.project.documentUnits,
     selected = s.objects.filter((g) => s.selected.includes(g.id)),
@@ -475,14 +492,11 @@ export function Panels({ studio: s, onImport }: { studio: Studio; onImport: () =
     </Section>
   ) : null;
   return (
-    <aside className="context-panel">
-      {s.mode !== 'apply' && (
-        <>
-          <SymmetryGallery studio={s} />
-          <TilePanel studio={s} />
-        </>
-      )}
-      {s.mode !== 'apply' && (
+    <aside className="context-panel" aria-label="Panel contextual" hidden={collapsed}>
+      <header className="context-heading">
+        {categories.find((c) => c.id === category)?.label}
+      </header>
+      {category === 'layers' && s.mode !== 'apply' && (
         <div className="pattern-set-list" aria-label="Conjuntos de composición">
           {s.project.patterns.map((p, i) => (
             <div key={p.id} className={`pattern-set-row ${p.id === s.pattern.id ? 'active' : ''}`}>
@@ -540,16 +554,44 @@ export function Panels({ studio: s, onImport }: { studio: Studio; onImport: () =
           ))}
         </div>
       )}
-      <div className="panel-tabs">
-        <button className={tab === 'design' ? 'selected' : ''} onClick={() => setTab('design')}>
-          <SlidersHorizontal size={15} /> Diseño
-        </button>
-        <button className={tab === 'layers' ? 'selected' : ''} onClick={() => setTab('layers')}>
-          <Layers size={15} /> Capas <span>{s.objects.length}</span>
-        </button>
-      </div>
+      {category === 'layers' && (
+        <div className="panel-tabs" role="tablist" aria-label="Organización">
+          <button
+            role="tab"
+            aria-selected={tab === 'design'}
+            className={tab === 'design' ? 'selected' : ''}
+            onClick={() => setTab('design')}
+          >
+            <SlidersHorizontal size={15} /> Conjuntos
+          </button>
+          <button
+            role="tab"
+            aria-selected={tab === 'layers'}
+            className={tab === 'layers' ? 'selected' : ''}
+            onClick={() => setTab('layers')}
+          >
+            <Layers size={15} /> Capas <span>{s.objects.length}</span>
+          </button>
+        </div>
+      )}
+      {category === 'symmetry' && (
+        <div className="panel-tabs" role="tablist" aria-label="Opciones de simetría">
+          <button role="tab" aria-selected={tab === 'design'} onClick={() => setTab('design')}>
+            Grupo y red
+          </button>
+          <button
+            role="tab"
+            aria-selected={tab === 'generator'}
+            onClick={() => setTab('generator')}
+          >
+            Generador
+          </button>
+        </div>
+      )}
       <div className="panel-scroll">
-        {tab === 'layers' ? (
+        {category === 'symmetry' && tab !== 'generator' && <SymmetryGallery studio={s} />}
+        {category === 'tiles' && <TilePanel studio={s} expanded />}
+        {category === 'layers' && tab === 'layers' ? (
           <>
             <div className="section-caption">
               GEOMETRÍA FUENTE <span>{s.objects.length} objetos</span>
@@ -642,300 +684,357 @@ export function Panels({ studio: s, onImport }: { studio: Studio; onImport: () =
           </>
         ) : (
           <>
-            {geometryPanel}
-            <Section title={s.mode === 'apply' ? 'APPLICATION' : 'DESIGN'}>
-              {s.mode !== 'apply' ? (
-                <>
-                  <Select
-                    label="Patrón activo"
-                    value={s.pattern.id}
-                    onChange={(id) => {
-                      s.setPatternId(id);
-                      s.setSelected([]);
-                    }}
-                    options={s.project.patterns.map((p) => ({ value: p.id, label: p.name }))}
-                  />
-                  <div className="button-row">
-                    <button
-                      onClick={() => {
-                        const p = newPattern();
-                        p.name = `Patrón ${s.project.patterns.length + 1}`;
-                        s.change((doc) => doc.patterns.push(p));
-                        s.setPatternId(p.id);
-                        s.setSelected([]);
-                      }}
-                    >
-                      <Plus size={14} /> Nuevo patrón
-                    </button>
-                    <button
-                      title="Duplicar patrón"
-                      onClick={() => {
-                        const p = structuredClone(s.pattern);
-                        p.id = uid();
-                        p.name += ' copia';
-                        const groups = new Map<string, string>();
-                        for (const g of p.sourceGeometry) {
-                          g.id = uid();
-                          if (g.groupId) {
-                            if (!groups.has(g.groupId)) groups.set(g.groupId, uid());
-                            g.groupId = groups.get(g.groupId);
-                          }
-                        }
-                        s.change((doc) => doc.patterns.push(p));
-                        s.setPatternId(p.id);
-                      }}
-                    >
-                      <Copy size={14} />
-                    </button>
-                  </div>
-                  <label className="text-field">
-                    <span>Nombre del patrón</span>
-                    <input
-                      aria-label="Nombre del patrón"
-                      value={s.pattern.name}
-                      onChange={(e) =>
-                        updatePattern((p) => {
-                          p.name = e.target.value;
-                        })
-                      }
+            {category === 'shapes' && (
+              <div className="context-hint">
+                <button className="wide-button" onClick={onCreateRegular}>
+                  Polígono paramétrico · crear
+                </button>
+                <p>
+                  Creá una figura regular; ajustá lados, ancho, alto y rotación debajo. El color y
+                  el trazo usan el estilo vigente.
+                </p>
+                {shape?.parameters && (
+                  <svg
+                    className="shape-context-preview"
+                    viewBox={`${shape.parameters.x - 5} ${shape.parameters.y - 5} ${shape.parameters.width + 10} ${shape.parameters.height + 10}`}
+                    aria-label="Vista previa de forma"
+                  >
+                    <path
+                      d={pathData(shape)}
+                      fill={shape.fill}
+                      stroke={shape.stroke}
+                      strokeWidth={shape.strokeWidth}
                     />
-                  </label>
-                </>
-              ) : (
-                <>
-                  <Select
-                    label="Perímetro"
-                    value={s.regionId}
-                    onChange={(id) => {
-                      s.setRegionId(id);
-                      s.setSelected([]);
-                    }}
-                    options={[
-                      { value: '', label: 'Seleccionar perímetro' },
-                      ...s.project.regions.map((r) => ({ value: r.id, label: r.name })),
-                    ]}
-                  />
-                  <div className="button-row">
-                    <button
-                      onClick={() => {
-                        s.setRegionId('');
-                        s.setSelected([]);
-                        s.setTool('region');
-                      }}
-                    >
-                      <Plus size={14} /> Dibujar
-                    </button>
-                    <button onClick={onImport}>Importar SVG</button>
-                  </div>
-                  <Select
-                    label="Patrón a aplicar"
-                    value={s.pattern.id}
-                    onChange={s.setPatternId}
-                    options={s.project.patterns.map((p) => ({ value: p.id, label: p.name }))}
-                  />
-                  <button className="wide-button primary-soft" onClick={addApplication}>
-                    <Plus size={15} /> Aplicar al perímetro
-                  </button>
-                  {s.project.applications.length > 0 && (
+                  </svg>
+                )}
+              </div>
+            )}
+            {(category === 'drawing' || category === 'shapes') && geometryPanel}
+            {(category === 'drawing' || category === 'shapes') && !shape && (
+              <p className="context-hint">
+                {category === 'shapes'
+                  ? 'Elegí Rectángulo, Elipse o Polígono en la barra. El polígono regular (+) crea una forma con lados, tamaño y rotación editables.'
+                  : 'Elegí una herramienta en la barra o seleccioná un objeto para editar su geometría. Los colores y trazos están en el panel derecho.'}
+              </p>
+            )}
+            {category === 'application' && s.mode !== 'apply' && (
+              <div className="context-hint">
+                <p>Recortá un patrón dentro de un perímetro cerrado sin deformarlo.</p>
+                <button onClick={() => s.setMode('apply')}>Entrar en Aplicar</button>
+              </div>
+            )}
+            {((category === 'layers' && s.mode !== 'apply') ||
+              (category === 'application' && s.mode === 'apply')) && (
+              <Section title={s.mode === 'apply' ? 'APPLICATION' : 'DESIGN'}>
+                {s.mode !== 'apply' ? (
+                  <>
                     <Select
-                      label="Aplicación activa"
-                      value={s.applicationId}
+                      label="Patrón activo"
+                      value={s.pattern.id}
                       onChange={(id) => {
-                        s.setApplicationId(id);
-                        const a = s.project.applications.find((a) => a.id === id);
-                        if (a) {
-                          s.setRegionId(a.regionId);
-                          s.setPatternId(a.patternId);
+                        s.setPatternId(id);
+                        s.setSelected([]);
+                      }}
+                      options={s.project.patterns.map((p) => ({ value: p.id, label: p.name }))}
+                    />
+                    <div className="button-row">
+                      <button
+                        onClick={() => {
+                          const p = newPattern();
+                          p.name = `Patrón ${s.project.patterns.length + 1}`;
+                          s.change((doc) => doc.patterns.push(p));
+                          s.setPatternId(p.id);
+                          s.setSelected([]);
+                        }}
+                      >
+                        <Plus size={14} /> Nuevo patrón
+                      </button>
+                      <button
+                        title="Duplicar patrón"
+                        onClick={() => {
+                          const p = structuredClone(s.pattern);
+                          p.id = uid();
+                          p.name += ' copia';
+                          const groups = new Map<string, string>();
+                          for (const g of p.sourceGeometry) {
+                            g.id = uid();
+                            if (g.groupId) {
+                              if (!groups.has(g.groupId)) groups.set(g.groupId, uid());
+                              g.groupId = groups.get(g.groupId);
+                            }
+                          }
+                          s.change((doc) => doc.patterns.push(p));
+                          s.setPatternId(p.id);
+                        }}
+                      >
+                        <Copy size={14} />
+                      </button>
+                    </div>
+                    <label className="text-field">
+                      <span>Nombre del patrón</span>
+                      <input
+                        aria-label="Nombre del patrón"
+                        value={s.pattern.name}
+                        onChange={(e) =>
+                          updatePattern((p) => {
+                            p.name = e.target.value;
+                          })
                         }
+                      />
+                    </label>
+                  </>
+                ) : (
+                  <>
+                    <Select
+                      label="Perímetro"
+                      value={s.regionId}
+                      onChange={(id) => {
+                        s.setRegionId(id);
+                        s.setSelected([]);
                       }}
                       options={[
-                        { value: '', label: 'Seleccionar aplicación' },
-                        ...s.project.applications.map((a) => ({ value: a.id, label: a.name })),
+                        { value: '', label: 'Seleccionar perímetro' },
+                        ...s.project.regions.map((r) => ({ value: r.id, label: r.name })),
                       ]}
                     />
-                  )}
-                  {s.application && (
-                    <>
+                    <div className="button-row">
+                      <button
+                        onClick={() => {
+                          s.setRegionId('');
+                          s.setSelected([]);
+                          s.setTool('region');
+                        }}
+                      >
+                        <Plus size={14} /> Dibujar
+                      </button>
+                      <button onClick={onImport}>Importar SVG</button>
+                    </div>
+                    <Select
+                      label="Patrón a aplicar"
+                      value={s.pattern.id}
+                      onChange={s.setPatternId}
+                      options={s.project.patterns.map((p) => ({ value: p.id, label: p.name }))}
+                    />
+                    <button className="wide-button primary-soft" onClick={addApplication}>
+                      <Plus size={15} /> Aplicar al perímetro
+                    </button>
+                    {s.project.applications.length > 0 && (
                       <Select
-                        label="Cambiar patrón vinculado"
-                        value={s.application.patternId}
-                        onChange={(id) =>
-                          changeApplication((a) => {
-                            a.patternId = id;
-                            a.linked = true;
-                            a.frozenPattern = undefined;
-                          })
-                        }
-                        options={s.project.patterns.map((p) => ({ value: p.id, label: p.name }))}
+                        label="Aplicación activa"
+                        value={s.applicationId}
+                        onChange={(id) => {
+                          s.setApplicationId(id);
+                          const a = s.project.applications.find((a) => a.id === id);
+                          if (a) {
+                            s.setRegionId(a.regionId);
+                            s.setPatternId(a.patternId);
+                          }
+                        }}
+                        options={[
+                          { value: '', label: 'Seleccionar aplicación' },
+                          ...s.project.applications.map((a) => ({ value: a.id, label: a.name })),
+                        ]}
                       />
-                      <Field
-                        label="Escala uniforme"
-                        value={Math.sqrt(
-                          Math.abs(
-                            s.application.placementTransform[0] *
-                              s.application.placementTransform[3] -
-                              s.application.placementTransform[1] *
-                                s.application.placementTransform[2],
-                          ),
-                        )}
-                        min={0.05}
-                        max={10}
-                        step={0.05}
-                        onChange={(v) =>
-                          changeApplication((a) => {
-                            const m = a.placementTransform,
-                              angle = (Math.atan2(m[1], m[0]) * 180) / Math.PI;
-                            const next = multiply(rotate(angle), scale(v));
-                            a.placementTransform = [next[0], next[1], next[2], next[3], m[4], m[5]];
-                          })
-                        }
-                      />
-                      <Field
-                        label="Escala X"
-                        value={Math.hypot(
-                          s.application.placementTransform[0],
-                          s.application.placementTransform[1],
-                        )}
-                        min={0.05}
-                        max={10}
-                        step={0.05}
-                        onChange={(value) =>
-                          changeApplication((a) => {
-                            const m = a.placementTransform,
-                              old = Math.hypot(m[0], m[1]);
-                            a.placementTransform = [
-                              (m[0] * value) / old,
-                              (m[1] * value) / old,
-                              m[2],
-                              m[3],
-                              m[4],
-                              m[5],
-                            ];
-                          })
-                        }
-                      />
-                      <Field
-                        label="Escala Y"
-                        value={Math.hypot(
-                          s.application.placementTransform[2],
-                          s.application.placementTransform[3],
-                        )}
-                        min={0.05}
-                        max={10}
-                        step={0.05}
-                        onChange={(value) =>
-                          changeApplication((a) => {
-                            const m = a.placementTransform,
-                              old = Math.hypot(m[2], m[3]);
-                            a.placementTransform = [
-                              m[0],
-                              m[1],
-                              (m[2] * value) / old,
-                              (m[3] * value) / old,
-                              m[4],
-                              m[5],
-                            ];
-                          })
-                        }
-                      />
-                      <Field
-                        label="Rotación de aplicación"
-                        value={
-                          (Math.atan2(
-                            s.application.placementTransform[1],
-                            s.application.placementTransform[0],
-                          ) *
-                            180) /
-                          Math.PI
-                        }
-                        min={-180}
-                        max={180}
-                        unit="°"
-                        onChange={(value) =>
-                          changeApplication((a) => {
-                            const m = a.placementTransform;
-                            const next = multiply(
-                              rotate(value - (Math.atan2(m[1], m[0]) * 180) / Math.PI),
-                              m,
-                            );
-                            a.placementTransform = [next[0], next[1], next[2], next[3], m[4], m[5]];
-                          })
-                        }
-                      />
-                      {(['x', 'y'] as const).map((axis, i) => (
+                    )}
+                    {s.application && (
+                      <>
+                        <Select
+                          label="Cambiar patrón vinculado"
+                          value={s.application.patternId}
+                          onChange={(id) =>
+                            changeApplication((a) => {
+                              a.patternId = id;
+                              a.linked = true;
+                              a.frozenPattern = undefined;
+                            })
+                          }
+                          options={s.project.patterns.map((p) => ({ value: p.id, label: p.name }))}
+                        />
                         <Field
-                          key={axis}
-                          label={`Fase ${axis.toUpperCase()}`}
-                          unit={u}
-                          value={units(s.application!.placementTransform[i + 4])}
-                          step={0.5}
+                          label="Escala uniforme"
+                          value={Math.sqrt(
+                            Math.abs(
+                              s.application.placementTransform[0] *
+                                s.application.placementTransform[3] -
+                                s.application.placementTransform[1] *
+                                  s.application.placementTransform[2],
+                            ),
+                          )}
+                          min={0.05}
+                          max={10}
+                          step={0.05}
                           onChange={(v) =>
                             changeApplication((a) => {
-                              const m = [...a.placementTransform];
-                              m[i + 4] = mm(v);
-                              a.placementTransform = m as unknown as Matrix;
+                              const m = a.placementTransform,
+                                angle = (Math.atan2(m[1], m[0]) * 180) / Math.PI;
+                              const next = multiply(rotate(angle), scale(v));
+                              a.placementTransform = [
+                                next[0],
+                                next[1],
+                                next[2],
+                                next[3],
+                                m[4],
+                                m[5],
+                              ];
                             })
                           }
                         />
-                      ))}
-                      <Toggle
-                        label="Ver patrón fuera del contorno"
-                        checked={s.project.preferences.outside}
-                        onChange={(v) =>
-                          s.change((p) => {
-                            p.preferences.outside = v;
-                          })
-                        }
-                      />
-                      <Toggle
-                        label="Mostrar contorno"
-                        checked={s.application.showOutline}
-                        onChange={(v) =>
-                          changeApplication((a) => {
-                            a.showOutline = v;
-                          })
-                        }
-                      />
-                      <button
-                        className="wide-button"
-                        onClick={() =>
-                          changeApplication((a) => {
-                            a.linked = !a.linked;
-                            a.frozenPattern = a.linked
-                              ? undefined
-                              : freezePattern(
-                                  s.project.patterns.find((p) => p.id === a.patternId)!,
-                                  s.project.mainSymmetry,
-                                );
-                          })
-                        }
-                      >
-                        {s.application.linked ? <Link2 size={14} /> : <Unlink size={14} />}{' '}
-                        {s.application.linked
-                          ? 'Vinculado · congelar copia'
-                          : 'Congelado · volver a vincular'}
-                      </button>
-                      <button
-                        className="wide-button danger-text"
-                        onClick={() => {
-                          s.change((p) => {
-                            p.applications = p.applications.filter((a) => a.id !== s.applicationId);
-                          });
-                          s.setApplicationId('');
-                        }}
-                      >
-                        <Trash2 size={14} /> Eliminar aplicación
-                      </button>
-                    </>
-                  )}
-                  <p className="help-text">
-                    El perímetro recorta el patrón sin deformarlo. Podés combinar regiones y
-                    agujeros con operaciones geométricas.
-                  </p>
-                </>
-              )}
-            </Section>
-            {s.mode !== 'apply' && (!shape || s.mode === 'pattern') && (
+                        <Field
+                          label="Escala X"
+                          value={Math.hypot(
+                            s.application.placementTransform[0],
+                            s.application.placementTransform[1],
+                          )}
+                          min={0.05}
+                          max={10}
+                          step={0.05}
+                          onChange={(value) =>
+                            changeApplication((a) => {
+                              const m = a.placementTransform,
+                                old = Math.hypot(m[0], m[1]);
+                              a.placementTransform = [
+                                (m[0] * value) / old,
+                                (m[1] * value) / old,
+                                m[2],
+                                m[3],
+                                m[4],
+                                m[5],
+                              ];
+                            })
+                          }
+                        />
+                        <Field
+                          label="Escala Y"
+                          value={Math.hypot(
+                            s.application.placementTransform[2],
+                            s.application.placementTransform[3],
+                          )}
+                          min={0.05}
+                          max={10}
+                          step={0.05}
+                          onChange={(value) =>
+                            changeApplication((a) => {
+                              const m = a.placementTransform,
+                                old = Math.hypot(m[2], m[3]);
+                              a.placementTransform = [
+                                m[0],
+                                m[1],
+                                (m[2] * value) / old,
+                                (m[3] * value) / old,
+                                m[4],
+                                m[5],
+                              ];
+                            })
+                          }
+                        />
+                        <Field
+                          label="Rotación de aplicación"
+                          value={
+                            (Math.atan2(
+                              s.application.placementTransform[1],
+                              s.application.placementTransform[0],
+                            ) *
+                              180) /
+                            Math.PI
+                          }
+                          min={-180}
+                          max={180}
+                          unit="°"
+                          onChange={(value) =>
+                            changeApplication((a) => {
+                              const m = a.placementTransform;
+                              const next = multiply(
+                                rotate(value - (Math.atan2(m[1], m[0]) * 180) / Math.PI),
+                                m,
+                              );
+                              a.placementTransform = [
+                                next[0],
+                                next[1],
+                                next[2],
+                                next[3],
+                                m[4],
+                                m[5],
+                              ];
+                            })
+                          }
+                        />
+                        {(['x', 'y'] as const).map((axis, i) => (
+                          <Field
+                            key={axis}
+                            label={`Fase ${axis.toUpperCase()}`}
+                            unit={u}
+                            value={units(s.application!.placementTransform[i + 4])}
+                            step={0.5}
+                            onChange={(v) =>
+                              changeApplication((a) => {
+                                const m = [...a.placementTransform];
+                                m[i + 4] = mm(v);
+                                a.placementTransform = m as unknown as Matrix;
+                              })
+                            }
+                          />
+                        ))}
+                        <Toggle
+                          label="Ver patrón fuera del contorno"
+                          checked={s.project.preferences.outside}
+                          onChange={(v) =>
+                            s.change((p) => {
+                              p.preferences.outside = v;
+                            })
+                          }
+                        />
+                        <Toggle
+                          label="Mostrar contorno"
+                          checked={s.application.showOutline}
+                          onChange={(v) =>
+                            changeApplication((a) => {
+                              a.showOutline = v;
+                            })
+                          }
+                        />
+                        <button
+                          className="wide-button"
+                          onClick={() =>
+                            changeApplication((a) => {
+                              a.linked = !a.linked;
+                              a.frozenPattern = a.linked
+                                ? undefined
+                                : freezePattern(
+                                    s.project.patterns.find((p) => p.id === a.patternId)!,
+                                    s.project.mainSymmetry,
+                                  );
+                            })
+                          }
+                        >
+                          {s.application.linked ? <Link2 size={14} /> : <Unlink size={14} />}{' '}
+                          {s.application.linked
+                            ? 'Vinculado · congelar copia'
+                            : 'Congelado · volver a vincular'}
+                        </button>
+                        <button
+                          className="wide-button danger-text"
+                          onClick={() => {
+                            s.change((p) => {
+                              p.applications = p.applications.filter(
+                                (a) => a.id !== s.applicationId,
+                              );
+                            });
+                            s.setApplicationId('');
+                          }}
+                        >
+                          <Trash2 size={14} /> Eliminar aplicación
+                        </button>
+                      </>
+                    )}
+                    <p className="help-text">
+                      El perímetro recorta el patrón sin deformarlo. Podés combinar regiones y
+                      agujeros con operaciones geométricas.
+                    </p>
+                  </>
+                )}
+              </Section>
+            )}
+            {category === 'symmetry' && tab === 'generator' && (
               <>
                 <Section title="GENERATOR">
                   <Select
@@ -1156,94 +1255,111 @@ export function Panels({ studio: s, onImport }: { studio: Studio; onImport: () =
               </>
             )}
 
-            <Section title="VIEW" defaultOpen={false}>
-              <Toggle
-                label="Ajustar a grilla y nodos"
-                checked={s.project.preferences.snap}
-                onChange={(v) =>
-                  s.change((p) => {
-                    p.preferences.snap = v;
-                  })
-                }
-              />
-              <Toggle
-                label="Guías detalladas"
-                checked={s.project.preferences.guides}
-                onChange={(v) =>
-                  s.change((p) => {
-                    p.preferences.guides = v;
-                    p.preferences.structureVisible = false;
-                  })
-                }
-              />
-              <Toggle
-                label="Región fundamental"
-                checked={s.project.preferences.fundamental}
-                onChange={(v) =>
-                  s.change((p) => {
-                    p.preferences.fundamental = v;
-                    p.preferences.guides = true;
-                    p.preferences.structureVisible = false;
-                  })
-                }
-              />
-              <Toggle
-                label="Ejes de reflexión y deslizamiento"
-                checked={s.project.preferences.axes}
-                onChange={(v) =>
-                  s.change((p) => {
-                    p.preferences.axes = v;
-                    p.preferences.guides = true;
-                    p.preferences.structureVisible = false;
-                  })
-                }
-              />
-              <Toggle
-                label="Centros de rotación"
-                checked={s.project.preferences.centers}
-                onChange={(v) =>
-                  s.change((p) => {
-                    p.preferences.centers = v;
-                    p.preferences.guides = true;
-                    p.preferences.structureVisible = false;
-                  })
-                }
-              />
-              <Toggle
-                label="Inspeccionar uniones"
-                checked={s.project.preferences.continuity}
-                onChange={(v) =>
-                  s.change((p) => {
-                    p.preferences.continuity = v;
-                    p.preferences.guides = true;
-                    p.preferences.structureVisible = false;
-                  })
-                }
-              />
-              <Select
-                label="Unidades"
-                value={u}
-                onChange={(v) =>
-                  s.change((p) => {
-                    p.documentUnits = v as typeof u;
-                  })
-                }
-                options={['mm', 'cm', 'in', 'px']}
-              />
-              <label className="color-row">
-                Fondo del lienzo
-                <input
-                  aria-label="Fondo del lienzo"
-                  type="color"
-                  value={s.project.preferences.background}
-                  onChange={(e) =>
+            {category === 'preferences' && (
+              <Section title="VIEW">
+                <Toggle
+                  label="Ajustar a grilla y nodos"
+                  checked={s.project.preferences.snap}
+                  onChange={(v) =>
                     s.change((p) => {
-                      p.preferences.background = e.target.value;
+                      p.preferences.snap = v;
                     })
                   }
                 />
-              </label>
-            </Section>
+                <Toggle
+                  label="Guías detalladas"
+                  checked={s.project.preferences.guides}
+                  onChange={(v) =>
+                    s.change((p) => {
+                      p.preferences.guides = v;
+                      p.preferences.structureVisible = false;
+                    })
+                  }
+                />
+                <Toggle
+                  label="Región fundamental"
+                  checked={s.project.preferences.fundamental}
+                  onChange={(v) =>
+                    s.change((p) => {
+                      p.preferences.fundamental = v;
+                      p.preferences.guides = true;
+                      p.preferences.structureVisible = false;
+                    })
+                  }
+                />
+                <Toggle
+                  label="Ejes de reflexión y deslizamiento"
+                  checked={s.project.preferences.axes}
+                  onChange={(v) =>
+                    s.change((p) => {
+                      p.preferences.axes = v;
+                      p.preferences.guides = true;
+                      p.preferences.structureVisible = false;
+                    })
+                  }
+                />
+                <Toggle
+                  label="Centros de rotación"
+                  checked={s.project.preferences.centers}
+                  onChange={(v) =>
+                    s.change((p) => {
+                      p.preferences.centers = v;
+                      p.preferences.guides = true;
+                      p.preferences.structureVisible = false;
+                    })
+                  }
+                />
+                <Toggle
+                  label="Inspeccionar uniones"
+                  checked={s.project.preferences.continuity}
+                  onChange={(v) =>
+                    s.change((p) => {
+                      p.preferences.continuity = v;
+                      p.preferences.guides = true;
+                      p.preferences.structureVisible = false;
+                    })
+                  }
+                />
+                <Select
+                  label="Unidades"
+                  value={u}
+                  onChange={(v) =>
+                    s.change((p) => {
+                      p.documentUnits = v as typeof u;
+                    })
+                  }
+                  options={['mm', 'cm', 'in', 'px']}
+                />
+                <label className="color-row">
+                  Fondo del lienzo
+                  <input
+                    aria-label="Fondo del lienzo"
+                    type="color"
+                    value={s.project.preferences.background}
+                    onChange={(e) =>
+                      s.change((p) => {
+                        p.preferences.background = e.target.value;
+                      })
+                    }
+                  />
+                </label>
+              </Section>
+            )}
+            {category === 'drawing' && (
+              <button
+                className="wide-button"
+                onClick={() => {
+                  s.setStyleOpen(true);
+                }}
+              >
+                Colores y trazo · panel derecho
+              </button>
+            )}
+            {category === 'shapes' && shape && (
+              <button className="wide-button" onClick={() => onCategory('drawing')}>
+                Edición de nodos y geometría
+              </button>
+            )}
           </>
         )}
       </div>

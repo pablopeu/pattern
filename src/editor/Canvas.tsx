@@ -1158,10 +1158,6 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         tabIndex={0}
         viewBox={`${actualView.x} ${actualView.y} ${actualView.width} ${actualView.height}`}
         style={{ background: s.project.preferences.background }}
-        onPointerDownCapture={() => {
-          if (s.tool !== 'fill' && s.styleOpen && !s.project.preferences.stylePanelPinned)
-            s.setStyleOpen(false);
-        }}
         onPointerDown={pointerDown}
         onPointerMove={pointerMove}
         onPointerUp={pointerUp}
