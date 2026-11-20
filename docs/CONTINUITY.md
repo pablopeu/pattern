@@ -68,13 +68,25 @@ posterior 94/94 correcta en 4,3 min, estado de salida 0 registrado en
 .runtime/v23-full-regression-final.status.json. Ambos builds y3+3 estáticas
 repetidos correctamente. Se registra PROJECT_COMPLETE al publicar este cierre.
 
-## Nueva entrega · Hosting FTP autorizado
+## Hosting FTP automático confirmado
 
-Pablo autorizó producción FTP automática con cada push. PROJECT_COMPLETE se
-retiró para esta tarea; v2.3 sigue auditado. Workflow deploy-ftp.yml preparado
-con Repository secrets FTP_HOST/FTP_USERNAME/FTP_PASSWORD/FTP_FOLDER. Destino
-public_html/<FTP_FOLDER>/ (barra final automática), build relativo, sólo dist/,
-FTP21 y sincronización serializada sin vaciar la carpeta.3 pruebas de destino,
-203 unitarias/TypeScript, build y actionlint correctos. Próximo paso inmediato:
-commit/push y seguir la ejecución real hasta confirmar despliegue o documentar
-un bloqueo externo concreto. No duplicar app4173 ni monitor4174.
+Pablo autorizó producción FTP automática con cada push. Workflow
+.github/workflows/deploy-ftp.yml activo para push (sin filtros de rama/archivo)
+y workflow_dispatch. Usa los cuatro Repository secrets FTP_HOST, FTP_USERNAME,
+FTP_PASSWORD y FTP_FOLDER, sin extraer sus valores a esta máquina.
+
+Destino public_html/<FTP_FOLDER>/ con barra final automática; también acepta
+el prefijo public_html sin duplicarlo. BASE_PATH=./, sólo dist/, FTP puerto 21.
+Transferencias serializadas, sin cancelar la que está en curso ni vaciar la
+carpeta completa. Checkout/setup-node/FTP action fijados por SHA.
+
+Verificado localmente: actionlint 1.7.12, 3 pruebas de configuración del destino,
+203 unitarias/TypeScript y build. Verificado realmente en GitHub: instalación
+npm ci, todas esas pruebas/build, preparación de secretos y subida FTP correctas.
+Primera ejecución: https://github.com/pablopeu/pattern/actions/runs/44744523772, commit df4e712.
+La publicación del cierre documental dispara otra ejecución automáticamente;
+su resultado final se registra en el marcador local de cierre.
+
+V2.3 conserva toda su auditoría anterior. Se mantienen app 4173 y monitor 4174,
+y la entrega independiente de feedback. Ante cambios nuevos, retirar
+PROJECT_COMPLETE y comprobar uso real antes de continuar.

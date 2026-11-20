@@ -402,10 +402,21 @@
 - FTP_FOLDER se interpreta como subcarpeta de public_html y se normaliza con
   barra final. Se admiten nombre solo o prefijo public_html sin duplicarlo;
   no se aceptan destino vacío/raíz, traversal ni saltos de línea en el output.
-- Node24, npm ci, tres pruebas de despliegue, TypeScript +203 unitarias y build
+- Node 24, npm ci, tres pruebas de despliegue, TypeScript +203 unitarias y build
   antes de subir. Actions fijadas por SHA; permisos de lectura y transferencias
   serializadas, sin limpieza total de la carpeta. README al final documenta
-  configuración y uso. App4173 y monitor4174 conservados.
-- Verificación local:3 tests de despliegue,203 unitarias/TypeScript, build y
-  actionlint1.7.12 correctos. Pendiente publicar el commit y observar la primera
+  configuración y uso. App4173 y monitor 4174 conservados.
+- Verificación local:3 tests de despliegue, 203 unitarias/TypeScript, build y
+  actionlint 1.7.12 correctos. Pendiente publicar el commit y observar la primera
   ejecución real de FTP en GitHub.
+
+## Hosting FTP · Primera publicación real correcta
+
+- Commit df4e712 publicado en main; el push disparó Deploy FTP automáticamente.
+- Ejecución 44744523772 completada con success: checkout/Node 24, npm ci,
+ 3 pruebas de despliegue, 203 unitarias/TypeScript, build, validación del
+ destino y transferencia FTP correctos. Sin pasos manuales ni secretos locales.
+- Evidencia: https://github.com/pablopeu/pattern/actions/runs/44744523772.
+- README documenta cada push, cuatro secrets, destino public_html/subcarpeta/,
+ barra final automática y revisión en Actions. El push documental de cierre
+ dispara una segunda sincronización que se comprueba antes de finalizar.

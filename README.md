@@ -206,6 +206,8 @@ action, sin vaciar la carpeta completa ni subir el código fuente, el monitor,
 `.runtime/` o las credenciales. El protocolo configurado es FTP, puerto 21.
 Para ver el resultado de una publicación, abrir su ejecución en **Actions**.
 
+Primera publicación verificada: [ejecución correcta en GitHub Actions](https://github.com/pablopeu/pattern/actions/runs/44744523772).
+
 Validación local de la normalización del destino: `npm run test:deploy`.
 Referencia: [configuración de FTP Deploy Action](https://github.com/SamKirkland/FTP-Deploy-Action#settings).
 
