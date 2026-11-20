@@ -116,9 +116,11 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
       setDownloading(false);
     }
   };
-  const rect = s.pattern.tiling
-    ? tileRectangularCell(s.pattern.tiling)
-    : rectangularCell(s.confirmedSymmetry);
+  const rect = s.pattern.composition?.enabled
+    ? null
+    : s.pattern.tiling
+      ? tileRectangularCell(s.pattern.tiling)
+      : rectangularCell(s.confirmedSymmetry);
   return (
     <Modal label="Exportar patrón" className="export-modal" onClose={onClose}>
       <section className="export-dialog">
@@ -168,9 +170,13 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
                 onChange={(v) => set('target', v as ExportOptions['target'])}
                 options={[
                   { value: 'view', label: 'Región finita' },
-                  { value: 'tile', label: 'Celda rectangular seamless' },
-                  { value: 'lattice', label: 'Celda de red · geometría real' },
-                  { value: 'fundamental', label: 'Región fundamental del grupo' },
+                  ...(!s.pattern.composition?.enabled
+                    ? [
+                        { value: 'tile', label: 'Celda rectangular seamless' },
+                        { value: 'lattice', label: 'Celda de red · geometría real' },
+                        { value: 'fundamental', label: 'Región fundamental del grupo' },
+                      ]
+                    : []),
                   ...(s.project.applications.length
                     ? [{ value: 'application', label: 'Patrón aplicado' }]
                     : []),
@@ -295,12 +301,14 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
                 </>
               )}
             </div>
-            {!rect && s.confirmedSymmetry.family === 'wallpaper' && (
-              <p className="math-notice">
-                La red oblicua no tiene una celda rectangular verificada. Exportá su celda de red o
-                una región finita; no se deforma para simular continuidad.
-              </p>
-            )}
+            {!rect &&
+              !s.pattern.composition?.enabled &&
+              s.confirmedSymmetry.family === 'wallpaper' && (
+                <p className="math-notice">
+                  La red oblicua no tiene una celda rectangular verificada. Exportá su celda de red
+                  o una región finita; no se deforma para simular continuidad.
+                </p>
+              )}
             {options.format === 'dxf' && (
               <p className="help-text">
                 DXF 2D en milímetros. Bézier subdivididas con tolerancia física; coordenada Y hacia

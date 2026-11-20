@@ -115,3 +115,23 @@ simetrías, creación, grosor, archivo/exportación). No ejecuta otra lógica
 geométrica. Modal usa dialog.showModal para fondo inerte, foco acotado,
 Escape y retorno al disparador. Exportación/importación/biblioteca/ayuda usan
 la misma base. No se añaden dependencias de runtime ni se modifica el motor.
+
+
+## V3.0 · Composición finita separada de la fuente
+
+composition/model y functional describen recetas/operadores; evaluate compila
+un árbol acotado en matrices, IDs de hoja y niveles. composition/generated
+normaliza el marco fuente y compone las colocaciones del generador existente.
+Scene conserva geometrías canónicas y expone metadatos de disposición finita.
+La composición suspende la repetición wallpaper y la cobertura de teselas,
+conservando sus parámetros para volver a ellas. No implica teselación exacta.
+
+sceneLayers comparte geometría/colocaciones por nivel entre SVG de pantalla y
+exportador. El primer relleno del motivo puede variar de color; ojos/trazos y
+contrastes conservan el estilo. Captura conserva IDs determinísticos y matrices
+inversas; Fuente pura muestra el motivo original. Modos de vista/encuadre quedan
+fuera del historial geométrico. JSON5 y presets5 conservan recetas/procedencia.
+
+CompositionPanel se aloja en Simetrías → Composición. ExampleGallery es modal,
+busca/filtra/pagina proyectos originales y los8 ejemplos clásicos. No introduce
+un editor alternativo, un rail nuevo ni un servicio de producción.

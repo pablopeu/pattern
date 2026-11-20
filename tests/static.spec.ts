@@ -216,7 +216,7 @@ test('v2.2 estático: panel derecho, Fill vectorial, perfiles/preset y workers s
   await page.getByRole('button', { name: 'Guardar archivo', exact: true }).click();
   let file = await downloaded;
   const project = JSON.parse(await readFile((await file.path())!, 'utf8'));
-  expect(project.schemaVersion).toBe(4);
+  expect(project.schemaVersion).toBe(5);
   expect(project.patterns[0].sourceGeometry).toHaveLength(6);
   expect(project.patterns[0].sourceGeometry.filter((g: any) => g.fillRegion)).toHaveLength(1);
   expect(project.patterns[0].sourceGeometry.at(-1).strokeProfile.kind).toBe('taper-both');

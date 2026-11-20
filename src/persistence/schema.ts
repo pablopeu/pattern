@@ -1,3 +1,4 @@
+import { compositionSchema } from '../composition/schema';
 import { defaultDrawingStyle, styleIssue } from '../app/styles';
 import { tilingIssue } from '../tiling/validate';
 import { z } from 'zod';
@@ -193,6 +194,7 @@ export const tilingSchema = z.object({
     .max(3),
 });
 const pattern = z.object({
+  composition: compositionSchema.optional(),
   tiling: tilingSchema.optional(),
   id: z.string(),
   name: z.string(),
@@ -225,7 +227,7 @@ export const drawingStyleSchema = geometrySchema
     if (issue) ctx.addIssue({ code: 'custom', message: issue });
   });
 export const projectSchema = z.object({
-  schemaVersion: z.literal(4),
+  schemaVersion: z.literal(5),
   drawingStyle: drawingStyleSchema,
   stylePresets: z
     .array(
@@ -248,6 +250,28 @@ export const projectSchema = z.object({
     name: z.string(),
     createdAt: z.string(),
     updatedAt: z.string(),
+    example: z
+      .object({
+        id: z.string().max(160),
+        category: z.string().max(100),
+        description: z.string().max(2000),
+        construction: z.string().max(500),
+        validity: z.enum(['EXACT', 'APPROXIMATED', 'ARTISTIC', 'UNVERIFIED']),
+        artwork: z.enum(['original', 'mathematical', 'licensed']),
+        author: z.string().max(300),
+        references: z
+          .array(
+            z.object({
+              title: z.string().max(300),
+              url: z
+                .string()
+                .url()
+                .regex(/^https:\/\//),
+            }),
+          )
+          .max(32),
+      })
+      .optional(),
   }),
   documentUnits: z.enum(['mm', 'cm', 'in', 'px']),
   patterns: z.array(pattern).min(1).max(100),

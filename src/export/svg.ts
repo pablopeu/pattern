@@ -150,7 +150,10 @@ function preparePatternExport(
   }
   if (!pattern) throw Error('No se encontró el patrón.');
   pattern = resolvePattern(pattern, project);
-  const tiling = pattern.generator.kind !== 'penrose' ? pattern.tiling : undefined;
+  const tiling =
+    pattern.generator.kind !== 'penrose' && !pattern.composition?.enabled
+      ? pattern.tiling
+      : undefined;
   let bounds: Bounds = customBounds ?? {
     x: -options.width / 2,
     y: -options.height / 2,
@@ -158,6 +161,8 @@ function preparePatternExport(
     height: options.height,
   };
   let latticeMask = '';
+  if (pattern.composition?.enabled && ['tile', 'lattice', 'fundamental'].includes(options.target))
+    throw Error('La composición es finita; exportá una región, no una celda periódica.');
   if (region) bounds = geometryBounds(region.geometry);
   if (options.target === 'tile') {
     const cell = tiling ? tileRectangularCell(tiling) : rectangularCell(pattern.symmetry);
@@ -276,7 +281,9 @@ function preparePatternExport(
             ),
           );
       } else
-        for (const t of transforms)
+        for (const t of layer.placements
+          ? scene.instances.flatMap((i) => layer.placements!.map((m) => multiply(i.matrix, m)))
+          : transforms)
           for (const shape of layer.geometry) {
             geometries.push(
               ...clipGeometry(
@@ -307,7 +314,14 @@ function preparePatternExport(
           }),
         )
         .join('');
-    const subset = { ...scene, generated: { ...scene.generated, geometry: layer.geometry } },
+    const subset = {
+        ...scene,
+        generated: {
+          ...scene.generated,
+          geometry: layer.geometry,
+          placements: layer.placements ?? scene.generated.placements,
+        },
+      },
       id = index === 0 ? 'motif' : 'motif-' + index,
       decorations = !decorated;
     decorated = true;
@@ -321,8 +335,11 @@ function preparePatternExport(
         '',
         true,
       );
-    if (pattern.symmetry.family === 'none')
-      return transforms
+    const layerTransforms = layer.placements
+      ? scene.instances.flatMap((i) => layer.placements!.map((m) => multiply(i.matrix, m)))
+      : transforms;
+    if (pattern.symmetry.family === 'none' && !pattern.composition?.enabled)
+      return layerTransforms
         .flatMap((t) =>
           layer.geometry.map((shape) =>
             renderPath({ ...shape, transform: multiply(multiply(placement, t), shape.transform) }),
@@ -330,7 +347,7 @@ function preparePatternExport(
         )
         .join('');
     motifDefs.push(`<g id="${id}">${layer.geometry.map(renderMotifPath).join('')}</g>`);
-    return transforms
+    return layerTransforms
       .map(
         (t) =>
           `<use href="#${id}" xlink:href="#${id}" transform="${matrixString(multiply(placement, t))}"/>`,
@@ -347,7 +364,7 @@ function preparePatternExport(
     !expanded &&
     !scene.tiling &&
     options.target !== 'tile' &&
-    pattern.symmetry.family !== 'none'
+    (pattern.symmetry.family !== 'none' || pattern.composition?.enabled)
   )
     content = defs + content;
   if (region && application?.showOutline) {
@@ -369,6 +386,13 @@ function preparePatternExport(
     status: tiling ? 'PERIODIC_SEAMLESS' : scene.status,
     ...(tiling ? { tiling, motifSymmetry: 'local-to-tile' } : {}),
     algorithmVersion: pattern.generator.version,
+    ...(pattern.composition?.enabled
+      ? {
+          composition: pattern.composition,
+          validity: { affineTransforms: 'EXACT', tessellation: 'UNVERIFIED' },
+          example: project.metadata.example,
+        }
+      : {}),
   };
   content = `<metadata>${escapeXML(JSON.stringify(metadata))}</metadata>` + content;
   return {

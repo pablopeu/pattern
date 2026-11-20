@@ -1,3 +1,4 @@
+import { CompositionPanel } from './CompositionPanel';
 import { TilePanel } from './TilePanel';
 import { SymmetryGallery } from './SymmetryGallery';
 import { freezePattern } from '../symmetry/config';
@@ -78,6 +79,7 @@ export function Panels({
   collapsed,
   onCreateRegular,
   onCollapse,
+  onExamples,
 }: {
   studio: Studio;
   onImport: () => void;
@@ -85,12 +87,16 @@ export function Panels({
   collapsed: boolean;
   onCreateRegular: () => void;
   onCollapse: () => void;
+  onExamples: () => void;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [generatorPage, setGeneratorPage] = useState(0),
     [placementPage, setPlacementPage] = useState(0),
     [applicationPage, setApplicationPage] = useState('region');
   const [tabs, setTabs] = useState<Partial<Record<Category, string>>>({});
+  useEffect(() => {
+    if (s.compositionRequest) setTabs((old) => ({ ...old, symmetry: 'composition' }));
+  }, [s.compositionRequest]);
   const tab = tabs[category] ?? (category === 'layers' ? 'layers' : 'design');
   useEffect(() => {
     scrollRef.current?.scrollTo(0, 0);
@@ -211,6 +217,13 @@ export function Panels({
           >
             Generador
           </button>
+          <button
+            role="tab"
+            aria-selected={tab === 'composition'}
+            onClick={() => setTab('composition')}
+          >
+            Composición
+          </button>
         </div>
       )}
       <div ref={scrollRef} className={`panel-scroll context-${category}`}>
@@ -282,8 +295,11 @@ export function Panels({
           </div>
         )}
 
-        {category === 'symmetry' && tab !== 'generator' && (
+        {category === 'symmetry' && tab !== 'generator' && tab !== 'composition' && (
           <SymmetryGallery studio={s} section={tab === 'placement' ? 'placement' : 'parameters'} />
+        )}
+        {category === 'symmetry' && tab === 'composition' && (
+          <CompositionPanel studio={s} onExamples={onExamples} />
         )}
         {category === 'tiles' && <TilePanel studio={s} expanded />}
         {category === 'layers' && tab === 'layers' ? (

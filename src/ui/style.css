@@ -2587,3 +2587,53 @@ input[type='color']::-webkit-color-swatch {
  .topbar .app-title small {font-size:10px; max-width:105px; white-space:normal;}
  .topbar .top-actions {grid-column:3; gap:4px;}
 }
+
+/* V3 compositions stay inside the existing contextual surfaces. */
+.panel-tabs[aria-label='Opciones de simetría'] button { padding-inline:3px; font-size:11px; }
+.composition-panel { display:flex; flex-direction:column; gap:10px; padding:14px; }
+.composition-tabs { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:3px; }
+.composition-tabs button { padding:6px 2px; font-size:10px; border:1px solid var(--line); border-radius:5px; }
+.composition-tabs button[aria-selected='true'] { background:var(--green); color:var(--ink); }
+.composition-family-cards { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.composition-family-cards button { display:flex; flex-direction:column; gap:4px; padding:6px; border:1px solid var(--line); border-radius:8px; text-align:left; background:#fbfcf8; }
+.composition-family-cards button[aria-pressed='true'] { border-color:#537647; box-shadow:0 0 0 1px #537647; }
+.composition-family-cards img { width:100%; height:80px; border-radius:4px; object-fit:contain; background:#f3eddf; }
+.composition-family-cards strong { font-size:12px; }
+.composition-family-cards small { font-size:10px; color:#64775c; }
+.composition-source-actions { display:grid; grid-template-columns:1fr; gap:6px; margin-top:2px; }
+.composition-palette { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.composition-palette label { display:flex; flex-direction:column; gap:4px; font-size:11px; }
+.composition-palette input { width:100%; height:32px; }
+.saved-composition-recipes { display:flex; flex-direction:column; max-height:180px; overflow:auto; gap:5px; }
+.saved-composition-recipes button { padding:7px; text-align:left; border:1px solid var(--line); border-radius:5px; }
+.example-gallery-modal { width:min(760px,calc(100vw - 24px)); max-height:calc(100dvh - 24px); }
+.gallery-title { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+.gallery-title h2 { margin:0 0 5px; font-size:20px; }
+.gallery-title p { margin:0 0 14px; font-size:12px; color:#66745e; }
+.example-filters { display:grid; grid-template-columns:1fr 170px; gap:10px; margin-bottom:12px; }
+.example-filters input,.example-filters select { min-width:0; width:100%; border:1px solid var(--line); border-radius:6px; padding:8px; background:#fcfdf9; }
+.example-cards { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.example-card { display:flex; flex-direction:column; align-items:stretch; gap:5px; padding:10px; text-align:left; border:1px solid var(--line); border-radius:9px; background:#fcfdf9; }
+.example-card:hover { border-color:#68855a; background:#f2f6e9; }
+.example-card img { width:100%; height:112px; object-fit:contain; border-radius:5px; background:#f3eddf; }
+.example-card strong { font-size:13px; }
+.example-card span:not(.example-category) { font-size:11px; line-height:1.4; }
+.example-card .example-category { font-size:10px; text-transform:uppercase; letter-spacing:.5px; color:#587047; }
+.example-card small { font-size:10px; color:#64725c; }
+.example-gallery-modal .page-controls { margin-top:12px; }
+@media(max-width:650px) {
+ .example-cards {grid-template-columns:1fr;gap:8px;}
+ .example-card img {height:88px;}
+ .example-card {padding:8px;gap:3px;}
+ .example-filters {grid-template-columns:1fr 120px;gap:6px;}
+ .example-filters input,.example-filters select {padding:7px;font-size:12px;}
+ .gallery-title h2 {font-size:18px;}
+ .panel-tabs[aria-label='Opciones de simetría'] button {font-size:10px;padding-inline:2px;}
+}
+.example-cards { grid-template-columns:repeat(2,minmax(0,1fr)); min-width:0; }
+.example-card { min-width:0; white-space:normal; }
+.example-card > span,.example-card > strong,.example-card > small { min-width:0; overflow-wrap:anywhere; }
+@media(max-width:650px) { .example-cards {grid-template-columns:minmax(0,1fr);} }
+.composition-panel { padding:10px; gap:8px; }
+.composition-panel > .section-caption { padding:4px 0; }
+.composition-family-cards img { height:72px; }

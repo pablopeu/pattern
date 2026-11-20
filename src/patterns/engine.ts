@@ -1,3 +1,4 @@
+import { composeGenerated } from '../composition/generated';
 import { strokePadding } from '../geometry/stroke-bounds';
 import { tileFillContour } from '../fill/coordinates';
 import {
@@ -28,7 +29,7 @@ export interface Scene {
   message: string;
 }
 export function buildScene(pattern: Pattern, bounds: Bounds, prepared?: Generated): Scene {
-  if (pattern.tiling && pattern.generator.kind !== 'penrose') {
+  if (pattern.tiling && pattern.generator.kind !== 'penrose' && !pattern.composition?.enabled) {
     const definition = pattern.tiling,
       boundary = tileBoundary(definition),
       inner = buildScene(
@@ -123,7 +124,7 @@ export function buildScene(pattern: Pattern, bounds: Bounds, prepared?: Generate
   }
 
   const derived = pattern.sourceGeometry.filter((g) => g.fillRegion);
-  const generated = {
+  let generated: Generated = {
     ...(prepared ??
       generate(
         pattern.generator,
@@ -140,6 +141,7 @@ export function buildScene(pattern: Pattern, bounds: Bounds, prepared?: Generate
       (order.get(a.id) ?? pattern.sourceGeometry.length) -
       (order.get(b.id) ?? pattern.sourceGeometry.length),
   );
+  if (pattern.composition?.enabled) generated = composeGenerated(generated, pattern.composition);
   generated.placements = generated.placements.map((m) =>
     multiply(pattern.placementTransform ?? IDENTITY, m),
   );
@@ -182,13 +184,15 @@ export function buildScene(pattern: Pattern, bounds: Bounds, prepared?: Generate
     status: free ? 'FREE_NONPERIODIC' : finite ? 'FINITE_NONPERIODIC' : 'PERIODIC_SEAMLESS',
     message: free
       ? 'Libre · geometría sin operaciones de grupo'
-      : generated.finite
-        ? 'Penrose · región aperiódica finita'
-        : pattern.symmetry.family === 'radial'
-          ? 'Simetría radial · sin periodicidad de traslación'
-          : pattern.symmetry.family === 'frieze'
-            ? 'Periódico en una dirección'
-            : 'Periódico por construcción sobre su red de traslación',
+      : generated.composition
+        ? `${generated.composition.definition.kind === 'recursive' ? 'Composición recursiva' : 'Semejanza en espiral'} · finita, sin periodicidad de traslación${generated.composition.report.limited ? ' · detalle limitado por presupuesto' : ''}`
+        : generated.finite
+          ? 'Penrose · región aperiódica finita'
+          : pattern.symmetry.family === 'radial'
+            ? 'Simetría radial · sin periodicidad de traslación'
+            : pattern.symmetry.family === 'frieze'
+              ? 'Periódico en una dirección'
+              : 'Periódico por construcción sobre su red de traslación',
   };
 }
 export function expandedTransforms(scene: Scene): Matrix[] {

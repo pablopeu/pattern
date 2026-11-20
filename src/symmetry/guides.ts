@@ -51,6 +51,12 @@ export function verifyPeriodicity(pattern: Pattern): {
   valid: boolean;
   message: string;
 } {
+  if (pattern.composition?.enabled)
+    return {
+      status: 'FINITE_NONPERIODIC',
+      valid: false,
+      message: 'Composición finita · sin periodicidad de traslación',
+    };
   if (pattern.tiling && pattern.generator.kind !== 'penrose')
     return {
       status: 'PERIODIC_SEAMLESS',

@@ -1,6 +1,6 @@
 # Formato de proyecto
 
-El archivo nativo es JSON UTF-8, extensión sugerida `.pattern.json`. Versión actual: **4**. El proyecto no almacena objetos Paper.js, píxeles del canvas ni cientos de clones del motivo.
+El archivo nativo es JSON UTF-8, extensión sugerida `.pattern.json`. Versión actual: **5**. El proyecto no almacena objetos Paper.js, píxeles del canvas ni cientos de clones del motivo.
 
 ## Estructura
 
@@ -154,3 +154,23 @@ modales y búsqueda pertenecen al estado de interfaz y no se serializan en el
 proyecto ni en undo. Recientes de simetría son de sesión; favoritos son una
 preferencia local del navegador. El JSON portable sigue conteniendo el
 mismo documento geométrico/estilos y se abre en los recorridos anteriores.
+
+
+## Esquema5 · Composiciones reproducibles
+
+La migración pura4→5 sólo cambia la versión; conserva exactamente geometrías,
+IDs, estilos, simetrías, Fill, teselas, preferencias y snapshots. Lectura1–4
+continúa por el registro existente. Presets actuales5; se leen1–4.
+
+`patterns[].composition` es opcional: versión1, enabled, kind recursive/spiral,
+receta, marco fuente, centro/tamaño/detalle mínimo, parámetros de recursión o
+semejanza y paleta por nivel. El árbol, sus matrices/IDs/niveles, las miniaturas
+y los clones temporales de color se derivan: no se serializan miles de copias.
+Desactivar conserva la definición y recupera generador/simetría/tesela previos.
+Los snapshots congelados y presets conservan su propia definición.
+
+`metadata.example` opcional registra identificador/categoría, descripción,
+construcción, validez específica, autor, tipo de obra y referencias HTTPS.
+La geometría original sigue en sourceGeometry. Se usa versión5 para que un
+lector anterior rechace los nuevos datos en vez de eliminarlos silenciosamente.
+El nuevo estudio conserva P3/cámara100%/estructura50%/Dibujo libre.

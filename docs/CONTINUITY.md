@@ -1,3 +1,25 @@
+# V3.0 · Fase1 integrada, cierre de validación pendiente
+
+Núcleo en abbda26; Fase0 en f12c78d. Integrados Pattern.composition, esquema5
+(migración4→5 sin cambiar fuente), presets5, escenas finitas/IDs de captura,
+colores por nivel compartidos con SVG editable/expandido. Sin composición se
+conserva el pipeline anterior. Composición suspende wallpaper/teselas guardados.
+UI Simetrías → Composición: recetas, geometría agrupada, paleta, recetas locales,
+Editar motivo/Ver composición y Ctrl+K. Archivo → Galería con filtros/miniaturas.
+Cuatro ejemplos originales vectoriales: peces/anillos, aves/cuadrantes,
+cardumen/espiral y roseta/aves. No se copiaron gráficos Escher ni código GPL.
+
+220 unidades/TypeScript,build y6 E2E nuevas correctos en cuatro resoluciones,
+edición de fuente/undo/JSON/SVG reales y recetas personales. Evidencia
+.runtime/v30-{ui-check,ui-build,targeted-e2e}.log. Corregidos overflow de tarjetas,
+altura del contexto1366 y defs SVG de composiciones sobre Libre.
+Pendientes antes de cerrar Fase1: culling/contextos Fill, mediciones de presupuesto,
+comparación independiente de salidas/raster/DXF, capturas/JSON README y regresión
+completa de117 E2E con estáticas. Todavía NO se declara terminada Fase1 ni v3.0.
+Servicios LAN vivos; revisar monitor sólo primaria5h; no PROJECT_COMPLETE.
+
+---
+
 # V3.0 · Fase1 en desarrollo: núcleo afín listo
 
 Fase0 documentada y commit f12c78d. Núcleo nuevo independiente de React en

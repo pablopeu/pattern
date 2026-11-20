@@ -1,3 +1,5 @@
+import { ExampleGallery } from '../ui/ExampleGallery';
+import { compositionExample } from '../examples/catalog';
 import { SaveDialog } from '../ui/SaveDialog';
 import { studyFileName } from './naming';
 import { Modal } from '../ui/Modal';
@@ -87,6 +89,7 @@ export default function App() {
   const s = useStudio(),
     [exportOpen, setExportOpen] = useState(false),
     [saveOpen, setSaveOpen] = useState(false),
+    [examplesOpen, setExamplesOpen] = useState(false),
     [commandOpen, setCommandOpen] = useState(false),
     [collapsed, setCollapsed] = useState(() => innerWidth <= 900),
     [category, setCategory] = useState<Category>('drawing'),
@@ -151,11 +154,19 @@ export default function App() {
     };
   }, []);
   useEffect(() => {
-    if (saveOpen || exportOpen || commandOpen || help || importText !== null || library) {
+    if (
+      examplesOpen ||
+      saveOpen ||
+      exportOpen ||
+      commandOpen ||
+      help ||
+      importText !== null ||
+      library
+    ) {
       const menu = document.querySelector<HTMLDetailsElement>('.main-menu');
       if (menu) menu.open = false;
     }
-  }, [saveOpen, exportOpen, commandOpen, help, importText, library]);
+  }, [examplesOpen, saveOpen, exportOpen, commandOpen, help, importText, library]);
   const openCategory = (next: Category) => {
     setCategory(next);
     setCollapsed(false);
@@ -212,7 +223,35 @@ export default function App() {
     s.setFileSaved(s.projectRef.current === project);
     s.setMessage('Proyecto guardado como archivo JSON editable.');
   };
+  const openExamples = () => {
+    s.setStyleOpen(false);
+    setExamplesOpen(true);
+  };
   const commands: Command[] = [
+    {
+      id: 'composition-recursive',
+      label: 'Explorar composición recursiva',
+      keywords: 'square limit cuadrantes autosimilar peces',
+      run: () => {
+        openCategory('symmetry');
+        s.openComposition();
+      },
+    },
+    {
+      id: 'composition-spiral',
+      label: 'Explorar espirales y semejanzas',
+      keywords: 'espiral roseta escala giro',
+      run: () => {
+        openCategory('symmetry');
+        s.openComposition();
+      },
+    },
+    {
+      id: 'examples-gallery',
+      label: 'Galería de ejemplos',
+      keywords: 'peces aves ejemplos escher originales',
+      run: openExamples,
+    },
     ...tools.map((t) => ({
       id: `tool-${t.id}`,
       label: t.label,
@@ -459,6 +498,9 @@ export default function App() {
                 <FolderOpen size={15} /> Biblioteca de este navegador
               </button>
               <hr />
+              <button onClick={openExamples}>
+                <LayoutGrid size={15} /> Galería de ejemplos
+              </button>
               <label>Ejemplos editables</label>
               {exampleNames.map((name, index) => (
                 <button
@@ -477,7 +519,7 @@ export default function App() {
                   download(
                     JSON.stringify(
                       {
-                        presetVersion: 4,
+                        presetVersion: 5,
                         pattern: freezePattern(s.pattern, s.project.mainSymmetry),
                       },
                       null,
@@ -581,6 +623,7 @@ export default function App() {
           category={category}
           collapsed={collapsed}
           onCollapse={() => setCollapsed(true)}
+          onExamples={openExamples}
           onCreateRegular={createRegular}
           onImport={() => svgRef.current?.click()}
         />
@@ -592,6 +635,7 @@ export default function App() {
                   !s.visiblePatterns.some(
                     (p) =>
                       p.generator.kind !== 'penrose' &&
+                      !p.composition?.enabled &&
                       (p.tiling || ['wallpaper', 'frieze'].includes(p.symmetry.family)),
                   )
                 }
@@ -610,8 +654,14 @@ export default function App() {
                 Una celda
               </button>
               <span>
-                {s.symmetryPreview ? 'Previsualización temporal' : 'Simetría confirmada'} ·{' '}
-                {tools.find((t) => t.id === s.tool)?.label ?? s.tool}
+                {s.symmetryPreview
+                  ? 'Previsualización temporal'
+                  : s.pattern.composition?.enabled
+                    ? s.project.preferences.sourceView
+                      ? 'Motivo fuente · composición enlazada'
+                      : 'Composición finita'
+                    : 'Simetría confirmada'}{' '}
+                · {tools.find((t) => t.id === s.tool)?.label ?? s.tool}
               </span>
             </div>
           )}
@@ -841,6 +891,21 @@ export default function App() {
         </div>
       )}
       {commandOpen && <CommandPalette commands={commands} onClose={() => setCommandOpen(false)} />}
+      {examplesOpen && (
+        <ExampleGallery
+          onClose={() => setExamplesOpen(false)}
+          onSelect={(id) => {
+            s.load(compositionExample(id));
+            s.setMode('edit');
+            setExamplesOpen(false);
+            s.setSelected([]);
+            setCategory('symmetry');
+            s.openComposition();
+            setCollapsed(innerWidth <= 900);
+            s.requestFit();
+          }}
+        />
+      )}
       {saveOpen && (
         <SaveDialog
           name={s.project.metadata.name}

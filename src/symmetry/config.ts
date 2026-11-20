@@ -137,7 +137,7 @@ export function commonRectangularCell(
   const cells = patterns
     .filter((p) => p.visible)
     .map((p) =>
-      p.generator.kind === 'penrose'
+      p.generator.kind === 'penrose' || p.composition?.enabled
         ? null
         : p.tiling
           ? tileRectangularCell(p.tiling)

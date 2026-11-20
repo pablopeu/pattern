@@ -1,3 +1,4 @@
+import { generatedBounds } from '../composition/generated';
 import { geometryHit } from './hitGeometry';
 import { sceneLayers } from '../patterns/layers';
 import { useFill } from '../fill/useFill';
@@ -173,6 +174,7 @@ export function Canvas({
       !editorOnly &&
       s.mode !== 'apply' &&
       activePattern.generator.kind !== 'penrose' &&
+      !activePattern.composition?.enabled &&
       activePattern.symmetry.family !== 'none'
         ? cachedStructure(
             activePattern.symmetry,
@@ -185,6 +187,7 @@ export function Canvas({
       s.mode,
       activePattern.symmetry,
       activePattern.generator.kind,
+      activePattern.composition?.enabled,
       activePattern.tiling,
       actualView,
     ],
@@ -203,8 +206,18 @@ export function Canvas({
   const split = s.project.preferences.split && s.mode === 'edit';
   const periodic =
     activePattern.generator.kind !== 'penrose' &&
+    !activePattern.composition?.enabled &&
     (!!activePattern.tiling || ['wallpaper', 'frieze'].includes(activePattern.symmetry.family));
   const cellBounds = useMemo(() => {
+    if (activePattern.composition?.enabled) {
+      const evaluated = safeScene(activePattern, {
+        x: -500,
+        y: -500,
+        width: 1000,
+        height: 1000,
+      }).scene;
+      if (evaluated) return generatedBounds(evaluated.generated);
+    }
     if (activePattern.generator.kind === 'penrose') {
       const r = activePattern.generator.radius;
       return { x: -r, y: -r, width: r * 2, height: r * 2 };
@@ -962,6 +975,8 @@ export function Canvas({
     freshView.current = false;
     let b: Bounds;
     if (focusCell) b = cellBounds;
+    else if (activePattern.composition?.enabled && scene && !editorOnly)
+      b = generatedBounds(scene.generated);
     else if (s.mode === 'apply' && s.region) b = geometryBounds(s.region.geometry);
     else if (patternView && activePattern.tiling && activePattern.generator.kind !== 'penrose')
       b = tileWorldBounds(activePattern.tiling);
@@ -994,6 +1009,9 @@ export function Canvas({
       height: (width * size.height) / size.width,
     });
   };
+  useEffect(() => {
+    if (s.viewFit) fit();
+  }, [s.viewFit]);
   const renderShapeAtTolerance = (g: Geometry, tolerance: number) => (
     <g key={g.id} dangerouslySetInnerHTML={{ __html: previewSVGPathAtTolerance(g, tolerance) }} />
   );
@@ -1189,9 +1207,16 @@ export function Canvas({
           const decorations = !decorated;
           decorated = true;
           return (
-            <g key={'motif-' + index}>
+            <g key={'motif-' + index} data-composition-level={layer.level}>
               {renderPatternBody(
-                { ...sc, generated: { ...sc.generated, geometry: layer.geometry } },
+                {
+                  ...sc,
+                  generated: {
+                    ...sc.generated,
+                    geometry: layer.geometry,
+                    placements: layer.placements ?? sc.generated.placements,
+                  },
+                },
                 index === 0 ? id : id + '-' + index,
                 placement,
                 interactive,
@@ -1430,7 +1455,10 @@ export function Canvas({
           scene &&
           (editorOnly ? (
             <g onPointerDown={(e) => selectInstance(e, IDENTITY)}>
-              {sceneLayers(scene, activePattern).map((layer, index) => (
+              {sceneLayers(
+                { ...scene, generated: { ...scene.generated, composition: undefined } },
+                activePattern,
+              ).map((layer, index) => (
                 <g key={index}>
                   {layer.kind === 'fill'
                     ? renderShape(layer.geometry)
@@ -1570,7 +1598,8 @@ export function Canvas({
           !editorOnly &&
           s.mode !== 'apply' &&
           activePattern.symmetry.family === 'wallpaper' &&
-          activePattern.generator.kind !== 'penrose' && (
+          activePattern.generator.kind !== 'penrose' &&
+          !activePattern.composition?.enabled && (
             <g pointerEvents="none">
               <path
                 d={`M${sym.origin.x} ${sym.origin.y}l${a.x} ${a.y}l${b.x} ${b.y}l${-a.x} ${-a.y}Z`}
@@ -1603,7 +1632,8 @@ export function Canvas({
           !editorOnly &&
           s.mode !== 'apply' &&
           sym.family === 'frieze' &&
-          activePattern.generator.kind !== 'penrose' && (
+          activePattern.generator.kind !== 'penrose' &&
+          !activePattern.composition?.enabled && (
             <g pointerEvents="none" aria-label="Traslación del friso en una dirección">
               <line
                 x1={sym.origin.x}
@@ -1629,6 +1659,7 @@ export function Canvas({
           !editorOnly &&
           s.mode !== 'apply' &&
           activePattern.generator.kind !== 'penrose' &&
+          !activePattern.composition?.enabled &&
           activePattern.symmetry.family === 'radial' && (
             <g pointerEvents="none" stroke="#79976b" strokeWidth={0.3} strokeDasharray="2 2">
               {Array.from({ length: activePattern.symmetry.sectors }, (_, i) => {
@@ -1652,6 +1683,7 @@ export function Canvas({
           s.project.preferences.guides &&
           !editorOnly &&
           activePattern.generator.kind !== 'penrose' &&
+          !activePattern.composition?.enabled &&
           s.mode !== 'apply' && (
             <g pointerEvents="none">
               {s.project.preferences.fundamental && domain.length > 0 && (
@@ -1786,6 +1818,7 @@ export function Canvas({
           !editorOnly &&
           activePattern.symmetry.family !== 'none' &&
           activePattern.generator.kind !== 'penrose' &&
+          !activePattern.composition?.enabled &&
           s.project.preferences.guides && (
             <g
               transform={

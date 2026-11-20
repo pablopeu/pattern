@@ -1,3 +1,5 @@
+import type { Composition } from '../composition/model';
+import type { ExampleProvenance } from '../examples/model';
 import type { FillRegion } from '../fill/model';
 import {
   defaultDrawingStyle,
@@ -78,6 +80,7 @@ export interface Symmetry {
   center: Point;
 }
 export interface Pattern {
+  composition?: Composition;
   tiling?: TilingDefinition;
   id: string;
   name: string;
@@ -108,10 +111,16 @@ export interface Project {
   drawingStyle: DrawingStyle;
   stylePresets: StylePreset[];
   palette: ProjectPalette;
-  schemaVersion: 4;
+  schemaVersion: 5;
   mainSymmetry: Symmetry;
   mainSymmetryProfiles: Record<string, Symmetry>;
-  metadata: { id: string; name: string; createdAt: string; updatedAt: string };
+  metadata: {
+    id: string;
+    name: string;
+    createdAt: string;
+    updatedAt: string;
+    example?: ExampleProvenance;
+  };
   documentUnits: Unit;
   patterns: Pattern[];
   regions: Region[];
@@ -213,7 +222,7 @@ export function newPattern(): Pattern {
 export function newProject(): Project {
   const now = new Date().toISOString();
   return {
-    schemaVersion: 4,
+    schemaVersion: 5,
     drawingStyle: defaultDrawingStyle(),
     stylePresets: [],
     palette: { colors: [], recent: [], favorites: [] },

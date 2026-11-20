@@ -768,3 +768,18 @@
   fuentes; presupuesto/culling/detalle e inversas verificables. Fuente intacta.
 - 216 unidades/TypeScript correctos, incluidas10 nuevas. Integración UI/archivos/
   exportación/ejemplos pendiente: no se declara completa Fase1.
+
+
+## V3.0 Fase1 · UI, escenas, archivos y ejemplos integrados
+
+- Esquema5/presets5, migración4 pura, definición opcional de composición y
+  procedencia original. Fuente única, escenas finitas y captura inversa.
+- Simetrías → Composición con recetas y parámetros agrupados; fuente/resultado,
+  paletas y recetas personales. Archivo → galería modal paginada/buscable.
+- Cuatro motivos/proyectos vectoriales originales: peces al límite, aves en
+  cuadrantes, cardumen en espiral y aves en roseta. Ocho clásicos conservados.
+- 220 unitarias/TypeScript,build,6 E2E nuevas correctos (cuatro resoluciones,
+  edición/undo/JSON/SVG y recetas locales). Se corrigieron desbordes/altura y
+  defs SVG necesarias para composición sobre Libre. Logs v30-* en .runtime.
+- Cierre de Fase1 todavía pendiente: culling/contextos Fill, mediciones, validación
+  independiente/exportaciones, README visual y regresiones generales.

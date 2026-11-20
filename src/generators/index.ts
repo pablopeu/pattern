@@ -1,3 +1,4 @@
+import type { Composition, CompositionReport } from '../composition/model';
 import { defaultGenerator, geometry, node, type Generator, type Geometry } from '../app/model';
 import {
   IDENTITY,
@@ -33,6 +34,12 @@ export function random(seed: number): () => number {
   };
 }
 export interface Generated {
+  composition?: {
+    definition: Composition;
+    report: CompositionReport;
+    levels: number[];
+    ids: string[];
+  };
   geometry: Geometry[];
   placements: Matrix[];
   finite: boolean;

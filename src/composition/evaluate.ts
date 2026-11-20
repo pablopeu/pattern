@@ -226,7 +226,7 @@ export function compileComposition(
     if (node.source) {
       const a = matrix[0] * matrix[3] - matrix[1] * matrix[2];
       if (
-        Math.sqrt(Math.abs(a)) < minSize ||
+        Math.min(Math.hypot(matrix[0], matrix[1]), Math.hypot(matrix[2], matrix[3])) < minSize ||
         Math.abs(a) / Math.max(source.width, source.height) ** 2 < 1e-8
       ) {
         report.detailOmitted++;

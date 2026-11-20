@@ -15,7 +15,8 @@ export function parsePreset(text: string): Pattern {
     (data.presetVersion !== 1 &&
       data.presetVersion !== 2 &&
       data.presetVersion !== 3 &&
-      data.presetVersion !== 4) ||
+      data.presetVersion !== 4 &&
+      data.presetVersion !== 5) ||
     !('pattern' in data)
   )
     throw Error('Versión o estructura de preset no compatible.');
@@ -24,7 +25,7 @@ export function parsePreset(text: string): Pattern {
     (data.presetVersion === 1 ? migratePatternV1(data.pattern) : data.pattern) as Pattern,
   ];
   const pattern = parseProject(
-    JSON.stringify({ ...project, schemaVersion: data.presetVersion < 4 ? 3 : 4 }),
+    JSON.stringify({ ...project, schemaVersion: data.presetVersion < 4 ? 3 : data.presetVersion }),
   ).patterns[0];
   const oldPatternId = pattern.id;
   pattern.id = uid();

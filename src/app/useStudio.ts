@@ -89,6 +89,10 @@ export function useStudio() {
     [patternId, setPatternId] = useState(project.patterns[0].id),
     [regionId, setRegionId] = useState(''),
     [applicationId, setApplicationId] = useState('');
+  const [compositionRequest, setCompositionRequest] = useState(0);
+  const openComposition = useCallback(() => setCompositionRequest((value) => value + 1), []);
+  const [viewFit, setViewFit] = useState(0);
+  const requestFit = useCallback(() => setViewFit((value) => value + 1), []);
   const [viewReset, setViewReset] = useState(0);
   // Camera state belongs to the session, not the document or undo history.
   const [viewScale, setViewScale] = useState<{ scale: number; sender: string }>({
@@ -718,6 +722,10 @@ export function useStudio() {
     cancelRecalculation,
     recalculatingId,
     viewReset,
+    viewFit,
+    compositionRequest,
+    openComposition,
+    requestFit,
     viewScale,
     setViewScale,
     tileEditing,

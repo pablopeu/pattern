@@ -1,8 +1,9 @@
+import { levelGeometry } from '../composition/generated';
 import type { Geometry, Pattern } from '../app/model';
 import type { Scene } from './engine';
 import type { Matrix } from '../geometry/matrix';
 export type SceneLayer =
-  | { kind: 'motif'; geometry: Geometry[] }
+  | { kind: 'motif'; geometry: Geometry[]; placements?: Matrix[]; level?: number }
   | { kind: 'fill'; geometry: Geometry; matrices: Matrix[] };
 /** Preserve canonical layer order even when some regions have restricted instance orbits. */
 export function sceneLayers(scene: Scene, pattern: Pattern): SceneLayer[] {
@@ -39,5 +40,23 @@ export function sceneLayers(scene: Scene, pattern: Pattern): SceneLayer[] {
   }
   if (remaining.length || !result.some((l) => l.kind === 'motif'))
     result.push({ kind: 'motif', geometry: remaining });
-  return result;
+  const composition = scene.generated.composition;
+  if (!composition?.definition.colorByLevel) return result;
+  const groups = new Map<number, Matrix[]>();
+  scene.generated.placements.forEach((matrix, index) => {
+    const level = composition.levels[index] ?? 0;
+    const placements = groups.get(level) ?? [];
+    placements.push(matrix);
+    groups.set(level, placements);
+  });
+  return result.flatMap((layer): SceneLayer[] =>
+    layer.kind === 'fill'
+      ? [layer]
+      : [...groups].map(([level, placements]) => ({
+          kind: 'motif',
+          level,
+          placements,
+          geometry: levelGeometry(layer.geometry, composition.definition.palette, level),
+        })),
+  );
 }

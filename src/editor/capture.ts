@@ -56,7 +56,7 @@ export function captureCandidates(pattern: Pattern, scene: Scene, p: Point): Cap
         const matrix = multiply(i.matrix, m),
           reference = apply(matrix, center);
         return {
-          id: `${pattern.id}/${i.id}/${k}`,
+          id: `${pattern.id}/${i.id}/${scene.generated.composition?.ids[k] ?? k}`,
           patternId: pattern.id,
           matrix,
           inverse: inverse(matrix),
