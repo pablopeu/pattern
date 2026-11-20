@@ -40,6 +40,11 @@ export async function symmetry(page: Page, name: string) {
 
 /** Follow the visible navigation used by a person; keep original test assertions. */
 export async function field(page: Page, label: string) {
+  if (label === 'Nombre del proyecto') {
+    const menu = page.locator('.main-menu');
+    if (!(await menu.evaluate((el) => (el as HTMLDetailsElement).open)))
+      await menu.locator('summary').click();
+  }
   const rightPages: Record<string, string> = {
     Colores: 'Colores',
     'HEX de trazo': 'Colores',
@@ -166,4 +171,13 @@ export async function field(page: Page, label: string) {
   });
   await expect(locator).toBeVisible();
   return locator;
+}
+
+export async function pureSource(page: Page) {
+  await context(page, 'Preferencias');
+  const section = page.locator('.advanced-view');
+  if (!(await section.evaluate((el) => (el as HTMLDetailsElement).open)))
+    await section.locator('summary').click();
+  await section.getByLabel('Fuente pura (edición avanzada)', { exact: true }).click();
+  await page.getByRole('button', { name: 'Cerrar panel izquierdo', exact: true }).click();
 }

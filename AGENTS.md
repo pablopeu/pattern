@@ -14,7 +14,7 @@ Implementar `prd_v2.3.txt` como evolución no destructiva de v2.2; conservar las
 - Documentación pública: usar `<IP_LOCAL>` en URLs LAN; no publicar direcciones concretas de esta máquina, tampoco en commits o historial. Los datos de ejecución quedan en `.runtime/`, excluido de Git.
 - README: primero explicaciones y ejemplos con imágenes; al final instalación, despliegue y detalles de trabajo. Mantener ejemplos verificables y capturas de la aplicación real.
 
-- Pablo revisó en LAN y autorizó explícitamente «al terminar push a gh». Se puede publicar en main el historial local pendiente (Fill/paneles/footer/iconos/metadatos); comprobar el workflow FTP real después del push. Mantener servicios LAN.
+- Pablo revisó en LAN y autorizó explícitamente «al terminar push a gh». Se puede publicar en main el historial local pendiente (Fill/paneles/footer/iconos/metadatos); No revisar el workflow ni el FTP después del push: Pablo recibe fallos por email de GitHub. Mantener servicios LAN.
 
 - Predeterminados pedidos por Pablo: estudios nuevos en P3, zoom100% centrado,
   estructura visible50% y Dibujo libre al iniciar. P3 primero/Libre último, resto

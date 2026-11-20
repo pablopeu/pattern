@@ -213,6 +213,7 @@ test('v2.2 estático: panel derecho, Fill vectorial, perfiles/preset y workers s
   await saved();
   let downloaded = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Guardar proyecto', exact: true }).click();
+  await page.getByRole('button', { name: 'Guardar archivo', exact: true }).click();
   let file = await downloaded;
   const project = JSON.parse(await readFile((await file.path())!, 'utf8'));
   expect(project.schemaVersion).toBe(4);

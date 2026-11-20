@@ -635,3 +635,21 @@
   registro .runtime/p3-published.html. README con captura de puntos negros reales.
 - Se publica este registro de cierre y se verifica su workflow; resultado en
   .runtime/LAST_DEPLOY.json. Servicios4173/4174 conservados.
+
+
+## Cámara compartida, celda editable, guardado y cabecera · Implementados
+
+- Cabecera Patterns / Patrones Geométricos, texto mayor y junto al logo sin separador.
+  Campo Nombre en Archivo; diálogo al guardar con propuesta local AA-MM-DD-HH-MM,
+  cancelación sin cambios, nombre persistido y descarga JSON editable.
+- Trazo con icono PenLine; slider0–2mm independiente de entrada numérica50mm.
+  Nueva referencia100%=antiguo200%, sin modificar milímetros del modelo.
+- Split muestra celda activa centrada/ajustada y composición repetida con escala
+  compartida (botones/rueda/ajustes/reset/resize). Sin celda: motivo completo.
+  Una celda permite pantalla única. Fuente pura conserva utilidad en Preferencias
+  avanzadas para originales que atraviesan celdas y patrones aperiódicos.
+- 206 unidades/TypeScript y build correctos;4 E2E dirigidas correctas. Corrida
+  integrada de108 en curso y estáticas pendientes. Logs cell-header-*.
+- README e imágenes reales actualizados. Servicios4173/4174 siguen vivos.
+  Pedido explícito de Pablo: push al cerrar, sin inspeccionar Actions/FTP;
+  recibe por email los fallos. AGENTS actualizado con esta preferencia.

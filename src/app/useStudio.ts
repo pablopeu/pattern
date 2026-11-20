@@ -90,6 +90,11 @@ export function useStudio() {
     [regionId, setRegionId] = useState(''),
     [applicationId, setApplicationId] = useState('');
   const [viewReset, setViewReset] = useState(0);
+  // Camera state belongs to the session, not the document or undo history.
+  const [viewScale, setViewScale] = useState<{ scale: number; sender: string }>({
+    scale: 7.559055118,
+    sender: '',
+  });
   const [revision, setRevision] = useState(0),
     [fileSaved, setFileSaved] = useState(false);
   const selectedRef = useRef(selected);
@@ -713,6 +718,8 @@ export function useStudio() {
     cancelRecalculation,
     recalculatingId,
     viewReset,
+    viewScale,
+    setViewScale,
     tileEditing,
     setTileEditing,
     tileEdge,

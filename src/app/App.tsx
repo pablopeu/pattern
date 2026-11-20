@@ -1,3 +1,5 @@
+import { SaveDialog } from '../ui/SaveDialog';
+import { studyFileName } from './naming';
 import { Modal } from '../ui/Modal';
 import { SiteFooter } from '../ui/SiteFooter';
 import { CommandPalette, type Command } from '../ui/CommandPalette';
@@ -13,6 +15,7 @@ import {
   MousePointer2,
   PenTool,
   Pencil,
+  PenLine,
   Minus,
   Square,
   Circle,
@@ -60,7 +63,7 @@ import { Panels } from '../ui/Panels';
 import { ExportDialog } from '../ui/ExportDialog';
 import { buildScene } from '../patterns/engine';
 const stylePages: { id: StylePage; label: string; icon: typeof Palette }[] = [
-  { id: 'stroke', label: 'Trazo', icon: Minus },
+  { id: 'stroke', label: 'Trazo', icon: PenLine },
   { id: 'profile', label: 'Perfil', icon: Activity },
   { id: 'fill', label: 'Fill', icon: PaintBucket },
   { id: 'palette', label: 'Paleta', icon: SwatchBook },
@@ -83,6 +86,7 @@ const tools: { id: Tool; label: string; shortcut?: string; icon: typeof MousePoi
 export default function App() {
   const s = useStudio(),
     [exportOpen, setExportOpen] = useState(false),
+    [saveOpen, setSaveOpen] = useState(false),
     [commandOpen, setCommandOpen] = useState(false),
     [collapsed, setCollapsed] = useState(() => innerWidth <= 900),
     [category, setCategory] = useState<Category>('drawing'),
@@ -147,11 +151,11 @@ export default function App() {
     };
   }, []);
   useEffect(() => {
-    if (exportOpen || commandOpen || help || importText !== null || library) {
+    if (saveOpen || exportOpen || commandOpen || help || importText !== null || library) {
       const menu = document.querySelector<HTMLDetailsElement>('.main-menu');
       if (menu) menu.open = false;
     }
-  }, [exportOpen, commandOpen, help, importText, library]);
+  }, [saveOpen, exportOpen, commandOpen, help, importText, library]);
   const openCategory = (next: Category) => {
     setCategory(next);
     setCollapsed(false);
@@ -181,21 +185,31 @@ export default function App() {
     s.setStyleTarget('selection');
     s.setStyleOpen(true);
   };
-  const save = async () => {
-    const project = s.projectRef.current;
+  const save = () => {
+    s.setStyleOpen(false);
+    setSaveOpen(true);
+  };
+  const saveNamed = async (name: string) => {
+    let project = structuredClone(s.projectRef.current);
+    project.metadata.name = studyFileName(name);
     try {
       parseProject(serialize(project));
     } catch (e) {
       s.setMessage('No se puede guardar: ' + (e as Error).message);
       return;
     }
+    s.change((p) => {
+      p.metadata.name = project.metadata.name;
+    });
+    project = s.projectRef.current;
+    setSaveOpen(false);
     try {
       await autosave(project);
     } catch {
       /* The portable file remains available if local storage fails. */
     }
     download(serialize(project), project.metadata.name + '.pattern.json');
-    s.setFileSaved(true);
+    s.setFileSaved(s.projectRef.current === project);
     s.setMessage('Proyecto guardado como archivo JSON editable.');
   };
   const commands: Command[] = [
@@ -326,27 +340,9 @@ export default function App() {
         <a className="brand" href="./" aria-label="Pattern Studio">
           <img src={logo} alt="PEU Patterns" width="142" height="66" />
         </a>
-        <div className="top-divider" />
-        <div className="project-name">
-          <input
-            aria-label="Nombre del proyecto"
-            value={s.project.metadata.name}
-            onChange={(e) =>
-              s.change((p) => {
-                p.metadata.name = e.target.value;
-              })
-            }
-          />
-          <span
-            title={
-              s.fileSaved
-                ? 'Archivo guardado'
-                : 'Cambios conservados en autosave; podés guardar un archivo JSON'
-            }
-          >
-            {!s.fileSaved && '•'}
-          </span>
-          <ChevronDown size={13} />
+        <div className="app-title">
+          <strong>Patterns</strong>
+          <small>Patrones Geométricos</small>
         </div>
         <div className="mode-switch" role="tablist" aria-label="Contexto de trabajo">
           {(
@@ -412,6 +408,18 @@ export default function App() {
               Archivo <ChevronDown size={13} />
             </summary>
             <div className="menu-popover">
+              <label className="file-project-name">
+                Nombre del proyecto
+                <input
+                  aria-label="Nombre del proyecto"
+                  value={s.project.metadata.name}
+                  onChange={(e) =>
+                    s.change((p) => {
+                      p.metadata.name = e.target.value;
+                    })
+                  }
+                />
+              </label>
               <button
                 onClick={() => {
                   s.load(newStudy(), { fresh: true });
@@ -580,16 +588,6 @@ export default function App() {
           {s.mode !== 'apply' && (
             <div className="continuous-view-controls">
               <button
-                aria-pressed={s.project.preferences.sourceView}
-                onClick={() =>
-                  s.change((p) => {
-                    p.preferences.sourceView = !p.preferences.sourceView;
-                  })
-                }
-              >
-                Fuente pura
-              </button>
-              <button
                 disabled={
                   !s.visiblePatterns.some(
                     (p) =>
@@ -601,7 +599,11 @@ export default function App() {
                 onClick={() =>
                   s.change((p) => {
                     p.preferences.repetitionView =
-                      p.preferences.repetitionView === 'single' ? 'extended' : 'single';
+                      !p.preferences.split && p.preferences.repetitionView === 'single'
+                        ? 'extended'
+                        : 'single';
+                    p.preferences.sourceView = false;
+                    p.preferences.split = false;
                   })
                 }
               >
@@ -679,7 +681,7 @@ export default function App() {
           >
             {s.mode === 'edit' && s.project.preferences.split ? (
               <>
-                <Canvas studio={s} editorOnly />
+                <Canvas studio={s} cellOnly />
                 <Canvas studio={s} previewOnly />
               </>
             ) : (
@@ -839,6 +841,13 @@ export default function App() {
         </div>
       )}
       {commandOpen && <CommandPalette commands={commands} onClose={() => setCommandOpen(false)} />}
+      {saveOpen && (
+        <SaveDialog
+          name={s.project.metadata.name}
+          onSave={saveNamed}
+          onClose={() => setSaveOpen(false)}
+        />
+      )}
       {exportOpen && <ExportDialog studio={s} onClose={() => setExportOpen(false)} />}
       {importText !== null && (
         <Modal label="Importar SVG" className="simple-modal" onClose={() => setImportText(null)}>

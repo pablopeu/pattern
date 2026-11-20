@@ -119,6 +119,7 @@ test('AC-12/13: rectángulo 100x50 mm, JSON portable y recuperación', async ({ 
   await (await field(page, 'Alto')).fill('50');
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Guardar proyecto', exact: true }).click();
+  await page.getByRole('button', { name: 'Guardar archivo', exact: true }).click();
   const download = await downloadPromise;
   const file = await download.path();
   expect(file).not.toBeNull();
@@ -267,9 +268,7 @@ test('presets y biblioteca conservan proyectos al restaurar ejemplos', async ({ 
   await menu(page, 'Biblioteca de este navegador');
   const dialog = page.getByRole('dialog', { name: 'Biblioteca de proyectos' });
   await dialog.getByRole('button', { name: /Mi proyecto conservado/ }).click();
-  await expect(page.getByLabel('Nombre del proyecto', { exact: true })).toHaveValue(
-    'Mi proyecto conservado',
-  );
+  await expect(await field(page, 'Nombre del proyecto')).toHaveValue('Mi proyecto conservado');
   const d = page.waitForEvent('download');
   await menu(page, 'Exportar preset del patrón');
   const file = await (await d).path();

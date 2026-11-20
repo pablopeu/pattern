@@ -1032,6 +1032,23 @@ export function Panels({
 
             {category === 'preferences' && (
               <Section title="VIEW">
+                <details className="advanced-view">
+                  <summary>Vista avanzada</summary>
+                  <Toggle
+                    label="Fuente pura (edición avanzada)"
+                    checked={s.project.preferences.sourceView}
+                    onChange={(value) =>
+                      s.change((p) => {
+                        p.preferences.sourceView = value;
+                        if (value) p.preferences.split = false;
+                      })
+                    }
+                  />
+                  <p className="hint">
+                    Editá los originales completos, incluso fuera de la celda. Útil para curvas que
+                    cruzan varias celdas y patrones sin repetición periódica.
+                  </p>
+                </details>
                 <label className="text-field">
                   <span>Nombre del proyecto</span>
                   <input

@@ -2567,3 +2567,22 @@ input[type='color']::-webkit-color-swatch {
 .canvas-floats { width: max-content; max-width: calc(100% - 16px); height: auto; min-height: 39px; flex-wrap: wrap; justify-content: center; }
 .canvas-floats > button, .canvas-floats > span, .canvas-floats > i, .structure-opacity { flex-shrink: 0; }
 @media(max-width:650px) { .canvas-floats { min-height:34px; } }
+
+/* Application identity stays visible; editable file name lives in Archivo. */
+.app-title { display:flex; flex-direction:column; gap:3px; flex-shrink:0; margin-left:-8px; }
+.app-title strong { font-size:26px; color:var(--text); letter-spacing:-.4px; }
+.app-title small { font-size:13px; color:#68785c; white-space:nowrap; }
+.file-project-name { display:flex; flex-direction:column; gap:6px; padding:10px; }
+.file-project-name input { min-width:0; width:100%; padding:8px; border:1px solid var(--line); border-radius:6px; }
+.save-dialog { width:min(440px, calc(100vw - 24px)); }
+.save-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
+.save-actions button { padding:9px 14px; border:1px solid var(--line); border-radius:7px; }
+@media(max-width:1100px) { .topbar {gap:10px;} .app-title strong {font-size:23px;} }
+@media(max-width:650px) {
+ .topbar {grid-template-columns:82px 1fr minmax(0,1fr); grid-template-rows:52px 38px;}
+ .topbar .brand img {width:76px;}
+ .topbar .app-title {grid-column:2; grid-row:1; gap:2px; margin-left:0;}
+ .topbar .app-title strong {font-size:18px;}
+ .topbar .app-title small {font-size:10px; max-width:105px; white-space:normal;}
+ .topbar .top-actions {grid-column:3; gap:4px;}
+}

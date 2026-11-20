@@ -51,6 +51,7 @@ interface Props {
   studio: Studio;
   editorOnly?: boolean;
   previewOnly?: boolean;
+  cellOnly?: boolean;
 }
 interface Drag {
   type: 'pan' | 'move' | 'node' | 'draw' | 'penhandle' | 'marquee' | 'origin' | 'orientation';
@@ -79,21 +80,28 @@ function safeScene(
     return { scene: null, error: (e as Error).message };
   }
 }
-const PIXELS_PER_MM = 3.779527559;
+const PIXELS_PER_MM = 7.559055118;
 const centeredView = (width: number, height: number): Bounds => ({
   x: -width / PIXELS_PER_MM / 2,
   y: -height / PIXELS_PER_MM / 2,
   width: width / PIXELS_PER_MM,
   height: height / PIXELS_PER_MM,
 });
-export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: Props) {
+export function Canvas({
+  studio: s,
+  editorOnly = false,
+  previewOnly = false,
+  cellOnly = false,
+}: Props) {
   const activePattern = s.effectivePattern;
   const [view, setView] = useState<Bounds>({ x: -110, y: -100, width: 300, height: 240 }),
     [size, setSize] = useState({ width: 1000, height: 800 }),
     [cursor, setCursor] = useState<Point>({ x: 0, y: 0 }),
     [marquee, setMarquee] = useState<{ start: Point; end: Point } | null>(null);
   const freshView = useRef(false),
-    viewSize = useRef(size);
+    viewSize = useRef(size),
+    measuredWidth = useRef<number | undefined>(undefined),
+    cellCenter = useRef<Point | null>(null);
   viewSize.current = size;
   useEffect(() => {
     if (!s.viewReset) return;
@@ -134,16 +142,26 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
   );
   useEffect(() => {
     if (!container.current) return;
-    let measuredWidth: number | undefined;
     const observer = new ResizeObserver((entries) => {
       const r = entries[0].contentRect;
       const width = Math.max(1, r.width);
       if (freshView.current) setView(centeredView(width, Math.max(1, r.height)));
-      else if (measuredWidth !== undefined && measuredWidth !== width) {
-        const ratio = width / measuredWidth;
-        setView((v) => ({ ...v, width: v.width * ratio }));
+      else if (measuredWidth.current !== undefined) {
+        const ratio = width / measuredWidth.current;
+        setView((v) => {
+          const width = v.width * ratio,
+            center = cellCenter.current;
+          return center
+            ? {
+                x: center.x - width / 2,
+                y: center.y - (width * r.height) / Math.max(1, r.width) / 2,
+                width,
+                height: (width * r.height) / Math.max(1, r.width),
+              }
+            : { ...v, width };
+        });
       }
-      measuredWidth = width;
+      measuredWidth.current = width;
       setSize({ width, height: Math.max(1, r.height) });
     });
     observer.observe(container.current);
@@ -176,9 +194,123 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     [activePattern, actualView],
   );
   const patternLayers = useMemo(
-    () => s.visiblePatterns.map((pattern) => ({ pattern, ...safeScene(pattern, actualView) })),
-    [s.visiblePatterns, actualView],
+    () =>
+      s.visiblePatterns
+        .filter((p) => !cellOnly || p.id === activePattern.id)
+        .map((pattern) => ({ pattern, ...safeScene(pattern, actualView) })),
+    [s.visiblePatterns, actualView, cellOnly, activePattern.id],
   );
+  const split = s.project.preferences.split && s.mode === 'edit';
+  const periodic =
+    activePattern.generator.kind !== 'penrose' &&
+    (!!activePattern.tiling || ['wallpaper', 'frieze'].includes(activePattern.symmetry.family));
+  const cellBounds = useMemo(() => {
+    if (activePattern.generator.kind === 'penrose') {
+      const r = activePattern.generator.radius;
+      return { x: -r, y: -r, width: r * 2, height: r * 2 };
+    }
+    if (activePattern.tiling) return tileWorldBounds(activePattern.tiling);
+    if (activePattern.symmetry.family === 'wallpaper') return frameBounds(activePattern.symmetry);
+    if (activePattern.symmetry.family === 'frieze') {
+      const b = frameBounds(activePattern.symmetry),
+        source = geometryBounds(activePattern.sourceGeometry);
+      return { ...b, y: source.y, height: Math.max(20, source.height) };
+    }
+    return geometryBounds(
+      safeScene(activePattern, { x: -500, y: -500, width: 1000, height: 1000 }).scene?.generated
+        .geometry ?? activePattern.sourceGeometry,
+    );
+  }, [activePattern]);
+  const focusCell =
+    cellOnly ||
+    (!previewOnly &&
+      !editorOnly &&
+      s.mode !== 'apply' &&
+      s.project.preferences.repetitionView === 'single');
+  const cellPolygon = useMemo(() => {
+    if (!periodic || activePattern.symmetry.family === 'frieze') return '';
+    const tile = activePattern.tiling,
+      basis = tile ? tileBasis(tile) : lattice(activePattern.symmetry);
+    const points = [
+      { x: 0, y: 0 },
+      { x: basis[0], y: basis[1] },
+      { x: basis[0] + basis[2], y: basis[1] + basis[3] },
+      { x: basis[2], y: basis[3] },
+    ];
+    const origin = activePattern.symmetry.origin;
+    return points
+      .map((p) => (tile ? apply(tileFrame(tile), p) : { x: p.x + origin.x, y: p.y + origin.y }))
+      .map((p) => `${p.x},${p.y}`)
+      .join(' ');
+  }, [periodic, activePattern.symmetry, activePattern.tiling]);
+  cellCenter.current = focusCell
+    ? { x: cellBounds.x + cellBounds.width / 2, y: cellBounds.y + cellBounds.height / 2 }
+    : null;
+  const focusKey = focusCell
+    ? JSON.stringify([
+        activePattern.id,
+        activePattern.symmetry,
+        activePattern.tiling,
+        activePattern.generator.kind,
+      ])
+    : '';
+  const fittedCell = useRef(''),
+    pendingFit = useRef(false);
+  // Entry/configuration fits the real cell once; drawing and wheel zoom never refit it.
+  useEffect(() => {
+    if (!focusKey) {
+      fittedCell.current = '';
+      return;
+    }
+    if (fittedCell.current === focusKey || !container.current) return;
+    fittedCell.current = focusKey;
+    pendingFit.current = true;
+    freshView.current = false;
+    const rect = svgRef.current!.getBoundingClientRect();
+    measuredWidth.current = rect.width;
+    setSize({ width: rect.width, height: rect.height });
+    const width = Math.max(
+      20,
+      cellBounds.width + 16,
+      ((cellBounds.height + 16) * rect.width) / Math.max(1, rect.height),
+    );
+    const height = (width * rect.height) / Math.max(1, rect.width);
+    setView({
+      x: cellBounds.x + cellBounds.width / 2 - width / 2,
+      y: cellBounds.y + cellBounds.height / 2 - height / 2,
+      width,
+      height,
+    });
+    s.setViewScale({ scale: rect.width / width, sender: prefix });
+  }, [focusKey, cellBounds, prefix, s.setViewScale]);
+  useEffect(() => {
+    if (pendingFit.current) {
+      pendingFit.current = false;
+      return;
+    }
+    if (!split || s.viewScale.sender === prefix || !container.current) return;
+    freshView.current = false;
+    const rect = svgRef.current!.getBoundingClientRect();
+    measuredWidth.current = rect.width;
+    setSize({ width: rect.width, height: rect.height });
+    const width = rect.width / s.viewScale.scale,
+      height = rect.height / s.viewScale.scale;
+    setView((v) => {
+      const center = cellOnly
+        ? { x: cellBounds.x + cellBounds.width / 2, y: cellBounds.y + cellBounds.height / 2 }
+        : { x: v.x + v.width / 2, y: v.y + (v.width * rect.height) / rect.width / 2 };
+      return { x: center.x - width / 2, y: center.y - height / 2, width, height };
+    });
+  }, [
+    split,
+    s.viewScale,
+    prefix,
+    cellOnly,
+    cellBounds.x,
+    cellBounds.y,
+    cellBounds.width,
+    cellBounds.height,
+  ]);
   const fill = useFill(
     s,
     patternLayers.filter((l) => !!l.scene),
@@ -788,18 +920,24 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       x: actualView.x + actualView.width / 2,
       y: actualView.y + actualView.height / 2,
     },
-  ) =>
-    setView((v) => {
-      freshView.current = false;
-      const width = Math.max(10, Math.min(10000, v.width * factor)),
-        f = width / v.width;
-      return {
-        ...v,
-        width,
-        x: center.x + (v.x - center.x) * f,
-        y: center.y + (v.y - center.y) * f,
-      };
+  ) => {
+    freshView.current = false;
+    const width = Math.max(10, Math.min(10000, view.width * factor)),
+      f = width / view.width;
+    const anchor = cellOnly
+      ? { x: cellBounds.x + cellBounds.width / 2, y: cellBounds.y + cellBounds.height / 2 }
+      : center;
+    setView({
+      ...view,
+      width,
+      height: (width * size.height) / size.width,
+      x: cellOnly ? anchor.x - width / 2 : anchor.x + (view.x - anchor.x) * f,
+      y: cellOnly
+        ? anchor.y - (width * size.height) / size.width / 2
+        : anchor.y + (view.y - anchor.y) * f,
     });
+    s.setViewScale({ scale: size.width / width, sender: prefix });
+  };
   useEffect(() => {
     const svg = svgRef.current;
     if (!svg) return;
@@ -820,7 +958,8 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
   const fit = (patternView = false) => {
     freshView.current = false;
     let b: Bounds;
-    if (s.mode === 'apply' && s.region) b = geometryBounds(s.region.geometry);
+    if (focusCell) b = cellBounds;
+    else if (s.mode === 'apply' && s.region) b = geometryBounds(s.region.geometry);
     else if (patternView && activePattern.tiling && activePattern.generator.kind !== 'penrose')
       b = tileWorldBounds(activePattern.tiling);
     else if (
@@ -844,6 +983,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       };
     else b = geometryBounds(s.objects);
     const width = Math.max(b.width + 30, ((b.height + 30) * size.width) / size.height);
+    s.setViewScale({ scale: size.width / width, sender: prefix });
     setView({
       x: b.x + b.width / 2 - width / 2,
       y: b.y + b.height / 2 - (width * size.height) / size.width / 2,
@@ -1132,7 +1272,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
   );
   return (
     <div
-      className={`canvas-container ${editorOnly ? 'source-canvas' : ''} ${previewOnly ? 'preview-canvas' : ''}`}
+      className={`canvas-container ${editorOnly || cellOnly ? 'source-canvas' : ''} ${previewOnly ? 'preview-canvas' : ''}`}
       ref={container}
     >
       {s.mode !== 'apply' && !previewOnly && (captureLabel || s.instanceExplicit) && (
@@ -1157,8 +1297,14 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       )}
       {s.project.preferences.split && (
         <div className="view-label">
-          {editorOnly ? 'GEOMETRÍA FUENTE' : 'VISTA DEL PATRÓN'}
-          <span>{editorOnly ? 'Editable' : 'Sincronizada'}</span>
+          {cellOnly
+            ? periodic
+              ? 'CELDA DE REFERENCIA'
+              : 'MOTIVO COMPLETO'
+            : editorOnly
+              ? 'GEOMETRÍA FUENTE'
+              : 'VISTA DEL PATRÓN'}
+          <span>{editorOnly || cellOnly ? 'Editable' : 'Sincronizada'}</span>
         </div>
       )}
       {s.tool === 'fill' && !previewOnly && (
@@ -1225,6 +1371,11 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         aria-label={editorOnly ? 'Editor de geometría' : 'Lienzo de patrones'}
       >
         <defs>
+          {focusCell && cellPolygon && (
+            <clipPath id={`${prefix}-reference-cell`}>
+              <polygon points={cellPolygon} />
+            </clipPath>
+          )}
           <pattern
             id={`${prefix}-grid`}
             x={-2.5}
@@ -1249,10 +1400,21 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         {structure && !scene?.tiling && (
           <g
             aria-label="Estructura matemática de simetría"
+            clipPath={focusCell && cellPolygon ? `url(#${prefix}-reference-cell)` : undefined}
             pointerEvents="none"
             dangerouslySetInnerHTML={{
               __html: structureMarkup(structure, s.project.preferences.structureOpacity, scalePx),
             }}
+          />
+        )}
+        {focusCell && cellPolygon && (
+          <polygon
+            aria-label="Límite de la celda"
+            points={cellPolygon}
+            fill="none"
+            stroke="#60794b"
+            strokeWidth={1.2 / scalePx}
+            pointerEvents="none"
           />
         )}
         {s.mode !== 'apply' &&
@@ -1273,7 +1435,8 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
                 if (!layer.scene) return null;
                 const sym = layer.pattern.symmetry,
                   single =
-                    s.project.preferences.repetitionView === 'single' &&
+                    (cellOnly ||
+                      (!previewOnly && s.project.preferences.repetitionView === 'single')) &&
                     !layer.scene.generated.finite &&
                     (!!layer.scene.tiling || ['wallpaper', 'frieze'].includes(sym.family));
                 const tile = layer.scene.tiling?.definition;
@@ -1741,7 +1904,15 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
           aria-label="Restablecer vista"
           onClick={() => {
             freshView.current = true;
-            setView(centeredView(size.width, size.height));
+            const rect = svgRef.current!.getBoundingClientRect();
+            const centered = centeredView(rect.width, rect.height);
+            if (cellOnly) {
+              centered.x += cellBounds.x + cellBounds.width / 2;
+              centered.y += cellBounds.y + cellBounds.height / 2;
+              freshView.current = false;
+            }
+            setView(centered);
+            s.setViewScale({ scale: PIXELS_PER_MM, sender: prefix });
           }}
         >
           <Scan size={17} />

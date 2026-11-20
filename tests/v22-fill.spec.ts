@@ -1,4 +1,4 @@
-import { context, styles, catalog, symmetry, field } from './navigation';
+import { pureSource, context, styles, catalog, symmetry, field } from './navigation';
 import { test, expect, type Page } from '@playwright/test';
 async function saved(page: Page) {
   await expect(page.locator('.save-indicator')).toHaveText(/Guardado local/);
@@ -618,9 +618,9 @@ test('Fill en Penrose conserva color al soltar y salir, perímetro y persistenci
   expect(await redAt(page, sample.point.x, sample.point.y)).toBe(false);
   await page.getByRole('button', { name: 'Rehacer', exact: true }).click();
   await saved(page);
-  await page.getByRole('button', { name: 'Fuente pura', exact: true }).click();
+  await pureSource(page);
   expect(await redAt(page, sample.point.x, sample.point.y)).toBe(true);
-  await page.getByRole('button', { name: 'Fuente pura', exact: true }).click();
+  await pureSource(page);
   await page.reload();
   await saved(page);
   await page.getByRole('button', { name: 'Ajustar al patrón', exact: true }).click();

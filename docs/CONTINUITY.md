@@ -1,3 +1,33 @@
+# Incremento de cámara, guardado y cabecera · Verificación integrada en curso
+
+Pedidos sucesivos de Pablo incorporados al mismo incremento. Cabecera Patterns,
+subtítulo «Patrones Geométricos», tamaños mayores y sin separador junto al logo.
+Nombre movido a Archivo. Guardar pide nombre; blanco/sin título propone
+Estudio-AA-MM-DD-HH-MM en hora local, sin extensión en el campo. Cancelar no
+modifica el documento; descarga conserva schema4 y fuentes.
+
+Trazo usa PenLine y slider0–2mm; entrada numérica conserva hasta50mm para proyectos
+anteriores. Zoom100 equivale al200 anterior (7,559055118px/mm), sin alterar medidas
+ni exportación. Vista dividida: celda activa editable a izquierda, centrada/ajustada
+al entrar y al cambiar configuración; repetición de conjuntos visibles a derecha.
+Zoom compartido en botones/rueda/ajustar/restablecer, escala conservada al resize.
+Una celda sale de split; Fuente pura en Preferencias → Vista avanzada conserva
+edición de originales completos/Penrose. Sin celda periódica se muestra motivo
+completo; no se inventa una celda para Penrose.
+
+206 unitarias/TypeScript, build y4 E2E dirigidas correctos (arranque1440/390,
+centro/zoom/rueda/resize/rango y guardar/cancelar/nombre/descarga/recuperación).
+Verificación integrada de108 E2E en curso: .runtime/cell-header-full.log,
+resultado final en cell-header-full-result.json. Pendiente cerrar esa corrida y
+estáticas raíz/subdirectorio antes del push. Capturas reales nuevas en README.
+Servicios4173/4174 activos, sin duplicados. Marcador PROJECT_COMPLETE ausente.
+
+**Preferencia vigente: push autorizado a main al finalizar; no comprobar Actions
+ni FTP después del push. Pablo recibe errores de GitHub por email.** Esto reemplaza
+las instrucciones históricas de comprobar workflow que siguen más abajo.
+
+---
+
 # Incremento P3 y grilla negra · Verificado, push autorizado
 
 Nuevo pedido de Pablo, también enviado por monitor con id

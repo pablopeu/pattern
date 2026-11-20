@@ -509,7 +509,7 @@ for (const width of [1440, 390]) {
           m = svg.getScreenCTM()!;
         return { scale: m.a, cx: m.e - (b.x + b.width / 2), cy: m.f - (b.y + b.height / 2) };
       });
-      expect(v.scale).toBeCloseTo(3.779527559, 3);
+      expect(v.scale).toBeCloseTo(7.559055118, 3);
       expect(Math.abs(v.cx)).toBeLessThan(1);
       expect(Math.abs(v.cy)).toBeLessThan(1);
     };
@@ -582,3 +582,105 @@ for (const width of [1440, 390]) {
     );
   });
 }
+
+test.describe('Guardado en hora local', () => {
+  test.use({ timezoneId: 'America/Argentina/Buenos_Aires' });
+  test('Archivo nombra la descarga, propone fecha local y cancelar conserva el documento', async ({
+    page,
+  }) => {
+    await page.clock.setFixedTime(new Date('2026-11-20T19:47:00Z'));
+    await page.goto('/');
+    const before = (await project(page))!;
+    await expect(page.locator('.topbar .app-title')).toHaveText('PatternsPatrones Geométricos');
+    await expect(page.locator('.topbar input:visible')).toHaveCount(0);
+    await page.locator('.main-menu summary').click();
+    await page.getByRole('button', { name: 'Guardar archivo JSON', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: 'Guardar proyecto', exact: true });
+    await expect(dialog.getByLabel('Nombre del archivo')).toHaveValue('Estudio-26-11-20-16-47');
+    await dialog.getByLabel('Nombre del archivo').fill('No conservar');
+    await dialog.getByRole('button', { name: 'Cancelar', exact: true }).click();
+    expect(await project(page)).toEqual(before);
+    await page.locator('.main-menu summary').click();
+    await page.getByLabel('Nombre del proyecto', { exact: true }).fill('Mi patrón');
+    await page.getByRole('button', { name: 'Guardar archivo JSON', exact: true }).click();
+    await expect(dialog.getByLabel('Nombre del archivo')).toHaveValue('Mi patrón');
+    await dialog.getByLabel('Nombre del archivo').fill('Patrón final');
+    const downloaded = page.waitForEvent('download');
+    await dialog.getByRole('button', { name: 'Guardar archivo', exact: true }).click();
+    const file = await downloaded;
+    expect(file.suggestedFilename()).toBe('Patrón final.pattern.json');
+    const { readFile } = await import('node:fs/promises');
+    const stored = JSON.parse(await readFile((await file.path())!, 'utf8'));
+    expect(stored.metadata.name).toBe('Patrón final');
+    expect(stored.patterns).toEqual(before.patterns);
+    expect((await project(page))!.metadata.name).toBe('Patrón final');
+    await page.reload();
+    await page.locator('.main-menu summary').click();
+    await expect(page.getByLabel('Nombre del proyecto', { exact: true })).toHaveValue(
+      'Patrón final',
+    );
+  });
+});
+
+test('celda centrada, escala compartida y Trazo con deslizador 0–2 sin perder anchos existentes', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const before = (await project(page))!;
+  await page.getByRole('button', { name: 'Vista dividida', exact: true }).click();
+  const canvases = page.locator('.studio-canvas');
+  await expect(canvases).toHaveCount(2);
+  await expect(canvases.first().locator('[data-single-cell]')).toHaveCount(1);
+  await expect(canvases.last().locator('[data-single-cell]')).toHaveCount(0);
+  const scales = () =>
+    canvases.evaluateAll((els) => els.map((el) => (el as SVGSVGElement).getScreenCTM()!.a));
+  const shared = async () =>
+    expect
+      .poll(async () => {
+        const v = await scales();
+        return Math.abs(v[0] - v[1]);
+      })
+      .toBeLessThan(0.001);
+  await shared();
+  const initial = (await scales())[0];
+  await page.getByRole('button', { name: 'Acercar', exact: true }).last().click();
+  await shared();
+  expect((await scales())[0]).toBeGreaterThan(initial);
+  await page.getByRole('button', { name: 'Alejar', exact: true }).first().click();
+  await shared();
+  expect((await scales())[0]).toBeCloseTo(initial, 3);
+  const rect = await canvases.last().boundingBox();
+  await page.mouse.move(rect!.x + rect!.width / 2, rect!.y + rect!.height / 2);
+  await page.keyboard.down('Control');
+  await page.mouse.wheel(0, -80);
+  await page.keyboard.up('Control');
+  await expect.poll(async () => (await scales())[0]).toBeGreaterThan(initial);
+  await shared();
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await shared();
+  const centered = await canvases.first().evaluate((el) => {
+    const svg = el as SVGSVGElement,
+      boundary = svg.querySelector('[aria-label="Límite de la celda"]') as SVGGraphicsElement;
+    const box = boundary.getBBox(),
+      p = new DOMPoint(box.x + box.width / 2, box.y + box.height / 2).matrixTransform(
+        svg.getScreenCTM()!,
+      ),
+      r = svg.getBoundingClientRect();
+    return Math.hypot(p.x - r.x - r.width / 2, p.y - r.y - r.height / 2);
+  });
+  expect(centered).toBeLessThan(1);
+  expect((await project(page))!.patterns).toEqual(before.patterns);
+  await page.getByRole('button', { name: 'Una celda', exact: true }).click();
+  await expect(canvases).toHaveCount(1);
+  await expect(canvases.locator('[data-single-cell]')).toHaveCount(1);
+  await expect(page.getByRole('button', { name: 'Fuente pura', exact: true })).toHaveCount(0);
+  const panel = await styles(page, 'Trazo');
+  await expect(panel.getByLabel('Grosor de trazo deslizador', { exact: true })).toHaveAttribute(
+    'max',
+    '2',
+  );
+  await panel.getByLabel('Grosor de trazo', { exact: true }).fill('5');
+  await expect(panel.getByLabel('Grosor de trazo', { exact: true })).toHaveValue('5');
+  await expect(panel.getByLabel('Grosor de trazo deslizador', { exact: true })).toHaveValue('2');
+  expect((await project(page))!.drawingStyle.strokeWidth).toBe(5);
+});

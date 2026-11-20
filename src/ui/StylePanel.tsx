@@ -206,6 +206,7 @@ export function StyleControls({
             unit={u}
             min={0}
             max={fromMM(50, u)}
+            sliderMax={fromMM(2, u)}
             step={fromMM(0.1, u)}
             slider
             onChange={(n) => patch({ strokeWidth: toMM(n, u) })}
