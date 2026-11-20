@@ -12,8 +12,29 @@ conservados; commit/push autorizado sin consultar Actions/FTP.
 
 **Nuevo pedido pendiente:** Pablo solicita buscar referencias de Escher y patrones
 interesantes en la web, recrearlos como ejemplos editables de mayor calidad.
-Al terminar el incremento de cámara, comprobar cupo antes de iniciar ejemplos.
-No registrar PROJECT_COMPLETE mientras este pedido esté pendiente.
+Cámara publicada en bd96641. Monitor20:13UTC: primaria86% usada, secundaria90%
+(10% restante), status=winding_down; timer para el reset real secundario+60s.
+Por regla de cupo, no se inicia implementación de ejemplos. PROJECT_COMPLETE
+continúa ausente para que el monitor retome el pedido pendiente. No duplicar
+servicios4173/4174. Leer este estado y comprobar uso al reanudar.
+
+Referencias encontradas (lectura, sin copiar código ni descargar originales):
+- Museo Escher, peces/aves y división del plano:
+  https://www.escherinhetpaleis.nl/en/about-escher/escher-today/experimenting-fishes-birds
+- Museo Escher, reptiles:
+  https://www.escherinhetpaleis.nl/en/about-escher/escher-today/repeating-reptiles
+- Galería oficial de simetrías: https://mcescher.com/gallery/symmetry/
+- Truchet, artículo primario sobre variantes:
+  https://pmc.ncbi.nlm.nih.gov/articles/PMC7660392/
+- Girih, Lu/Steinhardt, patrones geométricos:
+  https://bpb-us-w2.wpmucdn.com/sites.uwm.edu/dist/0/158/files/2017/04/Lu-Steinhardt.Decagonal-and-Quasi-Crystalline-Tilings-in-Medieval-Islamic-Architecture.2017-23rjxd4.pdf
+
+Propuesta pendiente: motivos figurativos entrelazados (peces/aves/reptiles),
+Truchet de arcos y estrellas geométricas. Crear geometría vectorial propia,
+editable en el modelo canónico, con paletas y composiciones cuidadas; revisar
+visualmente antes de entregar. Conservar los8 ejemplos anteriores para regresión
+(índices usados en fixtures). Auditar teselado/simetría real, JSON y exportaciones;
+agregar capturas, descargas y referencias en README. Ninguno creado todavía.
 
 ---
 

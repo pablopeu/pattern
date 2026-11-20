@@ -722,3 +722,14 @@
   exit0,6 estáticas correctos. Logs cell-fixed-* en .runtime. README actualizado.
 - Nuevo pedido posterior: referencias web de Escher/otros patrones y ejemplos
   editables mejores. Pendiente después de este cierre; comprobar cupo real.
+
+
+## Publicación de cámara fija y continuidad de ejemplos
+
+- bd96641 publicado en main;111/111 E2E,206 unitarias, build y6 estáticas correctos.
+- Lectura inicial de referencias del museo/galería Escher (peces, aves, reptiles),
+  Truchet y artículo de Lu/Steinhardt. Enlaces e implementación pendiente en
+  CONTINUITY.md. Todavía no se añadieron ejemplos; preservar8 fixtures anteriores.
+- Monitor indica10% restante secundario, winding_down. Cierre del incremento sin
+  iniciar implementación nueva; timer del monitor apunta al reset real+60s.
+  PROJECT_COMPLETE ausente; servicios4173/4174 conservados para revisión/feedback.
