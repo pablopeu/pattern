@@ -1,3 +1,4 @@
+import { strokePadding } from '../geometry/stroke-bounds';
 import { tileFillContour } from '../fill/coordinates';
 import {
   tileBoundary,
@@ -50,7 +51,7 @@ export function buildScene(pattern: Pattern, bounds: Bounds, prepared?: Generate
         { x: base.x, y: base.y + base.height },
         { x: base.x + base.width, y: base.y + base.height },
       ],
-      padding = Math.max(1, ...inner.generated.geometry.map((g) => g.strokeWidth)) * 2,
+      padding = strokePadding(inner.generated.geometry, inner.generated.placements),
       wrapped = new Map<string, Instance>(),
       local = { ...definition, origin: { x: 0, y: 0 }, rotation: 0 };
     for (const instance of inner.instances) {
@@ -152,7 +153,7 @@ export function buildScene(pattern: Pattern, bounds: Bounds, prepared?: Generate
       { x: base.x + base.width, y: base.y + base.height },
     ],
     extent = generated.placements.flatMap((m) => corners.map((p) => apply(m, p)));
-  const padding = Math.max(1, ...generated.geometry.map((g) => g.strokeWidth)) * 2;
+  const padding = strokePadding(generated.geometry, generated.placements);
   const motif = extent.length
     ? {
         x: Math.min(...extent.map((p) => p.x)) - padding,

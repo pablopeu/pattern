@@ -9,7 +9,13 @@ import { paperPath, paperData, scope } from '../geometry/paper';
 import { clipGeometry } from '../application/clipping';
 import { tileBoundary } from '../tiling/tiles';
 import { profile, type DrawingStyle } from '../app/styles';
-import { buildArrangement, type Arrangement, type BoundaryInput, type PlanarFace } from './planar';
+import {
+  buildArrangement,
+  NUMERICAL_CLOSURE,
+  type Arrangement,
+  type BoundaryInput,
+  type PlanarFace,
+} from './planar';
 import type { Bounds } from '../symmetry/groups';
 export interface FillLayer {
   pattern: Pattern;
@@ -84,7 +90,7 @@ export function clipAxis(
 }
 export function collectFillInputs(layers: FillLayer[], bounds: Bounds): CapturedBoundary[] {
   const result: CapturedBoundary[] = [],
-    view = new scope.Rectangle(bounds);
+    view = new scope.Rectangle(bounds).expand(2 * NUMERICAL_CLOSURE);
   for (const [layerIndex, { pattern, scene }] of layers.entries()) {
     if (!scene) continue;
     for (const instance of scene.instances)

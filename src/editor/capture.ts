@@ -1,3 +1,5 @@
+import { geometryHit } from './hitGeometry';
+import { strokeExtent } from '../geometry/stroke-bounds';
 import type { Pattern, Geometry } from '../app/model';
 import type { Scene } from '../patterns/engine';
 import {
@@ -173,13 +175,8 @@ export function hitCandidates(
             : g.fillRegion && g.fillRegion.scope !== 'source'
         )
           continue;
-        if (!path.bounds.expand(tol * 2 + g.strokeWidth).contains(point)) continue;
-        const nearest = path.getNearestPoint(point);
-        if (
-          (g.fill !== 'none' && path.contains(point)) ||
-          (nearest &&
-            distance(q, { x: nearest.x, y: nearest.y }) < Math.max(tol, g.strokeWidth / 2))
-        ) {
+        if (!path.bounds.expand(2 * (tol + strokeExtent(g))).contains(point)) continue;
+        if (geometryHit(g, path, q, tol)) {
           hits.push({ ...candidate, shapeId: g.id });
           break;
         }

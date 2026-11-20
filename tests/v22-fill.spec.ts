@@ -103,20 +103,13 @@ async function screen(page: Page, x: number, y: number) {
   );
 }
 async function paint(page: Page, x: number, y: number) {
+  const before = Number(await page.locator('.fill-actions').getAttribute('data-fill-applied'));
   const p = await screen(page, x, y);
-  await page.mouse.move(p.x, p.y);
-  await expect(page.locator('[data-fill-preview]')).toBeVisible();
+  await page.mouse.click(p.x, p.y);
+  await page.mouse.move(2, 2);
   await expect
-    .poll(() =>
-      page
-        .locator('[data-fill-preview]')
-        .evaluate((el, p) => (el as SVGGeometryElement).isPointInFill(new DOMPoint(p.x, p.y)), {
-          x,
-          y,
-        }),
-    )
-    .toBe(true);
-  await page.getByRole('button', { name: 'Confirmar relleno', exact: true }).click();
+    .poll(async () => Number(await page.locator('.fill-actions').getAttribute('data-fill-applied')))
+    .toBeGreaterThan(before);
   await saved(page);
 }
 async function redAt(page: Page, x: number, y: number) {
@@ -224,6 +217,7 @@ test('v2.2 Fill confirma con mouse sobre lienzo y autocierra panel sin perder op
   await page.mouse.move(q.x, q.y);
   await expect(page.locator('[data-fill-preview]')).toBeVisible();
   await page.mouse.click(q.x, q.y);
+  await expect(page.locator('.fill-actions')).toHaveAttribute('data-fill-applied', '1');
   await saved(page);
   await expect(page.getByRole('complementary', { name: 'Panel de estilos' })).not.toBeVisible();
   expect((await model(page)).patterns[0].sourceGeometry).toHaveLength(5);
@@ -369,7 +363,10 @@ test('Fill rechaza abertura y sólo la cierra con tolerancia explícita sin toca
     q = await screen(page, 10, 10);
   await page.mouse.move(q.x, q.y);
   await expect(page.locator('.fill-actions')).toContainText('0 caras');
-  await expect(page.getByRole('button', { name: 'Confirmar relleno', exact: true })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Confirmar relleno', exact: true })).toHaveCount(0);
+  await page.mouse.click(q.x, q.y);
+  await expect(page.locator('.toast')).toContainText('No hay una región cerrada');
+  expect((await model(page)).patterns[0].sourceGeometry).toEqual(before);
   await expect(page.locator('[data-fill-preview]')).toHaveCount(0);
   await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
   await page
@@ -426,13 +423,13 @@ test('Fill conserva una cara que cruza la frontera de celda sin partir su fuente
 });
 test.describe('Fill táctil', () => {
   test.use({ hasTouch: true });
-  test('primer toque sólo previsualiza y el botón táctil confirma una región', async ({ page }) => {
+  test('el primer toque aplica relleno persistente sin confirmación aparte', async ({ page }) => {
     await setup(page);
     const q = await screen(page, 10, 10);
     await page.touchscreen.tap(q.x, q.y);
-    await expect(page.locator('[data-fill-preview]')).toBeVisible();
-    expect((await model(page)).patterns[0].sourceGeometry).toHaveLength(4);
-    await page.getByRole('button', { name: 'Confirmar relleno', exact: true }).tap();
+    await expect(page.getByRole('button', { name: 'Confirmar relleno', exact: true })).toHaveCount(
+      0,
+    );
     await expect.poll(async () => (await model(page)).patterns[0].sourceGeometry.length).toBe(5);
     expect(await redAt(page, 10, 10)).toBe(true);
   });
@@ -520,4 +517,25 @@ test('Fill de tesela fijo conserva fuente al editar borde y el vinculado cubre e
   expect(await redAt(page, 30, 1)).toBe(true);
   p = await model(page);
   expect(p.patterns[0].sourceGeometry[0].fillRegion?.status).toBe('linked');
+});
+
+test('Fill aplica clics rápidos y mantiene color al salir, autocerrar panel y deshacer', async ({
+  page,
+}) => {
+  await setup(page, 'periodic');
+  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
+  await paint(page, 10, 10);
+  await expect(page.getByRole('complementary', { name: 'Panel de estilos' })).toHaveCount(0);
+  expect(await redAt(page, 10, 10)).toBe(true);
+  const before = (await model(page)).patterns[0].sourceGeometry;
+  const q = await screen(page, 30, 30);
+  await page.mouse.click(q.x, q.y);
+  await page.mouse.click(q.x, q.y);
+  await expect
+    .poll(async () => Number(await page.locator('.fill-actions').getAttribute('data-fill-applied')))
+    .toBe(3);
+  expect((await model(page)).patterns[0].sourceGeometry).toHaveLength(before.length);
+  await page.getByRole('button', { name: 'Deshacer', exact: true }).click();
+  await expect.poll(async () => (await model(page)).patterns[0].sourceGeometry.length).toBe(2);
+  expect(await redAt(page, 10, 10)).toBe(false);
 });

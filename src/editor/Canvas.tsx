@@ -1,3 +1,4 @@
+import { geometryHit } from './hitGeometry';
 import { sceneLayers } from '../patterns/layers';
 import { useFill } from '../fill/useFill';
 import { TileEditor } from '../tiling/TileEditor';
@@ -40,7 +41,7 @@ import {
   type Point,
 } from '../geometry/matrix';
 import { pathData, simplifyPoints } from '../geometry/paths';
-import { paperPath, scope, smoothNodes } from '../geometry/paper';
+import { paperPath, smoothNodes } from '../geometry/paper';
 import { buildScene, sceneScaleBound, type Scene } from '../patterns/engine';
 import { lattice, latticeVectors, fundamentalDomain, type Bounds } from '../symmetry/groups';
 import { symmetryGuides, verifyPeriodicity } from '../symmetry/guides';
@@ -401,11 +402,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       if (!g.visible || g.locked) continue;
       const path = paperPath(g);
       try {
-        const loc = path.getNearestPoint(new scope.Point(p.x, p.y));
-        if (
-          (g.fill !== 'none' && path.contains(new scope.Point(p.x, p.y))) ||
-          (loc && distance(p, { x: loc.x, y: loc.y }) < Math.max(7 / scalePx, g.strokeWidth / 2))
-        ) {
+        if (geometryHit(g, path, p, 7 / scalePx)) {
           hit = g;
           break;
         }
@@ -477,19 +474,12 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       setCaptureLabel('');
     }
   }, [s.project]);
-  const willConfirmFill = (event: RPointerEvent<SVGSVGElement>) =>
-    s.tool === 'fill' &&
-    !!fill.preview &&
-    !!fill.position &&
-    distance(point(event), fill.position) < 2 / scalePx &&
-    event.pointerType !== 'touch';
   const pointerDown = (event: RPointerEvent<SVGSVGElement>) => {
     if (event.button === 2) return;
     svgRef.current?.focus();
     s.setSymmetryPreview(null);
     const p = point(event);
-    if (s.styleOpen && !s.project.preferences.stylePanelPinned && !willConfirmFill(event))
-      s.setStyleOpen(false);
+    if (s.styleOpen && !s.project.preferences.stylePanelPinned) s.setStyleOpen(false);
     lastPointer.current = p;
     if (event.button === 1 || space.current || s.tool === 'pan') {
       event.preventDefault();
@@ -508,14 +498,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         s.setMessage('Fill trabaja sobre los conjuntos de Diseño.');
         return;
       }
-      if (
-        fill.preview &&
-        fill.position &&
-        distance(p, fill.position) < 2 / scalePx &&
-        event.pointerType !== 'touch'
-      )
-        fill.confirm();
-      else fill.query(p);
+      fill.applyAt(p);
       return;
     }
     let q = snap(p);
@@ -850,16 +833,9 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
       for (const instance of [...sc.instances].reverse())
         for (const place of [...sc.generated.placements].reverse()) {
           const matrix = multiply(placement, multiply(instance.matrix, place)),
-            q = apply(inverse(matrix), p),
-            paperPoint = new scope.Point(q.x, q.y);
+            q = apply(inverse(matrix), p);
           for (const { g, path } of shapes) {
-            if (!path.bounds.expand(14 / scalePx).contains(paperPoint)) continue;
-            const near = path.getNearestPoint(paperPoint);
-            if (
-              (g.fill !== 'none' && path.contains(paperPoint)) ||
-              (near &&
-                distance(q, { x: near.x, y: near.y }) < Math.max(7 / scalePx, g.strokeWidth / 2))
-            ) {
+            if (geometryHit(g, path, q, 7 / scalePx)) {
               selectInstance(e, matrix);
               return;
             }
@@ -1148,11 +1124,8 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         </div>
       )}
       {s.tool === 'fill' && !previewOnly && (
-        <div className="fill-actions" role="status">
+        <div className="fill-actions" role="status" data-fill-applied={fill.applied}>
           <span>{fill.status}</span>
-          <button disabled={!fill.preview || fill.busy} onClick={fill.confirm}>
-            Confirmar relleno
-          </button>
           <button disabled={fill.count < 2} onClick={fill.cycle}>
             Otra región ({fill.count ? fill.index + 1 : 0}/{fill.count})
           </button>
@@ -1185,8 +1158,8 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         tabIndex={0}
         viewBox={`${actualView.x} ${actualView.y} ${actualView.width} ${actualView.height}`}
         style={{ background: s.project.preferences.background }}
-        onPointerDownCapture={(event) => {
-          if (s.styleOpen && !s.project.preferences.stylePanelPinned && !willConfirmFill(event))
+        onPointerDownCapture={() => {
+          if (s.tool !== 'fill' && s.styleOpen && !s.project.preferences.stylePanelPinned)
             s.setStyleOpen(false);
         }}
         onPointerDown={pointerDown}

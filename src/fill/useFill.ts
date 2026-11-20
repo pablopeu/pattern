@@ -3,7 +3,14 @@ import type { Studio } from '../app/useStudio';
 import type { Bounds } from '../symmetry/groups';
 import type { Point } from '../geometry/matrix';
 import type { Geometry } from '../app/model';
+import type { DrawingStyle } from '../app/styles';
 import { hasFillInk, createTileFill, type FillLayer, type FillCandidate } from './service';
+interface FillClick {
+  point: Point;
+  style: DrawingStyle;
+  preferredKey?: string;
+  inputKey: string;
+}
 export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled: boolean) {
   const worker = useRef<Worker | null>(null),
     ready = useRef(false),
@@ -11,6 +18,8 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
     latest = useRef<Point | null>(null),
     queryId = useRef(0),
     pendingCreate = useRef(false),
+    clicks = useRef<FillClick[]>([]),
+    applied = useRef(0),
     live = useRef({ s, layers, bounds, enabled });
   live.current = { s, layers, bounds, enabled };
   const [candidates, setCandidates] = useState<FillCandidate[]>([]),
@@ -18,6 +27,33 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
     [position, setPosition] = useState<Point | null>(null),
     [busy, setBusy] = useState(false),
     [status, setStatus] = useState('');
+  const inputKey = JSON.stringify([
+    s.project.preferences.fillCloseTolerance,
+    layers.map((l) => [
+      l.pattern.id,
+      l.pattern.symmetry,
+      l.pattern.generator,
+      l.pattern.placementTransform,
+      l.pattern.tiling,
+      l.pattern.sourceGeometry
+        .filter((g) => !g.fillRegion)
+        .map((g) => [
+          g.id,
+          g.kind,
+          g.nodes,
+          g.pathData,
+          g.parameters,
+          g.transform,
+          g.closed,
+          g.visible,
+          g.locked,
+          g.fillRule,
+          hasFillInk(g),
+        ]),
+    ]),
+  ]);
+  const currentInput = useRef(inputKey);
+  currentInput.current = inputKey;
   const key = enabled
     ? JSON.stringify([
         bounds,
@@ -55,6 +91,7 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
           old.fillRegion?.faceKey === g.fillRegion?.faceKey &&
           old.fillRegion?.context === g.fillRegion?.context,
       );
+      if (existing?.locked) return;
       if (existing) {
         existing.fill = g.fill;
         existing.fillOpacity = g.fillOpacity;
@@ -66,6 +103,7 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
         existingId = g.id;
       }
     });
+    if (!existingId) return;
     s.setPatternId(patternId);
     s.setSelected([existingId]);
     if (g.fillRegion) {
@@ -82,9 +120,13 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
     latest.current = p;
     if (!enabled) return;
     if (!worker.current) start();
-    if (ready.current && !queryBusy.current) {
+    if (ready.current && !queryBusy.current && !pendingCreate.current) {
       queryBusy.current = true;
-      worker.current?.postMessage({ type: 'query', point: p, id: ++queryId.current });
+      worker.current?.postMessage({
+        type: 'query',
+        point: clicks.current[0]?.point ?? p,
+        id: ++queryId.current,
+      });
     }
   };
   const start = () => {
@@ -107,20 +149,46 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
         setStatus(
           `${r.faces} caras · ${r.curves} curvas${r.approximate ? ' · cierre aproximado explícito' : ''}`,
         );
-        if (latest.current) query(latest.current);
+        if (clicks.current[0]) query(clicks.current[0].point);
+        else if (latest.current) query(latest.current);
       }
       if (r.type === 'preview' && r.id === queryId.current) {
         setCandidates(r.candidates);
         setIndex(0);
         setPosition(r.point);
         queryBusy.current = false;
-        if (latest.current && (latest.current.x !== r.point.x || latest.current.y !== r.point.y))
+        const click = clicks.current[0];
+        if (
+          click &&
+          click.inputKey === currentInput.current &&
+          click.point.x === r.point.x &&
+          click.point.y === r.point.y
+        ) {
+          const candidate =
+            r.candidates.find((c: FillCandidate) => c.key === click.preferredKey) ??
+            r.candidates[0];
+          if (candidate) applyCandidate(candidate, click.style);
+          else {
+            finishClick();
+            live.current.s.setMessage('No hay una región cerrada en ese punto.');
+          }
+        } else if (click) query(click.point);
+        else if (
+          latest.current &&
+          (latest.current.x !== r.point.x || latest.current.y !== r.point.y)
+        )
           query(latest.current);
       }
       if (r.type === 'created') {
         pendingCreate.current = false;
         setBusy(false);
-        applyCreated(r.geometry, r.patternId);
+        const click = clicks.current.shift();
+        if (click?.inputKey === currentInput.current) {
+          applied.current++;
+          applyCreated(r.geometry, r.patternId);
+        }
+        setCandidates([]);
+        if (clicks.current[0]) query(clicks.current[0].point);
         if (!live.current.s.project.preferences.stylePanelPinned)
           live.current.s.setStyleOpen(false);
       }
@@ -128,12 +196,15 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
         queryBusy.current = false;
         pendingCreate.current = false;
         setBusy(false);
+        clicks.current = [];
         setStatus(r.message);
         live.current.s.setMessage(r.message);
       }
     };
     w.onerror = () => {
       setBusy(false);
+      pendingCreate.current = false;
+      clicks.current = [];
       setStatus('No se pudo ejecutar el cálculo vectorial.');
     };
     w.postMessage({
@@ -144,6 +215,8 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
     });
   };
   useEffect(() => {
+    clicks.current = clicks.current.filter((click) => click.inputKey === inputKey);
+    if (!enabled) clicks.current = [];
     setCandidates([]);
     setPosition(null);
     if (!enabled) latest.current = null;
@@ -160,27 +233,36 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
     };
   }, [key, enabled]);
   const preview = candidates[index] ?? null;
-  const confirm = () => {
-    if (!preview || pendingCreate.current) return;
-    const style = s.project.drawingStyle;
-    if (style.fill === 'none') {
-      s.setStyleTarget('current');
-      s.setStyleOpen(true);
-      s.setMessage('Elegí un color sólido de relleno para usar Fill.');
-      return;
-    }
+  const finishClick = () => {
+    clicks.current.shift();
+    applied.current++;
+    setCandidates([]);
+    if (clicks.current[0]) query(clicks.current[0].point);
+  };
+  const applyCandidate = (preview: FillCandidate, style: DrawingStyle) => {
+    const { s } = live.current;
+    if (preview.kind !== 'face') finishClick();
     if (preview.kind !== 'face' && !s.project.preferences.stylePanelPinned) s.setStyleOpen(false);
     if (preview.kind === 'object') {
-      s.change((p) => {
-        const g = p.patterns
-          .find((p) => p.id === preview.patternId)
-          ?.sourceGeometry.find((g) => g.id === preview.shapeId);
-        if (g && !g.locked) {
-          g.fill = style.fill;
-          g.fillOpacity = style.fillOpacity;
-          g.fillRule = style.fillRule;
-        }
-      });
+      const current = s.projectRef.current.patterns
+        .find((p) => p.id === preview.patternId)
+        ?.sourceGeometry.find((g) => g.id === preview.shapeId);
+      if (!current || current.locked) return;
+      if (
+        current.fill !== style.fill ||
+        current.fillOpacity !== style.fillOpacity ||
+        current.fillRule !== style.fillRule
+      )
+        s.change((p) => {
+          const g = p.patterns
+            .find((p) => p.id === preview.patternId)
+            ?.sourceGeometry.find((g) => g.id === preview.shapeId);
+          if (g && !g.locked) {
+            g.fill = style.fill;
+            g.fillOpacity = style.fillOpacity;
+            g.fillRule = style.fillRule;
+          }
+        });
       s.setPatternId(preview.patternId);
       s.setSelected([preview.shapeId]);
       s.setInstance(preview.matrix);
@@ -189,6 +271,22 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
     } else if (preview.kind === 'tile') {
       const target = s.project.patterns.find((p) => p.id === preview.patternId);
       if (target) {
+        const previous = s.projectRef.current.patterns
+          .find((p) => p.id === target.id)
+          ?.sourceGeometry.find((g) => g.fillRegion?.faceKey === `tile/${target.id}`);
+        if (previous?.locked) return;
+        if (
+          previous &&
+          previous.fill === style.fill &&
+          previous.fillOpacity === style.fillOpacity &&
+          previous.fillRule === style.fillRule
+        ) {
+          s.setPatternId(target.id);
+          s.setSelected([previous.id]);
+          s.setInstance(preview.matrix);
+          s.setInstanceExplicit(true);
+          return;
+        }
         s.setPatternId(target.id);
         s.setInstance(preview.matrix);
         s.setInstanceExplicit(true);
@@ -197,6 +295,7 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
         s.change((p) => {
           const pat = p.patterns.find((p) => p.id === target.id)!;
           const old = pat.sourceGeometry.find((g) => g.fillRegion?.faceKey === `tile/${target.id}`);
+          if (old?.locked) return;
           if (old) {
             old.fill = style.fill;
             old.fillOpacity = style.fillOpacity;
@@ -224,7 +323,35 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
       });
     }
   };
+  const applyAt = (point: Point) => {
+    const { s } = live.current;
+    const style = s.project.drawingStyle;
+    if (style.fill === 'none') {
+      s.setStyleTarget('current');
+      s.setStyleOpen(true);
+      s.setMessage('Elegí un color sólido de relleno para usar Fill.');
+      return;
+    }
+    if (clicks.current.length >= 32) {
+      s.setMessage('Esperá a que se apliquen los rellenos pendientes.');
+      return;
+    }
+    clicks.current.push({
+      point,
+      style: structuredClone(style),
+      inputKey: currentInput.current,
+      preferredKey:
+        position && Math.hypot(point.x - position.x, point.y - position.y) < 1e-6
+          ? preview?.key
+          : undefined,
+    });
+    query(point);
+  };
+  const confirm = () => {
+    if (position) applyAt(position);
+  };
   const cancel = () => {
+    clicks.current = [];
     worker.current?.terminate();
     worker.current = null;
     ready.current = false;
@@ -244,6 +371,8 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
     index,
     query,
     confirm,
+    applyAt,
+    applied: applied.current,
     cancel,
     cycle: () => setIndex((i) => (i + 1) % Math.max(1, candidates.length)),
   };
