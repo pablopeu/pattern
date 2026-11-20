@@ -37,5 +37,5 @@ scripts/validate-exports.mjs ahora incluye validate-v22-exports.mjs; validate_ex
 
 ## Privacidad de direcciones LAN
 
-- Por pedido del usuario, documentación pública con `<IP_LOCAL>` en lugar de direcciones concretas. Las IP se consultan sólo en la máquina local; los servicios siguen en los puertos4173 y4174.
-- Se prepara limpieza de los dos valores encontrados en todo el historial publicado de main. Cambios de aplicación en curso y prd_v2.3.txt se conservan sin incluir en este incremento de privacidad.
+- Por pedido del usuario, documentación pública con `<IP_LOCAL>` en lugar de direcciones concretas. Las IP se consultan sólo en la máquina local; los servicios siguen en los puertos 4173 y 4174.
+- Se limpiaron los dos valores encontrados en todo el historial publicado de main mediante un clon aislado y push con force-with-lease. Verificados 403 blobs históricos de texto sin direcciones privadas; árbol HEAD idéntico antes/después de reescribir. Main local sincronizado con GitHub sin tocar el índice ni los cambios de aplicación en curso. prd_v2.3.txt permanece sin incluir en este incremento de privacidad.
