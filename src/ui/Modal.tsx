@@ -22,7 +22,11 @@ export function Modal({
     dialog.showModal();
     return () => {
       dialog.close();
-      if (previous instanceof HTMLElement && previous.isConnected) previous.focus();
+      if (
+        (previous instanceof HTMLElement || previous instanceof SVGElement) &&
+        previous.isConnected
+      )
+        previous.focus();
     };
   }, []);
   return createPortal(

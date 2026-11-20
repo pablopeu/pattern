@@ -47,6 +47,7 @@ export type StylePage =
   | 'object'
   | 'options';
 export function useStudio() {
+  const styleRequest = useRef<StylePage | null>(null);
   const [tileTab, setTileTab] = useState<'shape' | 'placement' | 'edge' | 'tangents'>('shape');
   const [catalogOpen, setCatalogOpen] = useState(false);
   const [stylePage, setStylePage] = useState<StylePage>('colors'),
@@ -674,6 +675,7 @@ export function useStudio() {
     return () => clearTimeout(timer);
   }, [message]);
   return {
+    styleRequest,
     tileTab,
     setTileTab,
     catalogOpen,

@@ -92,8 +92,10 @@ export default function App() {
     if (s.mode === 'apply') setCategory('application');
   }, [s.mode]);
   useEffect(() => {
+    const requested = s.styleRequest.current;
+    s.styleRequest.current = null;
     if (s.selected.length && (s.tool === 'select' || s.tool === 'nodes')) {
-      s.setStylePage('object');
+      s.setStylePage(requested ?? 'object');
       s.setStyleTarget('selection');
       s.setStyleOpen(true);
     }

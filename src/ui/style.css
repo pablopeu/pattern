@@ -2443,3 +2443,5 @@ input[type='color']::-webkit-color-swatch {
 @media(max-width:650px) { .export-modal .export-preview-image > img { height:120px; } .export-modal .export-preview { padding:8px 14px; } .export-modal .export-dialog > header { padding:12px 14px; } .export-modal .export-dialog h2 { font-size:19px; } .export-modal .export-body { min-height:0; } .export-modal .export-options { gap:7px; } .export-modal .export-dialog > footer > span { display:none; } }
 .context-heading { display:flex; align-items:center; justify-content:space-between; }
 .context-heading > button { width:24px; height:24px; font-size:19px; color:#657858; border-radius:5px; }
+/* Compact heights must retain a full text line, including native select padding. */
+.compact-fields select { padding:4px 25px 4px 8px; line-height:18px; }

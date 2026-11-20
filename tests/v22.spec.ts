@@ -268,6 +268,10 @@ test('trazo excesivo muestra aviso corregible y no desmonta lienzo ni galería',
   await context(page, 'Simetrías');
   await expect(page.locator('.symmetry-gallery')).toBeVisible();
   await page.getByRole('button', { name: 'Corregir trazo', exact: true }).click();
+  await expect(panel(page).getByRole('tab', { name: 'Trazo', exact: true })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
   await (await field(page, 'Estilo de línea')).selectOption('solid');
   await expect(page.getByRole('alert')).not.toBeVisible();
   expect((await model(page)).patterns[0].sourceGeometry[0].strokeDash).toEqual([]);

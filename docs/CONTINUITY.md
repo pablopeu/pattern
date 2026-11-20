@@ -98,3 +98,11 @@ Primera corrida:85/91 correctos;4 aserciones de título y1 apertura de catálogo
 adaptadas; regresión real de destino de estilo en Lápiz corregida. Las6
 repeticiones dirigidas y3 coberturas secundarias pasaron.9 tests del monitor
 correctos. Preparada corrida completa final de94; pendiente estático y cierre.
+
+## Último ajuste antes del cierre
+
+94 E2E completos correctos. Después se corrigió clipping de texto en selects,
+Corregir trazo→Trazo, acceso explícito al color de Fill y foco SVG al cerrar
+modal.9 repeticiones dirigidas correctas. No cambiar más fuentes durante las
+próximas suites. Falta producción raíz/subdirectorio, corrida completa final,
+regenerar/inspeccionar capturas ajustadas y cerrar docs/README con evidencia.

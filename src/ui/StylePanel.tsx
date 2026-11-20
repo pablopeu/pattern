@@ -716,6 +716,9 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
         </div>
         <div hidden={s.stylePage !== 'fill'} className="compact-fields">
           <strong>Fill · caras vectoriales</strong>
+          <button className="wide-button" onClick={() => s.setStylePage('colors')}>
+            Color de relleno: {value.fill === 'none' ? 'elegir color' : value.fill} · Colores
+          </button>
           <Toggle
             label="Nuevos rellenos vinculados a sus límites"
             checked={s.project.preferences.fillLinkedDefault}

@@ -339,3 +339,15 @@
   Scripts de benchmark adaptados a las categorías sin cambiar las métricas.
 -9 pruebas del monitor correctas; no se enviaron feedback de prueba. Pendiente
   corrida completa final de94 E2E y producción estática sobre el resultado.
+
+## PRD v2.3 · Verificación visual final
+
+- Corrida completa de94 E2E aprobada (4,2min), con los75 recorridos previos.
+- Inspección de las cinco capturas reales detectó padding excesivo que cortaba
+  texto en selects compactos. Se conserva su altura y se corrige la línea útil.
+- Corregir trazo abre directamente Trazo y respeta la intención explícita al
+  seleccionar el objeto. Fill muestra un acceso con el color a Colores.
+  Los modales restituyen foco también si el disparador era el SVG del lienzo.
+-9 E2E dirigidos posteriores correctos, incluidos textos completos y ausencia
+  de scroll en las cuatro resoluciones. Se prepara build raíz/subdirectorio,
+  verificación estática y una corrida completa sobre el último ajuste visual.

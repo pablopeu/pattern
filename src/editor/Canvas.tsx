@@ -1145,6 +1145,11 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
               const pat = s.project.patterns.find((p) =>
                 p.sourceGeometry.some((g) => g.id === strokeWarning.shapeId),
               );
+              s.styleRequest.current =
+                pat && (s.selected.length !== 1 || s.selected[0] !== strokeWarning.shapeId)
+                  ? 'stroke'
+                  : null;
+              s.setStylePage('stroke');
               if (pat) {
                 s.setPatternId(pat.id);
                 s.setSelected([strokeWarning.shapeId]);

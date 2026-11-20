@@ -157,6 +157,15 @@ for (const width of [1366, 1440, 1920, 390]) {
     const right = page.getByRole('complementary', { name: 'Panel de estilos' });
     for (const label of ['Lados', 'Ancho', 'Alto', 'Rotación', 'Tipo de relleno'])
       await expect(right.getByLabel(label, { exact: true })).toBeInViewport();
+    expect(
+      await right.getByLabel('Tipo de relleno', { exact: true }).evaluate((el) => {
+        const s = getComputedStyle(el);
+        return (
+          parseFloat(s.lineHeight) + parseFloat(s.paddingTop) + parseFloat(s.paddingBottom) <=
+          el.clientHeight
+        );
+      }),
+    ).toBe(true);
     const before = await project(page);
     for (const name of [
       'Colores',
