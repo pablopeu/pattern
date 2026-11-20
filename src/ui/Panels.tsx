@@ -1,7 +1,7 @@
 import { TilePanel } from './TilePanel';
 import { SymmetryGallery } from './SymmetryGallery';
 import { freezePattern } from '../symmetry/config';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { categories, type Category } from './navigation';
 import {
   Eye,
@@ -77,15 +77,24 @@ export function Panels({
   category,
   collapsed,
   onCreateRegular,
+  onCollapse,
 }: {
   studio: Studio;
   onImport: () => void;
   category: Category;
   collapsed: boolean;
   onCreateRegular: () => void;
+  onCollapse: () => void;
 }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [generatorPage, setGeneratorPage] = useState(0),
+    [placementPage, setPlacementPage] = useState(0),
+    [applicationPage, setApplicationPage] = useState('region');
   const [tabs, setTabs] = useState<Partial<Record<Category, string>>>({});
   const tab = tabs[category] ?? (category === 'layers' ? 'layers' : 'design');
+  useEffect(() => {
+    scrollRef.current?.scrollTo(0, 0);
+  }, [category, tab]);
   const setTab = (next: string) => setTabs((old) => ({ ...old, [category]: next }));
   const u = s.project.documentUnits,
     selected = s.objects.filter((g) => s.selected.includes(g.id)),
@@ -99,6 +108,22 @@ export function Panels({
       const a = p.applications.find((a) => a.id === s.applicationId);
       if (a) recipe(a);
     });
+  const generatorKeys = (
+    s.pattern.generator.kind === 'warp' && s.pattern.generator.distribution === 'circular'
+      ? ([
+          'distribution',
+          'count',
+          'radius',
+          'aspectRatio',
+          'rotation',
+          'scale',
+          'scaleRatio',
+          'amplitude',
+          'frequency',
+          'phase',
+        ] as (keyof Generator)[])
+      : generatorParameters[s.pattern.generator.kind]
+  ).filter((key) => key !== 'seed' || s.pattern.generator.distribution === 'freeform');
   const addApplication = () => {
     if (!s.region) {
       s.setMessage('Dibujá o importá un perímetro cerrado antes de aplicar el patrón.');
@@ -125,68 +150,28 @@ export function Panels({
     s.setTool('select');
   };
   return (
-    <aside className="context-panel" aria-label="Panel contextual" hidden={collapsed}>
+    <aside
+      className="context-panel"
+      aria-label="Panel contextual"
+      hidden={collapsed}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          e.stopPropagation();
+          onCollapse();
+        }
+      }}
+    >
       <header className="context-heading">
         {categories.find((c) => c.id === category)?.label}
+        <button
+          aria-label="Cerrar panel izquierdo"
+          title="Cerrar panel izquierdo (Esc)"
+          onClick={onCollapse}
+        >
+          ×
+        </button>
       </header>
-      {category === 'layers' && s.mode !== 'apply' && (
-        <div className="pattern-set-list" aria-label="Conjuntos de composición">
-          {s.project.patterns.map((p, i) => (
-            <div key={p.id} className={`pattern-set-row ${p.id === s.pattern.id ? 'active' : ''}`}>
-              <button
-                className="set-name"
-                onClick={() => {
-                  s.setPatternId(p.id);
-                  s.setSelected([]);
-                  s.setInstance(IDENTITY);
-                  s.setInstanceExplicit(false);
-                }}
-              >
-                {p.name}
-                <small>
-                  {p.symmetryMode === 'inherit'
-                    ? 'hereda'
-                    : p.symmetryMode === 'free'
-                      ? 'Libre'
-                      : p.symmetry.group}
-                </small>
-              </button>
-              <button
-                aria-label={`Visibilidad ${p.name}`}
-                onClick={() =>
-                  s.change((doc) => {
-                    doc.patterns[i].visible = !doc.patterns[i].visible;
-                  })
-                }
-              >
-                {p.visible ? <Eye size={13} /> : <EyeOff size={13} />}
-              </button>
-              <button
-                aria-label={`Subir conjunto ${p.name}`}
-                disabled={i === s.project.patterns.length - 1}
-                onClick={() =>
-                  s.change((doc) => {
-                    [doc.patterns[i], doc.patterns[i + 1]] = [doc.patterns[i + 1], doc.patterns[i]];
-                  })
-                }
-              >
-                <ChevronUp size={12} />
-              </button>
-              <button
-                aria-label={`Bajar conjunto ${p.name}`}
-                disabled={i === 0}
-                onClick={() =>
-                  s.change((doc) => {
-                    [doc.patterns[i], doc.patterns[i - 1]] = [doc.patterns[i - 1], doc.patterns[i]];
-                  })
-                }
-              >
-                <ChevronDown size={12} />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
       {category === 'layers' && (
         <div className="panel-tabs" role="tablist" aria-label="Organización">
           <button
@@ -214,6 +199,13 @@ export function Panels({
           </button>
           <button
             role="tab"
+            aria-selected={tab === 'placement'}
+            onClick={() => setTab('placement')}
+          >
+            Colocación
+          </button>
+          <button
+            role="tab"
             aria-selected={tab === 'generator'}
             onClick={() => setTab('generator')}
           >
@@ -221,8 +213,78 @@ export function Panels({
           </button>
         </div>
       )}
-      <div className={`panel-scroll context-${category}`}>
-        {category === 'symmetry' && tab !== 'generator' && <SymmetryGallery studio={s} />}
+      <div ref={scrollRef} className={`panel-scroll context-${category}`}>
+        {category === 'layers' && tab === 'design' && s.mode !== 'apply' && (
+          <div className="pattern-set-list" aria-label="Conjuntos de composición">
+            {s.project.patterns.map((p, i) => (
+              <div
+                key={p.id}
+                className={`pattern-set-row ${p.id === s.pattern.id ? 'active' : ''}`}
+              >
+                <button
+                  className="set-name"
+                  onClick={() => {
+                    s.setPatternId(p.id);
+                    s.setSelected([]);
+                    s.setInstance(IDENTITY);
+                    s.setInstanceExplicit(false);
+                  }}
+                >
+                  {p.name}
+                  <small>
+                    {p.symmetryMode === 'inherit'
+                      ? 'hereda'
+                      : p.symmetryMode === 'free'
+                        ? 'Libre'
+                        : p.symmetry.group}
+                  </small>
+                </button>
+                <button
+                  aria-label={`Visibilidad ${p.name}`}
+                  onClick={() =>
+                    s.change((doc) => {
+                      doc.patterns[i].visible = !doc.patterns[i].visible;
+                    })
+                  }
+                >
+                  {p.visible ? <Eye size={13} /> : <EyeOff size={13} />}
+                </button>
+                <button
+                  aria-label={`Subir conjunto ${p.name}`}
+                  disabled={i === s.project.patterns.length - 1}
+                  onClick={() =>
+                    s.change((doc) => {
+                      [doc.patterns[i], doc.patterns[i + 1]] = [
+                        doc.patterns[i + 1],
+                        doc.patterns[i],
+                      ];
+                    })
+                  }
+                >
+                  <ChevronUp size={12} />
+                </button>
+                <button
+                  aria-label={`Bajar conjunto ${p.name}`}
+                  disabled={i === 0}
+                  onClick={() =>
+                    s.change((doc) => {
+                      [doc.patterns[i], doc.patterns[i - 1]] = [
+                        doc.patterns[i - 1],
+                        doc.patterns[i],
+                      ];
+                    })
+                  }
+                >
+                  <ChevronDown size={12} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {category === 'symmetry' && tab !== 'generator' && (
+          <SymmetryGallery studio={s} section={tab === 'placement' ? 'placement' : 'parameters'} />
+        )}
         {category === 'tiles' && <TilePanel studio={s} expanded />}
         {category === 'layers' && tab === 'layers' ? (
           <>
@@ -428,245 +490,274 @@ export function Panels({
                   </>
                 ) : (
                   <>
-                    <Select
-                      label="Perímetro"
-                      value={s.regionId}
-                      onChange={(id) => {
-                        s.setRegionId(id);
-                        s.setSelected([]);
-                      }}
-                      options={[
-                        { value: '', label: 'Seleccionar perímetro' },
-                        ...s.project.regions.map((r) => ({ value: r.id, label: r.name })),
-                      ]}
-                    />
-                    <div className="button-row">
-                      <button
-                        onClick={() => {
-                          s.setRegionId('');
-                          s.setSelected([]);
-                          s.setTool('region');
-                        }}
-                      >
-                        <Plus size={14} /> Dibujar
-                      </button>
-                      <button onClick={onImport}>Importar SVG</button>
+                    <div
+                      className="context-tabs"
+                      role="tablist"
+                      aria-label="Opciones de aplicación"
+                    >
+                      {['region', 'transform', 'link']
+                        .filter((id) => !!s.application || id === 'region')
+                        .map((id) => (
+                          <button
+                            key={id}
+                            role="tab"
+                            aria-selected={applicationPage === id}
+                            onClick={() => setApplicationPage(id)}
+                          >
+                            {{ region: 'Perímetro', transform: 'Transformar', link: 'Vínculo' }[id]}
+                          </button>
+                        ))}
                     </div>
-                    <Select
-                      label="Patrón a aplicar"
-                      value={s.pattern.id}
-                      onChange={s.setPatternId}
-                      options={s.project.patterns.map((p) => ({ value: p.id, label: p.name }))}
-                    />
-                    <button className="wide-button primary-soft" onClick={addApplication}>
-                      <Plus size={15} /> Aplicar al perímetro
-                    </button>
-                    {s.project.applications.length > 0 && (
+                    <div hidden={applicationPage !== 'region'} className="compact-fields">
                       <Select
-                        label="Aplicación activa"
-                        value={s.applicationId}
+                        label="Perímetro"
+                        value={s.regionId}
                         onChange={(id) => {
-                          s.setApplicationId(id);
-                          const a = s.project.applications.find((a) => a.id === id);
-                          if (a) {
-                            s.setRegionId(a.regionId);
-                            s.setPatternId(a.patternId);
-                          }
+                          s.setRegionId(id);
+                          s.setSelected([]);
                         }}
                         options={[
-                          { value: '', label: 'Seleccionar aplicación' },
-                          ...s.project.applications.map((a) => ({ value: a.id, label: a.name })),
+                          { value: '', label: 'Seleccionar perímetro' },
+                          ...s.project.regions.map((r) => ({ value: r.id, label: r.name })),
                         ]}
                       />
-                    )}
+                      <div className="button-row">
+                        <button
+                          onClick={() => {
+                            s.setRegionId('');
+                            s.setSelected([]);
+                            s.setTool('region');
+                          }}
+                        >
+                          <Plus size={14} /> Dibujar
+                        </button>
+                        <button onClick={onImport}>Importar SVG</button>
+                      </div>
+                      <Select
+                        label="Patrón a aplicar"
+                        value={s.pattern.id}
+                        onChange={s.setPatternId}
+                        options={s.project.patterns.map((p) => ({ value: p.id, label: p.name }))}
+                      />
+                      <button className="wide-button primary-soft" onClick={addApplication}>
+                        <Plus size={15} /> Aplicar al perímetro
+                      </button>
+                      {s.project.applications.length > 0 && (
+                        <Select
+                          label="Aplicación activa"
+                          value={s.applicationId}
+                          onChange={(id) => {
+                            s.setApplicationId(id);
+                            const a = s.project.applications.find((a) => a.id === id);
+                            if (a) {
+                              s.setRegionId(a.regionId);
+                              s.setPatternId(a.patternId);
+                            }
+                          }}
+                          options={[
+                            { value: '', label: 'Seleccionar aplicación' },
+                            ...s.project.applications.map((a) => ({ value: a.id, label: a.name })),
+                          ]}
+                        />
+                      )}
+                    </div>
                     {s.application && (
                       <>
-                        <Select
-                          label="Cambiar patrón vinculado"
-                          value={s.application.patternId}
-                          onChange={(id) =>
-                            changeApplication((a) => {
-                              a.patternId = id;
-                              a.linked = true;
-                              a.frozenPattern = undefined;
-                            })
-                          }
-                          options={s.project.patterns.map((p) => ({ value: p.id, label: p.name }))}
-                        />
-                        <Field
-                          label="Escala uniforme"
-                          value={Math.sqrt(
-                            Math.abs(
-                              s.application.placementTransform[0] *
-                                s.application.placementTransform[3] -
-                                s.application.placementTransform[1] *
-                                  s.application.placementTransform[2],
-                            ),
-                          )}
-                          min={0.05}
-                          max={10}
-                          step={0.05}
-                          onChange={(v) =>
-                            changeApplication((a) => {
-                              const m = a.placementTransform,
-                                angle = (Math.atan2(m[1], m[0]) * 180) / Math.PI;
-                              const next = multiply(rotate(angle), scale(v));
-                              a.placementTransform = [
-                                next[0],
-                                next[1],
-                                next[2],
-                                next[3],
-                                m[4],
-                                m[5],
-                              ];
-                            })
-                          }
-                        />
-                        <Field
-                          label="Escala X"
-                          value={Math.hypot(
-                            s.application.placementTransform[0],
-                            s.application.placementTransform[1],
-                          )}
-                          min={0.05}
-                          max={10}
-                          step={0.05}
-                          onChange={(value) =>
-                            changeApplication((a) => {
-                              const m = a.placementTransform,
-                                old = Math.hypot(m[0], m[1]);
-                              a.placementTransform = [
-                                (m[0] * value) / old,
-                                (m[1] * value) / old,
-                                m[2],
-                                m[3],
-                                m[4],
-                                m[5],
-                              ];
-                            })
-                          }
-                        />
-                        <Field
-                          label="Escala Y"
-                          value={Math.hypot(
-                            s.application.placementTransform[2],
-                            s.application.placementTransform[3],
-                          )}
-                          min={0.05}
-                          max={10}
-                          step={0.05}
-                          onChange={(value) =>
-                            changeApplication((a) => {
-                              const m = a.placementTransform,
-                                old = Math.hypot(m[2], m[3]);
-                              a.placementTransform = [
-                                m[0],
-                                m[1],
-                                (m[2] * value) / old,
-                                (m[3] * value) / old,
-                                m[4],
-                                m[5],
-                              ];
-                            })
-                          }
-                        />
-                        <Field
-                          label="Rotación de aplicación"
-                          value={
-                            (Math.atan2(
-                              s.application.placementTransform[1],
-                              s.application.placementTransform[0],
-                            ) *
-                              180) /
-                            Math.PI
-                          }
-                          min={-180}
-                          max={180}
-                          unit="°"
-                          onChange={(value) =>
-                            changeApplication((a) => {
-                              const m = a.placementTransform;
-                              const next = multiply(
-                                rotate(value - (Math.atan2(m[1], m[0]) * 180) / Math.PI),
-                                m,
-                              );
-                              a.placementTransform = [
-                                next[0],
-                                next[1],
-                                next[2],
-                                next[3],
-                                m[4],
-                                m[5],
-                              ];
-                            })
-                          }
-                        />
-                        {(['x', 'y'] as const).map((axis, i) => (
+                        <div hidden={applicationPage !== 'link'} className="compact-fields">
+                          <Select
+                            label="Cambiar patrón vinculado"
+                            value={s.application.patternId}
+                            onChange={(id) =>
+                              changeApplication((a) => {
+                                a.patternId = id;
+                                a.linked = true;
+                                a.frozenPattern = undefined;
+                              })
+                            }
+                            options={s.project.patterns.map((p) => ({
+                              value: p.id,
+                              label: p.name,
+                            }))}
+                          />
+                        </div>
+                        <div hidden={applicationPage !== 'transform'} className="compact-fields">
                           <Field
-                            key={axis}
-                            label={`Fase ${axis.toUpperCase()}`}
-                            unit={u}
-                            value={units(s.application!.placementTransform[i + 4])}
-                            step={0.5}
+                            label="Escala uniforme"
+                            value={Math.sqrt(
+                              Math.abs(
+                                s.application.placementTransform[0] *
+                                  s.application.placementTransform[3] -
+                                  s.application.placementTransform[1] *
+                                    s.application.placementTransform[2],
+                              ),
+                            )}
+                            min={0.05}
+                            max={10}
+                            step={0.05}
                             onChange={(v) =>
                               changeApplication((a) => {
-                                const m = [...a.placementTransform];
-                                m[i + 4] = mm(v);
-                                a.placementTransform = m as unknown as Matrix;
+                                const m = a.placementTransform,
+                                  angle = (Math.atan2(m[1], m[0]) * 180) / Math.PI;
+                                const next = multiply(rotate(angle), scale(v));
+                                a.placementTransform = [
+                                  next[0],
+                                  next[1],
+                                  next[2],
+                                  next[3],
+                                  m[4],
+                                  m[5],
+                                ];
                               })
                             }
                           />
-                        ))}
-                        <Toggle
-                          label="Ver patrón fuera del contorno"
-                          checked={s.project.preferences.outside}
-                          onChange={(v) =>
-                            s.change((p) => {
-                              p.preferences.outside = v;
-                            })
-                          }
-                        />
-                        <Toggle
-                          label="Mostrar contorno"
-                          checked={s.application.showOutline}
-                          onChange={(v) =>
-                            changeApplication((a) => {
-                              a.showOutline = v;
-                            })
-                          }
-                        />
-                        <button
-                          className="wide-button"
-                          onClick={() =>
-                            changeApplication((a) => {
-                              a.linked = !a.linked;
-                              a.frozenPattern = a.linked
-                                ? undefined
-                                : freezePattern(
-                                    s.project.patterns.find((p) => p.id === a.patternId)!,
-                                    s.project.mainSymmetry,
-                                  );
-                            })
-                          }
-                        >
-                          {s.application.linked ? <Link2 size={14} /> : <Unlink size={14} />}{' '}
-                          {s.application.linked
-                            ? 'Vinculado · congelar copia'
-                            : 'Congelado · volver a vincular'}
-                        </button>
-                        <button
-                          className="wide-button danger-text"
-                          onClick={() => {
-                            s.change((p) => {
-                              p.applications = p.applications.filter(
-                                (a) => a.id !== s.applicationId,
-                              );
-                            });
-                            s.setApplicationId('');
-                          }}
-                        >
-                          <Trash2 size={14} /> Eliminar aplicación
-                        </button>
+                          <Field
+                            label="Escala X"
+                            value={Math.hypot(
+                              s.application.placementTransform[0],
+                              s.application.placementTransform[1],
+                            )}
+                            min={0.05}
+                            max={10}
+                            step={0.05}
+                            onChange={(value) =>
+                              changeApplication((a) => {
+                                const m = a.placementTransform,
+                                  old = Math.hypot(m[0], m[1]);
+                                a.placementTransform = [
+                                  (m[0] * value) / old,
+                                  (m[1] * value) / old,
+                                  m[2],
+                                  m[3],
+                                  m[4],
+                                  m[5],
+                                ];
+                              })
+                            }
+                          />
+                          <Field
+                            label="Escala Y"
+                            value={Math.hypot(
+                              s.application.placementTransform[2],
+                              s.application.placementTransform[3],
+                            )}
+                            min={0.05}
+                            max={10}
+                            step={0.05}
+                            onChange={(value) =>
+                              changeApplication((a) => {
+                                const m = a.placementTransform,
+                                  old = Math.hypot(m[2], m[3]);
+                                a.placementTransform = [
+                                  m[0],
+                                  m[1],
+                                  (m[2] * value) / old,
+                                  (m[3] * value) / old,
+                                  m[4],
+                                  m[5],
+                                ];
+                              })
+                            }
+                          />
+                          <Field
+                            label="Rotación de aplicación"
+                            value={
+                              (Math.atan2(
+                                s.application.placementTransform[1],
+                                s.application.placementTransform[0],
+                              ) *
+                                180) /
+                              Math.PI
+                            }
+                            min={-180}
+                            max={180}
+                            unit="°"
+                            onChange={(value) =>
+                              changeApplication((a) => {
+                                const m = a.placementTransform;
+                                const next = multiply(
+                                  rotate(value - (Math.atan2(m[1], m[0]) * 180) / Math.PI),
+                                  m,
+                                );
+                                a.placementTransform = [
+                                  next[0],
+                                  next[1],
+                                  next[2],
+                                  next[3],
+                                  m[4],
+                                  m[5],
+                                ];
+                              })
+                            }
+                          />
+                          {(['x', 'y'] as const).map((axis, i) => (
+                            <Field
+                              key={axis}
+                              label={`Fase ${axis.toUpperCase()}`}
+                              unit={u}
+                              value={units(s.application!.placementTransform[i + 4])}
+                              step={0.5}
+                              onChange={(v) =>
+                                changeApplication((a) => {
+                                  const m = [...a.placementTransform];
+                                  m[i + 4] = mm(v);
+                                  a.placementTransform = m as unknown as Matrix;
+                                })
+                              }
+                            />
+                          ))}
+                        </div>
+                        <div hidden={applicationPage !== 'link'} className="compact-fields">
+                          <Toggle
+                            label="Ver patrón fuera del contorno"
+                            checked={s.project.preferences.outside}
+                            onChange={(v) =>
+                              s.change((p) => {
+                                p.preferences.outside = v;
+                              })
+                            }
+                          />
+                          <Toggle
+                            label="Mostrar contorno"
+                            checked={s.application.showOutline}
+                            onChange={(v) =>
+                              changeApplication((a) => {
+                                a.showOutline = v;
+                              })
+                            }
+                          />
+                          <button
+                            className="wide-button"
+                            onClick={() =>
+                              changeApplication((a) => {
+                                a.linked = !a.linked;
+                                a.frozenPattern = a.linked
+                                  ? undefined
+                                  : freezePattern(
+                                      s.project.patterns.find((p) => p.id === a.patternId)!,
+                                      s.project.mainSymmetry,
+                                    );
+                              })
+                            }
+                          >
+                            {s.application.linked ? <Link2 size={14} /> : <Unlink size={14} />}{' '}
+                            {s.application.linked
+                              ? 'Vinculado · congelar copia'
+                              : 'Congelado · volver a vincular'}
+                          </button>
+                          <button
+                            className="wide-button danger-text"
+                            onClick={() => {
+                              s.change((p) => {
+                                p.applications = p.applications.filter(
+                                  (a) => a.id !== s.applicationId,
+                                );
+                              });
+                              s.setApplicationId('');
+                            }}
+                          >
+                            <Trash2 size={14} /> Eliminar aplicación
+                          </button>
+                        </div>
                       </>
                     )}
                     <p className="help-text">
@@ -683,11 +774,12 @@ export function Panels({
                   <Select
                     label="Familia"
                     value={s.pattern.generator.kind}
-                    onChange={(kind) =>
+                    onChange={(kind) => {
+                      setGeneratorPage(0);
                       updatePattern((p) => {
                         p.generator.kind = kind as Generator['kind'];
-                      })
-                    }
+                      });
+                    }}
                     options={Object.entries(generatorLabels).map(([value, label]) => ({
                       value,
                       label,
@@ -712,22 +804,7 @@ export function Panels({
                       <span>Tu geometría, en todas sus formas.</span>
                     </div>
                   ) : (
-                    (s.pattern.generator.kind === 'warp' &&
-                    s.pattern.generator.distribution === 'circular'
-                      ? ([
-                          'distribution',
-                          'count',
-                          'radius',
-                          'aspectRatio',
-                          'rotation',
-                          'scale',
-                          'scaleRatio',
-                          'amplitude',
-                          'frequency',
-                          'phase',
-                        ] as (keyof Generator)[])
-                      : generatorParameters[s.pattern.generator.kind]
-                    ).map((key) => {
+                    generatorKeys.slice(generatorPage * 4, (generatorPage + 1) * 4).map((key) => {
                       if (key === 'seed' && s.pattern.generator.distribution !== 'freeform')
                         return null;
                       if (key === 'staggerAxis')
@@ -790,6 +867,25 @@ export function Panels({
                       );
                     })
                   )}
+                  {generatorKeys.length > 4 && (
+                    <div className="page-controls">
+                      <button
+                        disabled={!generatorPage}
+                        onClick={() => setGeneratorPage(generatorPage - 1)}
+                      >
+                        Parámetros anteriores
+                      </button>
+                      <span>
+                        {generatorPage + 1}/{Math.ceil(generatorKeys.length / 4)}
+                      </span>
+                      <button
+                        disabled={(generatorPage + 1) * 4 >= generatorKeys.length}
+                        onClick={() => setGeneratorPage(generatorPage + 1)}
+                      >
+                        Más parámetros
+                      </button>
+                    </div>
+                  )}
                   {s.pattern.generator.kind === 'warp' && (
                     <p className="help-text">
                       Deforma el motivo antes de aplicar el grupo. Las repeticiones mantienen la
@@ -823,8 +919,32 @@ export function Panels({
                       >
                         <Plus size={14} /> Agregar instancia
                       </button>
+                      <div className="page-controls">
+                        <button
+                          disabled={!placementPage}
+                          onClick={() => setPlacementPage(placementPage - 1)}
+                        >
+                          Instancia anterior
+                        </button>
+                        <span>
+                          {Math.min(placementPage + 1, s.pattern.generator.placements.length)}/
+                          {s.pattern.generator.placements.length}
+                        </span>
+                        <button
+                          disabled={placementPage + 1 >= s.pattern.generator.placements.length}
+                          onClick={() => setPlacementPage(placementPage + 1)}
+                        >
+                          Instancia siguiente
+                        </button>
+                      </div>
                       {s.pattern.generator.placements.map((m, i) => (
-                        <div className="free-placement" key={i}>
+                        <div
+                          className="free-placement"
+                          key={i}
+                          hidden={
+                            i !== Math.min(placementPage, s.pattern.generator.placements.length - 1)
+                          }
+                        >
                           <span>{i + 1}</span>
                           <Field
                             label={`Instancia ${i + 1} X`}

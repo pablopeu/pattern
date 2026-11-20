@@ -111,7 +111,13 @@ const MathematicalIcon = memo(function MathematicalIcon({ choice }: { choice: Sy
     </svg>
   );
 });
-export function SymmetryGallery({ studio: s }: { studio: Studio }) {
+export function SymmetryGallery({
+  studio: s,
+  section = 'parameters',
+}: {
+  studio: Studio;
+  section?: 'parameters' | 'placement';
+}) {
   const [capturing, setCapturing] = useState(false),
     [expanded, setExpanded] = [s.catalogOpen, s.setCatalogOpen],
     [page, setPage] = useState(0),
@@ -295,7 +301,13 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
     ? candidateSymmetry(confirmed, profiles, s.symmetryPreview.choice)
     : confirmed;
   return (
-    <details className="symmetry-gallery" open>
+    <details
+      className="symmetry-gallery"
+      open
+      data-preview-pending={metrics.pending}
+      data-preview-completed={metrics.completed}
+      data-preview-ms={metrics.totalMs.toFixed(1)}
+    >
       <summary>
         <span>
           {s.pattern.tiling && s.pattern.generator.kind !== 'penrose'
@@ -515,7 +527,7 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
         <p className="help-text" role="status">
           {s.symmetryPreview
             ? `Previsualización · ${previewCurrent.group === 'none' ? 'Libre' : previewCurrent.group} · clic para confirmar`
-            : 'Pasá el cursor para explorar; clic para confirmar. Tu herramienta sigue activa.'}
+            : 'Hover previsualiza · clic confirma.'}
         </p>
         {s.pattern.generator.kind === 'penrose' ? (
           <p className="math-notice">
@@ -524,7 +536,7 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
           </p>
         ) : (
           <>
-            {confirmed.family !== 'none' && (
+            {confirmed.family !== 'none' && section === 'parameters' && (
               <>
                 <Field
                   label="Orientación de red"
@@ -597,36 +609,39 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
                     )}
                   </>
                 )}
-                <button className="wide-button" onClick={s.adaptPattern}>
-                  {s.pattern.tiling
-                    ? 'Adaptar motivo a tesela'
-                    : 'Adaptar a celda · conservar fuente'}
-                </button>
-                <button
-                  className="wide-button"
-                  onClick={() =>
-                    s.change((p) => {
-                      const pat = p.patterns.find((p) => p.id === s.pattern.id)!;
-                      pat.placementTransform = [1, 0, 0, 1, 0, 0];
-                    })
-                  }
-                >
-                  Restablecer colocación del motivo
-                </button>
               </>
             )}
           </>
         )}
-        <Toggle
-          label="Guías detalladas"
-          checked={s.project.preferences.guides}
-          onChange={(v) =>
-            s.change((p) => {
-              p.preferences.guides = v;
-              p.preferences.structureVisible = false;
-            })
-          }
-        />
+        {section === 'placement' && (
+          <div className="compact-fields">
+            {' '}
+            <button className="wide-button" onClick={s.adaptPattern}>
+              {s.pattern.tiling ? 'Adaptar motivo a tesela' : 'Adaptar a celda · conservar fuente'}
+            </button>
+            <button
+              className="wide-button"
+              onClick={() =>
+                s.change((p) => {
+                  const pat = p.patterns.find((p) => p.id === s.pattern.id)!;
+                  pat.placementTransform = [1, 0, 0, 1, 0, 0];
+                })
+              }
+            >
+              Restablecer colocación del motivo
+            </button>
+            <Toggle
+              label="Guías detalladas"
+              checked={s.project.preferences.guides}
+              onChange={(v) =>
+                s.change((p) => {
+                  p.preferences.guides = v;
+                  p.preferences.structureVisible = false;
+                })
+              }
+            />
+          </div>
+        )}
       </div>
     </details>
   );

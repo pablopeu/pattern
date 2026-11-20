@@ -620,6 +620,10 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
     window.addEventListener('keydown', close);
     return () => window.removeEventListener('keydown', close);
   }, [s.styleOpen]);
+  useEffect(() => {
+    if (!s.styleSelection.length && s.stylePage === 'object' && s.tool !== 'nodes')
+      s.setStylePage('colors');
+  }, [s.styleSelection.length, s.stylePage, s.tool]);
   if (!s.styleOpen) return null;
   return (
     <aside className="style-panel" aria-label="Panel de estilos">

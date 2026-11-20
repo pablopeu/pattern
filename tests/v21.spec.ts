@@ -1,3 +1,4 @@
+import { context, styles, catalog, symmetry, field } from './navigation';
 import { test, expect, type Page } from '@playwright/test';
 async function saved(page: Page) {
   await expect(page.locator('.save-indicator')).toHaveText(/Guardado local/);
@@ -101,9 +102,9 @@ for (const [family, group] of [
         (await (await import('/src/persistence/storage.ts')).recover())!.patterns[0].sourceGeometry,
     );
     expect(sources).toHaveLength(2);
-    await page.getByRole('button', { name: 'Simetría p4m', exact: true }).click();
+    await symmetry(page, 'Simetría p4m');
     await saved(page);
-    await page.getByRole('button', { name: 'Simetría p6m', exact: true }).click();
+    await symmetry(page, 'Simetría p6m');
     await saved(page);
     expect(
       await page.evaluate(
@@ -125,7 +126,7 @@ test('v2.1 overlay: botón independiente, opacidad persistente y exportación li
   await expect(button).toHaveAttribute('aria-pressed', 'true');
   await page.getByRole('button', { name: 'Mostrar grilla', exact: true }).click();
   await expect(page.locator('[data-symmetry-structure]')).toHaveCount(1);
-  await page.getByLabel('Opacidad de la estructura', { exact: true }).focus();
+  await (await field(page, 'Opacidad de la estructura')).focus();
   await page.keyboard.press('End');
   await page.keyboard.press('ArrowLeft');
   await saved(page);
@@ -142,6 +143,8 @@ test('v2.1 overlay: botón independiente, opacidad persistente y exportación li
   await button.click();
   await expect(page.locator('[data-symmetry-structure]')).toHaveCount(0);
   await button.click();
+  await context(page, 'Simetrías');
+  await page.getByRole('tab', { name: 'Colocación', exact: true }).click();
   await page.locator('.symmetry-gallery').getByLabel('Guías detalladas', { exact: true }).uncheck();
   await expect(button).toHaveAttribute('aria-pressed', 'false');
   await expect(page.locator('[data-symmetry-structure]')).toHaveCount(0);
@@ -152,9 +155,9 @@ for (const kind of ['square', 'rectangle', 'parallelogram', 'triangle', 'hexagon
     page,
   }) => {
     await prepare(page, 'none', 'none');
-    await page.locator('.tile-panel>summary').click();
-    await page.getByLabel('Usar teselas geométricas', { exact: true }).check();
-    await page.getByLabel('Forma de tesela', { exact: true }).selectOption(kind);
+    await context(page, 'Teselas');
+    await (await field(page, 'Usar teselas geométricas')).check();
+    await (await field(page, 'Forma de tesela')).selectOption(kind);
     await saved(page);
     await expect(page.locator('[data-tiled-pattern]')).toHaveCount(1);
     const lines = await page.evaluate(async () => {
@@ -197,8 +200,8 @@ for (const kind of ['square', 'rectangle', 'parallelogram', 'triangle', 'hexagon
       async () => (await (await import('/src/persistence/storage.ts')).recover())!.patterns[0],
     );
     expect(before.sourceGeometry).toHaveLength(2);
-    await page.getByLabel('Editar bordes de tesela', { exact: true }).check();
-    await page.getByLabel('Desvío del borde', { exact: true }).fill('2');
+    await (await field(page, 'Editar bordes de tesela')).check();
+    await (await field(page, 'Desvío del borde')).fill('2');
     await saved(page);
     const check = () =>
       page.evaluate(async () => {
@@ -359,9 +362,9 @@ for (const kind of ['square', 'rectangle', 'parallelogram', 'triangle', 'hexagon
     page,
   }) => {
     await prepare(page, 'none', 'none');
-    await page.locator('.tile-panel>summary').click();
-    await page.getByLabel('Usar teselas geométricas', { exact: true }).check();
-    await page.getByLabel('Forma de tesela', { exact: true }).selectOption(kind);
+    await context(page, 'Teselas');
+    await (await field(page, 'Usar teselas geométricas')).check();
+    await (await field(page, 'Forma de tesela')).selectOption(kind);
     await saved(page);
     const data = await page.evaluate(async () => {
       const { recover } = await import('/src/persistence/storage.ts');
@@ -482,7 +485,7 @@ test('v2.1 los 17 wallpaper, siete frisos y Cn/Dn producen overlays correctos en
     if (['pg', 'pgg', 'p4g'].includes(c.group))
       expect(data.axes.some((a) => a.type === 'glide')).toBe(true);
   }
-  await page.getByRole('button', { name: 'Simetría p2', exact: true }).click();
+  await symmetry(page, 'Simetría p2');
   await page.getByRole('button', { name: 'Línea', exact: true }).click();
   const a = await screen(page, 30, 0),
     b = await screen(page, 38, 8);

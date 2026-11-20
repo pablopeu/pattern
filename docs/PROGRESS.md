@@ -305,3 +305,21 @@
   documento intacto al navegar y edición real. Log v23-properties-*.log.
 - Pendiente aún: compactar teselas/generador/aplicación, exportación accesible,
   adaptar y ejecutar todas las regresiones anteriores y cerrar la auditoría.
+
+## PRD v2.3 · Contextos compactos y diálogos accesibles
+
+- Teselas separa Forma/Colocación/Bordes/Tangentes; generadores muestran hasta
+  cuatro parámetros relevantes por página e instancias seleccionables.
+  Aplicación separa Perímetro/Transformar/Vínculo. La lista de conjuntos pasa
+  al único contenedor de Capas. Simetrías separa red de colocación del motivo.
+- Exportación separa Contenido/Tamaño/Precisión y usa diálogo modal nativo;
+  importación, biblioteca y ayuda también conservan foco y fondo inerte.
+  Archivo cierra al actuar fuera/Escape; el panel izquierdo tiene cierre y Escape.
+-203 unitarias/TypeScript,21 E2E de propiedades/estilos/regresiones dirigidas y
+  cuatro recorridos adicionales sin scroll correctos (1366×768,1440×900,
+  1920×1080,390×844). Incluyen todas las tabs de teselas, p1, generador warp,
+  preferencias, aplicación y exportación/foco. Logs v23-contexts-*.log y
+  v23-properties-regressions.log.
+- Recorridos previos se adaptan a categorías, tabs y catálogo usando helpers
+  de interacción real. Se conservan aserciones de modelo/tinta/persistencia.
+  Pendiente ejecutar y corregir la regresión completa sobre estos recorridos.

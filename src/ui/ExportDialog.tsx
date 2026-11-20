@@ -1,3 +1,4 @@
+import { Modal } from './Modal';
 import { tileRectangularCell } from '../tiling/tiles';
 import { useState, useEffect, useRef } from 'react';
 import { X, Download, LoaderCircle, FileCode2 } from 'lucide-react';
@@ -8,6 +9,7 @@ import { download } from '../persistence/storage';
 import { rectangularCell } from '../symmetry/groups';
 import { Field, Select, Toggle } from './Controls';
 export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: () => void }) {
+  const [tab, setTab] = useState('content');
   const [options, setOptions] = useState<ExportOptions>({
     scope: s.project.patterns.filter((p) => p.visible).length > 1 ? 'composition' : 'pattern',
     target: s.mode === 'apply' && s.application ? 'application' : 'view',
@@ -118,18 +120,8 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
     ? tileRectangularCell(s.pattern.tiling)
     : rectangularCell(s.confirmedSymmetry);
   return (
-    <div
-      className="modal-shade"
-      onPointerDown={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
-      <section
-        className="export-dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Exportar patrón"
-      >
+    <Modal label="Exportar patrón" className="export-modal" onClose={onClose}>
+      <section className="export-dialog">
         <header>
           <div>
             <span className="eyebrow">DE LA IDEA AL ARCHIVO</span>
@@ -142,45 +134,6 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
         <div className="export-body">
           <div className="export-options">
             <Select
-              label="Contenido"
-              value={options.scope ?? 'pattern'}
-              onChange={(v) => set('scope', v as 'pattern' | 'composition')}
-              options={[
-                { value: 'composition', label: 'Composición visible' },
-                { value: 'pattern', label: 'Conjunto activo' },
-              ]}
-            />
-            <Select
-              label="Qué exportar"
-              value={options.target}
-              onChange={(v) => set('target', v as ExportOptions['target'])}
-              options={[
-                { value: 'view', label: 'Región finita' },
-                { value: 'tile', label: 'Celda rectangular seamless' },
-                { value: 'lattice', label: 'Celda de red · geometría real' },
-                { value: 'fundamental', label: 'Región fundamental del grupo' },
-                ...(s.project.applications.length
-                  ? [{ value: 'application', label: 'Patrón aplicado' }]
-                  : []),
-              ]}
-            />
-            {options.target === 'application' && (
-              <Select
-                label="Aplicación a exportar"
-                value={options.applicationId ?? ''}
-                onChange={(v) => set('applicationId', v)}
-                options={s.project.applications.map((a) => ({ value: a.id, label: a.name }))}
-              />
-            )}
-            {(s.project.patterns.some((p) => p.tiling) ||
-              s.project.applications.some((a) => a.frozenPattern?.tiling)) && (
-              <Toggle
-                label="Exportar contornos de teselas"
-                checked={options.includeTileOutlines ?? false}
-                onChange={(v) => set('includeTileOutlines', v)}
-              />
-            )}
-            <Select
               label="Formato"
               value={options.format}
               onChange={(v) => set('format', v as ExportOptions['format'])}
@@ -191,102 +144,157 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
                 { value: 'dxf', label: 'DXF · líneas y polilíneas' },
               ]}
             />
-            {options.format === 'svg' && (
+            <div className="context-tabs" role="tablist" aria-label="Opciones de exportación">
+              {['content', 'size', 'precision'].map((id) => (
+                <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)}>
+                  {{ content: 'Contenido', size: 'Tamaño', precision: 'Precisión' }[id]}
+                </button>
+              ))}
+            </div>
+            <div hidden={tab !== 'content'} className="compact-fields">
+              {' '}
               <Select
-                label="Representación"
-                value={options.representation}
-                onChange={(v) => set('representation', v as ExportOptions['representation'])}
+                label="Contenido"
+                value={options.scope ?? 'pattern'}
+                onChange={(v) => set('scope', v as 'pattern' | 'composition')}
                 options={[
-                  { value: 'editable', label: 'Instancias reutilizables' },
-                  { value: 'expanded', label: 'Geometría expandida' },
+                  { value: 'composition', label: 'Composición visible' },
+                  { value: 'pattern', label: 'Conjunto activo' },
                 ]}
               />
-            )}
-            {options.target === 'view' && (
-              <div className="two-fields">
-                <Field
-                  label="Ancho de exportación"
-                  value={options.width}
-                  min={1}
-                  max={2000}
-                  unit="mm"
-                  onChange={(v) => set('width', v)}
+              <Select
+                label="Qué exportar"
+                value={options.target}
+                onChange={(v) => set('target', v as ExportOptions['target'])}
+                options={[
+                  { value: 'view', label: 'Región finita' },
+                  { value: 'tile', label: 'Celda rectangular seamless' },
+                  { value: 'lattice', label: 'Celda de red · geometría real' },
+                  { value: 'fundamental', label: 'Región fundamental del grupo' },
+                  ...(s.project.applications.length
+                    ? [{ value: 'application', label: 'Patrón aplicado' }]
+                    : []),
+                ]}
+              />
+              {options.target === 'application' && (
+                <Select
+                  label="Aplicación a exportar"
+                  value={options.applicationId ?? ''}
+                  onChange={(v) => set('applicationId', v)}
+                  options={s.project.applications.map((a) => ({ value: a.id, label: a.name }))}
                 />
-                <Field
-                  label="Alto de exportación"
-                  value={options.height}
-                  min={1}
-                  max={2000}
-                  unit="mm"
-                  onChange={(v) => set('height', v)}
+              )}
+              {(s.project.patterns.some((p) => p.tiling) ||
+                s.project.applications.some((a) => a.frozenPattern?.tiling)) && (
+                <Toggle
+                  label="Exportar contornos de teselas"
+                  checked={options.includeTileOutlines ?? false}
+                  onChange={(v) => set('includeTileOutlines', v)}
                 />
-              </div>
-            )}
-            {['png', 'jpeg'].includes(options.format) && (
-              <>
-                <Field
-                  label="Resolución"
-                  value={options.dpi}
-                  unit="DPI"
-                  min={36}
-                  max={1200}
-                  onChange={(v) => set('dpi', v)}
-                />
-                {options.format === 'jpeg' && (
+              )}
+            </div>
+            <div hidden={tab !== 'size'} className="compact-fields">
+              {' '}
+              {options.target === 'view' && (
+                <div className="two-fields">
                   <Field
-                    label="Calidad JPEG"
-                    value={options.quality}
-                    min={0.1}
-                    max={1}
-                    step={0.05}
-                    slider
-                    onChange={(v) => set('quality', v)}
+                    label="Ancho de exportación"
+                    value={options.width}
+                    min={1}
+                    max={2000}
+                    unit="mm"
+                    onChange={(v) => set('width', v)}
                   />
-                )}
-              </>
-            )}
-            {options.format !== 'dxf' && (
-              <>
-                {options.format !== 'jpeg' && (
-                  <Toggle
-                    label="Fondo transparente"
-                    checked={options.transparent}
-                    onChange={(v) => set('transparent', v)}
+                  <Field
+                    label="Alto de exportación"
+                    value={options.height}
+                    min={1}
+                    max={2000}
+                    unit="mm"
+                    onChange={(v) => set('height', v)}
                   />
-                )}
-                {(!options.transparent || options.format === 'jpeg') && (
-                  <label className="color-row">
-                    Color de fondo
-                    <input
-                      aria-label="Color de fondo de exportación"
-                      type="color"
-                      value={options.background}
-                      onChange={(e) => set('background', e.target.value)}
+                </div>
+              )}
+              {['png', 'jpeg'].includes(options.format) && (
+                <>
+                  <Field
+                    label="Resolución"
+                    value={options.dpi}
+                    unit="DPI"
+                    min={36}
+                    max={1200}
+                    onChange={(v) => set('dpi', v)}
+                  />
+                  {options.format === 'jpeg' && (
+                    <Field
+                      label="Calidad JPEG"
+                      value={options.quality}
+                      min={0.1}
+                      max={1}
+                      step={0.05}
+                      slider
+                      onChange={(v) => set('quality', v)}
                     />
-                  </label>
-                )}
-              </>
-            )}
-            {(options.representation === 'expanded' || options.format === 'dxf') && (
-              <>
-                <Field
-                  label="Tolerancia de aproximación"
-                  value={options.tolerance}
-                  min={0.001}
-                  max={1}
-                  step={0.01}
-                  unit="mm"
-                  onChange={(v) => set('tolerance', v)}
+                  )}
+                </>
+              )}
+              {options.format !== 'dxf' && (
+                <>
+                  {options.format !== 'jpeg' && (
+                    <Toggle
+                      label="Fondo transparente"
+                      checked={options.transparent}
+                      onChange={(v) => set('transparent', v)}
+                    />
+                  )}
+                  {(!options.transparent || options.format === 'jpeg') && (
+                    <label className="color-row">
+                      Color de fondo
+                      <input
+                        aria-label="Color de fondo de exportación"
+                        type="color"
+                        value={options.background}
+                        onChange={(e) => set('background', e.target.value)}
+                      />
+                    </label>
+                  )}
+                </>
+              )}
+            </div>
+            <div hidden={tab !== 'precision'} className="compact-fields">
+              {' '}
+              {options.format === 'svg' && (
+                <Select
+                  label="Representación"
+                  value={options.representation}
+                  onChange={(v) => set('representation', v as ExportOptions['representation'])}
+                  options={[
+                    { value: 'editable', label: 'Instancias reutilizables' },
+                    { value: 'expanded', label: 'Geometría expandida' },
+                  ]}
                 />
-                {options.target === 'application' && (
-                  <Toggle
-                    label="Convertir trazos a contornos"
-                    checked={options.outlineStrokes}
-                    onChange={(v) => set('outlineStrokes', v)}
+              )}
+              {(options.representation === 'expanded' || options.format === 'dxf') && (
+                <>
+                  <Field
+                    label="Tolerancia de aproximación"
+                    value={options.tolerance}
+                    min={0.001}
+                    max={1}
+                    step={0.01}
+                    unit="mm"
+                    onChange={(v) => set('tolerance', v)}
                   />
-                )}
-              </>
-            )}
+                  {options.target === 'application' && (
+                    <Toggle
+                      label="Convertir trazos a contornos"
+                      checked={options.outlineStrokes}
+                      onChange={(v) => set('outlineStrokes', v)}
+                    />
+                  )}
+                </>
+              )}
+            </div>
             {!rect && s.confirmedSymmetry.family === 'wallpaper' && (
               <p className="math-notice">
                 La red oblicua no tiene una celda rectangular verificada. Exportá su celda de red o
@@ -359,6 +367,6 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
           </button>
         </footer>
       </section>
-    </div>
+    </Modal>
   );
 }

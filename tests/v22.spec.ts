@@ -1,3 +1,4 @@
+import { context, styles, catalog, symmetry, field } from './navigation';
 import { test, expect, type Page } from '@playwright/test';
 async function saved(page: Page) {
   await expect(page.locator('.save-indicator')).toHaveText(/Guardado local/);
@@ -50,13 +51,13 @@ test('v2.2 estilo vigente sin selección, indicador y tinta con ancho variable',
   page,
 }) => {
   await setup(page);
-  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
+  await styles(page, 'Colores');
   const p = panel(page);
-  await p.getByLabel('HEX de trazo', { exact: true }).fill('#e02040');
-  await p.getByLabel('Grosor de trazo', { exact: true }).fill('4');
-  await p.getByLabel('Perfil de grosor', { exact: true }).selectOption('taper-start');
-  await p.getByLabel('Estilo de línea').selectOption('dashed');
-  await p.getByLabel('Extremos del trazo').selectOption('butt');
+  await (await field(page, 'HEX de trazo')).fill('#e02040');
+  await (await field(page, 'Grosor de trazo')).fill('4');
+  await (await field(page, 'Perfil de grosor')).selectOption('taper-start');
+  await (await field(page, 'Estilo de línea')).selectOption('dashed');
+  await (await field(page, 'Extremos del trazo')).selectOption('butt');
   await page.getByRole('button', { name: 'Línea', exact: true }).click();
   await draw(page, 0, 0);
   await expect(p).not.toBeVisible();
@@ -98,19 +99,19 @@ test('v2.2 selección mixta cambia un atributo y respeta política explícita', 
   await setup(page, true);
   await page.locator('.studio-canvas').focus();
   await page.keyboard.press('Control+a');
-  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
+  await styles(page, 'Colores');
   const p = panel(page);
   await expect(p.getByText('Selección mixta.', { exact: false })).toBeVisible();
-  await p.getByLabel('Edición de selección actualiza estilo vigente').uncheck();
-  await p.getByLabel('HEX de trazo', { exact: true }).fill('#00aa44');
-  await p.getByLabel('Grosor de trazo', { exact: true }).focus();
+  await (await field(page, 'Edición de selección actualiza estilo vigente')).uncheck();
+  await (await field(page, 'HEX de trazo')).fill('#00aa44');
+  await (await field(page, 'Grosor de trazo')).focus();
   let m = await model(page);
   expect(m.patterns[0].sourceGeometry.map((g) => g.stroke)).toEqual(['#00aa44', '#00aa44']);
   expect(m.patterns[0].sourceGeometry.map((g) => g.strokeWidth)).toEqual([1, 3]);
   expect(m.drawingStyle.stroke).toBe('#233b2d');
-  await p.getByLabel('Edición de selección actualiza estilo vigente').check();
-  await p.getByLabel('Grosor de trazo', { exact: true }).fill('5');
-  await p.getByLabel('Límite de inglete').focus();
+  await (await field(page, 'Edición de selección actualiza estilo vigente')).check();
+  await (await field(page, 'Grosor de trazo')).fill('5');
+  await (await field(page, 'Límite de inglete')).focus();
   m = await model(page);
   expect(m.patterns[0].sourceGeometry.map((g) => g.strokeWidth)).toEqual([5, 5]);
   expect(m.drawingStyle.strokeWidth).toBe(5);
@@ -121,15 +122,16 @@ test('v2.2 selección mixta cambia un atributo y respeta política explícita', 
 });
 test('v2.2 presets por valor, paletas y persistencia', async ({ page }) => {
   await setup(page);
-  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
+  await styles(page, 'Colores');
   const p = panel(page);
-  await p.getByLabel('HEX de trazo', { exact: true }).fill('#12345680');
-  await p.getByLabel('Grosor de trazo', { exact: true }).fill('2');
-  await p.getByLabel('Nombre del preset de estilo').fill('Azul fino');
+  await (await field(page, 'HEX de trazo')).fill('#12345680');
+  await (await field(page, 'Grosor de trazo')).fill('2');
+  await (await field(page, 'Nombre del preset de estilo')).fill('Azul fino');
   await p.getByRole('button', { name: 'Guardar nuevo', exact: true }).click();
-  await p.getByLabel('Aplicar color de paleta a').selectOption('stroke');
+  await (await field(page, 'Aplicar color de paleta a')).selectOption('stroke');
   await p.getByRole('button', { name: 'Agregar a favoritos', exact: true }).click();
-  await p.getByLabel('HEX de trazo', { exact: true }).fill('#abcdef');
+  await (await field(page, 'HEX de trazo')).fill('#abcdef');
+  await styles(page, 'Presets');
   await p.getByRole('button', { name: 'Aplicar preset', exact: true }).click();
   let m = await model(page);
   expect(m.drawingStyle.stroke).toBe('#123456');
@@ -137,10 +139,8 @@ test('v2.2 presets por valor, paletas y persistencia', async ({ page }) => {
   expect(m.palette.favorites).toContain('#123456');
   await page.reload();
   await saved(page);
-  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
-  await panel(page)
-    .getByLabel('Preset de estilo', { exact: true })
-    .selectOption({ label: 'Azul fino' });
+  await styles(page, 'Colores');
+  await (await field(page, 'Preset de estilo')).selectOption({ label: 'Azul fino' });
   await expect(panel(page).getByLabel('Grosor de trazo', { exact: true })).toHaveValue('2');
   m = await model(page);
   expect(m.stylePresets).toHaveLength(1);
@@ -156,7 +156,7 @@ test('v2.2 panel conserva escala, Escape y selección, pin y pantallas reducidas
       return { a: m.a, d: m.d, x: svg.viewBox.baseVal.x };
     });
   const before = await camera();
-  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
+  await styles(page, 'Colores');
   await expect(panel(page)).toBeVisible();
   await expect.poll(async () => Math.abs((await camera()).a - before.a)).toBeLessThan(0.0001);
   await page.screenshot({ path: 'test-results/v22-panel-1440.png' });
@@ -169,7 +169,7 @@ test('v2.2 panel conserva escala, Escape y selección, pin y pantallas reducidas
   await page.keyboard.press('Escape');
   await expect(panel(page)).not.toBeVisible();
   await expect(page.locator('.statusbar')).toContainText('1 seleccionados');
-  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
+  await styles(page, 'Colores');
   for (const width of [1100, 768]) {
     await page.setViewportSize({ width, height: 800 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
@@ -183,7 +183,8 @@ test('v2.2 panel conserva escala, Escape y selección, pin y pantallas reducidas
 
 test('v2.2 slider y edición visual del perfil generan un undo por gesto', async ({ page }) => {
   await setup(page);
-  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
+  await styles(page, 'Colores');
+  await styles(page, 'Trazo');
   const p = panel(page),
     range = p.getByLabel('Grosor de trazo deslizador');
   await range.scrollIntoViewIfNeeded();
@@ -198,7 +199,7 @@ test('v2.2 slider y edición visual del perfil generan un undo por gesto', async
   expect((await model(page)).drawingStyle.strokeWidth).toBe(0.65);
   await page.getByRole('button', { name: 'Rehacer', exact: true }).click();
   expect((await model(page)).drawingStyle.strokeWidth).toBe(width);
-  await p.getByLabel('Perfil de grosor', { exact: true }).selectOption('custom');
+  await (await field(page, 'Perfil de grosor')).selectOption('custom');
   const control = p.getByRole('slider', { name: 'Control de perfil 1', exact: true });
   await control.scrollIntoViewIfNeeded();
   b = (await control.boundingBox())!;
@@ -220,9 +221,7 @@ test('feedback LAN: apariencia exclusivamente a la derecha, acceso desde inspect
   const left = page.locator('.context-panel');
   await expect(left.getByLabel('Color de trazo', { exact: true })).toHaveCount(0);
   await expect(left.getByLabel('Grosor de trazo', { exact: true })).toHaveCount(0);
-  await left
-    .getByRole('button', { name: 'Editar apariencia en panel derecho', exact: true })
-    .click();
+  await styles(page, 'Colores');
   await expect(panel(page)).toBeVisible();
   await expect(panel(page).getByLabel('Color de trazo', { exact: true })).toHaveCount(1);
   const rightBox = (await panel(page).boundingBox())!,
@@ -230,7 +229,7 @@ test('feedback LAN: apariencia exclusivamente a la derecha, acceso desde inspect
   expect(rightBox.x).toBeGreaterThanOrEqual(canvasBox.x + canvasBox.width - 1);
   await page.screenshot({ path: 'test-results/v22-right-only-1440.png' });
   await page.getByRole('button', { name: 'Seleccionar', exact: true }).click();
-  const q = await screen(page, 20, 0);
+  const q = await screen(page, 90, 70);
   await page.mouse.click(q.x, q.y);
   await expect(panel(page)).not.toBeVisible();
   await page.setViewportSize({ width: 768, height: 800 });
@@ -266,9 +265,10 @@ test('trazo excesivo muestra aviso corregible y no desmonta lienzo ni galería',
   await saved(page);
   await expect(page.getByRole('alert')).toContainText('Eje provisional en naranja');
   await expect(page.locator('.studio-canvas')).toBeVisible();
+  await context(page, 'Simetrías');
   await expect(page.locator('.symmetry-gallery')).toBeVisible();
   await page.getByRole('button', { name: 'Corregir trazo', exact: true }).click();
-  await panel(page).getByLabel('Estilo de línea', { exact: true }).selectOption('solid');
+  await (await field(page, 'Estilo de línea')).selectOption('solid');
   await expect(page.getByRole('alert')).not.toBeVisible();
   expect((await model(page)).patterns[0].sourceGeometry[0].strokeDash).toEqual([]);
   expect(errors).toEqual([]);
@@ -281,8 +281,8 @@ test('Pluma mantiene borrador y coordenadas al cerrar estilos con Escape desde u
   await page.getByRole('button', { name: 'Pluma Bézier', exact: true }).click();
   let q = await screen(page, 0, 0);
   await page.mouse.click(q.x, q.y);
-  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
-  await panel(page).getByLabel('Grosor de trazo', { exact: true }).fill('2');
+  await styles(page, 'Colores');
+  await (await field(page, 'Grosor de trazo')).fill('2');
   await page.keyboard.press('Escape');
   await expect(panel(page)).not.toBeVisible();
   await expect(page.getByRole('button', { name: 'Pluma Bézier', exact: true })).toHaveAttribute(
@@ -310,7 +310,7 @@ test('Pluma mantiene borrador y coordenadas al cerrar estilos con Escape desde u
 test('indicador permanece visible y accionable con panel superpuesto a768px', async ({ page }) => {
   await setup(page);
   await page.setViewportSize({ width: 768, height: 800 });
-  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
+  await styles(page, 'Colores');
   const indicator = panel(page).getByRole('button', { name: 'Abrir panel de estilos' });
   await expect(indicator).toBeVisible();
   await expect(indicator.locator('.style-chip').first()).toBeVisible();

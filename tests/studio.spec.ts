@@ -1,3 +1,4 @@
+import { context, styles, catalog, symmetry, field } from './navigation';
 import { test, expect, type Page } from '@playwright/test';
 async function ready(page: Page) {
   await page.goto('/');
@@ -65,7 +66,7 @@ test('editor inicial, tres modos y capturas desktop sin errores', async ({ page 
 test('AC-01: primera línea visible antes de soltar; undo y redo', async ({ page }) => {
   await ready(page);
   await newProject(page);
-  await page.getByRole('button', { name: 'Simetría p1', exact: true }).click();
+  await symmetry(page, 'Simetría p1');
   await page.getByRole('button', { name: 'Línea', exact: true }).click();
   const a = await modelPoint(page, 0, 0),
     b = await modelPoint(page, 20, 15);
@@ -89,7 +90,7 @@ test('AC-02/03: arrastrar nodo desde copia reflejada cambia la fuente', async ({
     '<svg xmlns="http://www.w3.org/2000/svg" width="60mm" height="60mm" viewBox="0 0 60 60"><path d="M10 10L25 15L15 25Z" fill="#55765b"/></svg>',
   );
   await page.getByRole('tab', { name: 'Patrón', exact: true }).click();
-  await page.getByRole('button', { name: 'Simetría pm', exact: true }).click();
+  await symmetry(page, 'Simetría pm');
   await page.getByRole('button', { name: 'Editar nodos', exact: true }).click();
   const hit = await modelPoint(page, 16, -15);
   await page.mouse.click(hit.x, hit.y);
@@ -114,8 +115,8 @@ test('AC-12/13: rectángulo 100x50 mm, JSON portable y recuperación', async ({ 
   await page.mouse.down();
   await page.mouse.move(b.x, b.y);
   await page.mouse.up();
-  await page.getByLabel('Ancho', { exact: true }).fill('100');
-  await page.getByLabel('Alto', { exact: true }).fill('50');
+  await (await field(page, 'Ancho')).fill('100');
+  await (await field(page, 'Alto')).fill('50');
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Guardar proyecto', exact: true }).click();
   const download = await downloadPromise;
@@ -160,7 +161,7 @@ test('exportación real SVG, PNG, JPEG y DXF desde worker', async ({ page }) => 
   await page.getByRole('button', { name: 'Exportar', exact: true }).click();
   await expect(page.getByAltText('Previsualización de exportación')).toBeVisible();
   for (const format of ['svg', 'png', 'jpeg', 'dxf']) {
-    await page.getByLabel('Formato', { exact: true }).selectOption(format);
+    await (await field(page, 'Formato')).selectOption(format);
     await expect(
       page.getByRole('button', { name: 'Descargar archivo', exact: true }),
     ).toBeEnabled();
@@ -182,7 +183,7 @@ test('aplicación a perímetro y SVG expandido sin máscara', async ({ page }) =
   await ready(page);
   await menu(page, 'Jardín en un perímetro');
   await page.getByRole('button', { name: 'Exportar', exact: true }).click();
-  await page.getByLabel('Representación', { exact: true }).selectOption('expanded');
+  await (await field(page, 'Representación')).selectOption('expanded');
   await expect(page.getByRole('button', { name: 'Descargar archivo', exact: true })).toBeEnabled({
     timeout: 20000,
   });
@@ -198,9 +199,9 @@ test('vista dividida y cambio de generador conserva geometría y undo', async ({
   await ready(page);
   await page.getByRole('button', { name: 'Vista dividida', exact: true }).click();
   await expect(page.locator('.studio-canvas')).toHaveCount(2);
-  await page.getByLabel('Familia', { exact: true }).selectOption('warp');
+  await (await field(page, 'Familia')).selectOption('warp');
   await expect(page.getByLabel('Espaciado', { exact: true })).toBeVisible();
-  await page.getByLabel('Espaciado', { exact: true }).fill('30');
+  await (await field(page, 'Espaciado')).fill('30');
   await expect
     .poll(async () => ((await model(page)) as any).patterns[0].generator.spacing)
     .toBe(30);
@@ -244,7 +245,7 @@ test('edición de un nodo desde una instancia rotada', async ({ page }) => {
     '<svg xmlns="http://www.w3.org/2000/svg" width="60mm" height="60mm" viewBox="0 0 60 60"><path d="M10 10L25 15L15 25Z" fill="#55765b"/></svg>',
   );
   await page.getByRole('tab', { name: 'Patrón', exact: true }).click();
-  await page.getByRole('button', { name: 'Simetría p4', exact: true }).click();
+  await symmetry(page, 'Simetría p4');
   await page.getByRole('button', { name: 'Editar nodos', exact: true }).click();
   const q = await modelPoint(page, -16, 15);
   await page.mouse.click(q.x, q.y);
@@ -260,7 +261,7 @@ test('edición de un nodo desde una instancia rotada', async ({ page }) => {
 });
 test('presets y biblioteca conservan proyectos al restaurar ejemplos', async ({ page }) => {
   await ready(page);
-  await page.getByLabel('Nombre del proyecto', { exact: true }).fill('Mi proyecto conservado');
+  await (await field(page, 'Nombre del proyecto')).fill('Mi proyecto conservado');
   await expect(page.locator('.save-indicator')).toHaveText(/Guardado local/);
   await menu(page, 'Espejos · p4m');
   await menu(page, 'Biblioteca de este navegador');
@@ -372,10 +373,13 @@ test('crear perímetro, aplicar, transformar, congelar y undo/redo', async ({ pa
   await page.mouse.down();
   await page.mouse.move(b.x, b.y);
   await page.mouse.up();
+  await context(page, 'Aplicación');
   await page.getByRole('button', { name: 'Aplicar al perímetro', exact: true }).click();
   await expect.poll(async () => ((await model(page)) as any)?.applications.length).toBe(1);
-  await page.getByLabel('Escala uniforme', { exact: true }).fill('1.5');
-  await page.getByLabel('Rotación de aplicación', { exact: true }).fill('30');
+  await (await field(page, 'Escala uniforme')).fill('1.5');
+  await (await field(page, 'Rotación de aplicación')).fill('30');
+  await context(page, 'Aplicación');
+  await page.getByRole('tab', { name: 'Vínculo', exact: true }).click();
   await page.getByRole('button', { name: 'Vinculado · congelar copia', exact: true }).click();
   await expect.poll(async () => ((await model(page)) as any)?.applications[0]?.linked).toBe(false);
   await page.getByRole('button', { name: 'Deshacer', exact: true }).click();
@@ -428,20 +432,23 @@ test('la exportación se puede cancelar y reintentar sin cambiar el documento', 
   await page.getByRole('button', { name: 'Exportar', exact: true }).click();
   await page.getByRole('button', { name: 'Cancelar', exact: true }).click();
   await expect(page.getByRole('alert')).toContainText('cancelada');
-  await page.getByLabel('Qué exportar', { exact: true }).selectOption('tile');
+  await (await field(page, 'Qué exportar')).selectOption('tile');
   await expect(page.getByRole('button', { name: 'Descargar archivo', exact: true })).toBeEnabled();
 });
 
 test('duplicar patrón mantiene fuentes independientes', async ({ page }) => {
   await ready(page);
+  await context(page, 'Capas');
+  await page.getByRole('tab', { name: 'Conjuntos', exact: true }).click();
   await page.getByRole('button', { name: 'Duplicar patrón', exact: true }).click();
   await expect.poll(async () => ((await model(page)) as any)?.patterns.length).toBe(2);
   const p: any = await model(page);
   expect(p.patterns[0].sourceGeometry[0].id).not.toBe(p.patterns[1].sourceGeometry[0].id);
-  await page.getByRole('button', { name: /^Capas/ }).click();
+  await context(page, 'Capas');
+  await page.getByRole('tab', { name: 'Capas', exact: false }).click();
   await page.locator('.layer-name').last().click();
-  await page.getByRole('button', { name: 'Diseño', exact: true }).click();
-  await page.getByLabel('Nombre del objeto', { exact: true }).fill('Sólo cambia la copia');
+  await styles(page, 'Objeto');
+  await (await field(page, 'Nombre del objeto')).fill('Sólo cambia la copia');
   await expect
     .poll(async () => ((await model(page)) as any)?.patterns[1].sourceGeometry[0].name)
     .toBe('Sólo cambia la copia');
@@ -471,7 +478,7 @@ test('cancelar una rasterización en curso evita la descarga tardía', async ({ 
   let downloads = 0;
   page.on('download', () => downloads++);
   await page.getByRole('button', { name: 'Exportar', exact: true }).click();
-  await page.getByLabel('Formato', { exact: true }).selectOption('png');
+  await (await field(page, 'Formato')).selectOption('png');
   await expect(page.getByRole('button', { name: 'Descargar archivo', exact: true })).toBeEnabled();
   await page.getByRole('button', { name: 'Descargar archivo', exact: true }).click();
   await page.waitForFunction(() => Boolean((window as any).__encodingStarted));
@@ -484,10 +491,11 @@ test('cancelar una rasterización en curso evita la descarga tardía', async ({ 
 test('un polígono regular en Aplicar crea un perímetro y conserva el motivo', async ({ page }) => {
   await ready(page);
   await page.getByRole('tab', { name: 'Aplicar', exact: true }).click();
-  await expect(page.getByRole('button', { name: /^Capas/ })).toHaveText(/0/);
+  await expect(page.locator('.statusbar')).toContainText('0 objetos');
   await page.getByRole('button', { name: 'Crear polígono regular', exact: true }).click();
   await expect.poll(async () => ((await model(page)) as any)?.regions.length).toBe(1);
   expect(((await model(page)) as any).patterns[0].sourceGeometry.length).toBe(3);
+  await context(page, 'Aplicación');
   await page.getByRole('button', { name: 'Aplicar al perímetro', exact: true }).click();
   await expect.poll(async () => ((await model(page)) as any)?.applications.length).toBe(1);
 });

@@ -2422,3 +2422,24 @@ input[type='color']::-webkit-color-swatch {
 .command-modal [role=option] { text-align:left; padding:9px; border-radius:6px; font-size:13px; }
 .command-modal [role=option][aria-selected=true] { background:#dfe9d7; }
 .top-actions > .command-trigger { display:flex; }
+.export-modal > .modal-content, .simple-modal > .modal-content { padding:0; }
+.export-modal .export-dialog { width:min(1040px,calc(100vw - 26px)); max-height:none; overflow:visible; border:0; }
+.export-modal .export-options { padding:14px; gap:10px; }
+.export-modal .export-dialog > header { padding:16px 20px; }
+.export-modal .export-dialog > footer { padding:12px 20px; }
+.export-modal .export-preview { padding:16px; }
+.export-modal .export-preview-image > img { height:300px; }
+.export-modal .export-body { min-height:320px; }
+.simple-modal .small-dialog { max-width:calc(100vw - 26px); max-height:none; overflow:visible; border:0; }
+.context-application .section-content { gap:9px; }
+.context-application .panel-section > summary { height:34px; }
+.context-application .compact-fields input, .context-application .compact-fields select { min-width:0; }
+.context-symmetry .section-content > .field { font-size:11px; }
+.context-symmetry .section-content > .slider-field { gap:5px; }
+.context-symmetry .section-content { gap:9px; }
+.tool-rail button[title] { position:relative; }
+.tool-rail button[title]::after { content:attr(title); position:absolute; left:calc(100% + 7px); top:50%; transform:translateY(-50%); padding:7px 9px; background:#233b2d; color:white; font-size:11px; white-space:nowrap; border-radius:5px; z-index:60; opacity:0; pointer-events:none; }
+.tool-rail button[title]:hover::after, .tool-rail button[title]:focus-visible::after { opacity:1; }
+@media(max-width:650px) { .export-modal .export-preview-image > img { height:120px; } .export-modal .export-preview { padding:8px 14px; } .export-modal .export-dialog > header { padding:12px 14px; } .export-modal .export-dialog h2 { font-size:19px; } .export-modal .export-body { min-height:0; } .export-modal .export-options { gap:7px; } .export-modal .export-dialog > footer > span { display:none; } }
+.context-heading { display:flex; align-items:center; justify-content:space-between; }
+.context-heading > button { width:24px; height:24px; font-size:19px; color:#657858; border-radius:5px; }

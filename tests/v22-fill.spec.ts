@@ -1,3 +1,4 @@
+import { context, styles, catalog, symmetry, field } from './navigation';
 import { test, expect, type Page } from '@playwright/test';
 async function saved(page: Page) {
   await expect(page.locator('.save-indicator')).toHaveText(/Guardado local/);
@@ -158,8 +159,8 @@ test('v2.2 Fill cuatro líneas: preview, tinta real, una fuente, undo y vínculo
   await page.getByRole('button', { name: 'Seleccionar', exact: true }).click();
   const q = await screen(page, 20, 10);
   await page.mouse.click(q.x, q.y);
-  await page.getByLabel('Posición X', { exact: true }).fill('5');
-  await page.getByLabel('Posición Y', { exact: true }).focus();
+  await (await field(page, 'Posición X')).fill('5');
+  await (await field(page, 'Posición Y')).focus();
   await expect
     .poll(async () => {
       const p = await model(page);
@@ -209,7 +210,7 @@ test('v2.2 Fill confirma con mouse sobre lienzo y autocierra panel sin perder op
   page,
 }) => {
   await setup(page);
-  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
+  await styles(page, 'Fill');
   await page.evaluate(
     () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))),
   );
@@ -229,10 +230,10 @@ test('Fill recolorea desde otra copia sin duplicar la fuente y la miniatura incl
 }) => {
   await setup(page, 'periodic');
   await paint(page, 10, 10);
-  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
+  await styles(page, 'Fill');
   const panel = page.getByRole('complementary', { name: 'Panel de estilos' });
-  await panel.getByLabel('Editar estilo de').selectOption('current');
-  await panel.getByLabel('HEX de relleno', { exact: true }).fill('#2455dd');
+  await (await field(page, 'Editar estilo de')).selectOption('current');
+  await (await field(page, 'HEX de relleno')).fill('#2455dd');
   await page.getByRole('button', { name: 'Cerrar panel de estilos' }).click();
   await paint(page, 30, 30);
   let p = await model(page);
@@ -240,6 +241,7 @@ test('Fill recolorea desde otra copia sin duplicar la fuente y la miniatura incl
   expect(p.patterns[0].sourceGeometry.find((g) => g.fillRegion)?.fill).toBe('#2455dd');
   await setup(page, 'tile');
   await paint(page, 10, 10);
+  await catalog(page);
   await expect
     .poll(() =>
       page
@@ -269,8 +271,8 @@ test('Fill recalcula vínculo tras cambio de grupo con undo/redo y una misma ent
   await setup(page);
   await paint(page, 10, 10);
   const initial = (await model(page)).patterns[0].sourceGeometry.find((g) => g.fillRegion)!;
-  await page.getByRole('button', { name: 'Simetría p1', exact: true }).click();
-  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
+  await symmetry(page, 'Simetría p1');
+  await styles(page, 'Fill');
   const panel = page.getByRole('complementary', { name: 'Panel de estilos' });
   await expect(panel.getByText('Vínculo desactualizado', { exact: false })).toBeVisible();
   await panel.getByRole('button', { name: 'Recalcular y vincular región', exact: true }).click();
@@ -317,7 +319,7 @@ test('cancelar actualización ignora un resultado tardío y conserva contorno e 
   await setup(page);
   await paint(page, 10, 10);
   const initial = (await model(page)).patterns[0].sourceGeometry.find((g) => g.fillRegion)!;
-  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
+  await styles(page, 'Fill');
   const panel = page.getByRole('complementary', { name: 'Panel de estilos' });
   await panel.getByRole('button', { name: 'Recalcular y vincular región', exact: true }).click();
   await panel.getByRole('button', { name: 'Cancelar actualización', exact: true }).click();
@@ -368,7 +370,7 @@ test('Fill rechaza abertura y sólo la cierra con tolerancia explícita sin toca
   await expect(page.locator('.toast')).toContainText('No hay una región cerrada');
   expect((await model(page)).patterns[0].sourceGeometry).toEqual(before);
   await expect(page.locator('[data-fill-preview]')).toHaveCount(0);
-  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
+  await styles(page, 'Fill');
   await page
     .getByRole('complementary', { name: 'Panel de estilos' })
     .getByLabel('Tolerancia de cierre de Fill', { exact: true })
@@ -456,8 +458,8 @@ test('Fill cruza varias teselas y conserva vínculo al cambiar un perfil de bord
   expect(worldBounds.width).toBeCloseTo(60);
   expect(worldBounds.height).toBeCloseTo(60);
   expect(await redAt(page, 65, 65)).toBe(true);
-  await page.locator('.tile-panel>summary').click();
-  await page.getByLabel('Contornos de teselas', { exact: true }).uncheck();
+  await context(page, 'Teselas');
+  await (await field(page, 'Contornos de teselas')).uncheck();
   await expect
     .poll(
       async () =>
@@ -465,9 +467,9 @@ test('Fill cruza varias teselas y conserva vínculo al cambiar un perfil de bord
           ?.status,
     )
     .toBe('linked');
-  await page.getByLabel('Editar bordes de tesela', { exact: true }).check();
-  await page.getByLabel('Desvío del borde', { exact: true }).fill('2');
-  await page.getByLabel('Editar bordes de tesela', { exact: true }).uncheck();
+  await (await field(page, 'Editar bordes de tesela')).check();
+  await (await field(page, 'Desvío del borde')).fill('2');
+  await (await field(page, 'Editar bordes de tesela')).uncheck();
   await expect
     .poll(async () => {
       const p = await model(page);
@@ -485,7 +487,7 @@ test('Fill de tesela fijo conserva fuente al editar borde y el vinculado cubre e
   page,
 }) => {
   await setup(page, 'tile');
-  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
+  await styles(page, 'Fill');
   await page
     .getByRole('complementary', { name: 'Panel de estilos' })
     .getByLabel('Nuevos rellenos vinculados a sus límites')
@@ -494,11 +496,11 @@ test('Fill de tesela fijo conserva fuente al editar borde y el vinculado cubre e
   await paint(page, 10, 10);
   const before = (await model(page)).patterns[0].sourceGeometry[0];
   expect(before.fillRegion?.linked).toBe(false);
-  await page.locator('.tile-panel>summary').click();
-  await page.getByLabel('Contornos de teselas', { exact: true }).uncheck();
-  await page.getByLabel('Editar bordes de tesela', { exact: true }).check();
-  await page.getByLabel('Desvío del borde', { exact: true }).fill('2');
-  await page.getByLabel('Editar bordes de tesela', { exact: true }).uncheck();
+  await context(page, 'Teselas');
+  await (await field(page, 'Contornos de teselas')).uncheck();
+  await (await field(page, 'Editar bordes de tesela')).check();
+  await (await field(page, 'Desvío del borde')).fill('2');
+  await (await field(page, 'Editar bordes de tesela')).uncheck();
   let p = await model(page);
   expect(p.patterns[0].sourceGeometry[0].nodes).toEqual(before.nodes);
   expect(p.patterns[0].sourceGeometry[0].fillRegion?.status).toBe('fixed');
@@ -506,11 +508,11 @@ test('Fill de tesela fijo conserva fuente al editar borde y el vinculado cubre e
   expect(await redAt(page, 30, 5)).toBe(true);
   await setup(page, 'tile');
   await paint(page, 10, 10);
-  await page.locator('.tile-panel>summary').click();
-  await page.getByLabel('Contornos de teselas', { exact: true }).uncheck();
-  await page.getByLabel('Editar bordes de tesela', { exact: true }).check();
-  await page.getByLabel('Desvío del borde', { exact: true }).fill('2');
-  await page.getByLabel('Editar bordes de tesela', { exact: true }).uncheck();
+  await context(page, 'Teselas');
+  await (await field(page, 'Contornos de teselas')).uncheck();
+  await (await field(page, 'Editar bordes de tesela')).check();
+  await (await field(page, 'Desvío del borde')).fill('2');
+  await (await field(page, 'Editar bordes de tesela')).uncheck();
   await expect
     .poll(async () => JSON.stringify((await model(page)).patterns[0].sourceGeometry[0].nodes))
     .not.toBe(JSON.stringify(before.nodes));
@@ -523,7 +525,7 @@ test('Fill aplica clics rápidos y mantiene color al salir, autocerrar panel y d
   page,
 }) => {
   await setup(page, 'periodic');
-  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
+  await styles(page, 'Fill');
   await paint(page, 10, 10);
   await expect(page.getByRole('complementary', { name: 'Panel de estilos' })).toHaveCount(0);
   expect(await redAt(page, 10, 10)).toBe(true);

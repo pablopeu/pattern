@@ -82,3 +82,12 @@ y comandos Ctrl+K implementados.203 unitarias/TypeScript, build y12 E2E de v2.3
 aprobados, incluyendo cuatro resoluciones con todas las tabs derechas sin scroll.
 Pendientes de la lista inicial: compactar otros contextos, adaptar regresiones,
 exportación/menús/teclado completos y documentación final. No declarar completo.
+
+## Cuarto incremento
+
+Contextos de teselas, simetrías, generador y aplicación compactados; exportación
+con tabs y diálogos nativos con foco/inert/Escape.203 unitarias/TypeScript,
+21 E2E de propiedades/estilos y4 nuevos de contextos sin scroll correctos.
+Los helpers tests/navigation.ts recorren la UI real y conservan aserciones.
+Próximo paso inmediato: regresión completa y corrección de recorridos/defectos,
+auditoría de cobertura, builds estáticos y documentación/capturas finales.

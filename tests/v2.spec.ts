@@ -1,3 +1,4 @@
+import { context, styles, catalog, symmetry, field } from './navigation';
 import { test, expect, type Page } from '@playwright/test';
 
 async function ready(page: Page) {
@@ -61,6 +62,7 @@ test('AC-21/29/30/31: Libre, miniaturas reales, hover puro y confirmación por t
   await page.getByRole('button', { name: 'Línea', exact: true }).click();
   await line(page, [0, 0], [20, 15]);
   await expect(page.locator('.studio-canvas use')).toHaveCount(1);
+  await catalog(page);
   await expect(page.locator('.dynamic-symmetry-grid')).toHaveAttribute(
     'data-preview-completed',
     '27',
@@ -72,7 +74,7 @@ test('AC-21/29/30/31: Libre, miniaturas reales, hover puro y confirmación por t
   await expect(page.locator('.gallery-details')).toContainText('Previsualización');
   expect(await page.locator('.studio-canvas use').count()).toBeGreaterThan(1);
   expect(JSON.stringify(await model(page))).toBe(before);
-  await page.getByRole('button', { name: 'Línea', exact: true }).hover();
+  await page.getByRole('dialog', { name: 'Catálogo de simetrías' }).getByRole('heading').hover();
   await expect(page.locator('.studio-canvas use')).toHaveCount(1);
   const button = page.getByRole('button', { name: 'Simetría p4m', exact: true });
   await button.focus();
@@ -83,6 +85,8 @@ test('AC-21/29/30/31: Libre, miniaturas reales, hover puro y confirmación por t
     'aria-pressed',
     'true',
   );
+  if (await page.getByRole('dialog', { name: 'Catálogo de simetrías' }).isVisible())
+    await page.getByRole('button', { name: 'Cerrar catálogo', exact: true }).click();
   await page.getByRole('button', { name: 'Deshacer', exact: true }).click();
   await saved(page);
   expect((await model(page))?.mainSymmetry.family).toBe('none');
@@ -91,6 +95,7 @@ test('AC-21/29/30/31: Libre, miniaturas reales, hover puro y confirmación por t
   await saved(page);
   expect((await model(page))?.mainSymmetry.group).toBe('p4m');
   await line(page, [30, 30], [38, 42]);
+  await catalog(page);
   await expect(thumb).not.toHaveAttribute('src', original!);
 });
 
@@ -161,7 +166,7 @@ test('AC-27/31/32/40: Pluma abierta conserva captura y nodos al cambiar grupo y 
   await page.getByRole('button', { name: 'Pluma Bézier', exact: true }).click();
   await clickAt(page, 10, 10);
   await clickAt(page, 20, 10);
-  await page.getByRole('button', { name: 'Simetría p4m', exact: true }).click();
+  await symmetry(page, 'Simetría p4m');
   await page.getByRole('tab', { name: 'Patrón', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Pluma Bézier', exact: true })).toHaveAttribute(
     'aria-pressed',
@@ -209,7 +214,7 @@ test('AC-34/35: origen arrastrable y vista de una celda conservan fuentes y expo
   await saved(page);
   p = (await model(page))!;
   expect(p.patterns[0].sourceGeometry).toEqual(before);
-  await page.getByRole('button', { name: 'Simetría Libre', exact: true }).click();
+  await symmetry(page, 'Simetría Libre');
   await expect(page.locator('.origin-handle')).toHaveCount(0);
   await expect(page.locator('[data-single-cell="true"]')).toHaveCount(0);
 });
@@ -245,8 +250,8 @@ test('AC-36: conjuntos heredados, propios y libres se editan y componen sin fals
   await saved(page);
   await expect(page.locator('.studio-canvas [data-pattern-id]')).toHaveCount(3);
   await expect(page.locator('.periodicity-status')).toContainText('sin celda común');
-  await page.getByLabel('Editar simetría de', { exact: true }).selectOption('project');
-  await page.getByRole('button', { name: 'Simetría p6m', exact: true }).click();
+  await (await field(page, 'Editar simetría de')).selectOption('project');
+  await symmetry(page, 'Simetría p6m');
   await saved(page);
   const p = (await model(page))!;
   expect(p.mainSymmetry.group).toBe('p6m');
@@ -260,7 +265,7 @@ test('AC-36: conjuntos heredados, propios y libres se editan y componen sin fals
     [10, 11, 'Heredado editado', 0],
   ] as const) {
     await clickAt(page, x, y);
-    await page.getByLabel('Nombre del objeto', { exact: true }).fill(name);
+    await (await field(page, 'Nombre del objeto')).fill(name);
     await saved(page);
     expect((await model(page))!.patterns[index].sourceGeometry[0].name).toBe(name);
   }
@@ -268,7 +273,7 @@ test('AC-36: conjuntos heredados, propios y libres se editan y componen sin fals
   await page.getByRole('button', { name: 'Exportar', exact: true }).click();
   await expect(page.getByLabel('Contenido', { exact: true })).toHaveValue('composition');
   await expect(page.getByAltText('Previsualización de exportación')).toBeVisible();
-  await page.getByLabel('Qué exportar', { exact: true }).selectOption('tile');
+  await (await field(page, 'Qué exportar')).selectOption('tile');
   await expect(page.getByRole('alert')).toContainText('común');
 });
 
@@ -284,9 +289,9 @@ test('AC-27: el contexto se conserva al confirmar un grupo con el puntero captur
   await page.mouse.down();
   await page.mouse.move(b.x, b.y);
   // A second input device can confirm the group without releasing the captured pointer.
-  await page
-    .locator('[data-symmetry-id="wallpaper:p6m"]')
-    .evaluate((button: HTMLButtonElement) => button.click());
+  await page.keyboard.press('Control+k');
+  await page.getByRole('combobox', { name: 'Buscar acción' }).fill('Simetría p6m');
+  await page.keyboard.press('Enter');
   await expect(page.locator('.capture-indicator')).toContainText('Captura fija');
   await page.mouse.move(c.x, c.y);
   await page.mouse.up();
@@ -307,16 +312,16 @@ test('AC-23/32: Lápiz y estilo continúan al recorrer grupos sin cambiar de con
   await page.getByRole('button', { name: 'Dibujo libre', exact: true }).click();
   let drawn = 0;
   for (const name of ['Simetría Libre', 'Simetría p4m', 'Simetría p6m', 'Simetría Libre']) {
-    await page.getByRole('button', { name, exact: true }).click();
+    await symmetry(page, name);
     await expect(page.getByRole('button', { name: 'Dibujo libre', exact: true })).toHaveAttribute(
       'aria-pressed',
       'true',
     );
     await line(page, [8, 10], [23, 24]);
     if (drawn++ === 0) {
-      await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
-      await page.getByLabel('Color de trazo', { exact: true }).fill('#b3364d');
-      await page.getByLabel('Grosor de trazo', { exact: true }).fill('1.25');
+      await styles(page, 'Colores');
+      await (await field(page, 'Color de trazo')).fill('#b3364d');
+      await (await field(page, 'Grosor de trazo')).fill('1.25');
       await page.getByRole('button', { name: 'Cerrar panel de estilos' }).click();
       await saved(page);
     }
@@ -341,6 +346,7 @@ test('AC-30/31: flechas, Espacio y toque confirman opciones sin reiniciar la her
   try {
     await ready(page);
     await page.getByRole('button', { name: 'Dibujo libre', exact: true }).tap();
+    await catalog(page);
     const first = page.getByRole('button', { name: 'Simetría p1', exact: true });
     await first.tap();
     await saved(page);
@@ -367,6 +373,7 @@ test('AC-29: cambios de preferencias no dejan una tanda de miniaturas incompleta
   await ready(page);
   await page.getByRole('button', { name: 'Línea', exact: true }).click();
   await line(page, [10, 10], [20, 20]);
+  await catalog(page);
   await expect(page.locator('.dynamic-symmetry-grid')).toHaveAttribute(
     'data-preview-completed',
     '27',
@@ -374,6 +381,7 @@ test('AC-29: cambios de preferencias no dejan una tanda de miniaturas incompleta
   const previous = await page
     .locator('[data-symmetry-id="none:none"]')
     .getAttribute('data-preview-revision');
+  await page.getByRole('button', { name: 'Cerrar catálogo', exact: true }).click();
   const a = await at(page, 25, 10),
     b = await at(page, 30, 20);
   await page.mouse.move(a.x, a.y);
@@ -381,11 +389,12 @@ test('AC-29: cambios de preferencias no dejan una tanda de miniaturas incompleta
   await page.mouse.move(b.x, b.y);
   await page.mouse.up();
   await page.waitForFunction(() => {
-    const grid = document.querySelector('.dynamic-symmetry-grid'),
+    const grid = document.querySelector('.symmetry-gallery'),
       n = Number(grid?.getAttribute('data-preview-completed'));
     return grid?.getAttribute('data-preview-pending') === 'true' && n > 0 && n < 27;
   });
   await page.getByRole('button', { name: 'Mostrar grilla', exact: true }).click();
+  await catalog(page);
   await expect(page.locator('[data-symmetry-id="none:none"]')).not.toHaveAttribute(
     'data-preview-revision',
     previous!,
@@ -404,6 +413,8 @@ test('AC-31: deshacer un conjunto activo permite seguir dibujando en el conjunto
   page,
 }) => {
   await ready(page);
+  await context(page, 'Capas');
+  await page.getByRole('tab', { name: 'Conjuntos', exact: true }).click();
   await page.getByRole('button', { name: 'Nuevo patrón', exact: true }).click();
   await saved(page);
   expect((await model(page))!.patterns).toHaveLength(2);

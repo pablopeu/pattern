@@ -1,3 +1,4 @@
+import { context, styles, catalog, symmetry, field } from './navigation';
 import { readFile } from 'node:fs/promises';
 import { test, expect } from '@playwright/test';
 test('build estático por HTTP: edición y exportación sin recursos de Internet', async ({
@@ -71,12 +72,12 @@ test('v2.1 estático: logo local, teselas curvas y worker sin Internet', async (
   await page.mouse.down();
   await page.mouse.move(points[1].x, points[1].y, { steps: 4 });
   await page.mouse.up();
-  await page.locator('.tile-panel>summary').click();
-  await page.getByLabel('Usar teselas geométricas', { exact: true }).check();
-  await page.getByLabel('Forma de tesela', { exact: true }).selectOption('hexagon');
-  await page.getByLabel('Editar bordes de tesela', { exact: true }).check();
-  await page.getByLabel('Desvío del borde', { exact: true }).fill('2');
-  await page.getByRole('button', { name: 'Simetría p4m', exact: true }).click();
+  await context(page, 'Teselas');
+  await (await field(page, 'Usar teselas geométricas')).check();
+  await (await field(page, 'Forma de tesela')).selectOption('hexagon');
+  await (await field(page, 'Editar bordes de tesela')).check();
+  await (await field(page, 'Desvío del borde')).fill('2');
+  await symmetry(page, 'Simetría p4m');
   await page
     .getByRole('button', { name: 'Mostrar/Ocultar estructura de simetría', exact: true })
     .click();
@@ -88,7 +89,7 @@ test('v2.1 estático: logo local, teselas curvas y worker sin Internet', async (
   expect(svg).toContain('clipPath');
   expect(svg).not.toContain('data-symmetry-structure');
   expect(svg).not.toContain('data-tile-outline');
-  await page.getByLabel('Exportar contornos de teselas', { exact: true }).check();
+  await (await field(page, 'Exportar contornos de teselas')).check();
   await expect
     .poll(async () => decodeURIComponent((await preview.getAttribute('src')) ?? ''))
     .toContain('data-tile-outline');
@@ -117,11 +118,11 @@ test('v2.2 estático: panel derecho, Fill vectorial, perfiles/preset y workers s
   await page.goto(baseURL!);
   const saved = () => expect(page.locator('.save-indicator')).toHaveText(/Guardado local/);
   await saved();
-  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
+  await styles(page, 'Colores');
   let panel = page.getByRole('complementary', { name: 'Panel de estilos' });
-  await panel.getByLabel('HEX de trazo', { exact: true }).fill('#1848a0');
-  await panel.getByLabel('Grosor de trazo', { exact: true }).fill('1.2');
-  await panel.getByLabel('HEX de relleno', { exact: true }).fill('#df3646');
+  await (await field(page, 'HEX de trazo')).fill('#1848a0');
+  await (await field(page, 'Grosor de trazo')).fill('1.2');
+  await (await field(page, 'HEX de relleno')).fill('#df3646');
   await page.getByRole('button', { name: 'Cerrar panel de estilos' }).click();
   await saved();
   const point = (x: number, y: number) =>
@@ -192,14 +193,14 @@ test('v2.2 estático: panel derecho, Fill vectorial, perfiles/preset y workers s
     return v[0] > 180 && v[1] < 120 && v[2] < 120;
   });
   expect(red).toBe(true);
-  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
+  await styles(page, 'Colores');
   panel = page.getByRole('complementary', { name: 'Panel de estilos' });
-  await panel.getByLabel('Editar estilo de').selectOption('current');
-  await panel.getByLabel('Grosor de trazo', { exact: true }).fill('2');
-  await panel.getByLabel('Estilo de línea', { exact: true }).selectOption('dashed');
-  await panel.getByLabel('Perfil de grosor', { exact: true }).selectOption('taper-both');
+  await (await field(page, 'Editar estilo de')).selectOption('current');
+  await (await field(page, 'Grosor de trazo')).fill('2');
+  await (await field(page, 'Estilo de línea')).selectOption('dashed');
+  await (await field(page, 'Perfil de grosor')).selectOption('taper-both');
   await panel.getByRole('button', { name: 'Sin relleno', exact: true }).click();
-  await panel.getByLabel('Nombre del preset de estilo').fill('Producción');
+  await (await field(page, 'Nombre del preset de estilo')).fill('Producción');
   await panel.getByRole('button', { name: 'Guardar nuevo', exact: true }).click();
   await page.getByRole('button', { name: 'Cerrar panel de estilos' }).click();
   await saved();

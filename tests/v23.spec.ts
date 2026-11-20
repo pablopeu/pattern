@@ -203,3 +203,71 @@ test('v2.3 comandos usan herramientas reales, foco, teclado y exportación', asy
   await expect(page.getByRole('dialog', { name: 'Exportar patrón' })).toBeVisible();
   await expect(page.getByLabel('Formato', { exact: true })).toHaveValue('svg');
 });
+
+for (const viewport of [
+  { width: 1366, height: 768 },
+  { width: 1440, height: 900 },
+  { width: 1920, height: 1080 },
+  { width: 390, height: 844 },
+]) {
+  test(`v2.3 teselas, red, generador, aplicación y exportación sin scroll ${viewport.width}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+    await project(page);
+    const left = page.getByRole('complementary', { name: 'Panel contextual' });
+    const noScroll = async () =>
+      expect(
+        await left
+          .locator('.panel-scroll')
+          .evaluate((el) => el.scrollHeight <= el.clientHeight + 1),
+      ).toBe(true);
+    await page.getByRole('button', { name: 'Abrir Teselas', exact: true }).click();
+    await page.getByLabel('Usar teselas geométricas', { exact: true }).check();
+    for (const name of ['Forma', 'Colocación', 'Bordes', 'Tangentes']) {
+      await left.getByRole('tab', { name, exact: true }).click();
+      await noScroll();
+    }
+    await page.getByLabel('Saliente Y', { exact: true }).fill('2');
+    await page.getByRole('button', { name: 'Abrir Simetrías', exact: true }).click();
+    await page.getByRole('button', { name: 'Explorar todas las simetrías · 27' }).click();
+    const gallery = page.getByRole('dialog', { name: 'Catálogo de simetrías' });
+    await gallery.getByLabel('Sistema', { exact: true }).selectOption('wallpaper');
+    await gallery.getByRole('button', { name: 'Simetría p1', exact: true }).click();
+    await gallery.getByRole('button', { name: 'Cerrar catálogo' }).click();
+    await noScroll();
+    await page.getByRole('tab', { name: 'Colocación', exact: true }).click();
+    await noScroll();
+    await page.getByRole('tab', { name: 'Generador', exact: true }).click();
+    await page.getByLabel('Familia', { exact: true }).selectOption('warp');
+    await noScroll();
+    while (await page.getByRole('button', { name: 'Más parámetros', exact: true }).isEnabled()) {
+      await page.getByRole('button', { name: 'Más parámetros', exact: true }).click();
+      await noScroll();
+    }
+    await page.getByRole('button', { name: 'Abrir Preferencias', exact: true }).click();
+    await noScroll();
+    await page.getByRole('tab', { name: 'Aplicar', exact: true }).click();
+    await page.getByRole('button', { name: 'Crear polígono regular', exact: true }).click();
+    await page.getByRole('button', { name: 'Abrir Aplicación', exact: true }).click();
+    await page.getByRole('button', { name: 'Aplicar al perímetro', exact: true }).click();
+    for (const name of ['Perímetro', 'Transformar', 'Vínculo']) {
+      await left.getByRole('tab', { name, exact: true }).click();
+      await noScroll();
+    }
+    await left.getByRole('button', { name: 'Cerrar panel izquierdo' }).click();
+    await page.getByRole('button', { name: 'Exportar', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: 'Exportar patrón' });
+    for (const name of ['Contenido', 'Tamaño', 'Precisión']) {
+      await dialog.getByRole('tab', { name, exact: true }).click();
+      expect(await dialog.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
+      await expect(
+        dialog.getByRole('button', { name: 'Descargar archivo', exact: true }),
+      ).toBeInViewport();
+    }
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+    await expect(page.getByRole('button', { name: 'Exportar', exact: true })).toBeFocused();
+  });
+}

@@ -1,3 +1,4 @@
+import { Modal } from '../ui/Modal';
 import { CommandPalette, type Command } from '../ui/CommandPalette';
 import { symmetryCatalog } from '../symmetry/config';
 import { StylePanel, StyleIndicator } from '../ui/StylePanel';
@@ -101,6 +102,33 @@ export default function App() {
   useEffect(() => {
     if (s.styleOpen && innerWidth <= 900) setCollapsed(true);
   }, [s.styleOpen]);
+  useEffect(() => {
+    const dismiss = (e: PointerEvent) => {
+      const menu = document.querySelector<HTMLDetailsElement>('.main-menu[open]');
+      if (menu && !menu.contains(e.target as Node)) menu.open = false;
+    };
+    const escape = (e: KeyboardEvent) => {
+      const menu = document.querySelector<HTMLDetailsElement>('.main-menu[open]');
+      if (menu && e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        menu.open = false;
+        menu.querySelector('summary')?.focus();
+      }
+    };
+    document.addEventListener('pointerdown', dismiss, true);
+    document.addEventListener('keydown', escape, true);
+    return () => {
+      document.removeEventListener('pointerdown', dismiss, true);
+      document.removeEventListener('keydown', escape, true);
+    };
+  }, []);
+  useEffect(() => {
+    if (exportOpen || commandOpen || help || importText !== null || library) {
+      const menu = document.querySelector<HTMLDetailsElement>('.main-menu');
+      if (menu) menu.open = false;
+    }
+  }, [exportOpen, commandOpen, help, importText, library]);
   const openCategory = (next: Category) => {
     setCategory(next);
     setCollapsed(false);
@@ -510,6 +538,7 @@ export default function App() {
           studio={s}
           category={category}
           collapsed={collapsed}
+          onCollapse={() => setCollapsed(true)}
           onCreateRegular={createRegular}
           onImport={() => svgRef.current?.click()}
         />
@@ -716,13 +745,8 @@ export default function App() {
       {commandOpen && <CommandPalette commands={commands} onClose={() => setCommandOpen(false)} />}
       {exportOpen && <ExportDialog studio={s} onClose={() => setExportOpen(false)} />}
       {importText !== null && (
-        <div className="modal-shade">
-          <section
-            className="small-dialog"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Importar SVG"
-          >
+        <Modal label="Importar SVG" className="simple-modal" onClose={() => setImportText(null)}>
+          <section className="small-dialog">
             <header>
               <h2>Importar geometría</h2>
               <button aria-label="Cerrar importación" onClick={() => setImportText(null)}>
@@ -751,16 +775,15 @@ export default function App() {
               <Upload size={15} /> Importar SVG
             </button>
           </section>
-        </div>
+        </Modal>
       )}
       {library && (
-        <div className="modal-shade">
-          <section
-            className="small-dialog"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Biblioteca de proyectos"
-          >
+        <Modal
+          label="Biblioteca de proyectos"
+          className="simple-modal"
+          onClose={() => setLibrary(null)}
+        >
+          <section className="small-dialog">
             <header>
               <h2>Tu biblioteca local</h2>
               <button aria-label="Cerrar biblioteca" onClick={() => setLibrary(null)}>
@@ -790,16 +813,11 @@ export default function App() {
               ))}
             </div>
           </section>
-        </div>
+        </Modal>
       )}
       {help && (
-        <div className="modal-shade">
-          <section
-            className="small-dialog help-dialog"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Ayuda"
-          >
+        <Modal label="Ayuda" className="simple-modal" onClose={() => setHelp(false)}>
+          <section className="small-dialog help-dialog">
             <header>
               <h2>Un estudio para explorar.</h2>
               <button aria-label="Cerrar ayuda" onClick={() => setHelp(false)}>
@@ -862,7 +880,7 @@ export default function App() {
               conserva el proyecto completo; el autosave vive en este navegador.
             </p>
           </section>
-        </div>
+        </Modal>
       )}
     </div>
   );
