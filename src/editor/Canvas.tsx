@@ -1202,6 +1202,12 @@ export function Canvas({
       </>
     );
   };
+  // Overlay coordinates are in world space before the selected instance transform.
+  // Use the same cell clip as the rendered motif, including frieze strips/tiles.
+  const editingClip =
+    focusCell && periodic && scene && !scene.generated.finite
+      ? `url(#${prefix}-cell-${activePattern.id})`
+      : undefined;
   const selectedShapes = s.objects.filter((g) => s.selected.includes(g.id) && g.visible);
   const [a, b] = latticeVectors(activePattern.symmetry);
   const sym = activePattern.symmetry;
@@ -1713,64 +1719,66 @@ export function Canvas({
                   ))}
             </g>
           )}
-        {!previewOnly &&
-          selectedShapes.map((shape) => (
-            <g
-              data-editing-handles="true"
-              key={shape.id}
-              transform={matrixString(multiply(s.instance, shape.transform))}
-            >
-              <path
-                d={pathData(shape)}
-                fill="none"
-                stroke="#82a357"
-                strokeWidth={1.4 / scalePx}
-                pointerEvents="none"
-              />
-              {s.tool === 'nodes' && shape.kind === 'path'
-                ? shape.nodes.map((n, i) => (
-                    <g key={i}>
-                      <g stroke="#86a367" strokeWidth={0.8 / scalePx}>
-                        {(['in', 'out'] as const).map((handle) => (
-                          <g key={handle}>
-                            {(n[handle].x !== 0 || n[handle].y !== 0) && (
-                              <>
-                                <line
-                                  x1={n.x}
-                                  y1={n.y}
-                                  x2={n.x + n[handle].x}
-                                  y2={n.y + n[handle].y}
-                                />
-                                <circle
-                                  aria-label={`Tangente ${handle} ${i + 1}`}
-                                  cx={n.x + n[handle].x}
-                                  cy={n.y + n[handle].y}
-                                  r={3.5 / scalePx}
-                                  fill="#f9fcf5"
-                                  onPointerDown={(e) => startNode(e, shape.id, i, handle)}
-                                />
-                              </>
-                            )}
-                          </g>
-                        ))}
+        <g clipPath={editingClip}>
+          {!previewOnly &&
+            selectedShapes.map((shape) => (
+              <g
+                data-editing-handles="true"
+                key={shape.id}
+                transform={matrixString(multiply(s.instance, shape.transform))}
+              >
+                <path
+                  d={pathData(shape)}
+                  fill="none"
+                  stroke="#82a357"
+                  strokeWidth={1.4 / scalePx}
+                  pointerEvents="none"
+                />
+                {s.tool === 'nodes' && shape.kind === 'path'
+                  ? shape.nodes.map((n, i) => (
+                      <g key={i}>
+                        <g stroke="#86a367" strokeWidth={0.8 / scalePx}>
+                          {(['in', 'out'] as const).map((handle) => (
+                            <g key={handle}>
+                              {(n[handle].x !== 0 || n[handle].y !== 0) && (
+                                <>
+                                  <line
+                                    x1={n.x}
+                                    y1={n.y}
+                                    x2={n.x + n[handle].x}
+                                    y2={n.y + n[handle].y}
+                                  />
+                                  <circle
+                                    aria-label={`Tangente ${handle} ${i + 1}`}
+                                    cx={n.x + n[handle].x}
+                                    cy={n.y + n[handle].y}
+                                    r={3.5 / scalePx}
+                                    fill="#f9fcf5"
+                                    onPointerDown={(e) => startNode(e, shape.id, i, handle)}
+                                  />
+                                </>
+                              )}
+                            </g>
+                          ))}
+                        </g>
+                        <rect
+                          aria-label={`Nodo ${i + 1}`}
+                          x={n.x - 3.5 / scalePx}
+                          y={n.y - 3.5 / scalePx}
+                          width={7 / scalePx}
+                          height={7 / scalePx}
+                          rx={1 / scalePx}
+                          fill="#f9fcf5"
+                          stroke="#557f39"
+                          strokeWidth={1.2 / scalePx}
+                          onPointerDown={(e) => startNode(e, shape.id, i, 'node')}
+                        />
                       </g>
-                      <rect
-                        aria-label={`Nodo ${i + 1}`}
-                        x={n.x - 3.5 / scalePx}
-                        y={n.y - 3.5 / scalePx}
-                        width={7 / scalePx}
-                        height={7 / scalePx}
-                        rx={1 / scalePx}
-                        fill="#f9fcf5"
-                        stroke="#557f39"
-                        strokeWidth={1.2 / scalePx}
-                        onPointerDown={(e) => startNode(e, shape.id, i, 'node')}
-                      />
-                    </g>
-                  ))
-                : null}
-            </g>
-          ))}
+                    ))
+                  : null}
+              </g>
+            ))}
+        </g>
         {s.mode !== 'apply' &&
           !editorOnly &&
           activePattern.symmetry.family !== 'none' &&
@@ -1852,6 +1860,7 @@ export function Canvas({
         {s.tool === 'fill' && fill.preview && (
           <path
             data-fill-preview="true"
+            clipPath={editingClip}
             d={fill.preview.pathData}
             fill={s.project.drawingStyle.fill === 'none' ? '#75a287' : s.project.drawingStyle.fill}
             fillOpacity={0.35}

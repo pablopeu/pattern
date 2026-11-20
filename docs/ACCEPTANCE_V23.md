@@ -77,3 +77,9 @@ de nombre con fecha/hora local/cancelación/descarga JSON/recuperación.
 Fuente pura se conserva en Preferencias → Vista avanzada. Logo icono.png intacto.
 Evidencia: .runtime/cell-header-full.log, cell-header-full-result.json y
 cell-header-static-summary.log; capturas reales en README.
+
+
+Regresión posterior de celda de referencia: selección/nodos/tangentes y preview
+Fill recortados sin modificar fuentes iniciadas fuera de la celda. Prueba raster
+real, geometría idéntica y undo/redo;206 unitarias,109/109 E2E integradas y6
+estáticas correctos. Evidencia .runtime/cell-clip-full.log y resultado JSON.

@@ -698,3 +698,16 @@
 - Build/TypeScript y revisión1440/390 correctos; resto12px, alto38px y seis
   enlaces conservados, sin overflow de página. Evidencia footer-size-* en .runtime.
 - README/captura actualizados; servicios LAN conservados y push autorizado.
+
+
+## Referencia sin garabato suelto · Verificado
+
+- Contorno de selección, nodos/tangentes y preview Fill comparten el recorte de
+  celda en coordenadas mundiales, conservando las transformaciones de instancia.
+  Funciona en split/Una celda; fuente completa, modelo y exportación intactos.
+- Regresión real iniciando garabato fuera de P3: fallaba por234 píxeles fuera;
+  ahora sin tinta exterior, incluso con nodos. Igualdad geométrica y undo/redo.
+- 206 unitarias/TypeScript, build,2 E2E dirigidas,109/109 integradas en
+  197.4s (exit0),6 estáticas raíz/subcarpeta correctos. Logs cell-clip-*
+  en .runtime. README/captura nueva del caso actualizados e inspeccionados.
+- Servicios LAN conservados; push autorizado sin consultar Actions/FTP.

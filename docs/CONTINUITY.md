@@ -1,3 +1,23 @@
+# Celda: recorte de selección y nodos · Verificado
+
+Pablo reprodujo un garabato iniciado fuera de la celda que reaparecía suelto en
+la referencia. La repetición ya se recortaba; faltaba recortar el contorno de
+selección. Selección/nodos/tangentes y preview de Fill ahora comparten el clip de
+la celda en coordenadas mundiales, antes de transformar la instancia seleccionada.
+Aplica a split/Una celda y conserva fuente completa, simetría y exportaciones.
+Fuente pura y escenas sin celda periódica conservan su edición completa.
+
+Prueba real reproduce el fallo antes del arreglo (234 píxeles de selección fuera
+del borde superior) y pasa después sin tinta afuera. Comprueba dibujo libre,
+nodos, Una celda, geometría idéntica y undo/redo. 206 unidades/TypeScript, build,
+2 E2E dirigidas,109/109 E2E integradas (197.4s, exit0) y6 estáticas
+raíz/subcarpeta correctos. Logs .runtime/cell-clip-{check,build,targeted,full}*,
+cell-clip-full-result.json y cell-clip-static-summary.log. README incluye captura
+real docs/images/cell-reference-freehand.png, inspeccionada. Sin pendientes de
+este pedido. Servicios4173/4174 activos; commit/push autorizados sin revisar FTP.
+
+---
+
 # Footer: textos destacados a13px · Verificado
 
 Patterns, «¿Te gustan los cuchillos?» y PEU.NET pasan de12 a13px. Resto del pie,

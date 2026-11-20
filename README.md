@@ -80,6 +80,10 @@ Diseño y Patrón son vistas de énfasis del mismo documento. **Vista dividida**
 
 ![Celda editable a la izquierda y patrón repetido con el mismo zoom a la derecha](docs/images/split-cell.png)
 
+La celda de referencia recorta también el contorno de selección, los nodos y la previsualización de Fill. Si empezaste a dibujar fuera de ella, el original completo se conserva y la referencia muestra sólo la parte que corresponde a esa celda.
+
+![Garabato iniciado fuera de la celda: referencia recortada a la izquierda y repetición a la derecha](docs/images/cell-reference-freehand.png)
+
 **Fuente pura** queda en **Preferencias → Vista avanzada**: permite editar los originales completos que cruzan varias celdas o revisar rellenos y patrones aperiódicos sin recorte. La escala **100%** equivale al antiguo **200%**; las medidas del documento y de las exportaciones conservan sus milímetros.
 
 

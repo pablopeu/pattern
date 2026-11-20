@@ -684,3 +684,85 @@ test('celda centrada, escala compartida y Trazo con deslizador 0–2 sin perder 
   await expect(panel.getByLabel('Grosor de trazo deslizador', { exact: true })).toHaveValue('2');
   expect((await project(page))!.drawingStyle.strokeWidth).toBe(5);
 });
+
+test('celda de referencia recorta también selección y nodos de un garabato iniciado afuera', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await project(page);
+  const points = await page.locator('.studio-canvas').evaluate((el) =>
+    [
+      [5, -20],
+      [20, -15],
+      [10, -10],
+      [30, -5],
+    ].map(([x, y]) => {
+      const p = new DOMPoint(x, y).matrixTransform((el as SVGSVGElement).getScreenCTM()!);
+      return { x: p.x, y: p.y };
+    }),
+  );
+  await page.mouse.move(points[0].x, points[0].y);
+  await page.mouse.down();
+  for (const p of points.slice(1)) await page.mouse.move(p.x, p.y, { steps: 8 });
+  await page.mouse.up();
+  const original = (await project(page))!.patterns;
+  expect(original[0].sourceGeometry).toHaveLength(1);
+  await page.getByRole('button', { name: 'Vista dividida', exact: true }).click();
+  const reference = page.locator('.studio-canvas').first();
+  const ink = () =>
+    reference.evaluate(async (el) => {
+      const svg = el as SVGSVGElement,
+        copy = svg.cloneNode(true) as SVGSVGElement,
+        r = svg.getBoundingClientRect();
+      copy
+        .querySelectorAll(
+          'rect[fill*="-grid"], [aria-label="Estructura matemática de simetría"], [aria-label="Límite de la celda"]',
+        )
+        .forEach((node) => node.remove());
+      copy.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+      copy.setAttribute('width', String(r.width));
+      copy.setAttribute('height', String(r.height));
+      const image = new Image();
+      image.src =
+        'data:image/svg+xml,' + encodeURIComponent(new XMLSerializer().serializeToString(copy));
+      await image.decode();
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.ceil(r.width);
+      canvas.height = Math.ceil(r.height);
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(image, 0, 0);
+      const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      const view = svg.viewBox.baseVal,
+        scale = r.width / view.width;
+      let outside = 0,
+        inside = 0;
+      for (let y = 0; y < canvas.height; y++)
+        for (let x = 0; x < canvas.width; x++) {
+          const i = (y * canvas.width + x) * 4;
+          if (data[i + 3] < 100 || data[i] > 180 || data[i + 1] > 190 || data[i + 2] > 180)
+            continue;
+          const worldY = view.y + y / scale;
+          if (worldY < -1) outside++;
+          else if (worldY > 1) inside++;
+        }
+      return { outside, inside };
+    });
+  const check = async () => {
+    await expect.poll(async () => (await ink()).outside).toBe(0);
+    expect((await ink()).inside).toBeGreaterThan(30);
+    expect((await project(page))!.patterns).toEqual(original);
+  };
+  await check();
+  await page.getByRole('button', { name: 'Editar nodos', exact: true }).click();
+  await expect(reference.locator('[data-editing-handles]')).toHaveCount(1);
+  await check();
+  await page.getByRole('button', { name: 'Una celda', exact: true }).click();
+  await expect(page.locator('.studio-canvas')).toHaveCount(1);
+  await check();
+  await page.getByRole('button', { name: 'Deshacer', exact: true }).click(); // single-cell view
+  await page.getByRole('button', { name: 'Deshacer', exact: true }).click(); // split view
+  await page.getByRole('button', { name: 'Deshacer', exact: true }).click(); // drawing
+  expect((await project(page))!.patterns[0].sourceGeometry).toHaveLength(0);
+  await page.getByRole('button', { name: 'Rehacer', exact: true }).click();
+  expect((await project(page))!.patterns).toEqual(original);
+});
