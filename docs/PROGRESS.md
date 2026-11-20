@@ -745,3 +745,16 @@
 - 12 pruebas Python correctas; monitor reiniciado sin duplicar y app conservada.
   API real confirma política y timer. Servicios4173/4174 activos; PROJECT_COMPLETE
   ausente. Commit de preparación, sin comenzar PRD3.0 durante esta ventana.
+
+
+## V3.0 · Fase0 auditada y baseline verificado
+
+- Leídos PRD y documentos obligatorios, inspeccionados motores/contratos/UX.
+  Identificada reutilización de fuente única, matrices, Scene, captura y exportador.
+- Baseline206 unidades/TypeScript,111 E2E en203,5s (exit0),12 monitor,build,
+  6 estáticas raíz/subcarpeta correctos. Logs v30-baseline-* en .runtime.
+- Plan incremental, inventario UX, matriz AC y revisión inicial de referencias/
+  licencias documentados. Notebook GPL no se copia; ejemplos serán originales.
+- Fases1–7 pendientes. Próximo: composiciones recursivas/espirales con UI, JSON,
+  exportación y galería de ejemplos. Servicios LAN conservados; primaria real0%
+  al reanudar. Secundaria sólo avisa; sin PROJECT_COMPLETE.

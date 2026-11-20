@@ -1,3 +1,24 @@
+# V3.0 · Fase0 verificada, Fase1 a continuación
+
+Reset real confirmado23:24:58UTC: primaria0% usada. Baseline desde8be6668 sin
+modificar código:206 unidades/TypeScript,111 E2E (203,5s/exit0),12 monitor,
+build y6 estáticas raíz/subdirectorio correctos. Evidencia .runtime/v30-baseline-*.
+Lecturas obligatorias e inspección de motores realizadas. Sin cambios en fuentes,
+servicios o navegador del autor. No hay nuevos feedback pendientes conocidos.
+
+Plan de dependencias/arquitectura: docs/PLAN_V30.md. Matriz de pendientes:
+ACCEPTANCE_V30.md; rutas UX propuestas: UX_V30_INVENTORY.md; referencias y
+licencias: REFERENCES_V30.md. Ninguna fase de producto v3.0 implementada aún.
+Próximo incremento: Fase1, composición recursiva y espirales, persistencia,
+exportación y ejemplos originales/galería. Mantener8 ejemplos/fixtures previos,
+P3/defaults, celda fija, Fill y logo. No marcar completo el PRD hasta auditar25AC.
+
+Servicios4173/4174 vivos. Sólo primaria5h limita ejecución; secundaria avisa.
+PROJECT_COMPLETE ausente. Commits pequeños y push autorizado; no revisar FTP.
+No editar módulos ni generar notices mientras haya E2E activas.
+
+---
+
 # PRD v3.0 recibido · Reanudación en ventana primaria
 
 Archivo correcto subido por Pablo: prd_v3.0.txt; se conserva el original y pasa
