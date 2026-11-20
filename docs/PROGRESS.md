@@ -456,3 +456,26 @@
 - Footer/iconos preservados en commit local 84d7415; esta entrega continúa
   exclusivamente local. GitHub conserva 4bd8938; **sin push ni despliegue**.
   Servicios LAN 4173/4174 activos, sin duplicados; pendiente revisión de Pablo.
+
+
+## Fill persistente en Penrose y accesos del panel derecho · Corrección LAN
+
+- Repro real previo: Fill en Penrose se guardaba pero quedaba oculto debajo de
+  las caras opacas del generador. sceneLayers dibuja fondos, rellenos y contornos
+  en ese orden, sin alterar fuentes ni schemaVersion 4. Fuente pura usa el mismo
+  orden. Tinta y perímetros comprobados también en SVG editable/expandido.
+- Activar Fill es una acción explícita: un segundo clic, F o búsqueda vuelven a
+  abrir controles aunque Fill ya esté activo. En móvil conserva un solo panel.
+- Barra derecha persistente con ocho accesos y toggle inferior: abrir sección,
+  plegar/desplegar recordando tab, Objeto habilitado con selección. Iconos Lucide,
+  nombres accesibles y estado activo. Espacio móvil reservado evita tapar el
+  cierre del panel contextual izquierdo.
+- 203 unitarias/TypeScript correctos. Primera corrida integrada:96/99; ajuste
+  móvil del rail y de la interacción de prueba con panel superpuesto, muestreo
+  raster 4× junto a borde curvo con idénticos puntos/umbrales. Revisión posterior:
+  7/7 casos relacionados correctos, incluidos los tres fallos iniciales.
+- Regresión nueva confirma presión/soltado/salida, undo/redo, Fuente pura,
+  recuperación y píxeles reales en ambas representaciones SVG de Penrose.
+  Otras cuatro cubren Fill repetido, teclado y accesos en 1440/390.
+- README actualizado; capturas en .runtime/fill-penrose-fixed.png y
+  right-rail-{1440,390}.png. Se mantiene la revisión LAN, sin push.

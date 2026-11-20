@@ -64,20 +64,22 @@ export function useStudio() {
     [saved, setSaved] = useState('Recuperando…'),
     [message, setMessage] = useState(''),
     [mode, setMode] = useState<Mode>('edit'),
-    [tool, setTool] = useState<Tool>('select');
+    [tool, setActiveTool] = useState<Tool>('select');
   const [symmetryPreview, setSymmetryPreview] = useState<SymmetryPreview | null>(null),
     [galleryTarget, setGalleryTarget] = useState<'pattern' | 'project'>('pattern');
   const [instanceExplicit, setInstanceExplicit] = useState(false);
   const [styleOpen, setStyleOpen] = useState(false),
     [styleTarget, setStyleTarget] = useState<'selection' | 'current'>('selection');
-  useEffect(() => {
-    if (tool === 'fill') {
+  // Tool activation is also an explicit request to reopen its controls.
+  // Keeping this in the action handles repeated clicks, shortcuts and commands.
+  const setTool = useCallback((next: Tool) => {
+    setActiveTool(next);
+    if (next === 'fill') {
       setStyleTarget('current');
       setStylePage('fill');
       setStyleOpen(true);
-      if (ref.current.drawingStyle.fill === 'none') setStyleOpen(true);
     }
-  }, [tool]);
+  }, []);
   const [nodeIndex, setNodeIndex] = useState(0);
   const [selected, setSelected] = useState<string[]>([]),
     [instance, setInstance] = useState<Matrix>(IDENTITY),

@@ -29,6 +29,13 @@ import {
   Copy,
   PanelLeftClose,
   PanelLeftOpen,
+  PanelRightClose,
+  PanelRightOpen,
+  Palette,
+  Activity,
+  SwatchBook,
+  Bookmark,
+  Shapes,
   Columns2,
   LayoutGrid,
   Check,
@@ -39,7 +46,7 @@ import {
   HelpCircle,
   Trash2,
 } from 'lucide-react';
-import { useStudio, type Tool } from './useStudio';
+import { useStudio, type Tool, type StylePage } from './useStudio';
 import { example, exampleNames } from './examples';
 import { newProject, geometry, uid } from './model';
 import { freezePattern } from '../symmetry/config';
@@ -52,6 +59,16 @@ import { Canvas } from '../editor/Canvas';
 import { Panels } from '../ui/Panels';
 import { ExportDialog } from '../ui/ExportDialog';
 import { buildScene } from '../patterns/engine';
+const stylePages: { id: StylePage; label: string; icon: typeof Palette }[] = [
+  { id: 'colors', label: 'Colores', icon: Palette },
+  { id: 'stroke', label: 'Trazo', icon: Minus },
+  { id: 'profile', label: 'Perfil', icon: Activity },
+  { id: 'fill', label: 'Fill', icon: PaintBucket },
+  { id: 'palette', label: 'Paleta', icon: SwatchBook },
+  { id: 'presets', label: 'Presets', icon: Bookmark },
+  { id: 'object', label: 'Objeto', icon: Shapes },
+  { id: 'options', label: 'Opciones', icon: Settings2 },
+];
 const tools: { id: Tool; label: string; shortcut?: string; icon: typeof MousePointer2 }[] = [
   { id: 'select', label: 'Seleccionar', shortcut: 'V', icon: MousePointer2 },
   { id: 'nodes', label: 'Editar nodos', shortcut: 'A', icon: Waypoints },
@@ -141,6 +158,11 @@ export default function App() {
     setCollapsed(false);
     if (innerWidth <= 900) s.setStyleOpen(false);
   };
+  const activateTool = (tool: Tool) => {
+    openCategory(toolCategory(tool));
+    s.setTool(tool);
+    if (tool === 'fill' && innerWidth <= 900) setCollapsed(true);
+  };
   const createRegular = () => {
     openCategory('shapes');
     const g = geometry('polygon', [], true);
@@ -183,8 +205,7 @@ export default function App() {
       label: t.label,
       keywords: t.id === 'fill' ? 'rellenar fill color' : t.shortcut,
       run: () => {
-        openCategory(toolCategory(t.id));
-        s.setTool(t.id);
+        activateTool(t.id);
       },
     })),
     ...categories.map((c) => ({
@@ -494,8 +515,7 @@ export default function App() {
                 aria-label={label}
                 aria-pressed={s.tool === id}
                 onClick={() => {
-                  openCategory(toolCategory(id));
-                  s.setTool(id);
+                  activateTool(id);
                 }}
               >
                 <Icon size={20} strokeWidth={1.6} />
@@ -697,7 +717,39 @@ export default function App() {
             </div>
           </footer>
         </section>
-        <StylePanel studio={s} />
+        <div className="style-dock">
+          <StylePanel studio={s} />
+          <nav className="style-panel-rail" aria-label="Accesos del panel derecho">
+            {stylePages.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                title={
+                  id === 'object' && !s.styleSelection.length
+                    ? 'Objeto · seleccioná una figura'
+                    : label
+                }
+                aria-label={`Panel derecho: ${label}`}
+                aria-pressed={s.styleOpen && s.stylePage === id}
+                disabled={id === 'object' && !s.styleSelection.length}
+                onClick={() => {
+                  s.setStylePage(id);
+                  s.setStyleOpen(true);
+                }}
+              >
+                <Icon size={18} strokeWidth={1.6} />
+              </button>
+            ))}
+            <button
+              className="style-panel-toggle"
+              title={s.styleOpen ? 'Plegar panel derecho' : 'Desplegar panel derecho'}
+              aria-label={s.styleOpen ? 'Plegar panel derecho' : 'Desplegar panel derecho'}
+              aria-expanded={s.styleOpen}
+              onClick={() => s.setStyleOpen(!s.styleOpen)}
+            >
+              {s.styleOpen ? <PanelRightClose size={19} /> : <PanelRightOpen size={19} />}
+            </button>
+          </nav>
+        </div>
       </main>
       <SiteFooter />
       <input

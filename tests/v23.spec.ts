@@ -91,8 +91,12 @@ test('v2.3 polígono paramétrico identificado, controles y estilo vigente', asy
   await expect(page.getByLabel('Vista previa de forma')).toBeVisible();
   const style = page.getByRole('complementary', { name: 'Panel de estilos' });
   await expect(style).toBeVisible();
-  const box = await style.boundingBox();
-  expect(box!.x + box!.width).toBeGreaterThan(1400);
+  const box = (await style.boundingBox())!;
+  const rail = (await page
+    .getByRole('navigation', { name: 'Accesos del panel derecho' })
+    .boundingBox())!;
+  expect(Math.abs(box.x + box.width - rail.x)).toBeLessThanOrEqual(1);
+  expect(rail.x + rail.width).toBeGreaterThan(1400);
 });
 
 for (const viewport of [
@@ -400,3 +404,53 @@ test('v2.3 resize y Escape de menús conservan selección y evitan overlays simu
   expect(await project(page)).toEqual(before);
   await expect(page.locator('.statusbar')).toContainText('1 seleccionados');
 });
+
+for (const width of [1440, 390]) {
+  test(`barra derecha abre secciones, recuerda tab y habilita Objeto con selección ${width}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/');
+    const before = await project(page);
+    const panel = page.getByRole('complementary', { name: 'Panel de estilos' });
+    const rail = page.getByRole('navigation', { name: 'Accesos del panel derecho' });
+    const object = rail.getByRole('button', { name: 'Panel derecho: Objeto', exact: true });
+    await expect(object).toBeDisabled();
+    for (const tab of ['Colores', 'Trazo', 'Perfil', 'Fill', 'Paleta', 'Presets', 'Opciones']) {
+      const button = rail.getByRole('button', { name: `Panel derecho: ${tab}`, exact: true });
+      await expect(button).toBeInViewport();
+      await button.click();
+      await expect(panel).toBeVisible();
+      await expect(panel.getByRole('tab', { name: tab, exact: true })).toHaveAttribute(
+        'aria-selected',
+        'true',
+      );
+      await expect(button).toHaveAttribute('aria-pressed', 'true');
+      await rail.getByRole('button', { name: 'Plegar panel derecho', exact: true }).click();
+      await expect(panel).toHaveCount(0);
+      await rail.getByRole('button', { name: 'Desplegar panel derecho', exact: true }).click();
+      await expect(panel.getByRole('tab', { name: tab, exact: true })).toHaveAttribute(
+        'aria-selected',
+        'true',
+      );
+    }
+    expect(await project(page)).toEqual(before);
+    const layout = await rail.evaluate((el) => ({
+      right: el.getBoundingClientRect().right,
+      width: document.documentElement.clientWidth,
+      scroll: document.documentElement.scrollWidth,
+    }));
+    expect(layout.right).toBeLessThanOrEqual(width);
+    expect(layout.scroll).toBe(layout.width);
+    await page.getByRole('button', { name: 'Crear polígono regular', exact: true }).click();
+    await expect(object).toBeEnabled();
+    await rail.getByRole('button', { name: 'Plegar panel derecho', exact: true }).click();
+    await object.click();
+    await expect(panel.getByRole('tab', { name: 'Objeto', exact: true })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    await expect(page.getByLabel('Lados', { exact: true })).toBeVisible();
+    await page.screenshot({ path: `.runtime/right-rail-${width}.png`, animations: 'disabled' });
+  });
+}

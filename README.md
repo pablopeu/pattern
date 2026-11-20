@@ -46,7 +46,11 @@ A la derecha están **Colores, Trazo, Perfil, Fill, Paleta, Presets, Objeto y
 Opciones**. Al seleccionar un objeto aparecen sus propiedades; sin selección,
 se edita el estilo vigente. **Objeto** separa forma, transformación, nodos y
 acciones geométricas. En ventanas estrechas los paneles funcionan como overlays
-temporales y se alternan para dejar disponible el lienzo.
+temporales y se alternan para dejar disponible el lienzo. Una barra de iconos
+permanece en el borde derecho: cada icono abre directamente su sección; **Objeto**
+se habilita al seleccionar una figura. El botón inferior pliega/despliega el
+panel y recuerda la pestaña. Volver a pulsar **Rellenar región**, aunque ya esté
+activo, vuelve a abrir sus controles; también funciona con **F**.
 
 **Ctrl+K** abre la búsqueda: probá «polígono», «rellenar», «simetría p6m»,
 «teselas», «grosor» o «exportar SVG». Flechas y Enter eligen una acción;
@@ -89,6 +93,12 @@ Dibujá cuatro segmentos o curvas que delimiten un área y elegí un color de re
 [Descargar el proyecto de las cuatro curvas](docs/examples/vector-fill.json) y abrirlo desde **Archivo** para inspeccionar las fuentes y el relleno.
 
 El relleno puede quedar **vinculado** a sus límites o **fijo**. Si cambia una topología y el vínculo deja de ser válido, se conserva el último contorno y se muestra su estado; **Recalcular y vincular región** intenta recuperar una cara equivalente. Volver a pulsar una zona pintada permite recolorearla sin crear copias idénticas.
+
+En patrones con simetría, el relleno se aplica a las instancias correspondientes
+del mismo motivo, incluidas rotaciones y reflexiones. En **Penrose**, que es una
+región aperiódica finita, pintás la cara elegida: el color queda sobre los fondos
+del generador y debajo de los perímetros originales. Se conserva al salir del
+área y al recargar, y se incluye en la exportación.
 
 Por defecto se exige cierre geométrico dentro del epsilon numérico. Para pequeños huecos, aumentá explícitamente **Tolerancia de cierre de Fill** en el panel derecho; esta opción no modifica los trazos originales. Las guías y los espejos de estructura no cuentan como límites materiales.
 

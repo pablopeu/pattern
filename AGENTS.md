@@ -14,4 +14,4 @@ Implementar `prd_v2.3.txt` como evolución no destructiva de v2.2; conservar las
 - Documentación pública: usar `<IP_LOCAL>` en URLs LAN; no publicar direcciones concretas de esta máquina, tampoco en commits o historial. Los datos de ejecución quedan en `.runtime/`, excluido de Git.
 - README: primero explicaciones y ejemplos con imágenes; al final instalación, despliegue y detalles de trabajo. Mantener ejemplos verificables y capturas de la aplicación real.
 
-- Entrega actual de footer, iconos y metadatos: Pablo pidió revisión en LAN **antes de pushear**. Conservar cambios y commits locales; no hacer ningún push (tampoco sólo documentación) hasta que apruebe la vista previa, porque cada push publica por FTP.
+- Entrega actual de Fill, panel derecho, footer, iconos y metadatos: Pablo pidió revisión en LAN **antes de pushear**. Conservar cambios y commits locales; no hacer ningún push (tampoco sólo documentación) hasta que apruebe la vista previa, porque cada push publica por FTP.

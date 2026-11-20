@@ -44,6 +44,10 @@ async function setup(page: Page, kind = 'lines') {
       pattern.sourceGeometry = ['M0 0L30 0', 'M20 0L20 20', 'M30 20L0 20', 'M0 20L0 0'].map(
         (pathData) => ({ ...geometry('compound'), pathData }),
       );
+    if (kind === 'penrose') {
+      pattern.sourceGeometry = [];
+      pattern.generator = { ...pattern.generator, kind: 'penrose', frequency: 1, radius: 50 };
+    }
     if (kind === 'tile-grid') {
       pattern.tiling = newTiling('square');
       pattern.sourceGeometry = [
@@ -118,24 +122,29 @@ async function redAt(page: Page, x: number, y: number) {
     async (el, p) => {
       const svg = el as SVGSVGElement,
         copy = svg.cloneNode(true) as SVGSVGElement,
-        b = svg.getBoundingClientRect();
+        b = svg.getBoundingClientRect(),
+        // Sample physical interiors precisely, including subpixel curved seams.
+        scale = 4;
       copy
         .querySelectorAll('[data-fill-preview],[data-editing-handles]')
         .forEach((e) => e.remove());
       copy.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-      copy.setAttribute('width', String(b.width));
-      copy.setAttribute('height', String(b.height));
+      copy.setAttribute('width', String(b.width * scale));
+      copy.setAttribute('height', String(b.height * scale));
       const img = new Image();
       img.src =
         'data:image/svg+xml,' + encodeURIComponent(new XMLSerializer().serializeToString(copy));
       await img.decode();
       const c = document.createElement('canvas');
-      c.width = Math.ceil(b.width);
-      c.height = Math.ceil(b.height);
+      c.width = Math.ceil(b.width * scale);
+      c.height = Math.ceil(b.height * scale);
       const ctx = c.getContext('2d')!;
       ctx.drawImage(img, 0, 0);
       const q = new DOMPoint(p.x, p.y).matrixTransform(svg.getScreenCTM()!);
-      const v = [...ctx.getImageData(Math.round(q.x - b.x), Math.round(q.y - b.y), 1, 1).data];
+      const v = [
+        ...ctx.getImageData(Math.round((q.x - b.x) * scale), Math.round((q.y - b.y) * scale), 1, 1)
+          .data,
+      ];
       return v[0] > 180 && v[1] < 90 && v[2] < 110;
     },
     { x, y },
@@ -541,3 +550,133 @@ test('Fill aplica clics rápidos y mantiene color al salir, autocerrar panel y d
   await expect.poll(async () => (await model(page)).patterns[0].sourceGeometry.length).toBe(2);
   expect(await redAt(page, 10, 10)).toBe(false);
 });
+
+test('Fill en Penrose conserva color al soltar y salir, perímetro y persistencia', async ({
+  page,
+}) => {
+  await setup(page, 'penrose');
+  const sample = await page.evaluate(async () => {
+    const { generate } = await import('/src/generators/index.ts');
+    const { recover } = await import('/src/persistence/storage.ts');
+    const p = (await recover())!;
+    const g = generate(p.patterns[0].generator, []).geometry[0];
+    return {
+      point: {
+        x: g.nodes.reduce((sum, n) => sum + n.x, 0) / 3,
+        y: g.nodes.reduce((sum, n) => sum + n.y, 0) / 3,
+      },
+      edge: { x: (g.nodes[0].x + g.nodes[1].x) / 2, y: (g.nodes[0].y + g.nodes[1].y) / 2 },
+    };
+  });
+  const q = await screen(page, sample.point.x, sample.point.y);
+  await page.mouse.move(q.x, q.y);
+  await expect(page.locator('[data-fill-preview]')).toBeVisible();
+  await page.mouse.down();
+  await expect(page.locator('.fill-actions')).toHaveAttribute('data-fill-applied', '1');
+  await page.mouse.up();
+  await page.mouse.move(2, 2);
+  expect(await redAt(page, sample.point.x, sample.point.y)).toBe(true);
+  expect((await model(page)).patterns[0].sourceGeometry).toHaveLength(1);
+  await page.getByRole('button', { name: 'Deshacer', exact: true }).click();
+  expect(await redAt(page, sample.point.x, sample.point.y)).toBe(false);
+  await page.getByRole('button', { name: 'Rehacer', exact: true }).click();
+  await saved(page);
+  await page.getByRole('button', { name: 'Fuente pura', exact: true }).click();
+  expect(await redAt(page, sample.point.x, sample.point.y)).toBe(true);
+  await page.getByRole('button', { name: 'Fuente pura', exact: true }).click();
+  await page.reload();
+  await saved(page);
+  expect(await redAt(page, sample.point.x, sample.point.y)).toBe(true);
+  const exports = await page.evaluate(async (sample) => {
+    const { prepareExport } = await import('/src/export/svg.ts');
+    const { recover } = await import('/src/persistence/storage.ts');
+    const p = (await recover())!;
+    const results = [];
+    for (const representation of ['editable', 'expanded'] as const) {
+      const output = prepareExport(p, {
+        target: 'view',
+        format: 'svg',
+        representation,
+        width: 120,
+        height: 120,
+        dpi: 120,
+        background: '#ffffff',
+        transparent: false,
+        quality: 0.9,
+        tolerance: 0.01,
+        outlineStrokes: true,
+        patternId: p.patterns[0].id,
+      });
+      const img = new Image();
+      img.src = 'data:image/svg+xml,' + encodeURIComponent(output.svg);
+      await img.decode();
+      const c = document.createElement('canvas');
+      c.width = c.height = 1200;
+      const ctx = c.getContext('2d')!;
+      ctx.drawImage(img, 0, 0, 1200, 1200);
+      const at = (point: { x: number; y: number }) => ({
+        x: Math.round(((point.x - output.bounds.x) / output.bounds.width) * 1200),
+        y: Math.round(((point.y - output.bounds.y) / output.bounds.height) * 1200),
+      });
+      const point = at(sample.point),
+        edge = at(sample.edge);
+      const color = [...ctx.getImageData(point.x, point.y, 1, 1).data];
+      const border = ctx.getImageData(edge.x - 2, edge.y - 2, 5, 5).data;
+      let dark = false;
+      for (let i = 0; i < border.length; i += 4)
+        if (border[i] < 85 && border[i + 1] < 110 && border[i + 2] < 90) dark = true;
+      results.push({
+        representation,
+        red: color[0] > 180 && color[1] < 90 && color[2] < 110,
+        dark,
+      });
+    }
+    return results;
+  }, sample);
+  expect(exports).toEqual([
+    { representation: 'editable', red: true, dark: true },
+    { representation: 'expanded', red: true, dark: true },
+  ]);
+  await page.screenshot({ path: '.runtime/fill-penrose-fixed.png', animations: 'disabled' });
+});
+
+for (const width of [1440, 390]) {
+  test(`Fill activo reabre controles tras autocierre y colapsado manual ${width}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await setup(page, 'periodic');
+    if (width <= 900)
+      await page.getByRole('button', { name: 'Plegar panel derecho', exact: true }).click();
+    const tool = page.getByRole('button', { name: 'Rellenar región', exact: true });
+    const panel = page.getByRole('complementary', { name: 'Panel de estilos' });
+    await paint(page, 10, 10);
+    await expect(panel).toHaveCount(0);
+    await expect(tool).toHaveAttribute('aria-pressed', 'true');
+    const before = await model(page);
+    await tool.click();
+    await expect(panel).toBeVisible();
+    await expect(panel.getByRole('tab', { name: 'Fill', exact: true })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    // Clicking an already active Fill also keeps narrow-screen panels exclusive.
+    await tool.click();
+    await expect(panel).toBeVisible();
+    if (width <= 900)
+      await expect(page.getByRole('complementary', { name: 'Panel contextual' })).toBeHidden();
+    await page.getByRole('button', { name: 'Plegar panel derecho', exact: true }).click();
+    await expect(panel).toHaveCount(0);
+    const handle = page.getByRole('button', { name: 'Desplegar panel derecho', exact: true });
+    await expect(handle).toBeInViewport();
+    await handle.focus();
+    await page.keyboard.press('Enter');
+    await expect(panel).toBeVisible();
+    await page.getByRole('button', { name: 'Plegar panel derecho', exact: true }).click();
+    await page.locator('.studio-canvas').focus();
+    await page.keyboard.press('f');
+    await expect(panel).toBeVisible();
+    expect(await model(page)).toEqual(before);
+    expect(await redAt(page, 30, 30)).toBe(true);
+  });
+}

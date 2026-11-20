@@ -1211,10 +1211,13 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
           scene &&
           (editorOnly ? (
             <g onPointerDown={(e) => selectInstance(e, IDENTITY)}>
-              {s.objects
-                .filter((g) => g.fillRegion && g.fillRegion.scope !== 'source' && g.visible)
-                .map(renderShape)}
-              {scene.generated.geometry.map(renderShape)}
+              {sceneLayers(scene, activePattern).map((layer, index) => (
+                <g key={index}>
+                  {layer.kind === 'fill'
+                    ? renderShape(layer.geometry)
+                    : layer.geometry.map(renderShape)}
+                </g>
+              ))}
             </g>
           ) : (
             <>

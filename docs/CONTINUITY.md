@@ -1,9 +1,30 @@
-# Entrega local para revisión · Footer, iconos y metadatos
+# Entrega local para revisión · Fill, panel derecho y presentación
 
 **No hacer push hasta que Pablo apruebe esta vista previa LAN.** El workflow
 FTP publica con cada push, incluso si sólo cambia documentación. Esta petición
 posterior limita la autorización anterior para esta entrega. App 4173 y
 monitor 4174 continúan activos, sin duplicados.
+
+Incremento actual por feedback de Pablo: reproducido Fill invisible en Penrose
+(el modelo guardaba el relleno debajo de las caras opacas del generador).
+sceneLayers separa fondos de geometría generada y perímetros, dejando Fill entre
+ambos; se reutiliza también en Fuente pura. Sin cambios de esquema ni mutación
+de fuentes/generador; vista/exportación comparten el orden corregido.
+
+setTool es una acción explícita: activar Fill reabre controles aunque la
+herramienta ya estuviera activa, también por F o búsqueda. Barra persistente a
+la derecha con Colores/Trazo/Perfil/Fill/Paleta/Presets/Objeto/Opciones y botón
+inferior de plegar/desplegar. Objeto requiere selección; cada acceso abre su
+sección y el toggle recuerda la tab. En móvil los paneles siguen alternándose.
+203 unitarias/TypeScript correctos. Primera corrida 99 E2E: 96 correctos;
+corregido solapamiento de cierre izquierdo con rail en 390px (max-width deja
+espacio al rail); prueba móvil cierra el panel antes de pintar el lienzo cubierto.
+El pixel cercano a una curva era dominado por antialias a 1×: el probe rasteriza
+a 4× con los mismos puntos y umbrales RGB (sin relajar la comprobación de tinta).
+Los siete casos de corrección pasaron juntos, incluidos los tres fallos previos,
+Penrose/exportación/perímetro y nuevos accesos de ambos tamaños. Logs
+fill-final-check.log, fill-full-e2e.log y fill-corrections-e2e.log. Pendiente una
+corrida integrada final sobre la revisión completa y el ZIP actualizado por Pablo.
 
 Footer implementado con el texto pedido en una línea y enlaces de FutureForge
 (Instagram/X/Facebook/WhatsApp/Telegram/PEU.NET), usando estilos e iconos propios
