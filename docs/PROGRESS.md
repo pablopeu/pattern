@@ -690,3 +690,11 @@
   scroll móvil hasta PEU.NET y sin overflow de página. Evidencia footer-bold-*
   en .runtime. README/captura actualizados; servicios LAN siguen activos.
 - Commit/push autorizados; no consultar Actions/FTP. Sin pendientes del pedido.
+
+
+## Footer: destacados un punto mayores · Verificado
+
+- Patterns, ¿Te gustan los cuchillos? y PEU.NET:12→13px, negrita700.
+- Build/TypeScript y revisión1440/390 correctos; resto12px, alto38px y seis
+  enlaces conservados, sin overflow de página. Evidencia footer-size-* en .runtime.
+- README/captura actualizados; servicios LAN conservados y push autorizado.

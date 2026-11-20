@@ -1,3 +1,14 @@
+# Footer: textos destacados a13px · Verificado
+
+Patterns, «¿Te gustan los cuchillos?» y PEU.NET pasan de12 a13px. Resto del pie,
+incluido Seguime en:, conserva12px/peso500; destacados conservan negrita700.
+Build/TypeScript y vista real1440/390 correctos: altura38px, seis enlaces,
+una línea y sin overflow de página. Evidencia .runtime/footer-size-{build.log,qa.json}
+y capturas footer-size-*.png; README/captura actualizados. Sólo CSS; no se repiten
+suites geométricas. Servicios4173/4174 activos. Push autorizado sin revisar FTP.
+
+---
+
 # Footer negro y negritas selectivas · Verificado
 
 Pedido de Pablo y aclaración incorporada: Patterns, «¿Te gustan los cuchillos?»
