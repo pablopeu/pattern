@@ -1,81 +1,63 @@
-# Entrega local para revisión · Fill, panel derecho y presentación
+# Entrega local para revisión · Fill, panel derecho e iconos actualizados
 
-**No hacer push hasta que Pablo apruebe esta vista previa LAN.** El workflow
-FTP publica con cada push, incluso si sólo cambia documentación. Esta petición
-posterior limita la autorización anterior para esta entrega. App 4173 y
-monitor 4174 continúan activos, sin duplicados.
+**No hacer push hasta que Pablo apruebe esta vista previa LAN.** Cada push
+publica por FTP, incluso si sólo cambia documentación. Esta condición posterior
+limita la autorización anterior. GitHub conserva 4bd8938; servicios 4173 y 4174
+activos, sin duplicados. Pendiente únicamente revisión de Pablo para publicar.
 
-Incremento actual por feedback de Pablo: reproducido Fill invisible en Penrose
-(el modelo guardaba el relleno debajo de las caras opacas del generador).
-sceneLayers separa fondos de geometría generada y perímetros, dejando Fill entre
-ambos; se reutiliza también en Fuente pura. Sin cambios de esquema ni mutación
-de fuentes/generador; vista/exportación comparten el orden corregido.
+## Cambios actuales
 
-setTool es una acción explícita: activar Fill reabre controles aunque la
-herramienta ya estuviera activa, también por F o búsqueda. Barra persistente a
-la derecha con Colores/Trazo/Perfil/Fill/Paleta/Presets/Objeto/Opciones y botón
-inferior de plegar/desplegar. Objeto requiere selección; cada acceso abre su
-sección y el toggle recuerda la tab. En móvil los paneles siguen alternándose.
-203 unitarias/TypeScript correctos. Primera corrida 99 E2E: 96 correctos;
-corregido solapamiento de cierre izquierdo con rail en 390px (max-width deja
-espacio al rail); prueba móvil cierra el panel antes de pintar el lienzo cubierto.
-El pixel cercano a una curva era dominado por antialias a 1×: el probe rasteriza
-a 4× con los mismos puntos y umbrales RGB (sin relajar la comprobación de tinta).
-Los siete casos de corrección pasaron juntos, incluidos los tres fallos previos,
-Penrose/exportación/perímetro y nuevos accesos de ambos tamaños. Logs
-fill-final-check.log, fill-full-e2e.log y fill-corrections-e2e.log. Pendiente una
-corrida integrada posterior dio 98/99: el bloqueo restante en 390px era el
-panel derecho completo tapando la categoría Aplicación, no sólo el rail. Se
-reservó ancho también al overlay derecho. Los cuatro casos UI/Penrose volvieron
-a pasar; Ajustar al patrón ahora prioriza Penrose finito sobre su simetría heredada.
+- Fill en Penrose: el modelo guardaba el color debajo de caras opacas. Separamos
+  fondos del generador y perímetros en sceneLayers, con Fill entre ambos. Fuente
+  pura comparte el orden; se conserva en SVG editable/expandido y al recargar.
+- Reactivar Fill por clic, F o comandos abre controles aunque la herramienta ya
+  esté activa. Barra derecha persistente con ocho accesos, Objeto condicionado
+  a selección y toggle inferior que conserva tab. Overlays móviles dejan libres
+  ambos rails y sus controles. Ajustar al patrón encuadra Penrose como finito.
+- Fill denso: al superar el presupuesto global, analiza la región clickeada;
+  un contorno cerrado se recolorea directamente. Para varios trazos, una cara
+  fuente sólo propone la ventana: se valida con todas las curvas/capas/instancias
+  que la cruzan. No se aceptan caras que excedan la ventana; agujeros, Béziers e
+  índices originales preservados. Seguridad sin elevar presupuestos. Vínculos
+  automáticos y recálculo manual usan el mismo criterio local si es necesario.
+- Nuevo favicon_io.zip: seis archivos reemplazados byte a byte; revisión
+  f6108aa8c880 en URLs de ICO/PNG/Apple/manifest/Android para evitar caché antigua.
+  Nombre/colores y rutas relativas del manifest preservados. icono.png intacto.
+- Footer de autor en una línea con seis enlaces de FutureForge, estética propia
+  y Lucide; desplazamiento horizontal sólo del footer en móvil. Logo preservado.
+- Metadatos SEO/canonical/Open Graph/Twitter estáticos con caratula.jpg original
+  1176×775. https://peu.net/pattern/ comprobado contra la app publicada; imagen
+  absoluta apunta allí y estará disponible después de aprobar el push.
+- README mantiene explicaciones/imágenes primero e instalación/trabajo al final;
+  nueva captura real docs/images/penrose-fill.png. Archivos fuente caratula.jpg y
+  favicon_io.zip intactos y sin seguimiento; las copias públicas sí van a Git.
 
-Último feedback: Fill agotaba 1200 curvas al contar las copias de un dibujo
-freeform. Se agrega modo local automático sólo al superar presupuestos globales:
-contorno cerrado se recolorea directamente; caras de varios trazos se buscan
-por ventanas completas, validadas contra todas las capas/copias que las cruzan.
-Béziers e índices originales preservados, límites de seguridad sin aumentar,
-y vínculo refrescado con análisis local cuando el global excede el presupuesto.
-204 unitarias/TypeScript y dos E2E nuevos pasan: cuatro trazos densos repetidos,
-tinta en otra celda y fuente intacta; objeto cerrado de 1501 curvas, tinta,
-perímetro y recarga. Pendiente corrida integrada final y cierre documental.
+## Verificación real
 
-Footer implementado con el texto pedido en una línea y enlaces de FutureForge
-(Instagram/X/Facebook/WhatsApp/Telegram/PEU.NET), usando estilos e iconos propios
-de Pattern Studio. No se copió código externo sin licencia: se reutiliza Lucide
-ya instalado. En móvil, sólo la franja del pie admite desplazamiento horizontal.
-En altura de 800px o menos se compactan los espacios del generador para mantener
-sus controles sin scroll pese a la altura ocupada por el nuevo footer.
+- 204 unitarias y TypeScript estricto; build final correcto:
+  .runtime/fill-local-final-{check,build}.log.
+- 101/101 E2E en una corrida integrada de3,1min:
+  .runtime/fill-local-full-e2e.log. Incluye regresiones anteriores, cuatro tamaños,
+  tinta real, fuente/undo/recarga, perímetro SVG, Fill denso y accesos de paneles.
+- Después se añadió el fallback al recálculo manual y se repitieron 204 unitarias,
+  build y los2 E2E densos, incluido su botón real. Log fill-local-recalculate-e2e.
+  Se conserva el ID y la familia de límites; no sólo el solapamiento geométrico.
+- 6 E2E estáticas sobre el build final, raíz y /pattern/, sin Internet:
+  fill-local-static-{root,sub}.log. Servidor temporal de QA detenido al terminar.
+- Probes de iconos/manifest HTTP200, revisión, dimensiones/decodificación y bytes
+  correctos en raíz/subcarpeta; ejemplo Penrose real de340 caras con tinta al
+  primer clic en producción local: preview-icons-qa.log, verify-preview.mjs.
+- Capturas .runtime/right-rail-{1440,390}.png y penrose-production.png.
+  Logs/scripts de ejecución sólo en .runtime; sin direcciones LAN en Git.
 
-favicon_io.zip es el archivo fuente aportado por Pablo; se conserva intacto y
-sin incluir en Git. Se copiaron los seis iconos a public/icons y se adaptó
-public/site.webmanifest (nombre, colores, start_url/scope y rutas relativas).
-index.html declara ICO, PNG16/32, Apple180 y manifest Android192/512; el logo
-icono.png sigue intacto. Footer e iconos guardados en commit local 84d7415.
+## Git y seguimiento
 
-Pablo agregó caratula.jpg para tarjetas sociales: copia íntegra en public/,
-JPEG1176×775, texto alternativo de Penrose, metadatos descriptivos/autor/robots,
-Open Graph website/es_AR y Twitter summary_large_image con @peu_ar.
-URL pública https://peu.net/pattern/ verificada por HTTP contra el HTML de
-Pattern Studio publicado. Canonical/og:url e imagen absoluta usan ese origen;
-no se publican IPs LAN. Los metadatos están en HTML estático, sin depender de JS.
-La carátula y los metadatos aún no están publicados: requieren aprobar el push.
-Build final correcto; probe Chromium con JS deshabilitado sobre dist/ en raíz
-y /pattern/: canonical, Open Graph y Twitter únicos/coherentes, JPEG HTTP200,
-dimensiones reales y bytes idénticos al original. Logs social-meta-build.log y
-social-meta-qa.log, script de comprobación en .runtime/verify-social-meta.mjs.
-Los 203 tests y 13 E2E corresponden al incremento de footer/iconos; para este
-agregado estático se verificó build/HTML/imagen sin repetir la suite completa.
-
-Verificación: 203 unitarias/TypeScript, build y 13 E2E de disposición correctos.
-Probes reales a 1366×768,1440×900,1920×1080 y 390×844: pie al borde inferior,
-sin overflow de página y enlaces accesibles con Tab. Se verificó Enter en un
-enlace sin navegar a sitios externos ni modificar el dibujo. Assets/manifest
-con HTTP200 y PNG decodificables en producción raíz y /pattern/. Capturas
-.runtime/footer-{ancho}.png y .runtime/footer-preview.png. Logs footer-*.log.
-Servidor temporal de QA detenido; servicios LAN se mantienen.
-
-Pendiente únicamente revisión del usuario y su autorización para publicar este
-incremento. No ejecutar push ni reanudar publicación por un timer viejo.
+Footer/iconos iniciales 84d7415, metadatos7db5cb7; correcciones Fill/paneles
+474fa8c y2afe5b4, recálculo denso52c58eb. Todos exclusivamente locales.
+El cierre de iconos y documentación se guarda también local, sin publicar.
+.runtime/PROJECT_COMPLETE registra entrega verificada pendiente de revisión,
+no una publicación. Feedback del monitor sigue activo. Ante un nuevo pedido,
+retirar el marcador al iniciar trabajo real, como indica AGENTS.md.
 
 ---
 

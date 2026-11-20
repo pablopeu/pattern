@@ -100,6 +100,8 @@ región aperiódica finita, pintás la cara elegida: el color queda sobre los fo
 del generador y debajo de los perímetros originales. Se conserva al salir del
 área y al recargar, y se incluye en la exportación.
 
+![Una cara de Penrose pintada en rojo, con sus perímetros y los accesos del panel derecho](docs/images/penrose-fill.png)
+
 Por defecto se exige cierre geométrico dentro del epsilon numérico. Para pequeños huecos, aumentá explícitamente **Tolerancia de cierre de Fill** en el panel derecho; esta opción no modifica los trazos originales. Las guías y los espejos de estructura no cuentan como límites materiales.
 
 ### Construir teselas con bordes curvos
@@ -124,8 +126,9 @@ El pie de página reúne los enlaces del autor en una línea: **Patterns — Hec
 con pasión por un cuchillero. ¿Te gustan los cuchillos? Seguime en:**, con
 Instagram, X, Facebook, WhatsApp, Telegram y PEU.NET. En pantallas estrechas
 se puede recorrer horizontalmente. Los iconos de pestaña, favoritos y pantalla
-de inicio usan los archivos aportados en favicon_io.zip; el manifest conserva
-rutas relativas para raíz y subcarpetas.
+de inicio usan los archivos actualizados aportados en favicon_io.zip; el manifest
+conserva rutas relativas para raíz y subcarpetas. Sus URLs incluyen una revisión
+para actualizar también los iconos que el navegador tenía en caché.
 
 Al compartir la página, las tarjetas de Open Graph y X/Twitter usan la
 carátula aportada por el autor, con título, descripción y texto alternativo.
@@ -152,7 +155,7 @@ La importación SVG admite paths, formas, grupos y referencias locales compatibl
 
 Se limitan las escenas a 20.000 transformaciones y las expansiones a 150.000 trazados; las imágenes raster se limitan a 64 millones de píxeles. Los objetivos interactivos son mediciones de referencia, no garantías para cualquier complejidad.
 
-Fill limita el análisis a 1.200 entradas, 20.000 intersecciones, 40.000 medias aristas y 2.000 caras. Los contornos de trazo tienen presupuestos de muestras y subdivisiones: si una combinación excede los límites, la vista ofrece corregir el estilo y el exportador informa el error. No se sustituye silenciosamente el resultado exportado por una imagen o un eje provisional. La tolerancia física se ajusta a las transformaciones afines.
+Fill limita cada análisis a 1.200 entradas/curvas, 20.000 intersecciones, 40.000 medias aristas y 2.000 caras. Si las repeticiones superan ese presupuesto en la vista completa, pasa automáticamente a analizar la región clickeada. Conserva curvas, agujeros y fuentes; un objeto ya cerrado puede recolorearse directamente aunque tenga más de 1.200 curvas. Una región cuya complejidad local excede esos límites sigue requiriendo simplificar los límites. Los contornos de trazo tienen presupuestos de muestras y subdivisiones: si una combinación excede los límites, la vista ofrece corregir el estilo y el exportador informa el error. No se sustituye silenciosamente el resultado exportado por una imagen o un eje provisional. La tolerancia física se ajusta a las transformaciones afines.
 
 ## Instalación y ejecución
 

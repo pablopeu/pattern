@@ -514,3 +514,21 @@
 - Corrida integrada previa a este ajuste puntual:101/101, incluida navegación
   móvil corregida. Se verificó el ajuste después con unidad y E2E dirigido.
   Logs fill-local-final-{check,build}.log y fill-local-recalculate-e2e.log.
+
+
+## Cierre verificado · Iconos nuevos y feedback de Fill/paneles
+
+- Revisión de iconos f6108aa8c880 aplicada en seis assets y URLs de caché; tamaños
+  ICO16/32/48, PNG16/32, Apple180, Android192/512. Archivo fuente intacto.
+- 204 unitarias/TypeScript y build final correctos. Corrida completa101/101 en
+  3,1min, y luego2/2 densos al ampliar recálculo manual; no se rebajaron umbrales
+  de tinta. Muestreo4× conserva puntos físicos cerca de bordes curvos.
+- 6 estáticas finales correctas en raíz y /pattern/, sin recursos externos.
+  Probes reales confirman iconos/manifest versionados, HTTP200, PNG decodificados
+  y bytes exactos. Penrose de340 caras probado también en producción local.
+- README con instrucciones de accesos, Fill local y nueva imagen real de Penrose.
+  Capturas inspeccionadas en escritorio y móvil, controles accesibles. Servidores
+  de QA cerrados; app4173 y monitor4174 conservados.
+- Commits locales coherentes:474fa8c (Fill/paneles),2afe5b4 (densidad/móvil),
+  52c58eb (recálculo). Actualización final de iconos se guarda local. GitHub sigue
+  en4bd8938; **sin push ni publicación** hasta revisión y aprobación de Pablo.
