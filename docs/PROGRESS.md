@@ -224,3 +224,10 @@
 
 - Por pedido del usuario, documentación pública con `<IP_LOCAL>` en lugar de direcciones concretas. Las IP se consultan sólo en la máquina local; los servicios siguen en los puertos 4173 y 4174.
 - Se limpiaron los dos valores encontrados en todo el historial publicado de main mediante un clon aislado y push con force-with-lease. Verificados 403 blobs históricos de texto sin direcciones privadas; árbol HEAD idéntico antes/después de reescribir. Main local sincronizado con GitHub sin tocar el índice ni los cambios de aplicación en curso. prd_v2.3.txt permanece sin incluir en este incremento de privacidad.
+
+## Feedback continuo desde el monitor LAN
+
+- El feedback nuevo se envía a esta misma conversación mediante codex queue --resume, tanto durante trabajo activo como esperando reset o con PROJECT_COMPLETE presente. La entrega tiene un hilo independiente del control de cupo; el POST HTTP lo despierta inmediatamente.
+- IDs persistentes, registro de encolados/revisados y exclusión mutua evitan reenvíos normales tras polling/reinicio. Los errores se reintentan después de30s; un warning de resume no repite un mensaje que el CLI ya aceptó. No se confunde «en conversación» con «leído». Un corte del proceso justo entre aceptación externa y escritura local puede requerir revisar eventos.
+- Dashboard distingue entrega pendiente, en conversación y revisado. Los dos feedback históricos ya leídos se marcaron revisados sin reenviarlos.
+- **9 pruebas Python correctas**: cuotas reales, ventana semanal, warning de resume, entrega en trabajo/espera/completado, reintentos persistentes, concurrencia y POST HTTP real con cola simulada. Monitor reiniciado una sola vez; HTTP4174 correcto y app4173 conserva su PID anterior.

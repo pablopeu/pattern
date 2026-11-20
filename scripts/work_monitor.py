@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """LAN work dashboard and real Codex quota timer. No credentials leave this process."""
-import argparse, datetime as dt, fcntl, json, os, pathlib, subprocess, threading, time
+import argparse, datetime as dt, fcntl, hashlib, json, os, pathlib, subprocess, threading, time, uuid
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 RUNTIME = ROOT / '.runtime'
 RUNTIME.mkdir(exist_ok=True, mode=0o700)
 STATE = RUNTIME / 'usage.json'
+FEEDBACK_WAKE = threading.Event()
+FEEDBACK_WRITE = threading.Lock()
+FEEDBACK_DELIVERY = threading.Lock()
 
 def atomic_json(path, value):
     tmp = path.with_suffix('.tmp')
@@ -42,13 +45,51 @@ def decision(limits, now):
             low.append(w['resets_at'])
     return max(low) + 60 if low else None
 
-def queue(thread_id, message, resume=False):
+def queue(thread_id, message, resume=False, accept_resume_warning=False):
     args = ['codex', 'queue', '--thread', thread_id, '--message', message]
     if resume: args.append('--resume')
     result = subprocess.run(args, cwd=ROOT, capture_output=True, text=True, timeout=60)
     event('queue', resume=resume, returncode=result.returncode, output=(result.stdout + result.stderr)[-2000:])
     # CLI may return zero with a resume warning: record it for inspection.
-    return result.returncode == 0 and not (resume and 'warning' in result.stderr.lower())
+    return result.returncode == 0 and not (resume and not accept_resume_warning and 'warning' in result.stderr.lower())
+
+def feedback_id(row):
+    return row.get('id') or hashlib.sha256(json.dumps([row.get('time'), row.get('message')], ensure_ascii=False).encode()).hexdigest()
+
+def feedback_rows():
+    ledger = read_json(RUNTIME / 'feedback-delivery.json', {})
+    return [dict(row, id=feedback_id(row), delivery=ledger.get(feedback_id(row), {}).get('status', 'pending'))
+            for row in read_json_lines(RUNTIME / 'feedback.jsonl')]
+
+def deliver_feedback(thread_id):
+    # Serialize POST/poll/retry delivery. A successful queue is persisted before sending another row.
+    with FEEDBACK_DELIVERY:
+        path = RUNTIME / 'feedback-delivery.json'
+        ledger = read_json(path, {})
+        for row in read_json_lines(RUNTIME / 'feedback.jsonl'):
+            key = feedback_id(row)
+            previous = ledger.get(key, {})
+            if previous.get('status') in ('queued', 'reviewed') or previous.get('retry_at', 0) > time.time(): continue
+            message = ('Feedback enviado desde el monitor LAN de Pattern Studio (' + str(row.get('time', '')) +
+                       '). Incorporalo al trabajo en curso aunque no estés esperando el reset.\n\n' + str(row.get('message', '')))
+            try:
+                # A resume warning means the message was still queued (e.g. the turn is already active).
+                ok = queue(thread_id, message, resume=True, accept_resume_warning=True)
+            except Exception as error:
+                event('feedback_error', id=key, error=str(error))
+                ok = False
+            ledger[key] = dict(status='queued' if ok else 'pending', updated_at=dt.datetime.now(dt.timezone.utc).isoformat(),
+                               retry_at=0 if ok else time.time()+30)
+            atomic_json(path, ledger)
+            event('feedback_delivery', id=key, status=ledger[key]['status'])
+
+def feedback_watch(thread_id):
+    # Independent of quota, waiting/reset, and the PROJECT_COMPLETE marker.
+    while not (RUNTIME / 'STOP').exists():
+        FEEDBACK_WAKE.clear()
+        try: deliver_feedback(thread_id)
+        except Exception as error: event('feedback_error', error=str(error))
+        FEEDBACK_WAKE.wait(5)
 
 def watch(thread_id, session):
     timer_file = RUNTIME / 'timer.json'
@@ -109,7 +150,7 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == '/api/status':
             body = dict(usage=read_json(STATE, {}), commits=git('log', '-10', '--format=%h %ad %s', '--date=iso-strict'),
                         changes=git('status', '--short'), progress=(ROOT / 'docs/PROGRESS.md').read_text(),
-                        feedback=read_json_lines(RUNTIME / 'feedback.jsonl')[-20:])
+                        feedback=feedback_rows()[-20:])
             self.reply(200, json.dumps(body, ensure_ascii=False).encode(), 'application/json')
         elif self.path in ('/', '/index.html'):
             self.reply(200, (ROOT / 'scripts/dashboard.html').read_bytes(), 'text/html; charset=utf-8')
@@ -126,9 +167,11 @@ class Handler(BaseHTTPRequestHandler):
             data = json.loads(self.rfile.read(length))
             message = str(data.get('message', '')).strip()
             if not message: raise ValueError('Escribí tu feedback')
-            row = dict(time=dt.datetime.now(dt.timezone.utc).isoformat(), message=message)
-            with (RUNTIME / 'feedback.jsonl').open('a') as handle: handle.write(json.dumps(row, ensure_ascii=False) + '\n')
-            self.reply(201, b'{"ok":true}', 'application/json')
+            row = dict(id=uuid.uuid4().hex, time=dt.datetime.now(dt.timezone.utc).isoformat(), message=message)
+            with FEEDBACK_WRITE:
+                with (RUNTIME / 'feedback.jsonl').open('a') as handle: handle.write(json.dumps(row, ensure_ascii=False) + '\n')
+            FEEDBACK_WAKE.set()
+            self.reply(201, json.dumps(dict(ok=True, id=row['id'])).encode(), 'application/json')
         except (ValueError, TypeError): self.reply(400, b'{"error":"Feedback invalido"}', 'application/json')
     def reply(self, status, body, content_type):
         self.send_response(status); self.send_header('Content-Type', content_type)
@@ -140,7 +183,9 @@ def read_json_lines(path):
     if not path.exists(): return []
     result = []
     for line in path.read_text().splitlines():
-        try: result.append(json.loads(line))
+        try:
+            row = json.loads(line)
+            if isinstance(row, dict): result.append(row)
         except ValueError: continue
     return result
 
@@ -163,5 +208,6 @@ if __name__ == '__main__':
     if len(paths) != 1: raise SystemExit('No se identificó un registro de sesión único')
     server = ThreadingHTTPServer(('0.0.0.0', args.port), Handler)
     threading.Thread(target=watch, args=(args.thread, paths[0]), daemon=True).start()
+    threading.Thread(target=feedback_watch, args=(args.thread,), daemon=True).start()
     event('started', thread=args.thread, port=args.port)
     server.serve_forever()

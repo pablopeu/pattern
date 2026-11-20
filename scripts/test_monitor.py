@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import unittest
+import unittest, tempfile, pathlib, json, threading, urllib.request, time
 from unittest.mock import patch
 import work_monitor as monitor
 
@@ -18,5 +18,78 @@ class QuotaTests(unittest.TestCase):
         run.return_value=type('Result',(),{'returncode':0,'stdout':'queued','stderr':'warning: failed to resume'})()
         self.assertFalse(monitor.queue('test-thread','test-message',True))
         self.assertIn('--resume',run.call_args.args[0])
+
+class FeedbackTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.runtime = pathlib.Path(self.temp.name)
+        self.patch = patch.object(monitor, 'RUNTIME', self.runtime)
+        self.patch.start()
+    def tearDown(self):
+        self.patch.stop()
+        self.temp.cleanup()
+    def append(self, message='feedback', **extra):
+        row = dict(time='2026-11-20T00:00:00Z', message=message, **extra)
+        with (self.runtime/'feedback.jsonl').open('a') as f: f.write(json.dumps(row)+'\n')
+        return row
+    @patch.object(monitor, 'queue', return_value=True)
+    def test_delivery_works_while_active_and_after_completion_without_duplicates(self, queue):
+        for status in ('working', 'waiting_reset', 'complete'):
+            monitor.atomic_json(self.runtime/'usage.json', dict(status=status))
+            if status=='complete': (self.runtime/'PROJECT_COMPLETE').touch()
+            self.append(status)
+            monitor.deliver_feedback('same-thread')
+            monitor.deliver_feedback('same-thread')
+        self.assertEqual(queue.call_count, 3)
+        self.assertTrue((self.runtime/'PROJECT_COMPLETE').exists())
+        self.assertTrue(all(r['delivery']=='queued' for r in monitor.feedback_rows()))
+        for call in queue.call_args_list:
+            self.assertEqual(call.args[0], 'same-thread')
+            self.assertTrue(call.kwargs['resume'])
+            self.assertTrue(call.kwargs['accept_resume_warning'])
+    @patch.object(monitor, 'queue', side_effect=[False, True])
+    def test_failed_delivery_is_retried_and_survives_restart(self, queue):
+        self.append()
+        with patch.object(monitor.time, 'time', return_value=100): monitor.deliver_feedback('thread')
+        with patch.object(monitor.time, 'time', return_value=101): monitor.deliver_feedback('thread')
+        self.assertEqual(queue.call_count, 1)
+        self.assertEqual(monitor.feedback_rows()[0]['delivery'], 'pending')
+        with patch.object(monitor.time, 'time', return_value=131): monitor.deliver_feedback('thread')
+        monitor.deliver_feedback('thread')
+        self.assertEqual(queue.call_count, 2)
+        self.assertEqual(monitor.feedback_rows()[0]['delivery'], 'queued')
+    @patch.object(monitor, 'queue', return_value=True)
+    def test_concurrent_delivery_serializes_and_read_legacy_rows_stay_reviewed(self, queue):
+        old=self.append('already reviewed')
+        monitor.atomic_json(self.runtime/'feedback-delivery.json', {monitor.feedback_id(old): dict(status='reviewed')})
+        self.append('new', id='stable-id')
+        threads=[threading.Thread(target=monitor.deliver_feedback,args=('thread',)) for _ in range(3)]
+        for thread in threads: thread.start()
+        for thread in threads: thread.join()
+        self.assertEqual(queue.call_count, 1)
+        self.assertEqual(monitor.feedback_rows()[0]['delivery'], 'reviewed')
+    @patch.object(monitor, 'queue', return_value=True)
+    def test_real_http_post_wakes_delivery_and_assigns_unique_ids(self, queue):
+        server=monitor.ThreadingHTTPServer(('127.0.0.1',0), monitor.Handler)
+        serving=threading.Thread(target=server.serve_forever,daemon=True); serving.start()
+        delivery=threading.Thread(target=monitor.feedback_watch,args=('thread',),daemon=True); delivery.start()
+        try:
+            url='http://127.0.0.1:'+str(server.server_port)+'/api/feedback'
+            request=urllib.request.Request(url, data=json.dumps(dict(message='desde HTTP')).encode(), headers={'Content-Type':'application/json'})
+            with urllib.request.urlopen(request) as response:
+                self.assertEqual(response.status,201)
+                self.assertTrue(json.load(response)['id'])
+            deadline=time.monotonic()+2
+            while not queue.called and time.monotonic()<deadline: time.sleep(.01)
+            self.assertEqual(queue.call_count,1)
+        finally:
+            (self.runtime/'STOP').touch(); monitor.FEEDBACK_WAKE.set()
+            delivery.join(2); server.shutdown(); serving.join(2); server.server_close()
+        self.assertEqual(monitor.feedback_rows()[0]['delivery'],'queued')
+    @patch.object(monitor,'event')
+    @patch.object(monitor.subprocess,'run')
+    def test_queue_acceptance_is_not_retried_for_resume_warning(self, run, event):
+        run.return_value=type('Result',(),{'returncode':0,'stdout':'queued','stderr':'warning: already active'})()
+        self.assertTrue(monitor.queue('thread','feedback',True,accept_resume_warning=True))
 
 if __name__=='__main__': unittest.main()
