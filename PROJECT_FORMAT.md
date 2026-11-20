@@ -147,3 +147,10 @@ Una geometría de relleno tiene pathData vectorial y `fillRegion` opcional, vers
 | `closeTolerance` | Cierre ampliado explícito en mm, cero por defecto |
 
 El eje de un trazo de perfil variable sigue siendo fuente editable; su contorno y las cachés no se serializan. Una región Fill derivada sí conserva su contorno y referencias. Se evita depender de otras regiones Fill para impedir ciclos. El esquema limita claves, referencias y pathData antes de aceptar una entidad nueva; las operaciones no pueden dejar un autosave inválido.
+
+
+La reorganización v2.3 conserva schemaVersion4. Categorías, pestañas,
+modales y búsqueda pertenecen al estado de interfaz y no se serializan en el
+proyecto ni en undo. Recientes de simetría son de sesión; favoritos son una
+preferencia local del navegador. El JSON portable sigue conteniendo el
+mismo documento geométrico/estilos y se abre en los recorridos anteriores.

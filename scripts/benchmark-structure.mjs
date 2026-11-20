@@ -23,25 +23,19 @@ const project = await page.evaluate(async () => {
   }
   return p;
 });
-await page
-  .locator('input[type=file][accept=".json,application/json"]')
-  .setInputFiles({
-    name: 'benchmark-structure.json',
-    mimeType: 'application/json',
-    buffer: Buffer.from(JSON.stringify(project)),
-  });
+await page.locator('input[type=file][accept=".json,application/json"]').setInputFiles({
+  name: 'benchmark-structure.json',
+  mimeType: 'application/json',
+  buffer: Buffer.from(JSON.stringify(project)),
+});
 await page.locator('.save-indicator').filter({ hasText: 'Guardado local' }).waitFor();
+await page.getByRole('button', { name: 'Abrir Simetrías', exact: true }).click();
 await page.waitForFunction(
   () =>
-    Number(
-      document
-        .querySelector('[data-symmetry-id="none:none"]')
-        ?.getAttribute('data-preview-revision'),
-    ) >= 2 &&
-    document.querySelector('.dynamic-symmetry-grid')?.getAttribute('data-preview-pending') ===
-      'false' &&
-    document.querySelector('.dynamic-symmetry-grid')?.getAttribute('data-preview-completed') ===
-      '27',
+    Number(document.querySelector('.symmetry-gallery')?.getAttribute('data-preview-revision')) >=
+      1 &&
+    document.querySelector('.symmetry-gallery')?.getAttribute('data-preview-pending') === 'false' &&
+    document.querySelector('.symmetry-gallery')?.getAttribute('data-preview-completed') === '27',
 );
 const statistics = (values) => {
   values.sort((a, b) => a - b);
@@ -54,20 +48,17 @@ const statistics = (values) => {
 const pan = {};
 for (const enabled of [false, true]) {
   if (enabled) {
-    const old = await page
-      .locator('[data-symmetry-id="none:none"]')
-      .getAttribute('data-preview-revision');
+    const old = await page.locator('.symmetry-gallery').getAttribute('data-preview-revision');
     await page
       .getByRole('button', { name: 'Mostrar/Ocultar estructura de simetría', exact: true })
       .click();
     await page.waitForFunction(
       (old) =>
-        document
-          .querySelector('[data-symmetry-id="none:none"]')
-          ?.getAttribute('data-preview-revision') !== old &&
-        document.querySelector('.dynamic-symmetry-grid')?.getAttribute('data-preview-pending') ===
+        document.querySelector('.symmetry-gallery')?.getAttribute('data-preview-revision') !==
+          old &&
+        document.querySelector('.symmetry-gallery')?.getAttribute('data-preview-pending') ===
           'false' &&
-        document.querySelector('.dynamic-symmetry-grid')?.getAttribute('data-preview-completed') ===
+        document.querySelector('.symmetry-gallery')?.getAttribute('data-preview-completed') ===
           '27',
       old,
     );

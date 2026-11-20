@@ -81,6 +81,10 @@ await page.locator('input[type=file][accept=".json,application/json"]').setInput
 });
 await page.getByRole('button', { name: 'Mostrar grilla', exact: true }).click();
 await page.waitForTimeout(800);
+await page.getByRole('button', { name: 'Abrir Simetrías', exact: true }).click();
+await page.getByRole('tab', { name: 'Generador', exact: true }).click();
+while (!(await page.getByLabel('Amplitud deslizador', { exact: true }).isVisible()))
+  await page.getByRole('button', { name: 'Más parámetros', exact: true }).click();
 // Drive an actual slider through repeated input events while measuring presented frames.
 const ui = await page.evaluate(async () => {
   const slider = document.querySelector('input[aria-label="Amplitud deslizador"]');
@@ -110,6 +114,8 @@ const ui = await page.evaluate(async () => {
     visibleUseElements: document.querySelectorAll('.studio-canvas use').length,
   };
 });
+await page.getByRole('tab', { name: 'Grupo y red', exact: true }).click();
+await page.getByRole('button', { name: 'Explorar todas las simetrías · 27' }).click();
 // Measure committed group changes through React and two animation frames, without hover.
 const groupChanges = await page.evaluate(async () => {
   const samples = [];
@@ -137,7 +143,9 @@ const thumbnails = {
   completed: Number(await gallery.getAttribute('data-preview-completed')),
   elapsedIncludingScheduledYieldsMs: Number(await gallery.getAttribute('data-preview-ms')),
 };
-await page.getByRole('button', { name: /^Capas/ }).click();
+await page.getByRole('button', { name: 'Cerrar catálogo', exact: true }).click();
+await page.getByRole('button', { name: 'Abrir Capas', exact: true }).click();
+await page.getByRole('tab', { name: /^Capas/ }).click();
 await page.locator('.layer-name').last().click();
 await page.getByRole('button', { name: 'Editar nodos', exact: true }).click();
 const handle = await page.getByLabel('Nodo 1', { exact: true }).boundingBox();

@@ -199,6 +199,7 @@ test('v2.2 estático: panel derecho, Fill vectorial, perfiles/preset y workers s
   await (await field(page, 'Grosor de trazo')).fill('2');
   await (await field(page, 'Estilo de línea')).selectOption('dashed');
   await (await field(page, 'Perfil de grosor')).selectOption('taper-both');
+  await styles(page, 'Colores');
   await panel.getByRole('button', { name: 'Sin relleno', exact: true }).click();
   await (await field(page, 'Nombre del preset de estilo')).fill('Producción');
   await panel.getByRole('button', { name: 'Guardar nuevo', exact: true }).click();

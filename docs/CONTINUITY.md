@@ -91,3 +91,10 @@ con tabs y diálogos nativos con foco/inert/Escape.203 unitarias/TypeScript,
 Los helpers tests/navigation.ts recorren la UI real y conservan aserciones.
 Próximo paso inmediato: regresión completa y corrección de recorridos/defectos,
 auditoría de cobertura, builds estáticos y documentación/capturas finales.
+
+## Auditoría de regresión
+
+Primera corrida:85/91 correctos;4 aserciones de título y1 apertura de catálogo
+adaptadas; regresión real de destino de estilo en Lápiz corregida. Las6
+repeticiones dirigidas y3 coberturas secundarias pasaron.9 tests del monitor
+correctos. Preparada corrida completa final de94; pendiente estático y cierre.

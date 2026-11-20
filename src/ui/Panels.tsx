@@ -163,7 +163,7 @@ export function Panels({
       }}
     >
       <header className="context-heading">
-        {categories.find((c) => c.id === category)?.label}
+        <span>{categories.find((c) => c.id === category)?.label}</span>
         <button
           aria-label="Cerrar panel izquierdo"
           title="Cerrar panel izquierdo (Esc)"
@@ -381,6 +381,18 @@ export function Panels({
           <>
             {category === 'shapes' && (
               <div className="context-hint">
+                <strong>
+                  {s.tool === 'polygon'
+                    ? 'Polígono libre'
+                    : s.tool === 'rectangle'
+                      ? 'Rectángulo'
+                      : s.tool === 'ellipse'
+                        ? 'Elipse'
+                        : 'Formas paramétricas'}
+                </strong>
+                {s.tool === 'polygon' && (
+                  <p>Clic agrega vértices; Enter termina y Shift+Enter cierra el polígono libre.</p>
+                )}
                 <button className="wide-button" onClick={onCreateRegular}>
                   Polígono paramétrico · crear
                 </button>

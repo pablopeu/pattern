@@ -304,6 +304,7 @@ export function SymmetryGallery({
     <details
       className="symmetry-gallery"
       open
+      data-preview-revision={revision.current}
       data-preview-pending={metrics.pending}
       data-preview-completed={metrics.completed}
       data-preview-ms={metrics.totalMs.toFixed(1)}
@@ -550,7 +551,7 @@ export function SymmetryGallery({
                   {(['x', 'y'] as const).map((axis) => (
                     <Field
                       key={axis}
-                      label={`Origen ${axis.toUpperCase()}`}
+                      label={`${confirmed.family === 'radial' ? 'Centro' : 'Origen'} ${axis.toUpperCase()}`}
                       value={
                         confirmed.family === 'radial'
                           ? confirmed.center[axis]

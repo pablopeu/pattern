@@ -93,3 +93,25 @@ El contrato `DrawingStyle` es compartido por geometrías, estilo vigente y prese
 Fill construye una disposición planar en un worker con Paper.js: intersecciones cúbicas, subdivisión, medias aristas y caras con agujeros. Hover reutiliza el índice y limita mensajes en vuelo. Cada clic o toque captura punto y estilo, se encola por separado de hover y crea o recolorea una fuente reversible; cerrar el panel o retirar el puntero no pierde el clic. Cambiar realmente los límites invalida los clics pendientes.
 
 Las regiones que no admiten una sola fuente propagada exacta usan una órbita concreta verificada. `patterns/layers.ts` comparte el orden entre regiones independientes y tandas de motivo. Los vínculos recalculados se incorporan a la misma revisión de geometría; el recálculo explícito es una operación cancelable independiente. Los snapshots de aplicaciones congeladas usan sus propios datos, también al exportar.
+
+
+## Navegación contextual v2.3
+
+App coordina siete categorías mediante ui/navigation.ts, sin modificar el
+proyecto. Panels conserva la pestaña de cada categoría durante la sesión y
+se pliega con hidden sin desmontar el contenedor. ObjectProperties reutiliza
+los handlers anteriores de geometría en la derecha. StylePanel organiza
+colores/trazo/perfil/Fill/paletas/presets/objeto/opciones y conserva estilos
+vigentes o de selección. Los puntos de perfil, colores e instancias extensos
+se seleccionan explícitamente, evitando columnas crecientes de controles.
+
+SymmetryGallery mantiene un selector compacto y un catálogo modal paginado
+según ancho. Ambos llaman changeSymmetryChoice; hover usa preview transitorio.
+Recientes se guardan en sessionStorage y favoritos en localStorage, fuera del
+JSON y del historial. Los controles de red y colocación tienen tabs separadas.
+
+CommandPalette filtra un registro de handlers de App (herramientas, categorías,
+simetrías, creación, grosor, archivo/exportación). No ejecuta otra lógica
+geométrica. Modal usa dialog.showModal para fondo inerte, foco acotado,
+Escape y retorno al disparador. Exportación/importación/biblioteca/ayuda usan
+la misma base. No se añaden dependencias de runtime ni se modifica el motor.

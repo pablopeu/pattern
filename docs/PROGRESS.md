@@ -323,3 +323,19 @@
 - Recorridos previos se adaptan a categorías, tabs y catálogo usando helpers
   de interacción real. Se conservan aserciones de modelo/tinta/persistencia.
   Pendiente ejecutar y corregir la regresión completa sobre estos recorridos.
+
+## PRD v2.3 · Auditoría de regresiones y cobertura secundaria
+
+- Primera corrida completa:85 correctos,6 fallos. Cuatro eran una aserción
+  del título que ahora incluye un botón de cierre; uno necesitaba abrir el
+  catálogo en el recorrido de26 grupos. El restante detectó una regresión
+  real: Lápiz forzaba destino vigente. Se conserva ahora el destino elegido,
+  como en v2.2;6 repeticiones dirigidas aprobadas.
+- Resize pliega el izquierdo si el derecho ocupa overlay estrecho; no quedan
+  dos paneles superpuestos tras reducir la ventana. Centro radial tiene
+  nombre explícito. Formas identifica la herramienta libre/paramétrica.
+- Tres E2E nuevos correctos: geometría/nodos/reflexión/grupos/booleana+undo,
+  CRUD completo de presets/paleta y resize/Escape con selección conservada.
+  Scripts de benchmark adaptados a las categorías sin cambiar las métricas.
+-9 pruebas del monitor correctas; no se enviaron feedback de prueba. Pendiente
+  corrida completa final de94 E2E y producción estática sobre el resultado.

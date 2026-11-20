@@ -1,3 +1,4 @@
+import { context, styles, field } from './navigation';
 import { test, expect, type Page } from '@playwright/test';
 
 async function project(page: Page) {
@@ -32,7 +33,7 @@ for (const viewport of [
       const button = page.getByRole('button', { name: `Abrir ${name}`, exact: true });
       await expect(button).toBeInViewport();
       await button.click();
-      await expect(page.locator('.context-heading')).toHaveText(name);
+      await expect(page.locator('.context-heading > span')).toHaveText(name);
     }
     expect(await project(page)).toEqual(before);
     for (const name of [
@@ -188,7 +189,7 @@ test('v2.3 comandos usan herramientas reales, foco, teclado y exportación', asy
   await project(page);
   await page.keyboard.press('Control+k');
   const dialog = page.getByRole('dialog', { name: 'Buscar comandos' });
-  await dialog.getByRole('combobox').fill('polígono paramétrico');
+  await dialog.getByRole('combobox').fill('poligono parametrico');
   await page.keyboard.press('Enter');
   await expect(dialog).toBeHidden();
   expect((await project(page))!.patterns[0].sourceGeometry).toHaveLength(1);
@@ -271,3 +272,108 @@ for (const viewport of [
     await expect(page.getByRole('button', { name: 'Exportar', exact: true })).toBeFocused();
   });
 }
+
+test('v2.3 cobertura de nodos, transformaciones, grupos y booleanas en propiedades', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await project(page);
+  await page.getByRole('button', { name: 'Crear polígono regular', exact: true }).click();
+  let right = await styles(page, 'Objeto');
+  await right.getByRole('tab', { name: 'Acciones', exact: true }).click();
+  await right.getByRole('button', { name: 'Duplicar', exact: true }).click();
+  expect((await project(page))!.patterns[0].sourceGeometry).toHaveLength(2);
+  await page.locator('.studio-canvas').focus();
+  await page.keyboard.press('Control+a');
+  right = await styles(page, 'Objeto');
+  await right.getByRole('tab', { name: 'Acciones', exact: true }).click();
+  await right.getByRole('button', { name: 'Agrupar', exact: true }).click();
+  const grouped = (await project(page))!.patterns[0].sourceGeometry;
+  expect(grouped[0].groupId).toBeTruthy();
+  expect(grouped[1].groupId).toBe(grouped[0].groupId);
+  await context(page, 'Capas');
+  await page.getByRole('tab', { name: /^Capas/ }).click();
+  await page.locator('.layer-name').first().click();
+  right = await styles(page, 'Objeto');
+  await right.getByRole('tab', { name: 'Acciones', exact: true }).click();
+  await right.getByRole('button', { name: 'Desagrupar', exact: true }).click();
+  expect((await project(page))!.patterns[0].sourceGeometry.every((g) => !g.groupId)).toBe(true);
+  await right.getByRole('tab', { name: 'Transformar', exact: true }).click();
+  await right.getByRole('button', { name: 'Reflejar X', exact: true }).click();
+  await right.getByRole('tab', { name: 'Nodos', exact: true }).click();
+  await right.getByRole('button', { name: 'Convertir a paths editables', exact: true }).click();
+  let path = (await project(page))!.patterns[0].sourceGeometry.find((g) => g.kind === 'path')!;
+  expect(path).toBeTruthy();
+  const count = path.nodes.length;
+  await right.getByRole('button', { name: 'Insertar nodo', exact: true }).click();
+  path = (await project(page))!.patterns[0].sourceGeometry.find((g) => g.kind === 'path')!;
+  expect(path.nodes).toHaveLength(count + 1);
+  await right.getByRole('button', { name: 'Eliminar nodo', exact: true }).click();
+  await right.getByRole('button', { name: 'Curvar segmento', exact: true }).click();
+  await right.getByRole('button', { name: 'Suavizar', exact: true }).click();
+  await right.getByRole('button', { name: 'Nodo angular', exact: true }).click();
+  expect(
+    (await project(page))!.patterns[0].sourceGeometry.find((g) => g.kind === 'path')!.nodes[0].out,
+  ).toEqual({ x: 0, y: 0 });
+  await page.locator('.studio-canvas').focus();
+  await page.keyboard.press('Control+a');
+  right = await styles(page, 'Objeto');
+  await right.getByRole('tab', { name: 'Acciones', exact: true }).click();
+  await right.getByRole('button', { name: 'Unión', exact: true }).click();
+  expect((await project(page))!.patterns[0].sourceGeometry).toHaveLength(1);
+  await page.getByRole('button', { name: 'Deshacer', exact: true }).click();
+  expect((await project(page))!.patterns[0].sourceGeometry).toHaveLength(2);
+});
+
+test('v2.3 presets completos y paleta siguen accesibles', async ({ page }) => {
+  await page.goto('/');
+  await project(page);
+  await (await field(page, 'HEX de trazo')).fill('#123456');
+  await (await field(page, 'Grosor de trazo')).fill('2');
+  await (await field(page, 'Nombre del preset de estilo')).fill('Original');
+  const right = page.getByRole('complementary', { name: 'Panel de estilos' });
+  await right.getByRole('button', { name: 'Guardar nuevo', exact: true }).click();
+  await right.getByRole('button', { name: 'Duplicar preset', exact: true }).click();
+  await right.getByLabel('Nombre del preset de estilo').fill('Copia editada');
+  await right.getByRole('button', { name: 'Renombrar', exact: true }).click();
+  await (await field(page, 'Grosor de trazo')).fill('4');
+  await styles(page, 'Presets');
+  await right.getByRole('button', { name: 'Actualizar valores', exact: true }).click();
+  expect(
+    (await project(page))!.stylePresets.find((p) => p.name === 'Copia editada')!.style.strokeWidth,
+  ).toBe(4);
+  await right.getByRole('button', { name: 'Eliminar preset', exact: true }).click();
+  expect((await project(page))!.stylePresets).toHaveLength(1);
+  await right.getByLabel('Preset de estilo', { exact: true }).selectOption({ label: 'Original' });
+  await right.getByRole('button', { name: 'Aplicar preset', exact: true }).click();
+  expect((await project(page))!.drawingStyle.strokeWidth).toBe(2);
+  await (await field(page, 'Aplicar color de paleta a')).selectOption('stroke');
+  await right.getByRole('button', { name: 'Agregar a favoritos', exact: true }).click();
+  await right.getByRole('button', { name: 'Agregar a proyecto', exact: true }).click();
+  expect((await project(page))!.palette.colors).toContain('#123456');
+  await right.getByLabel('Paleta', { exact: true }).selectOption('Favoritos');
+  await expect(right.getByRole('button', { name: 'Favoritos #123456', exact: true })).toBeVisible();
+});
+
+test('v2.3 resize y Escape de menús conservan selección y evitan overlays simultáneos', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await project(page);
+  await page.getByRole('button', { name: 'Crear polígono regular', exact: true }).click();
+  const before = await project(page);
+  await page.locator('.main-menu summary').click();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.main-menu')).not.toHaveAttribute('open', '');
+  await expect(page.locator('.statusbar')).toContainText('1 seleccionados');
+  await page.setViewportSize({ width: 768, height: 800 });
+  await expect(page.getByRole('complementary', { name: 'Panel contextual' })).toBeHidden();
+  await expect(page.getByRole('complementary', { name: 'Panel de estilos' })).toBeVisible();
+  await context(page, 'Preferencias');
+  await expect(page.getByRole('complementary', { name: 'Panel de estilos' })).toBeHidden();
+  await page.getByLabel('Unidades', { exact: true }).focus();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('complementary', { name: 'Panel contextual' })).toBeHidden();
+  expect(await project(page)).toEqual(before);
+  await expect(page.locator('.statusbar')).toContainText('1 seleccionados');
+});

@@ -421,6 +421,7 @@ test('v2.1 los 17 wallpaper, siete frisos y Cn/Dn producen overlays correctos en
       { family: 'radial', group: 'Dn' },
     ];
   });
+  await catalog(page);
   for (const c of choices) {
     const button = page.locator(`[data-symmetry-id="${c.family}:${c.group}"]`);
     await button.click();

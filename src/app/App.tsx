@@ -80,7 +80,6 @@ export default function App() {
     setCategory(toolCategory(s.tool));
     if (s.tool === 'pencil') {
       s.setStylePage('stroke');
-      s.setStyleTarget('current');
       s.setStyleOpen(true);
     }
     if (s.tool === 'nodes') {
@@ -100,7 +99,12 @@ export default function App() {
     }
   }, [s.selected.join(','), s.tool]);
   useEffect(() => {
-    if (s.styleOpen && innerWidth <= 900) setCollapsed(true);
+    const fitPanels = () => {
+      if (s.styleOpen && innerWidth <= 900) setCollapsed(true);
+    };
+    fitPanels();
+    window.addEventListener('resize', fitPanels);
+    return () => window.removeEventListener('resize', fitPanels);
   }, [s.styleOpen]);
   useEffect(() => {
     const dismiss = (e: PointerEvent) => {
