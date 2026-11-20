@@ -758,3 +758,13 @@
 - Fases1–7 pendientes. Próximo: composiciones recursivas/espirales con UI, JSON,
   exportación y galería de ejemplos. Servicios LAN conservados; primaria real0%
   al reanudar. Secundaria sólo avisa; sin PROJECT_COMPLETE.
+
+
+## V3.0 Fase1 · Núcleo funcional afín
+
+- Operadores rotate/flip/beside/above/over/quartet/cycle/scale/translate,
+  recetas de anillos/cuadrantes/ramificación y cuatro recetas de semejanza.
+- Compilación determinística a matrices y hojas con IDs/niveles, sin duplicar
+  fuentes; presupuesto/culling/detalle e inversas verificables. Fuente intacta.
+- 216 unidades/TypeScript correctos, incluidas10 nuevas. Integración UI/archivos/
+  exportación/ejemplos pendiente: no se declara completa Fase1.

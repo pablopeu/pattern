@@ -1,3 +1,21 @@
+# V3.0 · Fase1 en desarrollo: núcleo afín listo
+
+Fase0 documentada y commit f12c78d. Núcleo nuevo independiente de React en
+src/composition/{model,functional,evaluate}.ts: operadores, árbol acotado,
+matrices/IDs/niveles, recetas recursivas y espirales, cortes por detalle y culling.
+216 pruebas unitarias/TypeScript correctos (206 previas+10 nuevas), log
+.runtime/v30-composition-core-check.log. Todavía no está integrado a UI/JSON/
+exportación; Fase1 NO completa. Próximo: datos opcionales de composición en
+Pattern, escena finita/captura, estilos por nivel y exportación compartida,
+UI contextual, galería y ejemplos originales con E2E reales.
+
+Baseline8be6668:111 E2E,206 unidades,12 monitor,build y6 estáticas verificados.
+Servicios LAN activos; secundaria sólo avisa. PROJECT_COMPLETE ausente.
+No editar módulos/build mientras corran E2E. Mantener originales no seguidos
+caratula.jpg/favicon_io.zip. Plan/matriz/inventario/referencias en docs/*V30.md.
+
+---
+
 # V3.0 · Fase0 verificada, Fase1 a continuación
 
 Reset real confirmado23:24:58UTC: primaria0% usada. Baseline desde8be6668 sin
