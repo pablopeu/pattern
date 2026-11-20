@@ -1,4 +1,4 @@
-# Incremento de cámara, guardado y cabecera · Verificación integrada en curso
+# Cámara, guardado y cabecera · Entrega verificada
 
 Pedidos sucesivos de Pablo incorporados al mismo incremento. Cabecera Patterns,
 subtítulo «Patrones Geométricos», tamaños mayores y sin separador junto al logo.
@@ -17,10 +17,16 @@ completo; no se inventa una celda para Penrose.
 
 206 unitarias/TypeScript, build y4 E2E dirigidas correctos (arranque1440/390,
 centro/zoom/rueda/resize/rango y guardar/cancelar/nombre/descarga/recuperación).
-Verificación integrada de108 E2E en curso: .runtime/cell-header-full.log,
-resultado final en cell-header-full-result.json. Pendiente cerrar esa corrida y
-estáticas raíz/subdirectorio antes del push. Capturas reales nuevas en README.
-Servicios4173/4174 activos, sin duplicados. Marcador PROJECT_COMPLETE ausente.
+108/108 E2E integradas correctas en 190.5s, exit0:
+.runtime/cell-header-full.log y cell-header-full-result.json. Seis estáticas del
+build final correctas, raíz y /pattern/, sin Internet; resumen
+cell-header-static-summary.log. Pruebas heredadas adaptadas a nombre en Archivo
+y rango0–2mm conservan aserciones de persistencia, biblioteca y undo por gesto.
+Probe real de dibujo desde la celda: una fuente canónica, repetición visible y
+undo compartido; captura split-draw.png. Capturas nuevas reales en README,
+inspeccionadas junto a cabecera en1440/1024/768/390. Sin pendientes conocidos.
+Servicios4173/4174 activos, sin duplicados. Al publicar el cierre se registra
+.runtime/LAST_PUSH.json y PROJECT_COMPLETE; feedback independiente sigue activo.
 
 **Preferencia vigente: push autorizado a main al finalizar; no comprobar Actions
 ni FTP después del push. Pablo recibe errores de GitHub por email.** Esto reemplaza

@@ -65,3 +65,15 @@ etiquetas visibles y aserciones de bounds completos en los cuatro viewports.
 Nombre del documento también está en Preferencias para que siga accesible
 en móvil. La corrida posterior completa aprobó 94/94 en 4,3 min (exit_code 0),
 y ambos builds y las 6 estáticas se repitieron correctamente.
+
+
+## Feedback posterior · Cámara, archivos y cabecera
+
+Verificado el20/11/2026: 206 unitarias/TypeScript, build,108/108 E2E integradas
+(exit0) y6 estáticas raíz/subdirectorio. Regresiones geométricas, Fill, biblioteca,
+exportación y undo conservadas. Nuevas pruebas cubren celda centrada/zoom físico
+compartido/rueda/resize, rango0–2mm sin alterar grosores mayores guardados y diálogo
+de nombre con fecha/hora local/cancelación/descarga JSON/recuperación.
+Fuente pura se conserva en Preferencias → Vista avanzada. Logo icono.png intacto.
+Evidencia: .runtime/cell-header-full.log, cell-header-full-result.json y
+cell-header-static-summary.log; capturas reales en README.

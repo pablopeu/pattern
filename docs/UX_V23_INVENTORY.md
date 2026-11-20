@@ -30,7 +30,7 @@ global y los resultados de regresión se registran en ACCEPTANCE_V23.md.
 
 | ID | Funciones inventariadas v2.2 | Ubicación implementada v2.3 |
 | --- | --- | --- |
-| A01 | Nombre de proyecto, estado de guardado, guardar JSON | Cabecera; nombre también en Preferencias (disponible en móvil) |
+| A01 | Nombre de proyecto, estado de guardado, guardar JSON | Nombre en Archivo y Preferencias; guardar JSON pide nombre y propone fecha/hora local si falta. Cabecera muestra Patterns / Patrones Geométricos |
 | A02 | Nuevo, abrir JSON, duplicar proyecto | Archivo |
 | A03 | Biblioteca local, abrir proyecto anterior | Archivo → biblioteca |
 | A04 | Ocho ejemplos editables | Archivo → ejemplos |
@@ -77,14 +77,14 @@ global y los resultados de regresión se registran en ACCEPTANCE_V23.md.
 | P04 | Contorno del perímetro, congelar/revincular, eliminar aplicación | Aplicación → Transformar/Vínculo según acción |
 | V01 | Snap, guías, región fundamental, ejes, centros, continuidad | Preferencias |
 | V02 | Unidades y fondo del lienzo | Preferencias |
-| V03 | Fuente pura, una celda, vista dividida, snap rápido | Barras sobre lienzo |
-| V05 | Acercar/alejar, ajustar contenido/patrón, restablecer vista | Barra flotante del lienzo |
+| V03 | Fuente pura, una celda, vista dividida, snap rápido | Fuente pura en Preferencias → Vista avanzada; Una celda/split/snap sobre lienzo. Split: celda centrada editable y repetición, zoom compartido |
+| V05 | Acercar/alejar, ajustar contenido/patrón, restablecer vista | Barra flotante del lienzo; 100% equivale al anterior 200%, milímetros originales conservados |
 | V06 | Estructura matemática, opacidad, grilla, guías; origen/orientación arrastrables | Barra flotante y tiradores del lienzo |
 | V04 | Estado periódico, celda común, objetos/selección/unidades | Pie del workspace |
 | H01 | Undo/redo, atajos Ctrl Z/Y/Shift Z, duplicar/todo/eliminar | Barra del lienzo y teclado |
 | R01 | Estilo vigente/selección, selección mixta, seguir selección | Panel derecho por pestañas, independiente del izquierdo |
 | R02 | Color/HEX/ninguno, alfa de trazo/relleno y opacidad global | Panel derecho |
-| R03 | Grosor/unidades, extremos, uniones, miter | Panel derecho |
+| R03 | Grosor/unidades, extremos, uniones, miter | Panel derecho → Trazo (icono PenLine); deslizador 0–2mm y entrada numérica hasta50mm |
 | R04 | Línea sólida/discontinua/punteada/personalizada, secuencia y fase | Panel derecho |
 | R05 | Perfil, curva visual y controles/añadir/eliminar puntos | Panel derecho |
 | R06 | Regla de relleno, intercambiar, restablecer estilo | Panel derecho |

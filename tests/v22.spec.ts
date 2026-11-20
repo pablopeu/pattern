@@ -191,10 +191,11 @@ test('v2.2 slider y edición visual del perfil generan un undo por gesto', async
   let b = (await range.boundingBox())!;
   await page.mouse.move(b.x + 10, b.y + b.height / 2);
   await page.mouse.down();
-  await page.mouse.move(b.x + b.width * 0.3, b.y + b.height / 2, { steps: 8 });
+  await page.mouse.move(b.x + b.width * 0.8, b.y + b.height / 2, { steps: 8 });
   await page.mouse.up();
   const width = (await model(page)).drawingStyle.strokeWidth;
-  expect(width).toBeGreaterThan(5);
+  expect(width).toBeGreaterThan(1);
+  expect(width).toBeLessThanOrEqual(2);
   await page.getByRole('button', { name: 'Deshacer', exact: true }).click();
   expect((await model(page)).drawingStyle.strokeWidth).toBe(0.65);
   await page.getByRole('button', { name: 'Rehacer', exact: true }).click();

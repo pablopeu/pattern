@@ -653,3 +653,19 @@
 - README e imágenes reales actualizados. Servicios4173/4174 siguen vivos.
   Pedido explícito de Pablo: push al cerrar, sin inspeccionar Actions/FTP;
   recibe por email los fallos. AGENTS actualizado con esta preferencia.
+
+
+## Cierre de celda, cámara, guardado y cabecera · Verificado
+
+- 206 unitarias/TypeScript y build correctos.108/108 E2E integradas en
+  190.5s, exit0, y6 estáticas raíz/subcarpeta correctas. Evidencia
+  .runtime/cell-header-full{.log,-result.json}, cell-header-static-summary.log.
+- Helpers heredados ahora abren Archivo sólo si está cerrado; prueba de gesto
+  recorre0–2mm con undo/redo completo, manteniendo pruebas de perfiles y tinta.
+  Verificados nombre local, cancelación, JSON real y recuperación; escala
+  física/centro/rueda/resize y conservación de grosores numéricos mayores a2mm.
+- Dibujo real desde la celda crea una fuente y aparece en repetición; undo elimina
+  ambas representaciones. Capturas de cabecera1440/1024/768/390 y split inspeccionadas.
+- README, inventario UX y continuidad actualizados; logo/originales preservados.
+  Push de main autorizado; registro final en .runtime/LAST_PUSH.json, sin consultar
+  Actions/FTP por pedido de Pablo. Servicios4173/4174 conservados.

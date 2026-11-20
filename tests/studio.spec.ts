@@ -8,7 +8,7 @@ async function ready(page: Page) {
 }
 async function menu(page: Page, name: string) {
   const details = page.locator('.main-menu');
-  if (!(await details.getAttribute('open'))) await details.locator('summary').click();
+  if ((await details.getAttribute('open')) === null) await details.locator('summary').click();
   await details.getByRole('button', { name, exact: true }).click();
   if ((await details.getAttribute('open')) !== null) await details.locator('summary').click();
 }
