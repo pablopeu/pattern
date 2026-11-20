@@ -65,3 +65,12 @@ Cierre por cupo: telemetría real 90% usado (10% restante), reset primario
 2026-11-20 06:47:54 UTC; reanudación del monitor a partir de06:48:54 UTC
 (03:48:54 Argentina). Estado winding_down, resume_at1795157334. No iniciar
 otro incremento en esta ventana. Se conserva vigilancia independiente de feedback.
+
+## Reanudación y segundo incremento
+
+Reset confirmado por telemetría nueva (0% usado). Catálogo ampliado implementado:
+selector compacto, recientes/favoritos,27 opciones paginadas según ancho,
+hover/clic real, Escape/foco y undo.203 unitarias/TypeScript y2 E2E dirigidos
+correctos. Continúan pendientes propiedades/estilos compactos, comandos y
+regresión completa. La nota de winding_down anterior corresponde a la ventana
+previa, ya reiniciada.

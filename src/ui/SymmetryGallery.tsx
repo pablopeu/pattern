@@ -1,3 +1,5 @@
+import { Modal } from './Modal';
+import { X, Star } from 'lucide-react';
 import { sceneLayers } from '../patterns/layers';
 import { tiledMarkup } from '../tiling/render';
 import { tileBounds, tileWorldBounds } from '../tiling/tiles';
@@ -110,7 +112,60 @@ const MathematicalIcon = memo(function MathematicalIcon({ choice }: { choice: Sy
   );
 });
 export function SymmetryGallery({ studio: s }: { studio: Studio }) {
-  const [capturing, setCapturing] = useState(false);
+  const [capturing, setCapturing] = useState(false),
+    [expanded, setExpanded] = useState(false),
+    [page, setPage] = useState(0),
+    [pageSize, setPageSize] = useState(28),
+    [recent, setRecent] = useState<string[]>(() => {
+      try {
+        return JSON.parse(sessionStorage.getItem('pattern-symmetry-recent') ?? '[]')
+          .filter((id: unknown) => typeof id === 'string')
+          .slice(0, 4);
+      } catch {
+        return [];
+      }
+    }),
+    [favorites, setFavorites] = useState<string[]>(() => {
+      try {
+        return JSON.parse(localStorage.getItem('pattern-symmetry-favorites') ?? '[]')
+          .filter((id: unknown) => typeof id === 'string')
+          .slice(0, 27);
+      } catch {
+        return [];
+      }
+    });
+  useEffect(() => {
+    const resize = () => setPageSize(innerWidth >= 1000 ? 28 : innerWidth >= 650 ? 12 : 6);
+    resize();
+    window.addEventListener('resize', resize);
+    return () => window.removeEventListener('resize', resize);
+  }, []);
+  const closeGallery = () => {
+    setExpanded(false);
+    s.setSymmetryPreview(null);
+  };
+  const choose = (choice: SymmetryChoice) => {
+    s.changeSymmetryChoice(choice);
+    const key = symmetryId(choice);
+    setRecent((old) => [key, ...old.filter((id) => id !== key)].slice(0, 4));
+  };
+  const favorite = (key: string) =>
+    setFavorites((old) => {
+      const next = old.includes(key) ? old.filter((id) => id !== key) : [...old, key];
+      try {
+        localStorage.setItem('pattern-symmetry-favorites', JSON.stringify(next));
+      } catch {
+        /* optional preference */
+      }
+      return next;
+    });
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('pattern-symmetry-recent', JSON.stringify(recent));
+    } catch {
+      /* optional preference */
+    }
+  }, [recent]);
   const completedSignature = useRef('');
   useEffect(() => {
     const start = (e: PointerEvent) => {
@@ -136,6 +191,9 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
     [comparison, setComparison] = useState('physical'),
     [previews, setPreviews] = useState<Record<string, { url: string; revision: number }>>({}),
     [metrics, setMetrics] = useState({ pending: false, completed: 0, totalMs: 0 });
+  useEffect(() => {
+    setPage(0);
+  }, [family, pageSize]);
   const buttons = useRef<(HTMLButtonElement | null)[]>([]),
     revision = useRef(0),
     previewSignature = useMemo(
@@ -275,117 +333,184 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
             { value: 'free', label: 'Libre independiente' },
           ]}
         />
-        <div className="gallery-filters">
-          <Select
-            label="Sistema"
-            value={family}
-            onChange={setFamily}
-            options={[
-              { value: 'all', label: 'Todos' },
-              { value: 'none', label: 'Libre' },
-              { value: 'wallpaper', label: 'Plano · 17 grupos' },
-              { value: 'frieze', label: 'Friso · 7 grupos' },
-              { value: 'radial', label: 'Radial · Cn / Dn' },
-            ]}
-          />
-          <Select
-            label="Encuadre de miniaturas"
-            value={comparison}
-            onChange={setComparison}
-            options={[
-              { value: 'physical', label: '120 × 90 mm' },
-              { value: 'cell', label: 'Por celda' },
-            ]}
-          />
-        </div>
       </div>
-      <div
-        className="dynamic-symmetry-grid"
-        role="group"
-        aria-label="Galería de simetrías"
-        data-preview-pending={metrics.pending}
-        data-preview-ms={metrics.totalMs.toFixed(1)}
-        data-preview-completed={metrics.completed}
-      >
-        {choices.map((choice, i) => {
-          const key = symmetryId(choice),
-            p = previews[key],
-            label =
-              choice.family === 'none'
-                ? 'Libre'
-                : choice.family === 'radial'
-                  ? choice.group[0] + candidateSymmetry(confirmed, profiles, choice).sectors
-                  : choice.group;
-          return (
-            <button
-              key={key}
-              ref={(el) => {
-                buttons.current[i] = el;
-              }}
-              type="button"
-              aria-pressed={symmetryId(confirmed) === key}
-              aria-label={
-                choice.family === 'none'
-                  ? 'Simetría Libre'
-                  : choice.family === 'frieze'
-                    ? `Friso ${choice.group}`
-                    : `Simetría ${choice.group}`
-              }
-              data-symmetry-id={key}
-              data-preview-revision={p?.revision ?? 0}
-              onMouseEnter={() => hover(choice)}
-              onMouseLeave={() => s.setSymmetryPreview(null)}
-              onFocus={() => hover(choice)}
-              onBlur={() => s.setSymmetryPreview(null)}
-              onClick={() => s.changeSymmetryChoice(choice)}
-              onKeyDown={(e) => {
-                if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
-                  e.preventDefault();
-                  const step =
-                    e.key === 'ArrowLeft'
-                      ? -1
-                      : e.key === 'ArrowRight'
-                        ? 1
-                        : e.key === 'ArrowUp'
-                          ? -3
-                          : 3;
-                  buttons.current[(i + step + choices.length) % choices.length]?.focus();
-                }
-              }}
-              title={
-                choice.family === 'none'
-                  ? 'Sin transformaciones de grupo'
-                  : (choice.family === 'frieze' ? friezeDescriptions : groupDescriptions)[
-                      choice.group
-                    ]
-              }
-            >
-              <div className="drawing-thumbnail">
-                {p ? (
-                  <img alt={`Dibujo con ${choice.family} ${label}`} src={p.url} />
-                ) : (
-                  <span>Sin trazos</span>
-                )}
-              </div>
-              <span className="gallery-caption">
-                <MathematicalIcon choice={choice} />
-                <span>
-                  {label}
-                  <small>
-                    {choice.family === 'frieze'
-                      ? 'friso'
-                      : choice.family === 'none'
-                        ? 'sin repetir'
-                        : choice.family === 'radial'
-                          ? 'radial'
-                          : 'plano'}
-                  </small>
-                </span>
-              </span>
+      <div className="compact-symmetry">
+        <button className="wide-button primary-soft" onClick={() => setExpanded(true)}>
+          Explorar todas las simetrías · 27
+        </button>
+        {(['recent', 'favorites'] as const).map((kind) => (
+          <div className="symmetry-shortcuts" key={kind}>
+            <small>{kind === 'recent' ? 'Recientes' : 'Favoritos'}</small>
+            {(kind === 'recent' ? recent : favorites).slice(0, 4).map((key) => {
+              const choice = symmetryCatalog.find((c) => symmetryId(c) === key);
+              return (
+                choice && (
+                  <button
+                    key={key}
+                    title={`${choice.family} ${choice.group}`}
+                    onMouseEnter={() => hover(choice)}
+                    onMouseLeave={() => s.setSymmetryPreview(null)}
+                    onClick={() => choose(choice)}
+                  >
+                    {choice.group === 'none' ? 'Libre' : choice.group}
+                  </button>
+                )
+              );
+            })}
+            {!(kind === 'recent' ? recent : favorites).length && <span>—</span>}
+          </div>
+        ))}
+      </div>
+      {expanded && (
+        <Modal label="Catálogo de simetrías" className="symmetry-modal" onClose={closeGallery}>
+          <header>
+            <h2>Explorá las simetrías</h2>
+            <button aria-label="Cerrar catálogo" onClick={closeGallery}>
+              <X size={20} />
             </button>
-          );
-        })}
-      </div>
+          </header>
+          <div className="gallery-filters">
+            <Select
+              label="Sistema"
+              value={family}
+              onChange={setFamily}
+              options={[
+                { value: 'all', label: 'Todos' },
+                { value: 'none', label: 'Libre' },
+                { value: 'wallpaper', label: 'Plano · 17 grupos' },
+                { value: 'frieze', label: 'Friso · 7 grupos' },
+                { value: 'radial', label: 'Radial · Cn / Dn' },
+              ]}
+            />
+            <Select
+              label="Encuadre de miniaturas"
+              value={comparison}
+              onChange={setComparison}
+              options={[
+                { value: 'physical', label: '120 × 90 mm' },
+                { value: 'cell', label: 'Por celda' },
+              ]}
+            />
+          </div>
+          <div
+            className="dynamic-symmetry-grid"
+            role="group"
+            aria-label="Galería de simetrías"
+            data-preview-pending={metrics.pending}
+            data-preview-ms={metrics.totalMs.toFixed(1)}
+            data-preview-completed={metrics.completed}
+          >
+            {choices.slice(page * pageSize, (page + 1) * pageSize).map((choice, i) => {
+              const key = symmetryId(choice),
+                p = previews[key],
+                label =
+                  choice.family === 'none'
+                    ? 'Libre'
+                    : choice.family === 'radial'
+                      ? choice.group[0] + candidateSymmetry(confirmed, profiles, choice).sectors
+                      : choice.group;
+              return (
+                <div className="gallery-card" key={key}>
+                  <button
+                    ref={(el) => {
+                      buttons.current[i] = el;
+                    }}
+                    type="button"
+                    aria-pressed={symmetryId(confirmed) === key}
+                    aria-label={
+                      choice.family === 'none'
+                        ? 'Simetría Libre'
+                        : choice.family === 'frieze'
+                          ? `Friso ${choice.group}`
+                          : `Simetría ${choice.group}`
+                    }
+                    data-symmetry-id={key}
+                    data-preview-revision={p?.revision ?? 0}
+                    onMouseEnter={() => hover(choice)}
+                    onMouseLeave={() => s.setSymmetryPreview(null)}
+                    onFocus={() => hover(choice)}
+                    onBlur={() => s.setSymmetryPreview(null)}
+                    onClick={() => choose(choice)}
+                    onKeyDown={(e) => {
+                      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+                        e.preventDefault();
+                        const step =
+                          e.key === 'ArrowLeft'
+                            ? -1
+                            : e.key === 'ArrowRight'
+                              ? 1
+                              : e.key === 'ArrowUp'
+                                ? -3
+                                : 3;
+                        const count = Math.min(pageSize, choices.length - page * pageSize);
+                        buttons.current[(i + step + count) % count]?.focus();
+                      }
+                    }}
+                    title={
+                      choice.family === 'none'
+                        ? 'Sin transformaciones de grupo'
+                        : (choice.family === 'frieze' ? friezeDescriptions : groupDescriptions)[
+                            choice.group
+                          ]
+                    }
+                  >
+                    <div className="drawing-thumbnail">
+                      {p ? (
+                        <img alt={`Dibujo con ${choice.family} ${label}`} src={p.url} />
+                      ) : (
+                        <span>Sin trazos</span>
+                      )}
+                    </div>
+                    <span className="gallery-caption">
+                      <MathematicalIcon choice={choice} />
+                      <span>
+                        {label}
+                        <small>
+                          {choice.family === 'frieze'
+                            ? 'friso'
+                            : choice.family === 'none'
+                              ? 'sin repetir'
+                              : choice.family === 'radial'
+                                ? 'radial'
+                                : 'plano'}
+                        </small>
+                      </span>
+                    </span>
+                  </button>
+                  <button
+                    className="favorite-symmetry"
+                    aria-label={`Favorito ${choice.family} ${choice.group}`}
+                    aria-pressed={favorites.includes(key)}
+                    onClick={() => favorite(key)}
+                    title="Marcar como favorito"
+                  >
+                    <Star size={13} fill={favorites.includes(key) ? 'currentColor' : 'none'} />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+          {choices.length > pageSize && (
+            <div className="page-controls">
+              <button disabled={!page} onClick={() => setPage(page - 1)}>
+                Anterior
+              </button>
+              <span>
+                {page + 1} / {Math.ceil(choices.length / pageSize)}
+              </span>
+              <button
+                disabled={(page + 1) * pageSize >= choices.length}
+                onClick={() => setPage(page + 1)}
+              >
+                Siguiente
+              </button>
+            </div>
+          )}
+          <p className="help-text">
+            Hover previsualiza; clic confirma y permite seguir comparando. Escape vuelve al editor.
+          </p>
+        </Modal>
+      )}
       <div className="gallery-details">
         <p className="help-text" role="status">
           {s.symmetryPreview
@@ -438,7 +563,6 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
                     value={confirmed.sectors}
                     min={2}
                     max={64}
-                    slider
                     onChange={(v) => s.patchSymmetry({ sectors: v })}
                   />
                 ) : (
@@ -449,7 +573,6 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
                       min={5}
                       max={200}
                       unit="mm"
-                      slider
                       onChange={(v) => s.patchSymmetry({ width: v })}
                     />
                     {!/^p[346]/.test(confirmed.group) && (
@@ -459,7 +582,6 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
                         min={5}
                         max={200}
                         unit="mm"
-                        slider
                         onChange={(v) => s.patchSymmetry({ height: v })}
                       />
                     )}{' '}
@@ -470,7 +592,6 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
                         min={15}
                         max={165}
                         unit="°"
-                        slider
                         onChange={(v) => s.patchSymmetry({ angle: v })}
                       />
                     )}

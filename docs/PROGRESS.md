@@ -277,3 +277,15 @@
   reset06:47:54 UTC +60s. Verificación final posterior al ajuste de Canvas:
   203 unitarias/TypeScript, build y5 E2E nuevos correctos. Se cierra el
   incremento y se conservan los servicios para revisión LAN.
+
+## PRD v2.3 · Catálogo ampliado de simetrías
+
+- Reset real observado:0% usado en ventana nueva. Servicios LAN conservados.
+- Selector compacto con grupo activo, recientes de sesión y favoritos locales;
+  catálogo nativo modal con miniaturas dinámicas, familias, estrellas y paginación
+  adaptable para pantalla estrecha. Todas las27 opciones disponibles sin scroll
+  de galerías anidadas. Hover no confirma; clic usa changeSymmetryChoice y undo.
+- Modal con fondo inerte, foco acotado, Escape y retorno al botón de apertura.
+-203 unitarias/TypeScript y2 E2E dirigidos correctos (1366×768 y390×844):
+  recorren27 opciones, hover sin modificar proyecto, radial/sectores, favoritos,
+  cierre/restauración de foco y undo. Logs .runtime/v23-gallery-*.log.

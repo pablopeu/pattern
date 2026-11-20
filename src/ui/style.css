@@ -1904,3 +1904,27 @@ input[type='color']::-webkit-color-swatch {
 .context-heading, .context-panel > .panel-tabs { flex-shrink: 0; }
 
 .shape-context-preview { width: 100%; height: 64px; background: #f1f5e9; }
+
+/* Context controls use one scroll fallback, never nested tool scrollers. */
+.studio-modal { border: 1px solid var(--line); border-radius: 14px; padding: 0; color: var(--ink); background: var(--panel); max-width: calc(100vw - 24px); max-height: calc(100dvh - 24px); }
+.studio-modal::backdrop { background: #17231966; }
+.modal-content { padding: 20px; }
+.modal-content > header { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:14px; }
+.modal-content h2 { font-size:19px; margin:0; }
+.modal-content > header button { padding:5px; border-radius:6px; }
+.symmetry-modal { width:1000px; }
+.symmetry-modal .gallery-filters { display:flex; gap:14px; margin-bottom:12px; }
+.symmetry-modal .gallery-filters > * { flex:1; }
+.symmetry-modal .dynamic-symmetry-grid { grid-template-columns:repeat(7,minmax(0,1fr)); max-height:none; overflow:visible; padding:0; }
+.gallery-card { position:relative; min-width:0; }
+.gallery-card > button:first-child { width:100%; display:flex; flex-direction:column; border:1px solid #d8e1cd; border-radius:7px; overflow:hidden; padding:0; background:#fafcf7; }
+.gallery-card > button[aria-pressed=true] { border-color:#55765b; box-shadow:inset 0 0 0 1px #55765b; }
+.favorite-symmetry { position:absolute; right:3px; bottom:3px; padding:4px; background:#fafcf7dd; border-radius:5px; }
+.compact-symmetry { padding:0 14px; display:grid; gap:8px; }
+.symmetry-shortcuts { display:flex; align-items:center; gap:6px; min-height:22px; font-size:11px; }
+.symmetry-shortcuts small { min-width:55px; color:#657858; }
+.symmetry-shortcuts button { padding:3px 6px; border:1px solid var(--line); border-radius:5px; }
+.page-controls { display:flex; justify-content:center; gap:16px; align-items:center; padding:10px; font-size:12px; }
+.page-controls button { padding:6px 10px; border:1px solid var(--line); border-radius:5px; }
+@media(max-width:999px) { .symmetry-modal .dynamic-symmetry-grid { grid-template-columns:repeat(4,minmax(0,1fr)); } }
+@media(max-width:649px) { .modal-content { padding:12px; } .symmetry-modal .dynamic-symmetry-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }

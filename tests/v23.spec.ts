@@ -84,3 +84,57 @@ test('v2.3 polígono paramétrico identificado, controles y estilo vigente', asy
   const box = await style.boundingBox();
   expect(box!.x + box!.width).toBeGreaterThan(1400);
 });
+
+for (const viewport of [
+  { width: 1366, height: 768 },
+  { width: 390, height: 844 },
+]) {
+  test(`v2.3 catálogo paginado accesible con hover, favoritos y undo ${viewport.width}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+    const before = await project(page);
+    await page.getByRole('button', { name: 'Abrir Simetrías', exact: true }).click();
+    await page.getByRole('button', { name: 'Explorar todas las simetrías · 27' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Catálogo de simetrías' });
+    await expect(dialog).toBeVisible();
+    const seen = new Set<string>();
+    for (;;) {
+      for (const id of await dialog
+        .locator('[data-symmetry-id]')
+        .evaluateAll((els) => els.map((el) => el.getAttribute('data-symmetry-id')!)))
+        seen.add(id);
+      const next = dialog.getByRole('button', { name: 'Siguiente', exact: true });
+      if (!(await next.count()) || !(await next.isEnabled())) break;
+      await next.click();
+    }
+    expect(seen.size).toBe(27);
+    await dialog.getByLabel('Sistema', { exact: true }).selectOption('radial');
+    const radial = dialog.getByRole('button', { name: 'Simetría Dn', exact: true });
+    await radial.hover();
+    expect(await project(page)).toEqual(before);
+    await radial.click();
+    await dialog.getByRole('button', { name: 'Favorito radial Dn', exact: true }).click();
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+    await expect(page.getByLabel('Sectores', { exact: true })).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Explorar todas las simetrías · 27' }),
+    ).toBeFocused();
+    const changed = (await project(page))!;
+    expect(changed.patterns[0].symmetryMode === 'inherit' ? changed.mainSymmetry.family : changed.patterns[0].symmetry.family).toBe('radial');
+    await page.getByRole('button', { name: 'Deshacer', exact: true }).click();
+    expect((await project(page))!.patterns[0].symmetry.family).toBe(
+      before!.patterns[0].symmetry.family,
+    );
+    await page.getByRole('button', { name: 'Abrir Preferencias', exact: true }).click();
+    await page.getByRole('button', { name: 'Abrir Simetrías', exact: true }).click();
+    await expect(
+      page
+        .locator('.symmetry-shortcuts')
+        .filter({ hasText: 'Favoritos' })
+        .getByRole('button', { name: 'Dn', exact: true }),
+    ).toBeVisible();
+  });
+}
