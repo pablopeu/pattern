@@ -556,3 +556,15 @@
   recibió143 después del reporte completo. Artefacto copiado a
   .runtime/fill-flow-last-run.json. Captura de producción e iconos verificados;
   servicios LAN vivos y QA temporal cerrada. Commit local, sin publicación.
+
+
+## Archivo/Exportar cierran panel derecho · Publicación autorizada
+
+- Ambos accesos cierran primero el panel derecho, incluso fijado. Exportar comparte
+  acción entre cabecera y comandos; Archivo conserva apertura nativa con teclado.
+  Enter/Espacio del summary dejan de activar atajos de dibujo.
+- 204 unitarias/TypeScript, build y4 E2E dirigidas correctos en1440/768/390:
+  menú sin intercepción, pin, mouse/Enter, diálogo/Escape y proyecto intacto.
+- Pablo autorizó «al terminar push a gh»: publicar todo el historial pendiente,
+  levantando la espera previa de revisión LAN. Verificar el despliegue FTP real.
+- Monitor indicó91% usado. Cierre del incremento; sin iniciar otro trabajo.

@@ -381,9 +381,11 @@ test('v2.3 resize y Escape de menús conservan selección y evitan overlays simu
   await page.getByRole('button', { name: 'Crear polígono regular', exact: true }).click();
   const before = await project(page);
   await page.locator('.main-menu summary').click();
+  await expect(page.getByRole('complementary', { name: 'Panel de estilos' })).toHaveCount(0);
   await page.keyboard.press('Escape');
   await expect(page.locator('.main-menu')).not.toHaveAttribute('open', '');
   await expect(page.locator('.statusbar')).toContainText('1 seleccionados');
+  await page.getByRole('button', { name: 'Panel derecho: Objeto', exact: true }).click();
   await page.setViewportSize({ width: 768, height: 800 });
   await expect(page.getByRole('complementary', { name: 'Panel contextual' })).toBeHidden();
   await expect(page.getByRole('complementary', { name: 'Panel de estilos' })).toBeVisible();
@@ -443,5 +445,42 @@ for (const width of [1440, 390]) {
     );
     await expect(page.getByLabel('Lados', { exact: true })).toBeVisible();
     await page.screenshot({ path: `.runtime/right-rail-${width}.png`, animations: 'disabled' });
+  });
+}
+
+for (const width of [1440, 768, 390]) {
+  test(`Archivo y Exportar cierran antes el panel derecho, incluso fijado ${width}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/');
+    await project(page);
+    const panel = page.getByRole('complementary', { name: 'Panel de estilos' });
+    const menu = page.locator('.main-menu');
+    for (const keyboard of [false, true]) {
+      await page.getByRole('button', { name: 'Panel derecho: Fill', exact: true }).click();
+      const pin = page.getByRole('button', { name: 'Fijar panel de estilos', exact: true });
+      if ((await pin.getAttribute('aria-pressed')) !== 'true') await pin.click();
+      const before = await project(page);
+      const summary = menu.locator('summary');
+      if (keyboard) {
+        await summary.focus();
+        await page.keyboard.press('Enter');
+      } else await summary.click();
+      await expect(menu).toHaveAttribute('open', '');
+      await expect(panel).toHaveCount(0);
+      await menu
+        .getByRole('button', { name: 'Nuevo proyecto', exact: true })
+        .click({ trial: true });
+      await page.keyboard.press('Escape');
+      await page.getByRole('button', { name: 'Panel derecho: Trazo', exact: true }).click();
+      await page.getByRole('button', { name: 'Exportar', exact: true }).click();
+      await expect(page.getByRole('dialog', { name: 'Exportar patrón' })).toBeVisible();
+      await expect(panel).toHaveCount(0);
+      await expect(menu).not.toHaveAttribute('open', '');
+      await page.keyboard.press('Escape');
+      await expect(panel).toHaveCount(0);
+      expect(await project(page)).toEqual(before);
+    }
   });
 }

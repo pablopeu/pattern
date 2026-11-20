@@ -1,3 +1,22 @@
+# Cierre de incremento · Archivo/Exportar y publicación autorizada
+
+Pablo autorizó explícitamente «al terminar push a gh»: publicar todos los commits
+locales pendientes en main y comprobar el workflow FTP. Se levanta la espera de
+aprobación que figura en entregas históricas de abajo. Servicios4173/4174 activos.
+
+Archivo cierra el panel derecho antes de su apertura nativa (mouse/teclado).
+Enter/Espacio del summary no llegan a atajos del lienzo. Exportar usa una única
+acción de cierre/apertura, tanto en botón como en Ctrl+K. También respeta cierre
+explícito si el panel estaba fijado. No se reabre automáticamente al salir.
+
+204 unitarias/TypeScript, build y4 E2E dirigidas correctos:1440/768/390, panel
+fijado, clic/Enter, menú Archivo accionable sin intercepción, Exportar/Escape,
+proyecto y selección conservados. Logs menu-panel-{check,build,e2e}.log.
+Cupo91% usado al cierre: terminar documentación/commit/push autorizado y verificar
+FTP; no iniciar otro incremento. Estado del push/despliegue se registra al cerrar.
+
+---
+
 # Revisión LAN · Fill y color sin saltos entre pestañas
 
 **Sin push hasta aprobación de Pablo; cada push despliega por FTP.**

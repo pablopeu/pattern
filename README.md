@@ -51,7 +51,8 @@ acciones geométricas. En ventanas estrechas los paneles funcionan como overlays
 temporales y se alternan para dejar disponible el lienzo. Una barra de iconos
 permanece en el borde derecho: cada icono abre directamente su sección; **Objeto**
 se habilita al seleccionar una figura. El botón inferior pliega/despliega el
-panel y recuerda la pestaña. Volver a pulsar **Rellenar región**, aunque ya esté
+panel y recuerda la pestaña. Al abrir **Archivo** o **Exportar**, el panel derecho
+se pliega primero, incluso si estaba fijado, para dejar libre el menú. Volver a pulsar **Rellenar región**, aunque ya esté
 activo, vuelve a abrir sus controles; también funciona con **F**.
 
 **Ctrl+K** abre la búsqueda: probá «polígono», «rellenar», «simetría p6m»,

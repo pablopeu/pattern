@@ -90,6 +90,10 @@ export default function App() {
     [importText, setImportText] = useState<string | null>(null),
     [importWidth, setImportWidth] = useState(100),
     [library, setLibrary] = useState<Awaited<ReturnType<typeof savedProjects>> | null>(null);
+  const openExport = () => {
+    s.setStyleOpen(false);
+    setExportOpen(true);
+  };
   const openRef = useRef<HTMLInputElement>(null),
     svgRef = useRef<HTMLInputElement>(null),
     presetRef = useRef<HTMLInputElement>(null);
@@ -246,7 +250,7 @@ export default function App() {
         );
       },
     },
-    { id: 'export-svg', label: 'Exportar SVG', run: () => setExportOpen(true) },
+    { id: 'export-svg', label: 'Exportar SVG', run: openExport },
     {
       id: 'save',
       label: 'Guardar proyecto JSON',
@@ -402,7 +406,13 @@ export default function App() {
                 e.currentTarget.removeAttribute('open');
             }}
           >
-            <summary title="Archivo y ejemplos">
+            <summary
+              title="Archivo y ejemplos"
+              onClick={() => s.setStyleOpen(false)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') event.stopPropagation();
+              }}
+            >
               Archivo <ChevronDown size={13} />
             </summary>
             <div className="menu-popover">
@@ -484,7 +494,7 @@ export default function App() {
               )}
             </div>
           </details>
-          <button className="primary-button export-trigger" onClick={() => setExportOpen(true)}>
+          <button className="primary-button export-trigger" onClick={openExport}>
             <Download size={16} /> Exportar
           </button>
         </div>
