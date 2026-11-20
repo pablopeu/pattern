@@ -77,7 +77,7 @@ export function useStudio() {
     setProject(p);
   }, []);
   const change = useCallback(
-    (recipe: (p: Project) => void, transient = false) => {
+    (recipe: (p: Project) => void, transient = false, options: { derived?: boolean } = {}) => {
       const next = structuredClone(ref.current);
       recipe(next);
       for (const pat of next.patterns)
@@ -86,6 +86,7 @@ export function useStudio() {
             .find((p) => p.id === pat.id)
             ?.sourceGeometry.find((x) => x.id === g.id);
           if (
+            !options.derived &&
             g.fillRegion?.linked &&
             old &&
             JSON.stringify([old.nodes, old.pathData, old.parameters, old.transform]) !==
@@ -231,6 +232,73 @@ export function useStudio() {
       commit();
     }
   };
+  const recalcWorker = useRef<Worker | null>(null),
+    [recalculatingId, setRecalculatingId] = useState('');
+  const cancelRecalculation = () => {
+    recalcWorker.current?.terminate();
+    recalcWorker.current = null;
+    setRecalculatingId('');
+  };
+  useEffect(() => {
+    cancelRecalculation();
+    return () => {
+      recalcWorker.current?.terminate();
+    };
+  }, [project.metadata.id]);
+  const recalculateFill = (shapeId: string) => {
+    cancelRecalculation();
+    const fingerprint = axesFingerprint(ref.current),
+      worker = new Worker(new URL('../fill/worker.ts', import.meta.url), { type: 'module' });
+    recalcWorker.current = worker;
+    setRecalculatingId(shapeId);
+    const fail = (message: string) => {
+      if (recalcWorker.current !== worker) return;
+      setMessage(message);
+      cancelRecalculation();
+    };
+    worker.onmessage = (e) => {
+      if (recalcWorker.current !== worker) return;
+      if (e.data.type === 'error') {
+        fail(e.data.message);
+        return;
+      }
+      if (e.data.type !== 'recalculated') return;
+      if (axesFingerprint(ref.current) !== fingerprint) {
+        fail('La geometría cambió durante el cálculo. El contorno se conservó; podés reintentar.');
+        return;
+      }
+      const result = e.data.geometry as Geometry;
+      change(
+        (p) => {
+          for (const pat of p.patterns) {
+            const index = pat.sourceGeometry.findIndex((g) => g.id === shapeId);
+            if (index < 0) continue;
+            const current = pat.sourceGeometry[index];
+            pat.sourceGeometry[index] = {
+              ...result,
+              ...drawingStyle(current),
+              id: current.id,
+              name: current.name,
+              groupId: current.groupId,
+              visible: current.visible,
+              locked: current.locked,
+            };
+          }
+        },
+        false,
+        { derived: true },
+      );
+      if (result.fillRegion) {
+        setInstance(result.fillRegion.captureMatrix);
+        setInstanceExplicit(true);
+      }
+      setMessage('Región recalculada y vinculada a los límites actuales.');
+      cancelRecalculation();
+    };
+    worker.onerror = () =>
+      fail('No se pudo actualizar el relleno. Su contorno anterior se conserva.');
+    worker.postMessage({ type: 'recalculate', project: ref.current, shapeId, matrix: instance });
+  };
   const linkedCompleted = useRef('');
   useEffect(() => {
     if (
@@ -242,9 +310,35 @@ export function useStudio() {
     if (linkedCompleted.current === fingerprint) return;
     const worker = new Worker(new URL('../fill/worker.ts', import.meta.url), { type: 'module' });
     worker.onmessage = (e) => {
-      if (e.data.type !== 'links' || axesFingerprint(ref.current) !== fingerprint) return;
+      if (!['links', 'error'].includes(e.data.type) || axesFingerprint(ref.current) !== fingerprint)
+        return;
       linkedCompleted.current = fingerprint;
-      const patches = new Map<string, Geometry>(e.data.patches);
+      const patches =
+        e.data.type === 'links'
+          ? new Map<string, Geometry>(e.data.patches)
+          : new Map(
+              ref.current.patterns
+                .flatMap((p) => p.sourceGeometry)
+                .filter((g) => g.fillRegion?.linked)
+                .map((g) => [
+                  g.id,
+                  {
+                    ...g,
+                    fillRegion: {
+                      ...g.fillRegion!,
+                      status: 'stale' as const,
+                      reason:
+                        'No se pudo recalcular: ' +
+                        e.data.message +
+                        '. Contorno anterior conservado.',
+                    },
+                  },
+                ]),
+            );
+      if (e.data.type === 'error')
+        setMessage(
+          'No se pudieron actualizar los vínculos; se conservaron los contornos anteriores.',
+        );
       const amend = (p: Project) => {
         if (axesFingerprint(p) !== fingerprint) return p;
         const out = structuredClone(p);
@@ -267,6 +361,10 @@ export function useStudio() {
       replace(amend(ref.current));
       worker.terminate();
     };
+    worker.onerror = () =>
+      worker.onmessage?.({
+        data: { type: 'error', message: 'Fallo del worker vectorial' },
+      } as MessageEvent);
     worker.postMessage({ type: 'links', project: ref.current });
     return () => worker.terminate();
   }, [revision, loaded, replace]);
@@ -571,6 +669,9 @@ export function useStudio() {
     styleSelection,
     applyStyle,
     updateViewPreferences,
+    recalculateFill,
+    cancelRecalculation,
+    recalculatingId,
     tileEditing,
     setTileEditing,
     tileEdge,

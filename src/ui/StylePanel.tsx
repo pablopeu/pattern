@@ -658,6 +658,17 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
                     : 'Fijo'}
               </p>
               {g.fillRegion!.reason && <p>{g.fillRegion!.reason}</p>}
+              <div className="button-row">
+                <button
+                  disabled={g.locked || !!s.recalculatingId}
+                  onClick={() => s.recalculateFill(g.id)}
+                >
+                  Recalcular y vincular región
+                </button>
+                {s.recalculatingId === g.id && (
+                  <button onClick={s.cancelRecalculation}>Cancelar actualización</button>
+                )}
+              </div>
               <Toggle
                 label={`Vincular ${g.name}`}
                 checked={g.fillRegion!.linked}

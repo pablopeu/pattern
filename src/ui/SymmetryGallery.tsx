@@ -1,3 +1,4 @@
+import { sceneLayers } from '../patterns/layers';
 import { tiledMarkup } from '../tiling/render';
 import { tileBounds, tileWorldBounds } from '../tiling/tiles';
 import { cachedStructure, structureMarkup } from '../symmetry/structure';
@@ -7,7 +8,7 @@ import type { Symmetry, Pattern } from '../app/model';
 import { generate } from '../generators';
 import { buildScene } from '../patterns/engine';
 import { svgDocument, previewSVGPath as svgPath } from '../export/svg';
-import { matrixString, multiply, translate } from '../geometry/matrix';
+import { IDENTITY, matrixString, multiply, translate } from '../geometry/matrix';
 import {
   cosets,
   latticeVectors,
@@ -31,37 +32,45 @@ export function previewSVG(
   structure = false,
 ): string {
   const scene = buildScene(pattern, bounds, prepared);
-  if (scene.tiling)
-    return svgDocument(
-      tiledMarkup(
-        scene,
-        svgPath,
-        'preview-tile',
-        undefined,
-        scene.tiling.definition.showOutline,
-        structure
-          ? structureMarkup(
-              cachedStructure(pattern.symmetry, tileBounds(scene.tiling.definition)),
-              0.15,
-              0.7,
-            )
-          : '',
-      ),
-      bounds,
-      '#f8faf5',
-    );
-  const refs = scene.instances
-    .flatMap((i) =>
-      scene.generated.placements.map(
-        (m) => `<use href="#motif" transform="${matrixString(multiply(i.matrix, m))}"/>`,
-      ),
-    )
+  let decorated = false;
+  const content = sceneLayers(scene, pattern)
+    .map((layer, index) => {
+      if (layer.kind === 'fill')
+        return layer.matrices
+          .map((m) =>
+            svgPath({ ...layer.geometry, transform: multiply(m, layer.geometry.transform) }),
+          )
+          .join('');
+      const decorations = !decorated;
+      decorated = true;
+      const subset = { ...scene, generated: { ...scene.generated, geometry: layer.geometry } };
+      if (scene.tiling)
+        return tiledMarkup(
+          subset,
+          svgPath,
+          'preview-tile-' + index,
+          IDENTITY,
+          decorations && scene.tiling.definition.showOutline,
+          decorations && structure
+            ? structureMarkup(
+                cachedStructure(pattern.symmetry, tileBounds(scene.tiling.definition)),
+                0.15,
+                0.7,
+              )
+            : '',
+        );
+      const id = 'preview-motif-' + index,
+        refs = scene.instances
+          .flatMap((i) =>
+            scene.generated.placements.map(
+              (m) => `<use href="#${id}" transform="${matrixString(multiply(i.matrix, m))}"/>`,
+            ),
+          )
+          .join('');
+      return `${decorations && structure && pattern.generator.kind !== 'penrose' ? structureMarkup(cachedStructure(pattern.symmetry, bounds), 0.15, 0.7) : ''}<defs><g id="${id}">${layer.geometry.map(svgPath).join('')}</g></defs>${refs}`;
+    })
     .join('');
-  return svgDocument(
-    `${structure && pattern.generator.kind !== 'penrose' ? structureMarkup(cachedStructure(pattern.symmetry, bounds), 0.15, 0.7) : ''}<defs><g id="motif">${scene.generated.geometry.map(svgPath).join('')}</g></defs>${refs}`,
-    bounds,
-    '#f8faf5',
-  );
+  return svgDocument(content, bounds, '#f8faf5');
 }
 const MathematicalIcon = memo(function MathematicalIcon({ choice }: { choice: SymmetryChoice }) {
   const matrices = useMemo(() => {
@@ -165,7 +174,10 @@ export function SymmetryGallery({ studio: s }: { studio: Studio }) {
         start = performance.now();
       let prepared: ReturnType<typeof generate>;
       try {
-        prepared = generate(s.pattern.generator, s.pattern.sourceGeometry);
+        prepared = generate(
+          s.pattern.generator,
+          s.pattern.sourceGeometry.filter((g) => !g.fillRegion),
+        );
       } catch {
         setMetrics({ pending: false, completed: 0, totalMs: performance.now() - start });
         return;

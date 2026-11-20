@@ -137,7 +137,7 @@ export function buildScene(pattern: Pattern, bounds: Bounds, prepared?: Generate
   };
   generated.geometry = [
     ...derived.filter((g) => g.visible && g.fillRegion!.scope === 'source'),
-    ...generated.geometry,
+    ...generated.geometry.filter((g) => !derived.some((fill) => fill.id === g.id)),
   ];
   const order = new Map(pattern.sourceGeometry.map((g, i) => [g.id, i]));
   generated.geometry.sort(

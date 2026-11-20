@@ -1,3 +1,6 @@
+import { recalculateRegion } from '../fill/recalculate';
+import { previewSVG } from '../ui/SymmetryGallery';
+import { generate } from '../generators';
 import { sceneLayers } from '../patterns/layers';
 import { describe, it, expect } from 'vitest';
 import { newProject, newPattern, geometry, node, type Geometry } from '../app/model';
@@ -6,13 +9,15 @@ import { buildScene } from '../patterns/engine';
 import { resolvePattern } from '../symmetry/config';
 import { buildArrangement, facesAt } from '../fill/planar';
 import {
+  equivalentFaces,
+  fillCandidatesAt,
   collectFillInputs,
   createFaceFill,
   createTileFill,
   immediateFillCandidates,
   refreshLinkedFills,
 } from '../fill/service';
-import { translate } from '../geometry/matrix';
+import { IDENTITY, scale, translate } from '../geometry/matrix';
 import { parseProject, serialize } from '../persistence/schema';
 import { prepareExport, type ExportOptions } from '../export/svg';
 import { newTiling } from '../tiling/tiles';
@@ -220,4 +225,134 @@ it('región excesiva se rechaza antes de añadir una entidad incompatible con el
     ),
   ).toThrow(/almacenamiento/);
   expect(pattern.sourceGeometry).toHaveLength(5);
+});
+
+it('recolorear desde otra celda reutiliza el objeto derivado y omite una cara idéntica', () => {
+  const { p, pattern, fill } = prepared(true),
+    effective = resolvePattern(pattern, p),
+    scene = buildScene(effective, bounds),
+    layers = [{ pattern: effective, scene }],
+    a = buildArrangement(collectFillInputs(layers, bounds)),
+    point = { x: 30, y: 30 },
+    candidates = fillCandidatesAt(layers, point, facesAt(a, point));
+  expect(candidates[0]).toMatchObject({ kind: 'object', shapeId: fill.id, derived: true });
+  expect(candidates.some((c) => c.kind === 'face')).toBe(false);
+  expect(pattern.sourceGeometry).toHaveLength(3);
+});
+it('miniaturas muestran órbitas/fondos y una preparación externa no duplica la fuente Fill', () => {
+  const { p, pattern, fill } = prepared(),
+    effective = resolvePattern(pattern, p),
+    precomputed = generate(pattern.generator, pattern.sourceGeometry),
+    scene = buildScene(effective, bounds, precomputed);
+  expect(scene.generated.geometry.filter((g) => g.id === fill.id)).toHaveLength(1);
+  expect(previewSVG(effective, bounds, precomputed).match(/fill="#ef3344"/g) ?? []).toHaveLength(1);
+  fill.fillRegion!.scope = 'orbit';
+  expect(previewSVG(resolvePattern(pattern, p), bounds)).toContain('fill="#ef3344"');
+  const tileProject = newProject(),
+    tile = tileProject.patterns[0];
+  tile.tiling = newTiling('square');
+  const tileEffective = resolvePattern(tile, tileProject),
+    tileScene = buildScene(tileEffective, bounds),
+    candidate = immediateFillCandidates([{ pattern: tileEffective, scene: tileScene }], {
+      x: 10,
+      y: 10,
+    }).find((c) => c.kind === 'tile')!;
+  if (candidate.kind !== 'tile') throw Error();
+  tile.sourceGeometry.push(createTileFill(tileProject, tile, candidate, style));
+  expect(previewSVG(resolvePattern(tile, tileProject), bounds)).toContain('fill="#ef3344"');
+});
+it('un conjunto capturado ajeno a la frontera no invalida un contexto intacto', () => {
+  const p = newProject(),
+    pattern = p.patterns[0],
+    other = newPattern();
+  pattern.sourceGeometry = source();
+  other.sourceGeometry = [geometry('path', [node(50, 50), node(55, 50)])];
+  p.patterns.push(other);
+  const layers = p.patterns.map((pattern) => {
+      const effective = resolvePattern(pattern, p);
+      return { pattern: effective, scene: buildScene(effective, bounds) };
+    }),
+    inputs = collectFillInputs(layers, bounds),
+    a = buildArrangement(inputs),
+    face = facesAt(a, { x: 10, y: 10 })[0],
+    fill = createFaceFill(p, layers[0].pattern, layers[0].scene, face, a, inputs, style);
+  pattern.sourceGeometry.unshift(fill);
+  expect(fill.fillRegion?.scope).toBe('orbit');
+  expect(refreshLinkedFills(p).get(fill.id)?.fillRegion?.status).toBe('linked');
+});
+it('hacer un límite completamente transparente invalida el vínculo sin borrar la región', () => {
+  const { p, pattern, fill } = prepared();
+  pattern.sourceGeometry[2].opacity = 0;
+  const updated = refreshLinkedFills(p).get(fill.id)!;
+  expect(updated.fillRegion?.status).toBe('stale');
+  expect(updated.pathData).toBe(fill.pathData);
+});
+
+it('recálculo explícito vuelve a vincular una cara equivalente tras cambiar de grupo', () => {
+  const { p, pattern, fill } = prepared();
+  p.mainSymmetry = { ...p.mainSymmetry, family: 'wallpaper', group: 'p1', width: 60, height: 60 };
+  const stale = refreshLinkedFills(p).get(fill.id)!;
+  expect(stale.fillRegion?.status).toBe('stale');
+  pattern.sourceGeometry[0] = stale;
+  const before = serialize(p),
+    updated = recalculateRegion(p, fill.id, IDENTITY);
+  expect(updated.id).toBe(fill.id);
+  expect(updated.fill).toBe(fill.fill);
+  expect(updated.fillRegion?.status).toBe('linked');
+  expect(updated.fillRegion?.context).not.toBe(fill.fillRegion?.context);
+  expect(area(updated)).toBeCloseTo(400);
+  expect(serialize(p)).toBe(before);
+});
+it('recálculo rechaza cambio de topología o relleno bloqueado y conserva el anterior', () => {
+  const { p, pattern, fill } = prepared(),
+    before = fill.pathData;
+  pattern.sourceGeometry.push({ ...geometry('compound'), pathData: 'M0 10L20 10' });
+  expect(() => recalculateRegion(p, fill.id, IDENTITY)).toThrow(/equivalente/);
+  expect(fill.pathData).toBe(before);
+  fill.locked = true;
+  expect(() => recalculateRegion(p, fill.id, IDENTITY)).toThrow(/Desbloqueá/);
+});
+it('recálculo explícito adopta familia nueva de tesela conservando estilo y entidad', () => {
+  const p = newProject(),
+    pattern = p.patterns[0];
+  pattern.tiling = newTiling('square');
+  const effective = resolvePattern(pattern, p),
+    scene = buildScene(effective, bounds),
+    candidate = immediateFillCandidates([{ pattern: effective, scene }], { x: 10, y: 10 }).find(
+      (c) => c.kind === 'tile',
+    )!;
+  if (candidate.kind !== 'tile') throw Error();
+  const fill = createTileFill(p, pattern, candidate, { ...style, fillOpacity: 0.4 });
+  pattern.sourceGeometry = [fill];
+  pattern.tiling = newTiling('hexagon');
+  const update = recalculateRegion(p, fill.id, IDENTITY);
+  expect(update.id).toBe(fill.id);
+  expect(update.fillOpacity).toBe(0.4);
+  expect(update.fillRegion?.status).toBe('linked');
+  expect(update.fillRegion?.context).toContain('hexagon');
+  expect(area(update)).toBeGreaterThan(0);
+});
+
+it('equivalencia de regiones admite recorrido invertido, incluidos huecos orientados', () => {
+  const a = 'M0 0L20 0L20 20L0 20Z M5 5L5 15L15 15L15 5Z',
+    b = 'M0 0L0 20L20 20L20 0Z M5 5L15 5L15 15L5 15Z';
+  expect(equivalentFaces(a, b)).toBe(true);
+  expect(equivalentFaces(a, 'M0 0L20 0L20 20L0 20Z')).toBe(false);
+});
+it('órbita concreta verifica también una copia reflejada con orientación opuesta', () => {
+  const p = newProject(),
+    pattern = p.patterns[0];
+  pattern.generator.kind = 'freeform';
+  pattern.generator.placements = [IDENTITY, scale(-1, 1)];
+  pattern.sourceGeometry = ['M10 2L14 2', 'M14 2L14 5', 'M14 5L10 5', 'M10 5L10 2'].map(
+    (pathData) => ({ ...geometry('compound'), pathData }),
+  );
+  const effective = resolvePattern(pattern, p),
+    scene = buildScene(effective, bounds),
+    inputs = collectFillInputs([{ pattern: effective, scene }], bounds),
+    arrangement = buildArrangement(inputs),
+    face = facesAt(arrangement, { x: 12, y: 3.5 })[0],
+    fill = createFaceFill(p, effective, scene, face, arrangement, inputs, style);
+  expect(fill.fillRegion?.scope).toBe('orbit');
+  expect(fill.fillRegion?.orbitMatrices).toHaveLength(2);
 });

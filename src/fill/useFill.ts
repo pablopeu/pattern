@@ -3,7 +3,7 @@ import type { Studio } from '../app/useStudio';
 import type { Bounds } from '../symmetry/groups';
 import type { Point } from '../geometry/matrix';
 import type { Geometry } from '../app/model';
-import { createTileFill, type FillLayer, type FillCandidate } from './service';
+import { hasFillInk, createTileFill, type FillLayer, type FillCandidate } from './service';
 export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled: boolean) {
   const worker = useRef<Worker | null>(null),
     ready = useRef(false),
@@ -38,6 +38,8 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
             g.closed,
             g.visible,
             g.locked,
+            g.fillRule,
+            hasFillInk(g),
           ]),
         ]),
       ])
@@ -66,6 +68,10 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
     });
     s.setPatternId(patternId);
     s.setSelected([existingId]);
+    if (g.fillRegion) {
+      s.setInstance(g.fillRegion.captureMatrix);
+      s.setInstanceExplicit(true);
+    }
     s.setMessage(
       g.fillRegion?.scope === 'orbit'
         ? 'Relleno vectorial creado con órbita concreta verificada.'
@@ -177,11 +183,15 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
       });
       s.setPatternId(preview.patternId);
       s.setSelected([preview.shapeId]);
+      s.setInstance(preview.matrix);
+      s.setInstanceExplicit(true);
       s.setMessage('Color aplicado al objeto cerrado.');
     } else if (preview.kind === 'tile') {
       const target = s.project.patterns.find((p) => p.id === preview.patternId);
       if (target) {
         s.setPatternId(target.id);
+        s.setInstance(preview.matrix);
+        s.setInstanceExplicit(true);
         const g = createTileFill(s.project, target, preview, style);
         let found = false;
         s.change((p) => {

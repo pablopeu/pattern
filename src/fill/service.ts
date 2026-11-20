@@ -16,6 +16,7 @@ export interface FillLayer {
 }
 export interface ObjectFillCandidate {
   kind: 'object';
+  derived: boolean;
   key: string;
   patternId: string;
   shapeId: string;
@@ -42,6 +43,14 @@ export interface FaceFillCandidate {
 export type FillCandidate = ObjectFillCandidate | TileFillCandidate | FaceFillCandidate;
 export interface CapturedBoundary extends BoundaryInput {
   tileMatrix?: Matrix;
+}
+export function hasFillInk(g: Geometry): boolean {
+  return (
+    g.visible &&
+    g.opacity > 0 &&
+    ((g.stroke !== 'none' && g.strokeWidth > 0 && g.strokeOpacity > 0) ||
+      (g.fill !== 'none' && g.fillOpacity > 0))
+  );
 }
 const matrixKey = (m: Matrix) => m.map((n) => Number(n.toFixed(8))).join(',');
 export function clipAxis(
@@ -84,8 +93,7 @@ export function collectFillInputs(layers: FillLayer[], bounds: Bounds): Captured
             ? scene.tiling?.tiles.find((t) => t.id === instance.tileId)
             : undefined;
         for (const [shapeIndex, g] of scene.generated.geometry.entries()) {
-          if (g.fillRegion || !g.visible || g.locked || (g.stroke === 'none' && g.fill === 'none'))
-            continue;
+          if (g.fillRegion || !hasFillInk(g) || g.locked) continue;
           const p = paperPath(g, matrix),
             visible = p.bounds.intersects(view) || p.bounds.contains(view);
           p.remove();
@@ -120,7 +128,13 @@ export function immediateFillCandidates(layers: FillLayer[], point: Point): Fill
       const raw = new Map(pattern.sourceGeometry.map((g) => [g.id, g]));
       const inspect = (g: Geometry, matrix: Matrix, z: number) => {
         const source = raw.get(g.id);
-        if (!source?.closed || !source.visible || source.locked) return;
+        if (
+          !source?.closed ||
+          !source.visible ||
+          source.locked ||
+          (!source.fillRegion && !hasFillInk(g))
+        )
+          return;
         let path = paths.get(g);
         if (!path) {
           path = paperPath(g);
@@ -133,6 +147,7 @@ export function immediateFillCandidates(layers: FillLayer[], point: Point): Fill
         try {
           result.push({
             kind: 'object',
+            derived: !!source.fillRegion,
             key: `object/${pattern.id}/${g.id}/${matrixKey(matrix)}`,
             patternId: pattern.id,
             shapeId: g.id,
@@ -188,6 +203,34 @@ export function immediateFillCandidates(layers: FillLayer[], point: Point): Fill
   }
   return result.sort((a, b) => b.z - a.z || a.key.localeCompare(b.key));
 }
+export function fillCandidatesAt(
+  layers: FillLayer[],
+  point: Point,
+  faces: PlanarFace[],
+): FillCandidate[] {
+  const immediate = immediateFillCandidates(layers, point),
+    candidates: FillCandidate[] = [...immediate];
+  for (const face of faces) {
+    if (
+      immediate.some(
+        (c) => c.kind === 'object' && c.derived && equivalentFaces(c.pathData, face.pathData),
+      )
+    )
+      continue;
+    candidates.push({
+      kind: 'face',
+      key: `face/${face.key}`,
+      face,
+      pathData: face.pathData,
+      matrix: IDENTITY,
+      z: face.z - 0.1,
+    });
+  }
+  const priority = (c: FillCandidate) => (c.kind === 'object' ? 0 : c.kind === 'face' ? 1 : 2);
+  return candidates.sort(
+    (a, b) => b.z - a.z || priority(a) - priority(b) || a.key.localeCompare(b.key),
+  );
+}
 export function fillContext(
   project: Project,
   ids: string[],
@@ -215,6 +258,8 @@ export function equivalentFaces(a: string, b: string): boolean {
   const p = new scope.CompoundPath({ pathData: a, insert: false }),
     q = new scope.CompoundPath({ pathData: b, insert: false });
   try {
+    if (p.compare(q)) return true;
+    q.reverse();
     return p.compare(q);
   } finally {
     p.remove();
@@ -381,6 +426,8 @@ export function axesFingerprint(project: Project): string {
         g.transform,
         g.visible,
         g.locked,
+        g.fillRule,
+        hasFillInk(g),
         g.fillRegion,
       ]),
     ]),
@@ -433,7 +480,7 @@ export function refreshLinkedFills(project: Project): Map<string, Geometry> {
         fill.context !==
         fillContext(
           project,
-          fill.refs.map((r) => r.patternId),
+          fill.inputs.map((r) => r.patternId),
         )
       ) {
         stale('Cambió la configuración de los límites; se conserva el último contorno válido.');
@@ -442,7 +489,7 @@ export function refreshLinkedFills(project: Project): Map<string, Geometry> {
       try {
         const inputs: CapturedBoundary[] = fill.inputs.map((ref, index) => {
             const shape = generated.get(ref.patternId)?.find((g) => g.id === ref.shapeId);
-            if (!shape || !shape.visible || shape.locked)
+            if (!shape || !hasFillInk(shape) || shape.locked)
               throw Error('Un límite fue eliminado, ocultado o bloqueado.');
             const pat = resolved.find((p) => p.id === ref.patternId),
               b = pat?.tiling ? tileBoundary(pat.tiling) : undefined;
@@ -462,7 +509,7 @@ export function refreshLinkedFills(project: Project): Map<string, Geometry> {
               if (!prefix) continue;
               for (const shape of generated.get(ref.patternId) ?? []) {
                 const id = prefix + shape.id;
-                if (known.has(id) || !shape.visible || shape.locked) continue;
+                if (known.has(id) || !hasFillInk(shape) || shape.locked) continue;
                 const pat = resolved.find((p) => p.id === ref.patternId),
                   b = pat?.tiling ? tileBoundary(pat.tiling) : undefined;
                 inputs.push({

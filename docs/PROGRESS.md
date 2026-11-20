@@ -193,3 +193,12 @@
 - createFaceFill rechaza keys, referencias, paths y contexto que excedan los límites del archivo antes de añadir la entidad. Se evita guardar un documento inválido tras una operación excesiva.
 - **178 unitarias y build correctos**. E2E real de secuencia excesiva: aviso visible, galería/lienzo vivos, corrección desde panel derecho sin errores de página. Unitarias verifican fallo explícito de export, presupuesto acumulado y rechazo de relleno excesivo.
 - Reset real confirmado por telemetría del ciclo nuevo, inicialmente1% usado; monitor persistente retomó working. Continúa auditoría del PRD.
+
+## PRD v2.2 · Recoloreo, órbitas y recálculo explícito
+
+- Recolorear una cara ya derivada reutiliza su objeto desde cualquier copia; candidatos de cara idénticos se omiten. Comparación geométrica admite recorrido invertido, necesario en reflexiones y en órbitas concretas con placements reflejados. Selección de Fill guarda la matriz real pulsada.
+- Miniaturas representan regiones de órbita y fondos de teselas en orden de capas; preparación externa del generador no duplica fuentes Fill ni las deforma otra vez. Caché toma fill-rule y visibilidad material; un límite totalmente transparente invalida el vínculo sin borrar el último contorno.
+- Acción «Recalcular y vincular región»: worker cancelable, referencias/familias de límites y coincidencia geométrica para exigir una única cara equivalente (no cursor aproximado). Contorno conservado ante topología incompatible; estilos/ID preservados. Se integra como una acción undo/redo y descarta resultados tardíos tras cancelar o cambiar geometría. Errores del worker de vínculos marcan stale conservando contorno.
+- Corregida comparación de contexto de todos los inputs capturados, incluidos conjuntos presentes que no delimitan la cara seleccionada.
+- **187 unitarias correctas**. Los **13 E2E de Fill** pasaron entre corrida y repetición de reflexión tras corregir orientación: Bézier exacta, huecos nonzero, abertura/tolerancia explícita sin cambiar fuentes, caras entre instancias/celdas, reflejo/rotación y selección, recoloreo sin duplicado, fondo en miniatura, recálculo+undo/redo, cancelación tardía y primer toque/confirmación táctil reales. Build de cierre en verificación. Continúa auditoría de teselas curvas, export externa y producción estática.
+- Build de cierre de este incremento correcto; se registra commit y push en main.
