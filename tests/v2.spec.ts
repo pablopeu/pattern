@@ -314,8 +314,10 @@ test('AC-23/32: Lápiz y estilo continúan al recorrer grupos sin cambiar de con
     );
     await line(page, [8, 10], [23, 24]);
     if (drawn++ === 0) {
+      await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
       await page.getByLabel('Color de trazo', { exact: true }).fill('#b3364d');
       await page.getByLabel('Grosor de trazo', { exact: true }).fill('1.25');
+      await page.getByRole('button', { name: 'Cerrar panel de estilos' }).click();
       await saved(page);
     }
   }

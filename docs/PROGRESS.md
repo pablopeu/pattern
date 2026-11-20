@@ -178,3 +178,10 @@
 - Cierre de ciclo por cupo próximo al umbral. **Pendiente de PRD**: auditoría avanzada de Fill/órbitas/teselas, exportaciones externas v2.2, pruebas estáticas raíz/subdirectorio, benchmark y matriz visual final. Ver continuidad para riesgos concretos pendientes. No crear PROJECT_COMPLETE.
 - Monitor real alcanzó90% usado y confirmó timer para22:48:28 Argentina. Corrida general interrumpida con exit143 tras57 casos correctos; se verifican aparte los tres restantes antes del commit. No hubo fallos de aserciones en los57 completados.
 - Verificación de cierre del incremento Fill: **60 E2E distintos correctos** (57 general +3 restantes dirigidos), **175 unitarias** y build correctos. Se preservaron los50 anteriores junto a10 nuevos de v2.2. Se registra checkpoint; PRD v2.2 continúa pendiente de los puntos de auditoría indicados en CONTINUITY.
+
+## Feedback LAN · Panel de apariencia exclusivamente derecho
+
+- Atendido feedback recibido 20/11 01:29 UTC: colores/trazos no deben repetirse al pie del inspector izquierdo. Se retiraron de allí todos los controles de estilo; queda un acceso explícito que abre el panel vertical derecho con la selección como destino.
+- Se conservan el estilo vigente, pin, autocierre al interactuar con lienzo y escala documental. El indicador compacto mantiene muestras/unidad/patrón visibles también por debajo de900px.
+- **175 unitarias correctas**, dos E2E dirigidos correctos: flujo de feedback con ubicación real a la derecha/autocierre/768px, y regresión de lápiz/estilo al recorrer grupos (adaptada para usar panel derecho). Capturas v22-right-only-1440.png y v22-right-only-closed-768.png.
+- El usuario autorizó explícitamente continuar durante los últimos minutos de la ventana previa al reset. Se respeta esa indicación y no se duplica el monitor.

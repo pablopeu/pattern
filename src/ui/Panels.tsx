@@ -1,4 +1,3 @@
-import { StyleControls } from './StylePanel';
 import { TilePanel } from './TilePanel';
 import { SymmetryGallery } from './SymmetryGallery';
 import { freezePattern } from '../symmetry/config';
@@ -293,7 +292,15 @@ export function Panels({ studio: s, onImport }: { studio: Studio; onImport: () =
           Reflejar Y
         </button>
       </div>
-      <StyleControls studio={s} target="selection" />
+      <button
+        className="wide-button"
+        onClick={() => {
+          s.setStyleTarget('selection');
+          s.setStyleOpen(true);
+        }}
+      >
+        <SlidersHorizontal size={15} /> Editar apariencia en panel derecho
+      </button>
       {shape.kind !== 'path' ? (
         <button
           className="wide-button"

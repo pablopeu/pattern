@@ -210,3 +210,34 @@ test('v2.2 slider y edición visual del perfil generan un undo por gesto', async
   await page.getByRole('button', { name: 'Deshacer', exact: true }).click();
   expect((await model(page)).drawingStyle.strokeProfile.points[0].width).toBe(1);
 });
+
+test('feedback LAN: apariencia exclusivamente a la derecha, acceso desde inspector y autocierre', async ({
+  page,
+}) => {
+  await setup(page, true);
+  await page.locator('.studio-canvas').focus();
+  await page.keyboard.press('Control+a');
+  const left = page.locator('.context-panel');
+  await expect(left.getByLabel('Color de trazo', { exact: true })).toHaveCount(0);
+  await expect(left.getByLabel('Grosor de trazo', { exact: true })).toHaveCount(0);
+  await left
+    .getByRole('button', { name: 'Editar apariencia en panel derecho', exact: true })
+    .click();
+  await expect(panel(page)).toBeVisible();
+  await expect(panel(page).getByLabel('Color de trazo', { exact: true })).toHaveCount(1);
+  const rightBox = (await panel(page).boundingBox())!,
+    canvasBox = (await page.locator('.drawing-area').boundingBox())!;
+  expect(rightBox.x).toBeGreaterThanOrEqual(canvasBox.x + canvasBox.width - 1);
+  await page.screenshot({ path: 'test-results/v22-right-only-1440.png' });
+  await page.getByRole('button', { name: 'Seleccionar', exact: true }).click();
+  const q = await screen(page, 20, 0);
+  await page.mouse.click(q.x, q.y);
+  await expect(panel(page)).not.toBeVisible();
+  await page.setViewportSize({ width: 768, height: 800 });
+  const indicator = page.getByRole('button', { name: 'Abrir panel de estilos' });
+  await expect(indicator).toBeVisible();
+  await expect(indicator.locator('.style-chip').first()).toBeVisible();
+  await expect(indicator.getByLabel('Patrón de línea vigente')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: 'test-results/v22-right-only-closed-768.png' });
+});
