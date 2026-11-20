@@ -1,3 +1,18 @@
+# Footer con mayor contraste · Verificado
+
+Pedido de Pablo: texto del pie más oscuro. Se usa --ink (#24382b) sobre
+--panel (#f7f9f2), con peso500; contraste real11,81:1. Conserva38px de alto,
+una línea, seis enlaces y desplazamiento propio en móvil.
+Build/TypeScript correctos; revisión real en1440/390 sin overflow de página,
+con estilos computados y capturas inspeccionadas. Evidencia
+.runtime/footer-contrast-build.log, footer-contrast-qa.json y capturas
+footer-contrast-{1440,390}.png. README/captura de inicio actualizados.
+Cambio sólo CSS; no se repiten suites geométricas por este ajuste visual.
+Servicios4173/4174 conservados. Push autorizado; no consultar Actions/FTP.
+Registro de publicación en .runtime/LAST_PUSH.json al finalizar.
+
+---
+
 # Cámara, guardado y cabecera · Entrega verificada
 
 Pedidos sucesivos de Pablo incorporados al mismo incremento. Cabecera Patterns,

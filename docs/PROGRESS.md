@@ -669,3 +669,13 @@
 - README, inventario UX y continuidad actualizados; logo/originales preservados.
   Push de main autorizado; registro final en .runtime/LAST_PUSH.json, sin consultar
   Actions/FTP por pedido de Pablo. Servicios4173/4174 conservados.
+
+
+## Footer más legible · Verificado
+
+- Texto #24382b y peso500 sobre el fondo claro; contraste real11,81:1.
+- Build/TypeScript correctos; vista real1440/390 inspeccionada. Seis enlaces,
+  alto38px y una línea conservados, sin overflow de página en móvil.
+- Evidencia footer-contrast-build.log y footer-contrast-qa.json en .runtime.
+  README/captura actualizados. Sólo CSS; no se repiten suites de geometría.
+- Servicios4173/4174 conservados; push autorizado sin revisar Actions/FTP.
