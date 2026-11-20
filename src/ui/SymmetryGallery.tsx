@@ -389,10 +389,10 @@ export function SymmetryGallery({
               onChange={setFamily}
               options={[
                 { value: 'all', label: 'Todos' },
-                { value: 'none', label: 'Libre' },
                 { value: 'wallpaper', label: 'Plano · 17 grupos' },
                 { value: 'frieze', label: 'Friso · 7 grupos' },
                 { value: 'radial', label: 'Radial · Cn / Dn' },
+                { value: 'none', label: 'Libre' },
               ]}
             />
             <Select

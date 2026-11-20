@@ -48,7 +48,7 @@ import {
 } from 'lucide-react';
 import { useStudio, type Tool, type StylePage } from './useStudio';
 import { example, exampleNames } from './examples';
-import { newProject, geometry, uid } from './model';
+import { newStudy, geometry, uid } from './model';
 import { freezePattern } from '../symmetry/config';
 import { IDENTITY } from '../geometry/matrix';
 import { parseProject, serialize } from '../persistence/schema';
@@ -84,7 +84,7 @@ export default function App() {
   const s = useStudio(),
     [exportOpen, setExportOpen] = useState(false),
     [commandOpen, setCommandOpen] = useState(false),
-    [collapsed, setCollapsed] = useState(false),
+    [collapsed, setCollapsed] = useState(() => innerWidth <= 900),
     [category, setCategory] = useState<Category>('drawing'),
     [help, setHelp] = useState(false),
     [importText, setImportText] = useState<string | null>(null),
@@ -99,10 +99,6 @@ export default function App() {
     presetRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     setCategory(toolCategory(s.tool));
-    if (s.tool === 'pencil') {
-      s.setStylePage('stroke');
-      s.setStyleOpen(true);
-    }
     if (s.tool === 'nodes') {
       s.setStylePage('object');
       s.setObjectTab('nodes');
@@ -418,8 +414,10 @@ export default function App() {
             <div className="menu-popover">
               <button
                 onClick={() => {
-                  s.load(newProject());
+                  s.load(newStudy(), { fresh: true });
                   s.setMode('edit');
+                  setCategory('drawing');
+                  setCollapsed(innerWidth <= 900);
                 }}
               >
                 <Plus size={15} /> Nuevo proyecto

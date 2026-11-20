@@ -12,7 +12,7 @@ import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { hasClosedGeometry } from '../application/clipping';
 import { History } from '../editor/history';
 import { autosave, recover } from '../persistence/storage';
-import { newProject, type Symmetry } from './model';
+import { newStudy, type Symmetry } from './model';
 import {
   resolvePattern,
   changeSymmetry as applySymmetryChoice,
@@ -55,7 +55,7 @@ export function useStudio() {
   const [tileEditing, setTileEditing] = useState(false),
     [tileEdge, setTileEdge] = useState(0),
     [tileNode, setTileNode] = useState(1);
-  const [project, setProject] = useState<Project>(() => newProject()),
+  const [project, setProject] = useState<Project>(() => newStudy()),
     ref = useRef(project),
     history = useRef(new History(project)),
     hydrated = useRef(false),
@@ -64,7 +64,7 @@ export function useStudio() {
     [saved, setSaved] = useState('Recuperando…'),
     [message, setMessage] = useState(''),
     [mode, setMode] = useState<Mode>('edit'),
-    [tool, setActiveTool] = useState<Tool>('select');
+    [tool, setActiveTool] = useState<Tool>('pencil');
   const [symmetryPreview, setSymmetryPreview] = useState<SymmetryPreview | null>(null),
     [galleryTarget, setGalleryTarget] = useState<'pattern' | 'project'>('pattern');
   const [instanceExplicit, setInstanceExplicit] = useState(false);
@@ -78,6 +78,9 @@ export function useStudio() {
       setStyleTarget('current');
       setStylePage('fill');
       setStyleOpen(true);
+    } else if (next === 'pencil') {
+      setStylePage('stroke');
+      setStyleOpen(true);
     }
   }, []);
   const [nodeIndex, setNodeIndex] = useState(0);
@@ -86,6 +89,7 @@ export function useStudio() {
     [patternId, setPatternId] = useState(project.patterns[0].id),
     [regionId, setRegionId] = useState(''),
     [applicationId, setApplicationId] = useState('');
+  const [viewReset, setViewReset] = useState(0);
   const [revision, setRevision] = useState(0),
     [fileSaved, setFileSaved] = useState(false);
   const selectedRef = useRef(selected);
@@ -155,7 +159,13 @@ export function useStudio() {
     setRevision((n) => n + 1);
   }, []);
   const load = useCallback(
-    (p: Project) => {
+    (p: Project, options: { fresh?: boolean } = {}) => {
+      if (options.fresh) {
+        setActiveTool('pencil');
+        setStyleTarget('current');
+        setStylePage('stroke');
+        setViewReset((value) => value + 1);
+      }
       if (hydrated.current) void autosave(ref.current).catch(() => {});
       history.current.reset(p);
       replace(p);
@@ -191,6 +201,9 @@ export function useStudio() {
     recover()
       .then((p) => {
         if (live && p) load(p);
+        else if (live) {
+          setViewReset((value) => value + 1);
+        }
       })
       .catch((e) => {
         if (live) setMessage(`No se pudo recuperar el autosave: ${e.message}`);
@@ -699,6 +712,7 @@ export function useStudio() {
     recalculateFill,
     cancelRecalculation,
     recalculatingId,
+    viewReset,
     tileEditing,
     setTileEditing,
     tileEdge,

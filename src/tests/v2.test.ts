@@ -1,8 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import oldExamples from './fixtures/v1-examples.json';
-import { geometry, newProject, newPattern, node, type Project } from '../app/model';
+import { geometry, newProject, newStudy, newPattern, node, type Project } from '../app/model';
 import { parseProject, serialize } from '../persistence/schema';
-import { changeSymmetry, resolvePattern, freezePattern, symmetryId } from '../symmetry/config';
+import {
+  changeSymmetry,
+  resolvePattern,
+  freezePattern,
+  symmetryId,
+  symmetryCatalog,
+} from '../symmetry/config';
 import { buildScene } from '../patterns/engine';
 import { chooseCapture, capturedPoint, type CaptureContext } from '../editor/capture';
 import { apply, IDENTITY } from '../geometry/matrix';
@@ -272,4 +278,52 @@ describe('PRD v2 · exportación confirmada y composición', () => {
     p.patterns[0].symmetryMode = 'inherit';
     expect(prepareExport(p, opts).svg).toBe(initial);
   });
+});
+
+it('un estudio nuevo usa P3 y estructura al50% sin modificar documentos recuperados', () => {
+  const study = newStudy();
+  expect(resolvePattern(study.patterns[0], study).symmetry).toMatchObject({
+    family: 'wallpaper',
+    group: 'p3',
+    angle: 60,
+  });
+  expect(study.preferences).toMatchObject({
+    structureVisible: true,
+    structureOpacity: 0.5,
+    guides: false,
+  });
+  expect(study.patterns[0].sourceGeometry).toEqual([]);
+  const legacy = newProject();
+  expect(parseProject(serialize(legacy))).toEqual(legacy);
+  expect(legacy.mainSymmetry.family).toBe('none');
+});
+it('P3 encabeza el catálogo, Libre lo cierra y el resto mantiene su orden', () => {
+  expect(symmetryCatalog).toEqual([
+    { family: 'wallpaper', group: 'p3' },
+    ...[
+      'p1',
+      'p2',
+      'pm',
+      'pg',
+      'cm',
+      'pmm',
+      'pmg',
+      'pgg',
+      'cmm',
+      'p4',
+      'p4m',
+      'p4g',
+      'p3m1',
+      'p31m',
+      'p6',
+      'p6m',
+    ].map((group) => ({ family: 'wallpaper', group })),
+    ...['p1', 'p11g', 'p1m1', 'p11m', 'p2', 'p2mg', 'p2mm'].map((group) => ({
+      family: 'frieze',
+      group,
+    })),
+    { family: 'radial', group: 'Cn' },
+    { family: 'radial', group: 'Dn' },
+    { family: 'none', group: 'none' },
+  ]);
 });

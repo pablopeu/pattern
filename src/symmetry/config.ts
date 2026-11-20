@@ -12,11 +12,14 @@ export type SymmetryPreview = {
 };
 export const symmetryId = (s: SymmetryChoice) => `${s.family}:${s.group}`;
 export const symmetryCatalog: SymmetryChoice[] = [
-  { family: 'none', group: 'none' },
-  ...wallpaperNames.map((group) => ({ family: 'wallpaper' as const, group })),
+  { family: 'wallpaper', group: 'p3' },
+  ...wallpaperNames
+    .filter((group) => group !== 'p3')
+    .map((group) => ({ family: 'wallpaper' as const, group })),
   ...friezeNames.map((group) => ({ family: 'frieze' as const, group })),
   { family: 'radial', group: 'Cn' },
   { family: 'radial', group: 'Dn' },
+  { family: 'none', group: 'none' },
 ];
 export const symmetryOrigin = (s: Symmetry): Point => (s.family === 'radial' ? s.center : s.origin);
 export function candidateSymmetry(

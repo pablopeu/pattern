@@ -15,3 +15,9 @@ Implementar `prd_v2.3.txt` como evolución no destructiva de v2.2; conservar las
 - README: primero explicaciones y ejemplos con imágenes; al final instalación, despliegue y detalles de trabajo. Mantener ejemplos verificables y capturas de la aplicación real.
 
 - Pablo revisó en LAN y autorizó explícitamente «al terminar push a gh». Se puede publicar en main el historial local pendiente (Fill/paneles/footer/iconos/metadatos); comprobar el workflow FTP real después del push. Mantener servicios LAN.
+
+- Predeterminados pedidos por Pablo: estudios nuevos en P3, zoom100% centrado,
+  estructura visible50% y Dibujo libre al iniciar. P3 primero/Libre último, resto
+  del orden igual. Usar newStudy para UI; conservar newProject neutro para motor,
+  fixtures e importaciones. Recuperación no sobreescribe configuraciones guardadas.
+  Grilla: puntos negros5mm alineados con Snap, control de visibilidad independiente.

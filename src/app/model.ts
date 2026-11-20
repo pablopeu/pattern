@@ -246,3 +246,13 @@ export function newProject(): Project {
     },
   };
 }
+
+/** User-facing empty study; neutral newProject remains available for engine/import fixtures. */
+export function newStudy(): Project {
+  const project = newProject();
+  project.mainSymmetry = { ...project.mainSymmetry, family: 'wallpaper', group: 'p3', angle: 60 };
+  project.preferences.structureVisible = true;
+  project.preferences.structureOpacity = 0.5;
+  project.preferences.guides = false;
+  return project;
+}

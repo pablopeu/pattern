@@ -2562,3 +2562,8 @@ input[type='color']::-webkit-color-swatch {
 .style-panel-rail .style-panel-toggle { margin-top: 0; }
 .fill-actions[hidden] { display: none; }
 .fill-actions { top: auto; left: auto; right: 12px; bottom: 58px; width: auto; max-width: calc(100% - 24px); }
+
+/* Keep every canvas control reachable when the structure-opacity slider is shown. */
+.canvas-floats { width: max-content; max-width: calc(100% - 16px); height: auto; min-height: 39px; flex-wrap: wrap; justify-content: center; }
+.canvas-floats > button, .canvas-floats > span, .canvas-floats > i, .structure-opacity { flex-shrink: 0; }
+@media(max-width:650px) { .canvas-floats { min-height:34px; } }

@@ -4,6 +4,15 @@ import { test, expect, type Page } from '@playwright/test';
 async function ready(page: Page) {
   await page.goto('/');
   await saved(page);
+  // These v2 regressions exercise the explicitly free baseline, independent of
+  // the current user-facing default for a brand-new study.
+  await page.evaluate(async () => {
+    const { newProject } = await import('/src/app/model.ts');
+    const { autosave } = await import('/src/persistence/storage.ts');
+    await autosave(newProject());
+  });
+  await page.reload();
+  await saved(page);
 }
 async function saved(page: Page) {
   await expect(page.locator('.save-indicator')).toHaveText(/Guardado local/);
@@ -197,6 +206,7 @@ test('AC-34/35: origen arrastrable y vista de una celda conservan fuentes y expo
 }) => {
   await ready(page);
   await fixture(page, 'p4m');
+  await page.getByRole('button', { name: 'Seleccionar', exact: true }).click();
   const before = (await model(page))!.patterns[0].sourceGeometry;
   const a = await at(page, 0, 0),
     b = await at(page, 8, -7);
@@ -257,6 +267,8 @@ test('AC-36: conjuntos heredados, propios y libres se editan y componen sin fals
   expect(p.mainSymmetry.group).toBe('p6m');
   expect(p.patterns[1].symmetry.group).toBe('Dn');
   expect(p.patterns[2].symmetryMode).toBe('free');
+  await page.getByRole('button', { name: 'Seleccionar', exact: true }).click();
+  await context(page, 'Simetrías');
   await clickAt(page, 74, 11);
   await expect(page.getByLabel('Simetría del conjunto', { exact: true })).toHaveValue('free');
   for (const [x, y, name, index] of [

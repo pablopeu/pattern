@@ -79,12 +79,27 @@ function safeScene(
     return { scene: null, error: (e as Error).message };
   }
 }
+const PIXELS_PER_MM = 3.779527559;
+const centeredView = (width: number, height: number): Bounds => ({
+  x: -width / PIXELS_PER_MM / 2,
+  y: -height / PIXELS_PER_MM / 2,
+  width: width / PIXELS_PER_MM,
+  height: height / PIXELS_PER_MM,
+});
 export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: Props) {
   const activePattern = s.effectivePattern;
   const [view, setView] = useState<Bounds>({ x: -110, y: -100, width: 300, height: 240 }),
     [size, setSize] = useState({ width: 1000, height: 800 }),
     [cursor, setCursor] = useState<Point>({ x: 0, y: 0 }),
     [marquee, setMarquee] = useState<{ start: Point; end: Point } | null>(null);
+  const freshView = useRef(false),
+    viewSize = useRef(size);
+  viewSize.current = size;
+  useEffect(() => {
+    if (!s.viewReset) return;
+    freshView.current = true;
+    setView(centeredView(viewSize.current.width, viewSize.current.height));
+  }, [s.viewReset]);
   const svgRef = useRef<SVGSVGElement>(null),
     container = useRef<HTMLDivElement>(null),
     drag = useRef<Drag | null>(null),
@@ -123,7 +138,8 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     const observer = new ResizeObserver((entries) => {
       const r = entries[0].contentRect;
       const width = Math.max(1, r.width);
-      if (measuredWidth !== undefined && measuredWidth !== width) {
+      if (freshView.current) setView(centeredView(width, Math.max(1, r.height)));
+      else if (measuredWidth !== undefined && measuredWidth !== width) {
         const ratio = width / measuredWidth;
         setView((v) => ({ ...v, width: v.width * ratio }));
       }
@@ -485,6 +501,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
   }, [s.project]);
   const pointerDown = (event: RPointerEvent<SVGSVGElement>) => {
     if (event.button === 2) return;
+    freshView.current = false;
     svgRef.current?.focus();
     s.setSymmetryPreview(null);
     const p = point(event);
@@ -773,6 +790,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     },
   ) =>
     setView((v) => {
+      freshView.current = false;
       const width = Math.max(10, Math.min(10000, v.width * factor)),
         f = width / v.width;
       return {
@@ -786,6 +804,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     const svg = svgRef.current;
     if (!svg) return;
     const wheel = (e: WheelEvent) => {
+      freshView.current = false;
       e.preventDefault();
       if (e.ctrlKey || e.metaKey) zoom(Math.exp(e.deltaY * 0.002), point(e));
       else
@@ -799,6 +818,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     return () => svg.removeEventListener('wheel', wheel);
   });
   const fit = (patternView = false) => {
+    freshView.current = false;
     let b: Bounds;
     if (s.mode === 'apply' && s.region) b = geometryBounds(s.region.geometry);
     else if (patternView && activePattern.tiling && activePattern.generator.kind !== 'penrose')
@@ -1205,8 +1225,15 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         aria-label={editorOnly ? 'Editor de geometría' : 'Lienzo de patrones'}
       >
         <defs>
-          <pattern id={`${prefix}-grid`} width={5} height={5} patternUnits="userSpaceOnUse">
-            <circle cx={0} cy={0} r={0.22} fill="#bdcbbd" />
+          <pattern
+            id={`${prefix}-grid`}
+            x={-2.5}
+            y={-2.5}
+            width={5}
+            height={5}
+            patternUnits="userSpaceOnUse"
+          >
+            <circle cx={2.5} cy={2.5} r={0.25} fill="#000000" />
           </pattern>
         </defs>
         {s.project.preferences.grid && (
@@ -1701,7 +1728,7 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         <button title="Alejar" aria-label="Alejar" onClick={() => zoom(1.25)}>
           <ZoomOut size={17} />
         </button>
-        <span>{Math.round((scalePx / 3.779527559) * 100)}%</span>
+        <span>{Math.round((scalePx / PIXELS_PER_MM) * 100)}%</span>
         <button title="Acercar" aria-label="Acercar" onClick={() => zoom(0.8)}>
           <ZoomIn size={17} />
         </button>
@@ -1712,7 +1739,10 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         <button
           title="Restablecer vista"
           aria-label="Restablecer vista"
-          onClick={() => setView({ x: -110, y: -100, width: 300, height: 240 })}
+          onClick={() => {
+            freshView.current = true;
+            setView(centeredView(size.width, size.height));
+          }}
         >
           <Scan size={17} />
         </button>
@@ -1756,8 +1786,9 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
           </>
         )}
         <button
-          title="Grilla"
+          title="Grilla de puntos cada 5 mm · mostrar u ocultar (Snap se activa por separado)"
           aria-label="Mostrar grilla"
+          aria-pressed={s.project.preferences.grid}
           className={s.project.preferences.grid ? 'active' : ''}
           onClick={() =>
             s.change((p) => {

@@ -1,3 +1,38 @@
+# Incremento P3 y grilla negra · Verificado, push autorizado
+
+Nuevo pedido de Pablo, también enviado por monitor con id
+c1a1f5d808be4cb194ced69217f9048b (duplicado atendido una sola vez).
+P3 primero y Libre último; restantes simetrías conservan orden. Estudio nuevo
+por newStudy (UI) usa P3/estructura visible50%; motor newProject sigue neutro
+para importaciones/fixtures. Recuperación mantiene configuración existente.
+Dibujo libre al iniciar; activarlo explícitamente abre Trazo, sin desplegar el
+panel al cargar. Cámara100% centrada en origen al crear estudio/Restablecer vista;
+conserva captura y escala al dibujar y al cambiar ancho. Panel izquierdo inicial
+plegado en móvil; controles flotantes envuelven filas para mantener acceso.
+
+Aclaración de Pablo: se refería a Grilla, el cuadrado antes del ojo. Mostrar/
+ocultar puntos cada5mm, independiente de Snap. Se conserva con título claro y
+estado accesible. Puntos negro puro/radio0,25mm, completos dentro de la celda
+SVG: el punto anterior en esquina quedaba recortado. Celda desplazada−2,5mm y
+centro2,5mm conservan posiciones globales múltiplos de5mm y alineación con Snap.
+Prueba raster real a100% confirma tinta visible en1440/390.
+
+206 unitarias/TypeScript, build y5 E2E dirigidas correctos. Pruebas de estudio
+nuevo en1440/390 confirman P3, herramienta, opacidad, escala física, centro,
+Nuevo tras zoom y recuperación. Regresiones Libre usan fixture neutro explícito;
+no se rebajan assertions de geometría. Selección de objetos/origen en fixtures
+antiguos se activa explícitamente porque ahora el arranque es dibujo libre.
+Cierre:206 unitarias/TypeScript, build,106/106 E2E integradas y6 estáticas
+raíz/subcarpeta correctas. Corrida integrada completa con exit code0,198,5s:
+.runtime/p3-full-final.log y p3-full-final-result.json. Logs finales
+p3-final-{check,build,static-summary}.log; casos dirigidos p3-grid-final-targeted.
+Captura docs/images/new-study-p3.png real, escritorio y móvil inspeccionados.
+Pendiente push solicitado y comprobar ejecución FTP; no quedan criterios del
+incremento conocidos pendientes. Resultado externo final en .runtime/LAST_DEPLOY.json.
+Servicios4173/4174 conservados. Publicar en GH al finalizar, por pedido explícito.
+
+---
+
 # Cierre de incremento · Archivo/Exportar y publicación autorizada
 
 Pablo autorizó explícitamente «al terminar push a gh»: publicar todos los commits

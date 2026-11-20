@@ -17,11 +17,22 @@ Funciona en el navegador, procesa toda la geometría localmente y se puede despl
 
 ## Primeros pasos
 
-1. Empezá en **Libre** y dibujá un motivo. Usá línea, pluma, lápiz, rectángulo, elipse o polígono.
-2. Abrí el indicador de estilo para elegir trazo, grosor y relleno en el panel derecho. **Vigente · nuevos objetos** controla lo que vas a dibujar; **Selección** modifica los objetos seleccionados. La opción visible de actualizar el estilo vigente define cómo se relacionan ambos.
+1. Abrí **Archivo → Nuevo proyecto**. El estudio empieza en **P3**, con zoom **100%**, origen centrado, estructura visible al **50%** y **Dibujo libre** activo. Arrastrá para dibujar; también podés elegir línea, pluma o figuras.
+2. Elegí color y grosor en **Trazo**, o el color de relleno en **Fill**. **Aplicar a** permite editar los objetos seleccionados o lo que vas a dibujar a continuación.
 3. Abrí **Simetrías → Grupo y red** en la barra izquierda. Pasá por las miniaturas de **Simetría viva** para explorar. Clic, Enter o Espacio confirman el grupo y conservan tus fuentes. Podés seguir dibujando desde cualquier copia.
 4. Elegí **Rellenar región** y hacé clic dentro de una zona cerrada. El color queda aplicado al retirar el puntero; en una pantalla táctil alcanza un toque. Deshacer revierte la operación. No hace falta un botón de confirmación.
 5. Guardá el proyecto en JSON para continuar editándolo o usá **Exportar** para obtener el resultado final.
+
+P3 encabeza el catálogo y **Libre** queda al final; el resto conserva su orden.
+Los proyectos recuperados mantienen su simetría y preferencias guardadas. Al
+arrancar, la herramienta activa es Dibujo libre. En móvil, los paneles empiezan
+plegados para dejar libre el lienzo.
+
+![Estudio nuevo en P3 con dibujo libre, zoom100 y estructura al50](docs/images/new-study-p3.png)
+
+El botón del **cuadrado dividido en cuatro** muestra u oculta la grilla de puntos
+negros cada **5 mm**. Es una referencia visual, independiente de la estructura
+de simetría; **Snap** controla por separado el ajuste a grilla y nodos.
 
 La pluma termina con Enter, se cierra con Shift+Enter o un clic sobre el primer nodo y se cancela con Esc. Espacio permite arrastrar la vista; Ctrl + rueda controla el zoom.
 

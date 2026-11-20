@@ -266,7 +266,9 @@ for (const viewport of [
     await left
       .getByLabel('Nombre del documento', { exact: true })
       .fill(`Proyecto ${viewport.width}`);
-    expect((await project(page))!.metadata.name).toBe(`Proyecto ${viewport.width}`);
+    await expect
+      .poll(async () => (await project(page))!.metadata.name)
+      .toBe(`Proyecto ${viewport.width}`);
     await page.getByRole('tab', { name: 'Aplicar', exact: true }).click();
     await page.getByRole('button', { name: 'Crear polígono regular', exact: true }).click();
     await page.getByRole('button', { name: 'Abrir Aplicación', exact: true }).click();
@@ -482,5 +484,101 @@ for (const width of [1440, 768, 390]) {
       await expect(panel).toHaveCount(0);
       expect(await project(page)).toEqual(before);
     }
+  });
+}
+
+for (const width of [1440, 390]) {
+  test(`estudio nuevo inicia P3 al100 centrado con dibujo libre y estructura50 ${width}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/');
+    let p = (await project(page))!;
+    expect(p.mainSymmetry).toMatchObject({ family: 'wallpaper', group: 'p3' });
+    expect(p.preferences).toMatchObject({ structureVisible: true, structureOpacity: 0.5 });
+    await expect(page.getByRole('button', { name: 'Dibujo libre', exact: true })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await expect(page.getByLabel('Estructura matemática de simetría')).toBeVisible();
+    await expect(page.getByLabel('Opacidad de la estructura', { exact: true })).toHaveValue('0.5');
+    const checkView = async () => {
+      const v = await page.locator('.studio-canvas').evaluate((el) => {
+        const svg = el as SVGSVGElement,
+          b = svg.getBoundingClientRect(),
+          m = svg.getScreenCTM()!;
+        return { scale: m.a, cx: m.e - (b.x + b.width / 2), cy: m.f - (b.y + b.height / 2) };
+      });
+      expect(v.scale).toBeCloseTo(3.779527559, 3);
+      expect(Math.abs(v.cx)).toBeLessThan(1);
+      expect(Math.abs(v.cy)).toBeLessThan(1);
+    };
+    await checkView();
+    const ink = await page.locator('.studio-canvas').evaluate(async (el) => {
+      const svg = el as SVGSVGElement,
+        copy = svg.cloneNode(true) as SVGSVGElement,
+        b = svg.getBoundingClientRect();
+      copy.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+      copy.setAttribute('width', String(b.width));
+      copy.setAttribute('height', String(b.height));
+      const image = new Image();
+      image.src =
+        'data:image/svg+xml,' + encodeURIComponent(new XMLSerializer().serializeToString(copy));
+      await image.decode();
+      const c = document.createElement('canvas');
+      c.width = Math.ceil(b.width);
+      c.height = Math.ceil(b.height);
+      const ctx = c.getContext('2d')!;
+      ctx.fillStyle = getComputedStyle(svg).backgroundColor;
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(image, 0, 0);
+      const point = new DOMPoint(5, 10).matrixTransform(svg.getScreenCTM()!);
+      const pixels = ctx.getImageData(
+        Math.floor(point.x - b.x) - 1,
+        Math.floor(point.y - b.y) - 1,
+        3,
+        3,
+      ).data;
+      for (let i = 0; i < pixels.length; i += 4)
+        if (pixels[i] < 110 && pixels[i + 1] < 110 && pixels[i + 2] < 110 && pixels[i + 3] > 200)
+          return true;
+      return false;
+    });
+    expect(ink).toBe(true);
+    const grid = page.getByRole('button', { name: 'Mostrar grilla', exact: true });
+    await expect(grid).toBeInViewport();
+    await expect(grid).toHaveAttribute('title', /5 mm/);
+    await grid.click();
+    expect((await project(page))!.preferences.grid).toBe(false);
+    expect((await project(page))!.preferences.snap).toBe(p.preferences.snap);
+    await expect(page.getByLabel('Estructura matemática de simetría')).toBeVisible();
+    await page.getByRole('button', { name: 'Acercar', exact: true }).click();
+    await page.locator('.main-menu summary').click();
+    await page.getByRole('button', { name: 'Nuevo proyecto', exact: true }).click();
+    p = (await project(page))!;
+    expect(p.mainSymmetry.group).toBe('p3');
+    await checkView();
+    await expect(page.getByRole('button', { name: 'Dibujo libre', exact: true })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await page.screenshot({ path: `.runtime/p3-start-${width}.png`, animations: 'disabled' });
+    // Recovery preserves the saved document rather than imposing fresh defaults.
+    await page.evaluate(async () => {
+      const { recover, autosave } = await import('/src/persistence/storage.ts');
+      const p = (await recover())!;
+      p.mainSymmetry = { ...p.mainSymmetry, family: 'none', group: 'none' };
+      p.preferences.structureVisible = false;
+      p.preferences.structureOpacity = 0.27;
+      await autosave(p);
+    });
+    await page.reload();
+    p = (await project(page))!;
+    expect(p.mainSymmetry.group).toBe('none');
+    expect(p.preferences.structureOpacity).toBe(0.27);
+    await expect(page.getByRole('button', { name: 'Dibujo libre', exact: true })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
   });
 }

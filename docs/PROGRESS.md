@@ -581,3 +581,46 @@
 - Se publica también este registro de cierre; verificar su ejecución y guardar
   resultado en .runtime/LAST_DEPLOY.json. Servicios LAN se conservan. Cupo bajo10%:
   finalizar después de comprobar despliegue, sin abrir otro incremento.
+
+
+## Estudio nuevo P3 · Implementación y comprobación
+
+- Pedido de Pablo directo y por monitor atendido una sola vez. Catálogo P3 primero,
+  Libre último y resto en el mismo orden. Factory de estudio UI conserva motor
+  neutro y schemaVersion4; no modifica documentos existentes ni migraciones.
+- Nuevos estudios: estructura visible50%, P3, dibujo libre, cámara100% centrada.
+  Nuevo proyecto restablece herramienta/vista aunque se hubiera hecho zoom.
+  Recuperación respeta simetría/opacidad guardadas. En móvil panel inicial plegado
+  y controles de cámara ajustados al ancho disponible.
+- Botón cuadrado identificado como Grilla (5mm), conserva función e independencia
+  de Snap. Pablo pidió negro puro para distinguir puntos a100%; ajuste a cerrar.
+- 206 unitarias/TypeScript y build correctos;5 E2E dirigidas pasan. Dos pruebas
+  nuevas de arranque y dos unidades cubren defaults/orden/persistencia. Regresiones
+  antiguas de Libre ahora explicitan fixture neutro; comprobación asíncrona de
+  autosave conserva igualdad del nombre esperado.
+- Primera corrida general interrumpida por límite del ejecutor; corrida final
+  desacoplada con resultado/exit code persistido en .runtime/p3-full-final-result.json.
+  Fuente y logs locales; servicios activos. Push autorizado al completar checks.
+
+
+- Grilla negra aplicada: radio0,25mm y punto centrado en la celda de repetición,
+  que antes lo recortaba en la esquina. Coordenadas globales5mm preservadas.
+  Dos pruebas de arranque verifican píxeles oscuros reales a100%, además de
+  opacidad, escala/origen y preferencias guardadas. Captura actualizada en README.
+- Selección/origen de regresiones v2 se activa explícitamente con la herramienta
+  correspondiente, conservando todas las aserciones de geometría y capas; el
+  arranque actual es Dibujo libre. Seis estáticas del build final correctas.
+
+
+## Cierre de P3 por defecto y grilla negra · Verificado
+
+- 206 unitarias/TypeScript y build finales correctos.106/106 E2E en una corrida
+  completa de198,5s, exit0; seis estáticas del build final en raíz/subcarpeta.
+  Datos del runner en .runtime/p3-full-final-result.json, logs p3-final-*.
+- Puntos negros completos y alineados con Snap comprobados por píxeles reales a
+  escala100 en1440/390. Nuevos defaults y orden exacto en unidades; cámara y
+  herramienta/Nuevo/recuperación en E2E. Todas las regresiones previas conservadas.
+- README actualizado: inicio en P3, grilla/Snap y captura real de nuevo estudio.
+  AGENTS registra defaults explícitos. Fuente original caratula.jpg/favicon_io.zip
+  intacta, sin seguimiento. Servicios LAN conservados.
+- Se procede al push pedido por Pablo y verificación del workflow FTP real.
