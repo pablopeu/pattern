@@ -44,7 +44,44 @@ async function setup(page: Page, kind = 'lines') {
       pattern.sourceGeometry = ['M0 0L30 0', 'M20 0L20 20', 'M30 20L0 20', 'M0 20L0 0'].map(
         (pathData) => ({ ...geometry('compound'), pathData }),
       );
+    if (kind === 'dense') {
+      p.mainSymmetry = {
+        ...p.mainSymmetry,
+        family: 'wallpaper',
+        group: 'p1',
+        width: 20,
+        height: 20,
+      };
+      pattern.sourceGeometry = [
+        [0, 0, 20, 0],
+        [20, 0, 20, 20],
+        [20, 20, 0, 20],
+        [0, 20, 0, 0],
+      ].map(([x, y, ex, ey]) =>
+        geometry(
+          'path',
+          Array.from({ length: 81 }, (_, i) =>
+            node(x + ((ex - x) * i) / 80, y + ((ey - y) * i) / 80),
+          ),
+        ),
+      );
+    }
+    if (kind === 'dense-closed') {
+      pattern.sourceGeometry = [
+        geometry(
+          'path',
+          Array.from({ length: 1501 }, (_, i) =>
+            node(
+              10 + 8 * Math.cos((i / 1501) * Math.PI * 2),
+              10 + 8 * Math.sin((i / 1501) * Math.PI * 2),
+            ),
+          ),
+          true,
+        ),
+      ];
+    }
     if (kind === 'penrose') {
+      p.mainSymmetry = { ...p.mainSymmetry, family: 'wallpaper', group: 'p1' };
       pattern.sourceGeometry = [];
       pattern.generator = { ...pattern.generator, kind: 'penrose', frequency: 1, radius: 50 };
     }
@@ -586,6 +623,15 @@ test('Fill en Penrose conserva color al soltar y salir, perímetro y persistenci
   await page.getByRole('button', { name: 'Fuente pura', exact: true }).click();
   await page.reload();
   await saved(page);
+  await page.getByRole('button', { name: 'Ajustar al patrón', exact: true }).click();
+  const view = await page.locator('.studio-canvas').evaluate((el) => ({
+    x: (el as SVGSVGElement).viewBox.baseVal.x,
+    y: (el as SVGSVGElement).viewBox.baseVal.y,
+    width: (el as SVGSVGElement).viewBox.baseVal.width,
+    height: (el as SVGSVGElement).viewBox.baseVal.height,
+  }));
+  expect(Math.abs(view.x + view.width / 2)).toBeLessThan(0.001);
+  expect(Math.abs(view.y + view.height / 2)).toBeLessThan(0.001);
   expect(await redAt(page, sample.point.x, sample.point.y)).toBe(true);
   const exports = await page.evaluate(async (sample) => {
     const { prepareExport } = await import('/src/export/svg.ts');
@@ -678,5 +724,29 @@ for (const width of [1440, 390]) {
     await expect(panel).toBeVisible();
     expect(await model(page)).toEqual(before);
     expect(await redAt(page, 30, 30)).toBe(true);
+  });
+}
+
+for (const kind of ['dense', 'dense-closed']) {
+  test(`Fill supera límite global de curvas sin alterar fuentes: ${kind}`, async ({ page }) => {
+    await setup(page, kind);
+    const before = (await model(page)).patterns[0].sourceGeometry;
+    await expect(page.locator('.fill-actions')).toContainText('Fill local');
+    const point = kind === 'dense' ? { x: 4, y: 4 } : { x: 10, y: 10 };
+    await paint(page, point.x, point.y);
+    const after = (await model(page)).patterns[0].sourceGeometry;
+    if (kind === 'dense') {
+      expect(after.slice(1)).toEqual(before);
+      expect(after[0].fillRegion?.status).toBe('linked');
+      expect(await redAt(page, 24, 24)).toBe(true);
+    } else {
+      expect(after).toHaveLength(1);
+      expect(after[0].stroke).toBe(before[0].stroke);
+      expect(after[0].fill).toBe('#ed3040');
+    }
+    expect(await redAt(page, point.x, point.y)).toBe(true);
+    await page.reload();
+    await saved(page);
+    expect(await redAt(page, point.x, point.y)).toBe(true);
   });
 }

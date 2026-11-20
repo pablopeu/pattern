@@ -1,7 +1,9 @@
 import { recalculateRegion } from './recalculate';
-import { buildArrangement, faceIndex, type Arrangement } from './planar';
+import { buildArrangement, faceIndex, isFillBudgetError, type Arrangement } from './planar';
 import {
   collectFillInputs,
+  immediateFillCandidates,
+  localFillArrangement,
   fillCandidatesAt,
   createFaceFill,
   refreshLinkedFills,
@@ -16,6 +18,9 @@ let index: ReturnType<typeof faceIndex> | undefined;
 let arrangement: Arrangement | undefined,
   inputs: CapturedBoundary[] = [],
   layers: FillLayer[] = [];
+let regional = false,
+  view: Bounds,
+  tolerance = 0;
 type Request =
   | { type: 'build'; layers: FillLayer[]; bounds: Bounds; tolerance: number }
   | { type: 'query'; point: Point; id: number }
@@ -27,20 +32,62 @@ self.onmessage = (event: MessageEvent<Request>) => {
   try {
     if (r.type === 'build') {
       layers = r.layers;
-      inputs = collectFillInputs(layers, r.bounds);
+      view = r.bounds;
+      tolerance = r.tolerance;
       index?.dispose();
-      arrangement = buildArrangement(inputs, r.tolerance);
-      index = faceIndex(arrangement);
+      index = undefined;
+      arrangement = undefined;
+      inputs = [];
+      regional = false;
+      try {
+        inputs = collectFillInputs(layers, r.bounds);
+        arrangement = buildArrangement(inputs, r.tolerance);
+        index = faceIndex(arrangement);
+      } catch (error) {
+        if (!isFillBudgetError(error)) throw error;
+        regional = true;
+      }
       self.postMessage({
         type: 'ready',
-        curves: arrangement.curves,
-        faces: arrangement.faces.length,
-        approximate: arrangement.approximate,
+        curves: arrangement?.curves ?? 0,
+        faces: arrangement?.faces.length ?? 0,
+        approximate: arrangement?.approximate ?? false,
+        regional,
       });
     }
-    if (r.type === 'query' && arrangement) {
-      const candidates = fillCandidatesAt(layers, r.point, index!.at(r.point));
-      self.postMessage({ type: 'preview', id: r.id, point: r.point, candidates });
+    if (r.type === 'query') {
+      const immediate = regional ? immediateFillCandidates(layers, r.point) : [];
+      if (regional && immediate[0]?.kind === 'object') {
+        self.postMessage({
+          type: 'preview',
+          id: r.id,
+          point: r.point,
+          candidates: immediate,
+          regional: true,
+          curves: 0,
+          faces: 0,
+        });
+      } else {
+        if (regional) {
+          const local = localFillArrangement(layers, view, r.point, tolerance);
+          inputs = local.inputs;
+          arrangement = local.arrangement;
+          index?.dispose();
+          index = faceIndex(arrangement);
+        }
+        if (arrangement && index) {
+          const candidates = fillCandidatesAt(layers, r.point, index.at(r.point));
+          self.postMessage({
+            type: 'preview',
+            id: r.id,
+            point: r.point,
+            candidates,
+            regional,
+            curves: arrangement.curves,
+            faces: arrangement.faces.length,
+          });
+        }
+      }
     }
     if (r.type === 'create' && arrangement) {
       const layer = layers.find((l) => l.pattern.id === r.patternId),

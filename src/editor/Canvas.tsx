@@ -794,7 +794,11 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     if (s.mode === 'apply' && s.region) b = geometryBounds(s.region.geometry);
     else if (patternView && activePattern.tiling && activePattern.generator.kind !== 'penrose')
       b = tileWorldBounds(activePattern.tiling);
-    else if (patternView && activePattern.symmetry.family === 'wallpaper') {
+    else if (
+      patternView &&
+      activePattern.symmetry.family === 'wallpaper' &&
+      activePattern.generator.kind !== 'penrose'
+    ) {
       const cell = frameBounds(activePattern.symmetry);
       b = {
         x: cell.x - cell.width,

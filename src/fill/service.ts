@@ -6,11 +6,13 @@ import { generate } from '../generators';
 import { resolvePattern } from '../symmetry/config';
 import { IDENTITY, inverse, multiply, apply, type Matrix, type Point } from '../geometry/matrix';
 import { paperPath, paperData, scope } from '../geometry/paper';
-import { clipGeometry } from '../application/clipping';
+import { clipGeometry, geometryBounds } from '../application/clipping';
 import { tileBoundary } from '../tiling/tiles';
 import { profile, type DrawingStyle } from '../app/styles';
 import {
   buildArrangement,
+  facesAt,
+  isFillBudgetError,
   NUMERICAL_CLOSURE,
   type Arrangement,
   type BoundaryInput,
@@ -125,6 +127,91 @@ export function collectFillInputs(layers: FillLayer[], bounds: Bounds): Captured
       }
   }
   return result;
+}
+/** Analyze complete curves around the clicked face when viewport repetition is too dense. */
+export function localFillArrangement(
+  layers: FillLayer[],
+  view: Bounds,
+  point: Point,
+  tolerance: number,
+) {
+  const analyze = (bounds: Bounds) => {
+    const inputs = collectFillInputs(layers, bounds);
+    const arrangement = buildArrangement(inputs, tolerance, undefined, bounds);
+    // Accept only complete faces. All curves that could cut them or form holes
+    // were included; retain original curve indices for persistent links.
+    const faces = arrangement.faces.filter(
+      (f) =>
+        f.bounds.x >= bounds.x - NUMERICAL_CLOSURE &&
+        f.bounds.y >= bounds.y - NUMERICAL_CLOSURE &&
+        f.bounds.x + f.bounds.width <= bounds.x + bounds.width + NUMERICAL_CLOSURE &&
+        f.bounds.y + f.bounds.height <= bounds.y + bounds.height + NUMERICAL_CLOSURE,
+    );
+    return { inputs, arrangement: { ...arrangement, faces } };
+  };
+  // A source face supplies a compact search window, not the final topology.
+  // Validate again against EVERY visible instance/layer crossing that window.
+  let seeds = 0;
+  for (const [layerIndex, { pattern, scene }] of layers.entries()) {
+    if (!scene || scene.tiling) continue;
+    const geometry = scene.generated.geometry.filter(
+      (g) => !g.fillRegion && !g.locked && hasFillInk(g),
+    );
+    if (!geometry.length) continue;
+    const base = geometryBounds(geometry);
+    for (const instance of scene.instances)
+      for (const [placementIndex, placement] of scene.generated.placements.entries()) {
+        const matrix = multiply(instance.matrix, placement),
+          q = apply(inverse(matrix), point);
+        if (
+          q.x < base.x ||
+          q.x > base.x + base.width ||
+          q.y < base.y ||
+          q.y > base.y + base.height ||
+          seeds >= 4
+        )
+          continue;
+        seeds++;
+        try {
+          const inputs = geometry.map((g, i) => ({
+            id: `${pattern.id}/${instance.id}/${placementIndex}/${g.id}`,
+            patternId: pattern.id,
+            shapeId: g.id,
+            geometry: g,
+            matrix,
+            z: layerIndex * 100000 + i,
+          }));
+          for (const face of facesAt(buildArrangement(inputs, tolerance), point)) {
+            const margin =
+              Math.max(face.bounds.width, face.bounds.height) * 0.01 +
+              tolerance +
+              NUMERICAL_CLOSURE;
+            const bounds = {
+              x: face.bounds.x - margin,
+              y: face.bounds.y - margin,
+              width: face.bounds.width + 2 * margin,
+              height: face.bounds.height + 2 * margin,
+            };
+            const local = analyze(bounds);
+            if (facesAt(local.arrangement, point).length) return local;
+          }
+        } catch (error) {
+          if (!isFillBudgetError(error)) throw error;
+        }
+      }
+  }
+  let radius = Math.max(Math.min(view.width, view.height) / 128, tolerance * 2, 1e-4);
+  const reach = Math.max(view.width, view.height, 1) * 8;
+  for (let attempt = 0; attempt < 20; attempt++, radius *= 2) {
+    const local = analyze({
+      x: point.x - radius,
+      y: point.y - radius,
+      width: radius * 2,
+      height: radius * 2,
+    });
+    if (facesAt(local.arrangement, point).length || radius >= reach) return local;
+  }
+  throw Error('No se pudo delimitar una región cerrada alrededor del punto.');
 }
 export function immediateFillCandidates(layers: FillLayer[], point: Point): FillCandidate[] {
   const result: FillCandidate[] = [],
@@ -557,7 +644,24 @@ export function refreshLinkedFills(project: Project): Map<string, Geometry> {
                 known.add(id);
               }
             }
-            return buildArrangement(inputs, fill.closeTolerance);
+            try {
+              return buildArrangement(inputs, fill.closeTolerance);
+            } catch (error) {
+              if (!isFillBudgetError(error)) throw error;
+              const oldPath = paperPath(old, fill.captureMatrix);
+              const b = oldPath.bounds.expand(
+                Math.max(oldPath.bounds.width, oldPath.bounds.height) * 0.1 +
+                  fill.closeTolerance +
+                  NUMERICAL_CLOSURE,
+              );
+              oldPath.remove();
+              return buildArrangement(inputs, fill.closeTolerance, undefined, {
+                x: b.x,
+                y: b.y,
+                width: b.width,
+                height: b.height,
+              });
+            }
           })();
         let face = arrangement.faces.find((f) => f.key === fill.topologyKey);
         if (!face) {

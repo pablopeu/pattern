@@ -5,6 +5,8 @@ import type { Bounds } from '../symmetry/groups';
 /** Curve arrangement uses true cubic sub-curves, never raster pixels or flattened borders. */
 export const PLANAR_LIMITS = { curves: 1200, intersections: 20000, halfEdges: 40000, faces: 2000 };
 export const NUMERICAL_CLOSURE = 1e-6;
+export const isFillBudgetError = (error: unknown): boolean =>
+  error instanceof Error && /^Fill (admite|excede)/.test(error.message);
 export interface BoundaryInput {
   id: string;
   patternId: string;
@@ -81,11 +83,13 @@ export function buildArrangement(
   inputs: BoundaryInput[],
   closeTolerance = 0,
   cancelled: () => boolean = () => false,
+  bounds?: Bounds,
 ): Arrangement {
   if (!Number.isFinite(closeTolerance) || closeTolerance < 0 || closeTolerance > 5)
     throw Error('La tolerancia de cierre debe estar entre 0 y 5 mm.');
   const records: CurveRecord[] = [],
     paths: paper.PathItem[] = [],
+    window = bounds ? new scope.Rectangle(bounds).expand(closeTolerance + NUMERICAL_CLOSURE) : null,
     vertices: Vertex[] = [],
     edges: HalfEdge[] = [],
     buckets = new Map<string, number[]>(),
@@ -119,7 +123,17 @@ export function buildArrangement(
       let index = 0;
       for (const child of path instanceof scope.CompoundPath ? path.children : [path])
         for (const curve of (child as paper.Path).curves) {
-          records.push({ curve, owner: input, index: index++, cuts: [0, 1], overrides: new Map() });
+          const curveIndex = index++;
+          // Keep original curve indices for persistent boundary references. A local
+          // arrangement retains complete Béziers, never clipped/raster approximations.
+          if (window && !curve.bounds.intersects(window)) continue;
+          records.push({
+            curve,
+            owner: input,
+            index: curveIndex,
+            cuts: [0, 1],
+            overrides: new Map(),
+          });
           if (records.length > PLANAR_LIMITS.curves)
             throw Error(
               `Fill admite hasta ${PLANAR_LIMITS.curves} curvas visibles. Acercá el zoom u ocultá conjuntos.`,

@@ -24,7 +24,20 @@ a 4× con los mismos puntos y umbrales RGB (sin relajar la comprobación de tint
 Los siete casos de corrección pasaron juntos, incluidos los tres fallos previos,
 Penrose/exportación/perímetro y nuevos accesos de ambos tamaños. Logs
 fill-final-check.log, fill-full-e2e.log y fill-corrections-e2e.log. Pendiente una
-corrida integrada final sobre la revisión completa y el ZIP actualizado por Pablo.
+corrida integrada posterior dio 98/99: el bloqueo restante en 390px era el
+panel derecho completo tapando la categoría Aplicación, no sólo el rail. Se
+reservó ancho también al overlay derecho. Los cuatro casos UI/Penrose volvieron
+a pasar; Ajustar al patrón ahora prioriza Penrose finito sobre su simetría heredada.
+
+Último feedback: Fill agotaba 1200 curvas al contar las copias de un dibujo
+freeform. Se agrega modo local automático sólo al superar presupuestos globales:
+contorno cerrado se recolorea directamente; caras de varios trazos se buscan
+por ventanas completas, validadas contra todas las capas/copias que las cruzan.
+Béziers e índices originales preservados, límites de seguridad sin aumentar,
+y vínculo refrescado con análisis local cuando el global excede el presupuesto.
+204 unitarias/TypeScript y dos E2E nuevos pasan: cuatro trazos densos repetidos,
+tinta en otra celda y fuente intacta; objeto cerrado de 1501 curvas, tinta,
+perímetro y recarga. Pendiente corrida integrada final y cierre documental.
 
 Footer implementado con el texto pedido en una línea y enlaces de FutureForge
 (Instagram/X/Facebook/WhatsApp/Telegram/PEU.NET), usando estilos e iconos propios

@@ -2538,6 +2538,7 @@ input[type='color']::-webkit-color-swatch {
 @media (max-width: 1200px) {
   .style-dock > .style-panel {
     right: 32px;
+    max-width: calc(100vw - 126px);
   }
 }
 

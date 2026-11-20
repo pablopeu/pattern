@@ -479,3 +479,25 @@
   Otras cuatro cubren Fill repetido, teclado y accesos en 1440/390.
 - README actualizado; capturas en .runtime/fill-penrose-fixed.png y
   right-rail-{1440,390}.png. Se mantiene la revisión LAN, sin push.
+
+
+## Fill con muchas curvas y actualización de iconos · Verificación en curso
+
+- Nuevo favicon_io.zip aplicado byte a byte en sus seis destinos; revisión
+  f6108aa8c880 en favicon/Apple/manifest/Android evita reutilizar caché anterior.
+  Nombres, scope/start_url relativos y colores del manifest preservados;
+  icono.png y caratula.jpg intactos.
+- Revisión integrada anterior:98/99, pendiente móvil corregido al limitar ancho
+  del overlay derecho para dejar accesibles categorías izquierdas. Cuatro casos
+  UI/Penrose pasan después, con ajuste de encuadre de Penrose finito.
+- Por nuevo feedback de Pablo, Fill conserva los presupuestos de seguridad pero
+  analiza una región completa alrededor del clic cuando la vista global es densa.
+  Un objeto cerrado puede recolorearse sin construir el grafo planar. Para varios
+  trazos, un contorno fuente sólo propone la ventana: se valida con TODAS las
+  curvas/capas/instancias que la cruzan, preservando agujeros e índices originales.
+- Los rellenos vinculados se refrescan con el mismo recorte de análisis al exceder
+  presupuesto global. Fuente canónica, Béziers y schemaVersion 4 conservados.
+- 204 unitarias/TypeScript y 2/2 E2E nuevos correctos: área de cuatro trazos densos
+  repetidos y objeto cerrado de1501 curvas. Se verifica otra celda, fuentes intactas,
+  perímetro, tinta raster real, persistencia, agujero y vínculo en unidad geométrica.
+  Evidencias fill-local-{check,e2e,build}.log; corrida integrada final en curso.

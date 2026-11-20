@@ -12,6 +12,7 @@ import {
   equivalentFaces,
   fillCandidatesAt,
   collectFillInputs,
+  localFillArrangement,
   createFaceFill,
   createTileFill,
   immediateFillCandidates,
@@ -463,4 +464,45 @@ it('fondo fijo conserva su fuente y se recorta al material de tesela nuevo', () 
   expect(area(rendered)).toBeGreaterThan(3400);
   expect(fill.nodes).toEqual(nodes);
   expect(area(fill)).toBeCloseTo(3600);
+});
+
+it('Fill local conserva huecos, índices y vínculo al superar 1200 curvas por repetición', () => {
+  const p = newProject(),
+    pattern = p.patterns[0];
+  p.mainSymmetry = { ...p.mainSymmetry, family: 'wallpaper', group: 'p1', width: 20, height: 20 };
+  const sides = [
+    [0, 0, 20, 0],
+    [20, 0, 20, 20],
+    [20, 20, 0, 20],
+    [0, 20, 0, 0],
+  ];
+  pattern.sourceGeometry = sides.map(([x, y, ex, ey]) =>
+    geometry(
+      'path',
+      Array.from({ length: 81 }, (_, i) => node(x + ((ex - x) * i) / 80, y + ((ey - y) * i) / 80)),
+    ),
+  );
+  pattern.sourceGeometry.push({
+    ...geometry('compound', [], true),
+    pathData: 'M14 14L18 14L18 18L14 18Z',
+  });
+  const original = structuredClone(pattern.sourceGeometry);
+  const effective = resolvePattern(pattern, p),
+    scene = buildScene(effective, bounds),
+    layers = [{ pattern: effective, scene }];
+  expect(() => buildArrangement(collectFillInputs(layers, bounds))).toThrow(/1200/);
+  const local = localFillArrangement(layers, bounds, { x: 4, y: 4 }, 0),
+    face = facesAt(local.arrangement, { x: 4, y: 4 })[0];
+  expect(face.area).toBeCloseTo(384);
+  expect(local.arrangement.curves).toBeLessThanOrEqual(1200);
+  expect(face.refs.some((ref) => ref.curve > 20)).toBe(true);
+  const fill = createFaceFill(p, effective, scene, face, local.arrangement, local.inputs, style);
+  expect(fill.fillRegion?.scope).toBe('source');
+  pattern.sourceGeometry.unshift(fill);
+  expect(pattern.sourceGeometry.slice(1)).toEqual(original);
+  expect(refreshLinkedFills(p).get(fill.id)?.fillRegion?.status).toBe('linked');
+  expect(parseProject(serialize(p))).toEqual(p);
+  expect(
+    prepareExport(p, options(pattern.id)).geometries.filter((g) => g.fill === style.fill).length,
+  ).toBeGreaterThan(1);
 });

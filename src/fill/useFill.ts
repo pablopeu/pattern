@@ -147,13 +147,21 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
         ready.current = true;
         setBusy(false);
         setStatus(
-          `${r.faces} caras · ${r.curves} curvas${r.approximate ? ' · cierre aproximado explícito' : ''}`,
+          r.regional
+            ? 'Fill local · elegí una región cerrada.'
+            : `${r.faces} caras · ${r.curves} curvas${r.approximate ? ' · cierre aproximado explícito' : ''}`,
         );
         if (clicks.current[0]) query(clicks.current[0].point);
         else if (latest.current) query(latest.current);
       }
       if (r.type === 'preview' && r.id === queryId.current) {
         setCandidates(r.candidates);
+        if (r.regional)
+          setStatus(
+            r.curves
+              ? `${r.faces} caras · ${r.curves} curvas locales`
+              : 'Objeto cerrado · Fill local',
+          );
         setIndex(0);
         setPosition(r.point);
         queryBusy.current = false;
