@@ -679,3 +679,14 @@
 - Evidencia footer-contrast-build.log y footer-contrast-qa.json en .runtime.
   README/captura actualizados. Sólo CSS; no se repiten suites de geometría.
 - Servicios4173/4174 conservados; push autorizado sin revisar Actions/FTP.
+
+
+## Footer negro y énfasis selectivo · Verificado
+
+- Negrita700 sólo en Patterns, ¿Te gustan los cuchillos? y PEU.NET.
+  Seguime en: conserva peso500. Negro puro en texto/enlaces,12px e iconos más
+  marcados; contraste real19,79:1, altura38px/una línea conservadas.
+- Build/TypeScript y revisión1440/390 correctos: negritas exactas, seis enlaces,
+  scroll móvil hasta PEU.NET y sin overflow de página. Evidencia footer-bold-*
+  en .runtime. README/captura actualizados; servicios LAN siguen activos.
+- Commit/push autorizados; no consultar Actions/FTP. Sin pendientes del pedido.

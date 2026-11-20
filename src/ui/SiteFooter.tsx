@@ -20,7 +20,9 @@ export function SiteFooter() {
           <strong>Patterns</strong> — Hecho con pasión por un cuchillero.
         </span>
         <span className="site-footer-divider" aria-hidden="true" />
-        <span>¿Te gustan los cuchillos? Seguime en:</span>
+        <span>
+          <strong className="site-footer-follow">¿Te gustan los cuchillos?</strong> Seguime en:
+        </span>
         <nav className="site-footer-social" aria-label="Redes de Pablo">
           {socialLinks.map(({ name, href, icon: Icon }) => (
             <a
@@ -31,7 +33,7 @@ export function SiteFooter() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Icon size={16} strokeWidth={1.6} aria-hidden="true" />
+              <Icon size={16} strokeWidth={2} aria-hidden="true" />
             </a>
           ))}
           <a

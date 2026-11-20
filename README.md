@@ -144,7 +144,7 @@ En el panel derecho, **Fill** ofrece color HEX/alfa y opacidad del relleno; **Tr
 
 **Capas** permite ocultar, bloquear y ordenar objetos; **Objeto → Forma** permite nombrarlos. En **Aplicar**, creá o importá un perímetro cerrado y colocá el conjunto sobre él. Una aplicación congelada conserva su simetría efectiva aunque cambie la principal. El exportador permite elegir el conjunto activo o la composición visible; sólo ofrece una celda común cuando su periodicidad está verificada.
 
-El pie de página usa texto oscuro de mayor contraste y reúne los enlaces del autor en una línea: **Patterns — Hecho
+El pie de página usa negro de alto contraste y destaca en negrita Patterns, ¿Te gustan los cuchillos? y PEU.NET; «Seguime en:» conserva el peso normal. Reúne los enlaces del autor en una línea: **Patterns — Hecho
 con pasión por un cuchillero. ¿Te gustan los cuchillos? Seguime en:**, con
 Instagram, X, Facebook, WhatsApp, Telegram y PEU.NET. En pantallas estrechas
 se puede recorrer horizontalmente. Los iconos de pestaña, favoritos y pantalla

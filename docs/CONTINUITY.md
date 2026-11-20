@@ -1,3 +1,18 @@
+# Footer negro y negritas selectivas · Verificado
+
+Pedido de Pablo y aclaración incorporada: Patterns, «¿Te gustan los cuchillos?»
+y PEU.NET en peso700. «Seguime en:» y descripción en peso500. Texto/enlaces
+negro puro, tamaño12px; iconos con trazo2. Contraste real19,79:1 sobre el fondo
+claro. Conserva una línea/38px y scroll horizontal propio en móvil.
+Build/TypeScript correctos; estilos y revisión visual real1440/390, seis enlaces,
+negritas exactas y ausencia de overflow de página comprobados. Capturas incluyen
+el footer móvil desplazado hasta PEU.NET. Evidencia .runtime/footer-bold-qa.json,
+footer-bold-build.log y footer-bold-*.png. README y captura de inicio actualizados.
+Ajuste de presentación: no se repiten suites geométricas. Servicios4173/4174 vivos.
+Push autorizado sin inspeccionar Actions/FTP; cierre en .runtime/LAST_PUSH.json.
+
+---
+
 # Footer con mayor contraste · Verificado
 
 Pedido de Pablo: texto del pie más oscuro. Se usa --ink (#24382b) sobre
