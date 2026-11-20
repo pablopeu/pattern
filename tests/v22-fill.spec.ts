@@ -739,6 +739,10 @@ for (const kind of ['dense', 'dense-closed']) {
       expect(after.slice(1)).toEqual(before);
       expect(after[0].fillRegion?.status).toBe('linked');
       expect(await redAt(page, 24, 24)).toBe(true);
+      await page.getByRole('button', { name: 'Rellenar región', exact: true }).click();
+      await page.getByRole('button', { name: 'Recalcular y vincular región', exact: true }).click();
+      await expect(page.locator('.toast')).toContainText('Región recalculada');
+      expect((await model(page)).patterns[0].sourceGeometry[0].id).toBe(after[0].id);
     } else {
       expect(after).toHaveLength(1);
       expect(after[0].stroke).toBe(before[0].stroke);

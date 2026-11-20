@@ -4,8 +4,8 @@ import { buildScene } from '../patterns/engine';
 import { resolvePattern } from '../symmetry/config';
 import { paperPath, scope } from '../geometry/paper';
 import { type Matrix } from '../geometry/matrix';
-import { buildArrangement, type BoundaryRef } from './planar';
-import { collectFillInputs, createFaceFill, createTileFill } from './service';
+import { buildArrangement, isFillBudgetError, type BoundaryRef } from './planar';
+import { collectFillInputs, createFaceFill, createTileFill, localFillArrangement } from './service';
 /** References and boundary families must still identify the same face; overlap only disambiguates. */
 const families = (refs: BoundaryRef[]) =>
   JSON.stringify(
@@ -59,8 +59,21 @@ export function recalculateRegion(project: Project, shapeId: string, matrix: Mat
           const pattern = resolvePattern(raw, project);
           return { pattern, scene: buildScene(pattern, bounds) };
         }),
-      inputs = collectFillInputs(layers, bounds),
-      arrangement = buildArrangement(inputs, old.fillRegion.closeTolerance),
+      { inputs, arrangement } = (() => {
+        try {
+          const inputs = collectFillInputs(layers, bounds);
+          return { inputs, arrangement: buildArrangement(inputs, old.fillRegion!.closeTolerance) };
+        } catch (error) {
+          if (!isFillBudgetError(error)) throw error;
+          const point = previous.interiorPoint;
+          return localFillArrangement(
+            layers,
+            bounds,
+            { x: point.x, y: point.y },
+            old.fillRegion!.closeTolerance,
+          );
+        }
+      })(),
       signature = families(old.fillRegion.refs),
       contours = previous instanceof scope.CompoundPath ? previous.children.length : 1;
     const matches = arrangement.faces.filter((face) => {

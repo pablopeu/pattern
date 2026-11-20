@@ -501,3 +501,16 @@
   repetidos y objeto cerrado de1501 curvas. Se verifica otra celda, fuentes intactas,
   perímetro, tinta raster real, persistencia, agujero y vínculo en unidad geométrica.
   Evidencias fill-local-{check,e2e,build}.log; corrida integrada final en curso.
+
+
+## Recálculo manual de Fill denso · Verificado
+
+- Recalcular y vincular región también usa el análisis local si el presupuesto
+  global se excede. Conserva ID, familia de límites, agujeros y comprobación de
+  solapamiento; no acepta una cara por cercanía al punto solamente.
+- 204 unitarias/TypeScript correctos. La unidad de geometría densa comprueba
+  recálculo con hueco y área exacta; los dos E2E de densidad vuelven a pasar,
+  incluyendo el botón real y persistencia. Build final correcto.
+- Corrida integrada previa a este ajuste puntual:101/101, incluida navegación
+  móvil corregida. Se verificó el ajuste después con unidad y E2E dirigido.
+  Logs fill-local-final-{check,build}.log y fill-local-recalculate-e2e.log.

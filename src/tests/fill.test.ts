@@ -501,6 +501,10 @@ it('Fill local conserva huecos, índices y vínculo al superar 1200 curvas por r
   pattern.sourceGeometry.unshift(fill);
   expect(pattern.sourceGeometry.slice(1)).toEqual(original);
   expect(refreshLinkedFills(p).get(fill.id)?.fillRegion?.status).toBe('linked');
+  const recalculated = recalculateRegion(p, fill.id, fill.fillRegion!.captureMatrix);
+  expect(recalculated.id).toBe(fill.id);
+  expect(recalculated.fillRegion?.status).toBe('linked');
+  expect(area(recalculated)).toBeCloseTo(384);
   expect(parseProject(serialize(p))).toEqual(p);
   expect(
     prepareExport(p, options(pattern.id)).geometries.filter((g) => g.fill === style.fill).length,
