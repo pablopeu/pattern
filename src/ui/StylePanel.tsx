@@ -578,6 +578,9 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
     <aside className="style-panel" aria-label="Panel de estilos">
       <header>
         <strong>Estilos</strong>
+        <div className="panel-style-summary">
+          <StyleIndicator studio={s} />
+        </div>
         <button
           aria-label="Fijar panel de estilos"
           aria-pressed={s.project.preferences.stylePanelPinned}
@@ -646,7 +649,7 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
               <strong>{g.name}</strong>
               <p>
                 {g.fillRegion!.scope === 'orbit'
-                  ? 'Órbita concreta'
+                  ? `Órbita concreta · ${g.fillRegion!.orbitMatrices.length} copias`
                   : g.fillRegion!.scope === 'tile'
                     ? 'Interior de tesela'
                     : 'Fuente canónica'}{' '}

@@ -356,3 +356,111 @@ it('órbita concreta verifica también una copia reflejada con orientación opue
   expect(fill.fillRegion?.scope).toBe('orbit');
   expect(fill.fillRegion?.orbitMatrices).toHaveLength(2);
 });
+
+it('vínculo de cara entre teselas sigue perfiles válidos y no depende del overlay de contorno', () => {
+  const p = newProject(),
+    pattern = p.patterns[0];
+  pattern.tiling = newTiling('square');
+  pattern.sourceGeometry = [
+    geometry('path', [node(-5, 15), node(65, 15)]),
+    geometry('path', [node(15, -5), node(15, 65)]),
+  ];
+  const view = { x: -20, y: -20, width: 130, height: 130 },
+    effective = resolvePattern(pattern, p),
+    scene = buildScene(effective, view),
+    inputs = collectFillInputs([{ pattern: effective, scene }], view),
+    arrangement = buildArrangement(inputs),
+    face = facesAt(arrangement, { x: 45, y: 45 })[0],
+    fill = createFaceFill(p, effective, scene, face, arrangement, inputs, style);
+  pattern.sourceGeometry.unshift(fill);
+  expect(fill.fillRegion?.scope).toBe('orbit');
+  expect(area(fill)).toBeCloseTo(3600);
+  pattern.tiling.showOutline = !pattern.tiling.showOutline;
+  let update = refreshLinkedFills(p).get(fill.id)!;
+  expect(update.fillRegion?.status).toBe('linked');
+  pattern.sourceGeometry[0] = update;
+  pattern.tiling.edges[0][1].y = 0.02;
+  update = refreshLinkedFills(p).get(fill.id)!;
+  expect(update.fillRegion?.status).toBe('linked');
+  expect(area(update)).toBeCloseTo(3600);
+});
+it('una órbita vinculada no propaga un contorno editado donde dejó de ser una cara', () => {
+  const p = newProject(),
+    a = p.patterns[0],
+    b = newPattern();
+  p.patterns.push(b);
+  a.generator.kind = 'freeform';
+  a.generator.placements = [IDENTITY, translate(40, 0)];
+  a.sourceGeometry = ['M0 0L30 0', 'M0 20L30 20'].map((pathData) => ({
+    ...geometry('compound'),
+    pathData,
+  }));
+  b.sourceGeometry = [0, 20, 40, 60].map((x) => geometry('path', [node(x, 0), node(x, 20)]));
+  const view = { x: -10, y: -10, width: 90, height: 50 },
+    layers = p.patterns.map((raw) => {
+      const pattern = resolvePattern(raw, p);
+      return { pattern, scene: buildScene(pattern, view) };
+    }),
+    inputs = collectFillInputs(layers, view),
+    arrangement = buildArrangement(inputs),
+    face = facesAt(arrangement, { x: 10, y: 10 })[0],
+    fill = createFaceFill(p, layers[0].pattern, layers[0].scene, face, arrangement, inputs, style);
+  a.sourceGeometry.unshift(fill);
+  expect(fill.fillRegion?.orbitMatrices).toHaveLength(2);
+  b.sourceGeometry[1].transform = translate(5, 0);
+  const update = refreshLinkedFills(p).get(fill.id)!;
+  expect(update.fillRegion?.status).toBe('stale');
+  expect(update.fillRegion?.reason).toContain('órbita');
+  expect(update.pathData).toBe(fill.pathData);
+});
+
+it('recálculo vinculado respeta el marco afín editable del objeto', () => {
+  const { p, fill } = prepared();
+  fill.transform = translate(5, 7);
+  const update = refreshLinkedFills(p).get(fill.id)!;
+  expect(update.fillRegion?.status).toBe('linked');
+  expect(update.transform).toEqual(fill.transform);
+  const path = paperPath(update);
+  expect(path.bounds.x).toBeCloseTo(0);
+  expect(path.bounds.y).toBeCloseTo(0);
+  expect(path.bounds.width).toBeCloseTo(20);
+  path.remove();
+  const tileProject = newProject(),
+    tile = tileProject.patterns[0];
+  tile.tiling = newTiling('square');
+  const effective = resolvePattern(tile, tileProject),
+    scene = buildScene(effective, bounds),
+    candidate = immediateFillCandidates([{ pattern: effective, scene }], { x: 10, y: 10 }).find(
+      (c) => c.kind === 'tile',
+    )!;
+  if (candidate.kind !== 'tile') throw Error();
+  const background = createTileFill(tileProject, tile, candidate, style);
+  background.transform = scale(2, 2);
+  tile.sourceGeometry = [background];
+  const updated = refreshLinkedFills(tileProject).get(background.id)!;
+  expect(area(updated)).toBeCloseTo(3600);
+  const rendered = buildScene(resolvePattern(tile, tileProject), bounds).fills[0].geometry;
+  expect(area(rendered)).toBeCloseTo(3600);
+});
+it('fondo fijo conserva su fuente y se recorta al material de tesela nuevo', () => {
+  const p = newProject(),
+    pattern = p.patterns[0];
+  pattern.tiling = newTiling('square');
+  p.preferences.fillLinkedDefault = false;
+  const effective = resolvePattern(pattern, p),
+    scene = buildScene(effective, bounds),
+    candidate = immediateFillCandidates([{ pattern: effective, scene }], { x: 10, y: 10 }).find(
+      (c) => c.kind === 'tile',
+    )!;
+  if (candidate.kind !== 'tile') throw Error();
+  const fill = createTileFill(p, pattern, candidate, style),
+    nodes = structuredClone(fill.nodes);
+  pattern.sourceGeometry = [fill];
+  pattern.tiling.edges[0][1].y = 0.03;
+  expect(refreshLinkedFills(p).has(fill.id)).toBe(false);
+  const rendered = buildScene(resolvePattern(pattern, p), bounds).fills[0].geometry;
+  expect(area(rendered)).toBeLessThan(3600);
+  expect(area(rendered)).toBeGreaterThan(3400);
+  expect(fill.nodes).toEqual(nodes);
+  expect(area(fill)).toBeCloseTo(3600);
+});

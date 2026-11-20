@@ -273,3 +273,50 @@ test('trazo excesivo muestra aviso corregible y no desmonta lienzo ni galería',
   expect((await model(page)).patterns[0].sourceGeometry[0].strokeDash).toEqual([]);
   expect(errors).toEqual([]);
 });
+
+test('Pluma mantiene borrador y coordenadas al cerrar estilos con Escape desde un input', async ({
+  page,
+}) => {
+  await setup(page);
+  await page.getByRole('button', { name: 'Pluma Bézier', exact: true }).click();
+  let q = await screen(page, 0, 0);
+  await page.mouse.click(q.x, q.y);
+  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
+  await panel(page).getByLabel('Grosor de trazo', { exact: true }).fill('2');
+  await page.keyboard.press('Escape');
+  await expect(panel(page)).not.toBeVisible();
+  await expect(page.getByRole('button', { name: 'Pluma Bézier', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  q = await screen(page, 30, 10);
+  await page.mouse.click(q.x, q.y);
+  await page.keyboard.press('Enter');
+  const g = (await model(page)).patterns[0].sourceGeometry[0];
+  expect(g.nodes).toHaveLength(2);
+  expect(g.nodes[0].x).toBeCloseTo(0);
+  expect(g.nodes[0].y).toBeCloseTo(0);
+  expect(g.nodes[1].x).toBeCloseTo(30);
+  expect(g.nodes[1].y).toBeCloseTo(10);
+  expect(g.strokeWidth).toBe(0.65);
+  expect((await model(page)).drawingStyle.strokeWidth).toBe(2);
+  q = await screen(page, 50, 0);
+  await page.mouse.click(q.x, q.y);
+  q = await screen(page, 70, 10);
+  await page.mouse.click(q.x, q.y);
+  await page.keyboard.press('Enter');
+  expect((await model(page)).patterns[0].sourceGeometry[1].strokeWidth).toBe(2);
+});
+test('indicador permanece visible y accionable con panel superpuesto a768px', async ({ page }) => {
+  await setup(page);
+  await page.setViewportSize({ width: 768, height: 800 });
+  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
+  const indicator = panel(page).getByRole('button', { name: 'Abrir panel de estilos' });
+  await expect(indicator).toBeVisible();
+  await expect(indicator.locator('.style-chip').first()).toBeVisible();
+  await expect(indicator.getByLabel('Patrón de línea vigente')).toBeVisible();
+  await page.screenshot({ path: 'test-results/v22-indicator-open-768.png' });
+  await indicator.click();
+  await expect(panel(page)).not.toBeVisible();
+  await expect(page.getByRole('button', { name: 'Abrir panel de estilos' })).toBeVisible();
+});

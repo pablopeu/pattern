@@ -1879,3 +1879,5 @@ input[type='color']::-webkit-color-swatch {
 .tool-fill { cursor:crosshair; }
 .stroke-preview-warning { position:absolute; left:12px; right:12px; bottom:65px; z-index:20; display:flex; gap:10px; align-items:center; padding:9px 12px; border:1px solid #bd8d49; border-radius:6px; background:#fff6e4f5; color:#765022; font-size:12px; }
 .stroke-preview-warning span { flex:1; } .stroke-preview-warning button { padding:5px; border:1px solid #bd8d49; border-radius:4px; }
+.panel-style-summary { display:none; }
+@media(max-width:1200px) { .style-panel>header>strong { display:none; } .panel-style-summary { display:block; flex:1; min-width:0; } .panel-style-summary .style-indicator { padding:0; } .workspace:has(> .style-panel) .workspace-actions>.style-indicator { visibility:hidden; } }

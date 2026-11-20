@@ -43,6 +43,13 @@ async function setup(page: Page, kind = 'lines') {
       pattern.sourceGeometry = ['M0 0L30 0', 'M20 0L20 20', 'M30 20L0 20', 'M0 20L0 0'].map(
         (pathData) => ({ ...geometry('compound'), pathData }),
       );
+    if (kind === 'tile-grid') {
+      pattern.tiling = newTiling('square');
+      pattern.sourceGeometry = [
+        geometry('path', [node(-5, 15), node(65, 15)]),
+        geometry('path', [node(15, -5), node(15, 65)]),
+      ];
+    }
     if (kind === 'bezier')
       pattern.sourceGeometry = ['M0 0C0 -10 20 -10 20 0', 'M20 0C20 10 0 10 0 0'].map(
         (pathData) => ({ ...geometry('compound'), pathData }),
@@ -429,4 +436,88 @@ test.describe('Fill táctil', () => {
     await expect.poll(async () => (await model(page)).patterns[0].sourceGeometry.length).toBe(5);
     expect(await redAt(page, 10, 10)).toBe(true);
   });
+});
+
+test('Fill cruza varias teselas y conserva vínculo al cambiar un perfil de borde', async ({
+  page,
+}) => {
+  await setup(page, 'tile-grid');
+  await paint(page, 45, 45);
+  let p = await model(page);
+  const initial = p.patterns[0].sourceGeometry.find((g) => g.fillRegion)!;
+  expect(p.patterns[0].sourceGeometry).toHaveLength(3);
+  expect(initial.fillRegion?.scope).toBe('orbit');
+  const worldBounds = await page.evaluate(async (g) => {
+    const { paperPath } = await import('/src/geometry/paper.ts');
+    const p = paperPath(g, g.fillRegion!.captureMatrix),
+      b = p.bounds;
+    p.remove();
+    return { x: b.x, y: b.y, width: b.width, height: b.height };
+  }, initial);
+  expect(worldBounds.x).toBeCloseTo(15);
+  expect(worldBounds.y).toBeCloseTo(15);
+  expect(worldBounds.width).toBeCloseTo(60);
+  expect(worldBounds.height).toBeCloseTo(60);
+  expect(await redAt(page, 65, 65)).toBe(true);
+  await page.locator('.tile-panel>summary').click();
+  await page.getByLabel('Contornos de teselas', { exact: true }).uncheck();
+  await expect
+    .poll(
+      async () =>
+        (await model(page)).patterns[0].sourceGeometry.find((g) => g.id === initial.id)?.fillRegion
+          ?.status,
+    )
+    .toBe('linked');
+  await page.getByLabel('Editar bordes de tesela', { exact: true }).check();
+  await page.getByLabel('Desvío del borde', { exact: true }).fill('2');
+  await page.getByLabel('Editar bordes de tesela', { exact: true }).uncheck();
+  await expect
+    .poll(async () => {
+      const p = await model(page);
+      return p.patterns[0].sourceGeometry.find((g) => g.id === initial.id)?.fillRegion?.context;
+    })
+    .not.toBe(initial.fillRegion?.context);
+  p = await model(page);
+  expect(p.patterns[0].sourceGeometry.find((g) => g.id === initial.id)?.fillRegion?.status).toBe(
+    'linked',
+  );
+  expect(await redAt(page, 45, 45)).toBe(true);
+  await page.screenshot({ path: 'test-results/v22-fill-across-curved-tiles.png' });
+});
+test('Fill de tesela fijo conserva fuente al editar borde y el vinculado cubre el material nuevo', async ({
+  page,
+}) => {
+  await setup(page, 'tile');
+  await page.getByRole('button', { name: 'Abrir panel de estilos' }).click();
+  await page
+    .getByRole('complementary', { name: 'Panel de estilos' })
+    .getByLabel('Nuevos rellenos vinculados a sus límites')
+    .uncheck();
+  await page.getByRole('button', { name: 'Cerrar panel de estilos' }).click();
+  await paint(page, 10, 10);
+  const before = (await model(page)).patterns[0].sourceGeometry[0];
+  expect(before.fillRegion?.linked).toBe(false);
+  await page.locator('.tile-panel>summary').click();
+  await page.getByLabel('Contornos de teselas', { exact: true }).uncheck();
+  await page.getByLabel('Editar bordes de tesela', { exact: true }).check();
+  await page.getByLabel('Desvío del borde', { exact: true }).fill('2');
+  await page.getByLabel('Editar bordes de tesela', { exact: true }).uncheck();
+  let p = await model(page);
+  expect(p.patterns[0].sourceGeometry[0].nodes).toEqual(before.nodes);
+  expect(p.patterns[0].sourceGeometry[0].fillRegion?.status).toBe('fixed');
+  expect(await redAt(page, 30, 1)).toBe(false);
+  expect(await redAt(page, 30, 5)).toBe(true);
+  await setup(page, 'tile');
+  await paint(page, 10, 10);
+  await page.locator('.tile-panel>summary').click();
+  await page.getByLabel('Contornos de teselas', { exact: true }).uncheck();
+  await page.getByLabel('Editar bordes de tesela', { exact: true }).check();
+  await page.getByLabel('Desvío del borde', { exact: true }).fill('2');
+  await page.getByLabel('Editar bordes de tesela', { exact: true }).uncheck();
+  await expect
+    .poll(async () => JSON.stringify((await model(page)).patterns[0].sourceGeometry[0].nodes))
+    .not.toBe(JSON.stringify(before.nodes));
+  expect(await redAt(page, 30, 1)).toBe(true);
+  p = await model(page);
+  expect(p.patterns[0].sourceGeometry[0].fillRegion?.status).toBe('linked');
 });

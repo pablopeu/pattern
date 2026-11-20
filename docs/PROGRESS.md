@@ -202,3 +202,11 @@
 - Corregida comparación de contexto de todos los inputs capturados, incluidos conjuntos presentes que no delimitan la cara seleccionada.
 - **187 unitarias correctas**. Los **13 E2E de Fill** pasaron entre corrida y repetición de reflexión tras corregir orientación: Bézier exacta, huecos nonzero, abertura/tolerancia explícita sin cambiar fuentes, caras entre instancias/celdas, reflejo/rotación y selección, recoloreo sin duplicado, fondo en miniatura, recálculo+undo/redo, cancelación tardía y primer toque/confirmación táctil reales. Build de cierre en verificación. Continúa auditoría de teselas curvas, export externa y producción estática.
 - Build de cierre de este incremento correcto; se registra commit y push en main.
+
+## PRD v2.2 · Teselas curvas, marcos afines y panel superpuesto
+
+- Vínculos de cara comparan configuración geométrica: showOutline es preferencia visual y no invalida una región. Cambios de perfil de borde siguen la red de tesela existente si la cara sigue siendo inequívoca. Se revalida toda la órbita concreta tras editar límites; si alguna copia deja de ser cara, se conserva el último contorno y se marca stale.
+- La actualización conserva el marco afín editable de la región usando la transformación inversa correspondiente. Los fondos fijos se recortan al material nuevo sin alterar su fuente; los vinculados cubren el interior actualizado.
+- A768px el indicador se muestra dentro de la cabecera del panel superpuesto y vuelve a la barra cuando se cierra. No queda tapado ni pierde capacidad de abrir/cerrar el panel.
+- **191 unitarias correctas**. Cuatro E2E dirigidos pasaron entre corrida y repetición: cara entre distintas teselas con perfil modificado, fondo fijo/vinculado con tinta real, indicador superpuesto accionable, y Pluma/Escape desde un input sin cambio de coordenadas. Se corrigió una expectativa de QA: cambiar el vigente sin selección no altera retroactivamente el trazo iniciado; se comprobó que el siguiente sí utiliza el grosor nuevo.
+- Pendiente: auditar precisión física acumulada (contorno/afinidades/templates), validación externa SVG/DXF/raster, builds estáticos raíz/subdirectorio y regresión final.

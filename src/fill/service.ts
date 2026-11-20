@@ -1,3 +1,4 @@
+import { tileFillContour } from './coordinates';
 import { geometry, type Geometry, type Pattern, type Project } from '../app/model';
 import type { Scene } from '../patterns/engine';
 import { expandedTransforms } from '../patterns/engine';
@@ -254,6 +255,40 @@ export function fillContext(
     }),
   );
 }
+/** Compare geometric configuration; tile outlines are a view preference. Profiles may follow a fixed tile lattice. */
+export function sameFillContext(a: string, b: string, followTileProfiles = false): boolean {
+  if (a === b) return true;
+  const sorted = (v: unknown): unknown =>
+    Array.isArray(v)
+      ? v.map(sorted)
+      : v && typeof v === 'object'
+        ? Object.fromEntries(
+            Object.entries(v)
+              .sort(([a], [b]) => a.localeCompare(b))
+              .map(([k, value]) => [k, sorted(value)]),
+          )
+        : v;
+  const normalized = (text: string) => {
+    const rows = JSON.parse(text) as Record<string, unknown>[];
+    if (!Array.isArray(rows)) throw Error();
+    return sorted(
+      rows.map((row) => {
+        if (!row || typeof row !== 'object') throw Error();
+        const tile = row.tiling;
+        if (!tile || typeof tile !== 'object' || Array.isArray(tile)) return row;
+        const relevant = { ...tile } as Record<string, unknown>;
+        delete relevant.showOutline;
+        if (followTileProfiles) delete relevant.edges;
+        return { ...row, tiling: relevant };
+      }),
+    );
+  };
+  try {
+    return JSON.stringify(normalized(a)) === JSON.stringify(normalized(b));
+  } catch {
+    return false;
+  }
+}
 export function equivalentFaces(a: string, b: string): boolean {
   const p = new scope.CompoundPath({ pathData: a, insert: false }),
     q = new scope.CompoundPath({ pathData: b, insert: false });
@@ -465,24 +500,17 @@ export function refreshLinkedFills(project: Project): Map<string, Geometry> {
           stale('Cambió la familia de tesela; se conserva el contorno anterior.');
           continue;
         }
-        const b = tileBoundary(pattern.tiling);
-        g.nodes = b.nodes;
-        g.kind = b.kind;
-        g.pathData = undefined;
-        g.parameters = undefined;
-        g.closed = true;
+        Object.assign(g, tileFillContour(tileBoundary(pattern.tiling), g.transform));
         fill.status = 'linked';
         fill.reason = undefined;
         patches.set(g.id, g);
         continue;
       }
-      if (
-        fill.context !==
-        fillContext(
-          project,
-          fill.inputs.map((r) => r.patternId),
-        )
-      ) {
+      const currentContext = fillContext(
+        project,
+        fill.inputs.map((r) => r.patternId),
+      );
+      if (!sameFillContext(fill.context, currentContext, true)) {
         stale('Cambió la configuración de los límites; se conserva el último contorno válido.');
         continue;
       }
@@ -542,10 +570,50 @@ export function refreshLinkedFills(project: Project): Map<string, Geometry> {
           if (compatible.length === 1) face = compatible[0];
         }
         if (!face) {
+          const previousPath = paperPath(old, fill.captureMatrix),
+            previous = faceGeometry(paperData(previousPath));
+          previousPath.remove();
+          const owners = [...new Set(fill.refs.map((r) => r.patternId + '/' + r.shapeId))]
+              .sort()
+              .join('|'),
+            sameContour = arrangement.faces.filter(
+              (f) =>
+                [...new Set(f.refs.map((r) => r.patternId + '/' + r.shapeId))].sort().join('|') ===
+                  owners && equivalentFaces(previous.pathData!, f.pathData),
+            );
+          if (sameContour.length === 1) face = sameContour[0];
+        }
+        if (!face) {
           stale('La cara cambió de topología; se conserva el último contorno válido.');
           continue;
         }
-        const contour = faceGeometry(face.pathData, inverse(fill.captureMatrix));
+        const contour = faceGeometry(
+          face.pathData,
+          inverse(multiply(fill.captureMatrix, g.transform)),
+        );
+        if (fill.scope === 'orbit') {
+          const valid = fill.orbitMatrices.every((matrix) => {
+            const world = faceGeometry(contour.pathData!, multiply(matrix, g.transform)),
+              path = paperPath(world),
+              b = path.bounds;
+            path.remove();
+            return arrangement.faces.some(
+              (f) =>
+                Math.abs(f.bounds.x - b.x) < 1e-5 &&
+                Math.abs(f.bounds.y - b.y) < 1e-5 &&
+                Math.abs(f.bounds.width - b.width) < 1e-5 &&
+                Math.abs(f.bounds.height - b.height) < 1e-5 &&
+                equivalentFaces(world.pathData!, f.pathData),
+            );
+          });
+          if (!valid) {
+            stale(
+              'La órbita ya no reproduce todas las caras verificadas. Se conserva el contorno anterior; podés recalcular la región.',
+            );
+            continue;
+          }
+        }
+        fill.context = currentContext;
         g.kind = contour.kind;
         g.nodes = [];
         g.pathData = contour.pathData;

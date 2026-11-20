@@ -1,3 +1,4 @@
+import { tileFillContour } from '../fill/coordinates';
 import {
   tileBoundary,
   tileBounds,
@@ -88,14 +89,7 @@ export function buildScene(pattern: Pattern, bounds: Bounds, prepared?: Generate
     const fillGeometry = (g: Geometry): Geometry => {
       if (g.fillRegion!.scope !== 'tile') return g;
       if (g.fillRegion!.linked && g.fillRegion!.status !== 'stale')
-        return {
-          ...g,
-          nodes: boundary.nodes,
-          kind: boundary.kind,
-          pathData: undefined,
-          parameters: undefined,
-          closed: true,
-        };
+        return { ...g, ...tileFillContour(boundary, g.transform) };
       const parts = clipGeometry(
         { ...g, stroke: 'none' },
         { id: 'tile-fill-clip', name: 'Interior material', geometry: [boundary] },
