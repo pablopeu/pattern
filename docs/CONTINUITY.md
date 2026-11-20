@@ -13,7 +13,17 @@ explícito si el panel estaba fijado. No se reabre automáticamente al salir.
 fijado, clic/Enter, menú Archivo accionable sin intercepción, Exportar/Escape,
 proyecto y selección conservados. Logs menu-panel-{check,build,e2e}.log.
 Cupo91% usado al cierre: terminar documentación/commit/push autorizado y verificar
-FTP; no iniciar otro incremento. Estado del push/despliegue se registra al cerrar.
+FTP; no iniciar otro incremento.
+
+Publicado main8614d951533696df410bae569f3b63f242e87688, incluidos los ocho commits
+pendientes. Deploy FTP44773564280 completó con success (push): instalación,
+3 pruebas de despliegue,204 unitarias/TypeScript, build y transferencia correctos.
+https://github.com/pablopeu/pattern/actions/runs/44773564280
+HTML público https://peu.net/pattern/ sirve el mismo bundle que el build local,
+carátula OG e iconos revisión f6108aa8c880. Evidencia .runtime/published-final.html.
+El commit documental de cierre también se publica y su ejecución FTP se comprueba
+antes de finalizar; resultado final se conserva en .runtime/LAST_DEPLOY.json.
+Servicios LAN siguen activos. Incremento terminado, sin otros trabajos pendientes.
 
 ---
 

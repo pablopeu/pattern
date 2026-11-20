@@ -568,3 +568,16 @@
 - Pablo autorizó «al terminar push a gh»: publicar todo el historial pendiente,
   levantando la espera previa de revisión LAN. Verificar el despliegue FTP real.
 - Monitor indicó91% usado. Cierre del incremento; sin iniciar otro trabajo.
+
+
+## Publicación real del feedback y presentación · Correcta
+
+- Main8614d95 publicado con los ocho commits antes pendientes. GitHub Actions
+  Deploy FTP44773564280 terminó en success:3 tests de despliegue,204 unitarias,
+  TypeScript, build y transferencia FTP reales correctos.
+- https://github.com/pablopeu/pattern/actions/runs/44773564280.
+  Hosting https://peu.net/pattern/ confirmado: bundle idéntico al build local,
+  OG/caratula.jpg e iconos f6108aa8c880 presentes.
+- Se publica también este registro de cierre; verificar su ejecución y guardar
+  resultado en .runtime/LAST_DEPLOY.json. Servicios LAN se conservan. Cupo bajo10%:
+  finalizar después de comprobar despliegue, sin abrir otro incremento.
