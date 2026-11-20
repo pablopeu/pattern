@@ -139,3 +139,27 @@ Auditoría visual: `.runtime/v21-review-1440.png`, `v21-review-1366.png` y `v21-
 Cierre v2.1: **140 unitarias, 50 E2E y 4 tests de monitor correctos**. Producción: **4 pruebas estáticas correctas**, dos por raíz/subdirectorio, manteniendo el caso previo y añadiendo logo local, tesela curva, exclusión de guías y contornos explícitos desde el worker. TypeScript y build correctos.
 
 El validador independiente ahora produce también tile-editable.svg, tile-expanded.svg, tile.png y tile.dxf. CairoSVG y el raster del navegador muestran tinta real de un hexágono Bézier a 787×630; ezdxf comprueba 58 polilíneas 2D en mm dentro de la región de 100×80. Se sigue verificando la aplicación irregular v1 a 200 DPI. El test de parametrización compara puntos cúbicos continuos tras reflexión e inversión del recorrido.
+
+## PRD v2.2 · Estilos, trazo físico y Fill
+
+`src/tests/v22.test.ts`, `precision.test.ts`, `fill.test.ts`, `planar.test.ts` e `interaction-geometry.test.ts` comprueban estilos por valor, migración a esquema 4, geometría de guiones/perfiles, tolerancia física bajo afinidades, disposición planar, huecos, referencias de órbita, vínculos y contornos fijos. Se conservan las suites previas: total **203 unitarias** y TypeScript estricto correctos.
+
+`tests/v22.spec.ts` agrega 9 flujos: vigente, selección mixta/política, paletas/presets, panel/indicador, un gesto/un undo, apariencia sólo derecha, límites recuperables, Pluma/Escape y panel superpuesto. `v22-fill.spec.ts` agrega 16: clic y primer toque directos, color persistente al retirar el puntero, cola/autocierre/undo, cuatro límites, Bézier, agujeros, apertura y cierre explícito, instancias cruzadas y reflejadas, recálculo/cancelación y teselas vinculadas/fijas. Las comprobaciones raster eliminan previews y handles: el color debe pertenecer al modelo real.
+
+Producción: tres pruebas estáticas en raíz y tres con base `/pattern/`, bloqueando todo origen externo. Cubren regresión previa, logo local, teselas curvas, panel/Fill/presets/perfiles, JSON guardado y SVG producido por worker. Ambos builds compilados con `npm run build` y `BASE_PATH=/pattern/ npm run build`.
+
+La validación externa existente incorpora seis escenarios v2.2: trazos con alfa/puntos/perfiles, template escalado, cara con agujeros, órbita/composición, tesela curva y aplicación congelada tras vaciar la fuente viva. CairoSVG compara SVG editable/expandido y raster del navegador; Pillow verifica píxeles, tamaño y DPI; ezdxf verifica mm, contornos 2D, agujeros y límites del recorte. Los seis aprobaron. MAE máxima editable/expandido:0,06681 sobre 255; Chrome/CairoSVG:0,88727. Artefactos e informe en `.runtime/exports/v22/`.
+
+```bash
+node scripts/benchmark-fill.mjs
+node scripts/benchmark-structure.mjs
+node scripts/capture-readme.mjs
+```
+
+Fill, referencia del 20/11/2026: rejillas de 25 caras rectas y curvas, construcción59,0/76,6 ms;60 consultas con un solo build, p95=0,2 ms. El exceso explícito de1.200 entradas se informa en100,1 ms. rAF máximo16,8 ms en esas escenas. No se extrapola a cualquier complejidad. Overlay apagado/encendido con 100 fuentes: medianas 33,36/33,44 ms; p95 34,82/34,56 ms, incluyendo protocolo Playwright y un frame presentado. Informes en `.runtime/v22-benchmark-fill-final.log` y `.runtime/benchmark-structure.json`.
+
+Las imágenes del README y sus JSON se generan en un contexto de navegador aislado. Los JSON se vuelven a validar con parseProject/serialize antes de escribirlos. No se capturan direcciones de la barra del navegador ni se usan proyectos del usuario.
+
+Monitor: **9 pruebas Python**, incluyendo POST HTTP real con cola simulada, entrega en trabajo/espera/completado, persistencia del estado, reintento y exclusión mutua. No se envían mensajes de prueba a la conversación real ni se altera su marcador PROJECT_COMPLETE.
+
+Regresión completa: **75/75 flujos correctos** en una sola corrida (6,7 minutos), conservando los 50 de v1/v2/v2.1. Resultado y matriz de aceptación en docs/ACCEPTANCE.md y docs/PROGRESS.md.

@@ -10,3 +10,6 @@ Implementar `prd_v2.2.txt` como evolución no destructiva de v2.1; conservar las
 - Usar npm y package-lock.json; TypeScript estricto. Pruebas de geometría, persistencia y E2E reales.
 
 - Si el usuario solicita cambios después de un cierre verificado, retirar `.runtime/PROJECT_COMPLETE`: el monitor continúa vivo y retoma la vigilancia. No borrar este marcador como parte de una prueba.
+
+- Documentación pública: usar `<IP_LOCAL>` en URLs LAN; no publicar direcciones concretas de esta máquina, tampoco en commits o historial. Los datos de ejecución quedan en `.runtime/`, excluido de Git.
+- README: primero explicaciones y ejemplos con imágenes; al final instalación, despliegue y detalles de trabajo. Mantener ejemplos verificables y capturas de la aplicación real.

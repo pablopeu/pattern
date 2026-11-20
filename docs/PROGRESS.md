@@ -177,13 +177,13 @@
 - Verificado: **175 unitarias**, TypeScript/build correctos; **5 E2E Fill** con tinta real, agujero, celdas distintas, tesela persistida, actualización vinculada y mouse/autocierre (también forman parte de la regresión completa en curso). Cinco E2E de estilos ya verificados. Capturas de panel desktop/768 y relleno periódico inspeccionadas.
 - Cierre de ciclo por cupo próximo al umbral. **Pendiente de PRD**: auditoría avanzada de Fill/órbitas/teselas, exportaciones externas v2.2, pruebas estáticas raíz/subdirectorio, benchmark y matriz visual final. Ver continuidad para riesgos concretos pendientes. No crear PROJECT_COMPLETE.
 - Monitor real alcanzó90% usado y confirmó timer para22:48:28 Argentina. Corrida general interrumpida con exit143 tras57 casos correctos; se verifican aparte los tres restantes antes del commit. No hubo fallos de aserciones en los57 completados.
-- Verificación de cierre del incremento Fill: **60 E2E distintos correctos** (57 general +3 restantes dirigidos), **175 unitarias** y build correctos. Se preservaron los50 anteriores junto a10 nuevos de v2.2. Se registra checkpoint; PRD v2.2 continúa pendiente de los puntos de auditoría indicados en CONTINUITY.
+- Verificación de cierre del incremento Fill: **60 E2E distintos correctos** (57 general +3 restantes dirigidos), **175 unitarias** y build correctos. Se preservaron los 50 anteriores junto a10 nuevos de v2.2. Se registra checkpoint; PRD v2.2 continúa pendiente de los puntos de auditoría indicados en CONTINUITY.
 
 ## Feedback LAN · Panel de apariencia exclusivamente derecho
 
 - Atendido feedback recibido 20/11 01:29 UTC: colores/trazos no deben repetirse al pie del inspector izquierdo. Se retiraron de allí todos los controles de estilo; queda un acceso explícito que abre el panel vertical derecho con la selección como destino.
-- Se conservan el estilo vigente, pin, autocierre al interactuar con lienzo y escala documental. El indicador compacto mantiene muestras/unidad/patrón visibles también por debajo de900px.
-- **175 unitarias correctas**, dos E2E dirigidos correctos: flujo de feedback con ubicación real a la derecha/autocierre/768px, y regresión de lápiz/estilo al recorrer grupos (adaptada para usar panel derecho). Capturas v22-right-only-1440.png y v22-right-only-closed-768.png.
+- Se conservan el estilo vigente, pin, autocierre al interactuar con lienzo y escala documental. El indicador compacto mantiene muestras/unidad/patrón visibles también por debajo de900 px.
+- **175 unitarias correctas**, dos E2E dirigidos correctos: flujo de feedback con ubicación real a la derecha/autocierre/768 px, y regresión de lápiz/estilo al recorrer grupos (adaptada para usar panel derecho). Capturas v22-right-only-1440.png y v22-right-only-closed-768.png.
 - El usuario autorizó explícitamente continuar durante los últimos minutos de la ventana previa al reset. Se respeta esa indicación y no se duplica el monitor.
 
 ## PRD v2.2 · Límites geométricos y recuperación de preview
@@ -207,7 +207,7 @@
 
 - Vínculos de cara comparan configuración geométrica: showOutline es preferencia visual y no invalida una región. Cambios de perfil de borde siguen la red de tesela existente si la cara sigue siendo inequívoca. Se revalida toda la órbita concreta tras editar límites; si alguna copia deja de ser cara, se conserva el último contorno y se marca stale.
 - La actualización conserva el marco afín editable de la región usando la transformación inversa correspondiente. Los fondos fijos se recortan al material nuevo sin alterar su fuente; los vinculados cubren el interior actualizado.
-- A768px el indicador se muestra dentro de la cabecera del panel superpuesto y vuelve a la barra cuando se cierra. No queda tapado ni pierde capacidad de abrir/cerrar el panel.
+- A768 px el indicador se muestra dentro de la cabecera del panel superpuesto y vuelve a la barra cuando se cierra. No queda tapado ni pierde capacidad de abrir/cerrar el panel.
 - **191 unitarias correctas**. Cuatro E2E dirigidos pasaron entre corrida y repetición: cara entre distintas teselas con perfil modificado, fondo fijo/vinculado con tinta real, indicador superpuesto accionable, y Pluma/Escape desde un input sin cambio de coordenadas. Se corrigió una expectativa de QA: cambiar el vigente sin selección no altera retroactivamente el trazo iniciado; se comprobó que el siguiente sí utiliza el grosor nuevo.
 - Pendiente: auditar precisión física acumulada (contorno/afinidades/templates), validación externa SVG/DXF/raster, builds estáticos raíz/subdirectorio y regresión final.
 
@@ -230,7 +230,7 @@
 - El feedback nuevo se envía a esta misma conversación mediante codex queue --resume, tanto durante trabajo activo como esperando reset o con PROJECT_COMPLETE presente. La entrega tiene un hilo independiente del control de cupo; el POST HTTP lo despierta inmediatamente.
 - IDs persistentes, registro de encolados/revisados y exclusión mutua evitan reenvíos normales tras polling/reinicio. Los errores se reintentan después de30s; un warning de resume no repite un mensaje que el CLI ya aceptó. No se confunde «en conversación» con «leído». Un corte del proceso justo entre aceptación externa y escritura local puede requerir revisar eventos.
 - Dashboard distingue entrega pendiente, en conversación y revisado. Los dos feedback históricos ya leídos se marcaron revisados sin reenviarlos.
-- **9 pruebas Python correctas**: cuotas reales, ventana semanal, warning de resume, entrega en trabajo/espera/completado, reintentos persistentes, concurrencia y POST HTTP real con cola simulada. Monitor reiniciado una sola vez; HTTP4174 correcto y app4173 conserva su PID anterior.
+- **9 pruebas Python correctas**: cuotas reales, ventana semanal, warning de resume, entrega en trabajo/espera/completado, reintentos persistentes, concurrencia y POST HTTP real con cola simulada. Monitor reiniciado una sola vez; HTTP4174 correcto y app 4173 conserva su PID anterior.
 
 ## Fill directo y alcance real de la tinta
 
@@ -238,6 +238,14 @@
 - Se corrigió el orden de autocierre: calcular coordenadas del clic antes de permitir el cambio de ancho del lienzo. Dieciséis E2E de Fill correctos, verificando tinta real, modelo guardado, primer toque, clics rápidos, retirada del puntero, huecos, órbitas, recálculo, teselas curvas y undo/redo.
 - Culling y selección consideran perfil/ancho/afinidades: se puede seleccionar el cuerpo ancho fuera del eje sin seleccionar fuera de una punta fina. Epsilon inclusivo conserva límites exactamente sobre el viewport. Tres pruebas geométricas nuevas; total **203 unitarias correctas** y TypeScript estricto correcto.
 - Build de producción correcto para raíz y base /pattern/. **6 pruebas estáticas correctas**, tres por ruta, bloqueando orígenes externos; incluyen Fill de un clic, perfiles/preset y descargas JSON/SVG mediante worker.
-- Validación independiente completa nuevamente: archivos v1/v2.1 y6 escenarios v2.2 aprobados por CairoSVG/Pillow/ezdxf. Informe .runtime/exports/v22/validation-report.json.
-- Benchmark Fill real en worker:25 caras en rejillas rectas y curvas, construcción59,0/76,6ms y consultas p95=0,2ms, un solo build por60 consultas; límite de1.200 entradas informado en100,1ms. rAF máximo16,8ms en estas escenas. Desplazamiento con100 fuentes y overlay apagado/encendido:medianas33,36/33,44ms; incluye protocolo y un frame, no equivale a FPS.
+- Validación independiente completa nuevamente: archivos v1/v2.1 y 6 escenarios v2.2 aprobados por CairoSVG/Pillow/ezdxf. Informe .runtime/exports/v22/validation-report.json.
+- Benchmark Fill real en worker:25 caras en rejillas rectas y curvas, construcción59,0/76,6 ms y consultas p95=0,2 ms, un solo build por 60 consultas; límite de1.200 entradas informado en100,1 ms. rAF máximo16,8 ms en estas escenas. Desplazamiento con 100 fuentes y overlay apagado/encendido:medianas33,36/33,44 ms; incluye protocolo y un frame, no equivale a FPS.
 - La regresión completa de75 flujos de navegador está en curso en .runtime/v22-full-regression.log; el cierre global del PRD sigue pendiente de su resultado y de finalizar la matriz de aceptación/documentación.
+
+## Cierre auditado · PRD v2.2
+
+- **203 unitarias, 75/75 E2E en una corrida de 6,7 min, 9 pruebas del monitor y6 estáticas correctas**. Se conservan íntegramente los 50 flujos v1/v2/v2.1. Builds raíz y /pattern/ correctos; CairoSVG/Pillow/ezdxf aprueban las regresiones y los seis escenarios v2.2.
+- Matriz de los 22 criterios obligatorios completada en docs/ACCEPTANCE.md. Arquitectura, geometría, formato de proyecto y pruebas actualizados a estilos/perfiles/Fill/esquema 4. No quedan criterios v2.2 pendientes conocidos.
+- README: explicaciones y ejemplos primero, tres capturas inspeccionadas con proyectos JSON descargables; instalación/despliegue/seguimiento al final. scripts/capture-readme.mjs reproduce imágenes y valida el round-trip de los JSON desde un navegador aislado.
+- Privacidad: documentación y todo el historial publicado de main con placeholders de IP. Se vuelve a comprobar el historial público tras el push de cierre. Servicios app 4173 y monitor 4174 mantenidos; el feedback permanece vigilado incluso con PROJECT_COMPLETE.
+- prd_v2.3.txt aportado en el árbol de trabajo se conserva sin incorporar a este alcance. No se implementó ni se declara completado.

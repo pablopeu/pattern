@@ -1,16 +1,19 @@
 # Formato de proyecto
 
-El archivo nativo es JSON UTF-8, extensión sugerida `.pattern.json`. Versión actual: **3**. El proyecto no almacena objetos Paper.js, píxeles del canvas ni cientos de clones del motivo.
+El archivo nativo es JSON UTF-8, extensión sugerida `.pattern.json`. Versión actual: **4**. El proyecto no almacena objetos Paper.js, píxeles del canvas ni cientos de clones del motivo.
 
 ## Estructura
 
 ```json
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "metadata": { "id": "uuid", "name": "Mi estudio", "createdAt": "ISO-8601", "updatedAt": "ISO-8601" },
   "documentUnits": "mm",
   "mainSymmetry": { "family": "none", "group": "none", "width": 60, "height": 60, "angle": 90, "sectors": 8, "center": {"x": 0, "y": 0}, "origin": {"x": 0, "y": 0}, "orientation": 0 },
   "mainSymmetryProfiles": {},
+  "drawingStyle": {},
+  "stylePresets": [],
+  "palette": { "colors": [], "recent": [], "favorites": [] },
   "patterns": [],
   "regions": [],
   "applications": [],
@@ -96,13 +99,13 @@ El fragmento equivalente v2 conserva p1 propio y añade los campos del marco:
 
 Estos fragmentos muestran sólo los campos afectados, no son documentos autónomos. Los ocho documentos v1 completos están en [fixtures/v1-examples.json](src/tests/fixtures/v1-examples.json); la suite los migra y comprueba su round-trip v2.
 
-## Esquema 3 · PRD v2.1 en curso
+## Esquema 3 · PRD v2.1
 
 La migración 2→3 agrega únicamente `preferences.structureVisible:false` y `preferences.structureOpacity:0.22`. No altera entidades existentes. La migración v1 continúa pasando por v2 y conserva p1 periódico. El overlay y su caché no se exportan como parte del diseño ni se almacenan como geometría. La visibilidad/opacidad son preferencias de edición.
 
 ## Teselas en esquema 3
 
-`patterns[].tiling` es opcional. No tenerlo conserva íntegramente el comportamiento v2. Un snapshot congelado incluye su propia definición. Los presets nuevos declaran `presetVersion:3`; se siguen leyendo versiones 1 y 2.
+`patterns[].tiling` es opcional. No tenerlo conserva íntegramente el comportamiento v2. Un snapshot congelado incluye su propia definición. Los presets v2.1 declaran `presetVersion:3`. La versión actual es4 y se siguen leyendo las versiones 1, 2 y 3.
 
 ```json
 {
@@ -123,3 +126,24 @@ La definición anterior es el valor de `tiling`, no un proyecto completo. `kind`
 Los nodos y controles deben permanecer en sus corredores y el extremo estructural es fijo. Se valida el área, autointersección y solapamiento con vecinos antes de sustituir el documento. Los parámetros de forma no reemplazan `sourceGeometry` ni `generator`. Cambiar la familia reinicia sus perfiles de borde mediante una acción reversible; el motivo se conserva.
 
 `showOutline` sólo controla la edición. `includeTileOutlines` es una opción explícita de exportación, inicialmente false. Los contornos exportados comparten la misma geometría de borde y DXF recibe líneas centrales deduplicadas. El overlay matemático nunca forma parte de la exportación. No se guardan clips, fragmentos recortados, SVG de miniaturas ni colocaciones derivadas.
+
+## Esquema 4 · Estilos y regiones vectoriales
+
+El ejemplo de estructura anterior es abreviado: `drawingStyle` requiere todas las propiedades de `DrawingStyle` de `src/app/styles.ts`. El mismo contrato lo implementa cada `Geometry`: colores hex RGB o `none`, ancho en mm, cap/join/inglete, opacidad global/de trazo/de relleno, fill-rule, `strokeDash`, `strokeDashOffset` y `strokeProfile:{version:1,kind,points:[{at,width}]}`. El alfa HEX se normaliza a RGB y opacidad; no se almacena un alfa redundante.
+
+`drawingStyle` controla objetos futuros; `stylePresets:[{id,name,style}]` son valores completos independientes, sin vínculos retroactivos. `palette` almacena `colors`, `recent` y `favorites`. Preferencias nuevas: `styleDefaultsFollowSelection`, `stylePanelPinned`, `fillCloseTolerance` y `fillLinkedDefault`.
+
+La migración pura 3→4 agrega los valores predeterminados y normaliza estilos de fuentes, perímetros y snapshots congelados, conservando IDs, fuentes, unidades y simetrías. Archivos1/2/3 siguen pasando por el registro de migraciones; versiones futuras se rechazan. Los presets de patrón actuales usan versión 4; al importar un preset se remapean IDs y sus regiones derivadas quedan fijas para no vincularse accidentalmente con entidades ajenas.
+
+Una geometría de relleno tiene pathData vectorial y `fillRegion` opcional, versión 1:
+
+| Campo | Contrato |
+|---|---|
+| `kind`, `scope` | Cara o tesela; fuente canónica, órbita concreta o fondo de tesela |
+| `linked`, `status`, `reason` | Vínculo activo, fijo o stale; último contorno válido conservado ante ambigüedad |
+| `faceKey`, `topologyKey`, `refs` | Identidad de límites y subdivisiones, independiente del cursor aproximado |
+| `inputs`, `context` | IDs de patrón/fuente, matrices capturadas y configuración geométrica; no se clonan límites |
+| `captureMatrix`, `orbitMatrices` | Marco de captura y órbita geométricamente verificada |
+| `closeTolerance` | Cierre ampliado explícito en mm, cero por defecto |
+
+El eje de un trazo de perfil variable sigue siendo fuente editable; su contorno y las cachés no se serializan. Una región Fill derivada sí conserva su contorno y referencias. Se evita depender de otras regiones Fill para impedir ciclos. El esquema limita claves, referencias y pathData antes de aceptar una entidad nueva; las operaciones no pueden dejar un autosave inválido.

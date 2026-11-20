@@ -15,6 +15,7 @@ React es la interfaz. Paper.js es un servicio geométrico temporal, no el format
 | `geometry/` | Matrices afines, unidades, Bézier y adaptadores Paper.js |
 | `symmetry/` | Generadores de grupos, cierre, redes, dominio fundamental, guías y verificación |
 | `generators/` | Familias determinísticas, colocaciones y subdivisión Penrose |
+| `fill/` | Disposición planar, candidatos, vínculos, órbitas y worker cancelable |
 | `patterns/` | Evaluación del motivo y culling de sus transformaciones |
 | `application/` | Perímetros, agujeros, intersecciones y conversión de trazos |
 | `export/` | SVG, worker cancelable, DXF, raster y densidad física |
@@ -82,3 +83,13 @@ Los trazos se registran una vez al iniciarse y su contenido final actualiza las 
 `materializeTiling` crea únicamente una plantilla temporal para exportaciones expandidas/DXF. Reutiliza el mismo interior y el recorte real, conservando aplicaciones vinculadas/congeladas. SVG editable conserva defs/use y clips; los demás formatos usan la geometría derivada. Contornos se solicitan aparte y no se convierten accidentalmente en bordes duplicados para corte.
 
 Esquema nativo 3 y presets 3, con lectura compatible v1/v2; formato geométrico canónico intacto. El logo del usuario es un asset PNG local de Vite, sin servicio remoto.
+
+## Estilos, contornos y Fill · v2.2
+
+El contrato `DrawingStyle` es compartido por geometrías, estilo vigente y presets. El panel derecho aplica parches de atributos; seleccionar no modifica los valores vigentes. La política explícita para cambios desde selección y los gestos continuos se integran con el historial del documento.
+
+`geometry/stroke-outline.ts` deriva contornos con guiones/perfiles a partir del eje editable. Canvas, miniaturas y exportación usan ese motor. Preview puede mostrar un eje naranja con error y acceso a corregir; exportación exige contorno válido. Culling y hit-testing consideran el alcance físico del perfil y las afinidades, con comprobación del contorno para no seleccionar fuera de un extremo fino.
+
+Fill construye una disposición planar en un worker con Paper.js: intersecciones cúbicas, subdivisión, medias aristas y caras con agujeros. Hover reutiliza el índice y limita mensajes en vuelo. Cada clic o toque captura punto y estilo, se encola por separado de hover y crea o recolorea una fuente reversible; cerrar el panel o retirar el puntero no pierde el clic. Cambiar realmente los límites invalida los clics pendientes.
+
+Las regiones que no admiten una sola fuente propagada exacta usan una órbita concreta verificada. `patterns/layers.ts` comparte el orden entre regiones independientes y tandas de motivo. Los vínculos recalculados se incorporan a la misma revisión de geometría; el recálculo explícito es una operación cancelable independiente. Los snapshots de aplicaciones congeladas usan sus propios datos, también al exportar.

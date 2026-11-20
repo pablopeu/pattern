@@ -6,7 +6,7 @@
 - SVG: `width/height` en mm; `viewBox` en coordenadas canónicas. DXF invierte Y y declara `$INSUNITS=4`, `$ACADVER=AC1015`.
 - Visualización: `mm × zoom → píxeles CSS`; el zoom no modifica el documento. Las conversiones son 1 cm=10 mm, 1 in=25,4 mm, 1 px=25,4/96 mm.
 - Cálculo IEEE-754 de doble precisión. `EPS=1e-8` para inversas y equivalencias; pruebas de cierre usan 1e-7 por composición. JSON no redondea coordenadas; los inputs sólo redondean su presentación.
-- Clipper utiliza enteros a 100.000 unidades/mm (cuantización de 0,00001 mm). La tolerancia de exportación predeterminada es 0,05 mm y es configurable. El contorneado reduce su tolerancia local según la máxima escala de la matriz para respetar la tolerancia física.
+- Las operaciones Clipper generales usan enteros a 100.000 unidades/mm (cuantización de 0,00001 mm). El contorneado de trazos eleva esta escala según la tolerancia física requerida, con límites numéricos explícitos. La tolerancia de exportación predeterminada es 0,05 mm y es configurable. El contorneado reduce su tolerancia local según la máxima escala de la matriz para respetar la tolerancia física.
 
 Matriz SVG `[a,b,c,d,e,f]`:
 
@@ -59,7 +59,7 @@ La región fundamental se calcula como celda Dirichlet de un punto genérico de 
 
 ## Frisos y grupos radiales
 
-La nomenclatura de frisos es `p1, p11g, p1m1, p11m, p2, p2mg, p2mm`. El eje de repetición es X y la traslación es `(w,0)`. Los espejos paralelos/perpendiculares y deslizamientos de media longitud se documentan en las descripciones del selector. No se agrega una traslación artificial en Y.
+La nomenclatura de frisos es `p1, p11g, p1m1, p11m, p2, p2mg, p2 mm`. El eje de repetición es X y la traslación es `(w,0)`. Los espejos paralelos/perpendiculares y deslizamientos de media longitud se documentan en las descripciones del selector. No se agrega una traslación artificial en Y.
 
 Cn contiene n rotaciones; Dn añade n reflexiones, con n entre 2 y 64. El centro es editable. Las rosetas son finitas, sin afirmar periodicidad de traslación.
 
@@ -100,3 +100,11 @@ Los vértices se fijan y los controles Bézier quedan en corredores convexos con
 El marco de tesela F compone origen y orientación. La captura completa es C=F·T_red·H_orientación·J_adyacencia·G_local·P·Q; el objeto añade S. Se conserva C⁻¹ durante el gesto. Los fragmentos que cruzan un borde se continúan mediante isometrías de adyacencia antes del recorte a la tesela, conservando una sola fuente. Esto también se usa al exportar. El grupo seleccionado genera el motivo local antes de ese empaquetado; no se promete que toda su simetría sea global para cualquier forma de tesela.
 
 La cobertura de teselas sí certifica sus traslaciones. Las celdas rectangulares se ofrecen para cuadrados/rectángulos y superceldas verificadas de triángulos/hexágonos, en orientaciones de múltiplos de 90°. Los paralelogramos oblicuos conservan su celda de red sin deformarla a un rectángulo. Penrose suspende la familia periódica y conserva su construcción finita.
+
+## Trazo físico y Fill · v2.2
+
+El perfil usa anchos relativos de 0 a 4 a lo largo de la longitud normalizada, con interpolación Hermite monótona para evitar overshoot. Los puntos están estrictamente ordenados e incluyen 0 y 1. Los guiones son longitudes físicas no negativas, hasta 64 valores y período mínimo 0,001 mm; una secuencia impar se repite. Los segmentos de longitud cero requieren extremos round/square. Se conserva fase negativa.
+
+El contorno evalúa tangentes/normales cúbicas por lado de cada unión y refina eje y bordes. La tolerancia local se divide por la cota singular de la matriz total, incluidas colocaciones externas de templates. Cuantización al menos 100.000 y hasta 1.000 millones de unidades/mm; enteros efectivos no superan 1e14. Si la precisión no es representable se rechaza, sin fingir precisión mediante un clamp. Presupuestos: 24.000 muestras,100.000 polígonos,400.000 vértices,4.096 curvas,2.048 segmentos pintados y4.096 subdivisiones de arco. SVG expande los puntos de longitud cero para evitar diferencias nativas entre Chrome y CairoSVG.
+
+Fill utiliza ejes vectoriales materiales, no raster ni overlays. El epsilon de unión numérica es 1e-6 mm; el cierre ampliado 0–5 mm es explícito y sólo altera el cálculo derivado. Presupuestos por disposición: 1.200 curvas/entradas,20.000 intersecciones,40.000 medias aristas y2.000 caras. Las aristas coincidentes se normalizan y los agujeros se orientan para respetar evenodd/nonzero. La selección de cara y su vínculo se basan en referencias topológicas y contexto; un punto aproximado no prueba equivalencia.

@@ -130,3 +130,36 @@ TypeScript y **80 unitarias**, **31 E2E**, **4 tests del monitor**, build y dos 
 | Regresión | 140 unitarias y 50 E2E correctas, incluyendo los 80 tests/31 flujos de v2; TypeScript, build y 4 tests del monitor correctos |
 
 Límites: los vértices de las construcciones son estructurales; los controles de borde se limitan a corredores seguros. Los triángulos requieren simetría central por borde. La simetría elegida describe el motivo local antes de su recorte/adyacencia, sin prometer un grupo global arbitrario. Se conserva el límite de complejidad y no se ofrece un clasificador universal de polígonos. Penrose no se convierte a una red periódica.
+
+## PRD v2.2 · Matriz de los 22 criterios obligatorios
+
+| # | Requisito | Evidencia |
+|---|---|---|
+| 1 | Crear con estilo vigente sin selección | E2E de estilo vigente; tinta y perfil reales |
+| 2 | Modificar sólo seleccionados | E2E de selección mixta y política explícita; parches de un atributo |
+| 3 | Persistir colores/grosores/perfiles/presets | Round-trip esquema 4 y E2E de paletas/presets; tres JSON descargables del README |
+| 4 | Indicador con panel cerrado | E2E de indicador, apertura/cierre y pantalla 768 px |
+| 5 | Atributos mixtos | Unitarias de mezcla y E2E de selección múltiple |
+| 6 | Dashes/perfiles correctos | Unitarias de fase impar/negativa, tapas, puntos, Hermite y geometría; editor visual con undo por gesto |
+| 7 | Rellenar path cerrado | E2E con agujero: recolorea la misma fuente, sin duplicados |
+| 8 | Cuatro líneas independientes | E2E de modelo, tinta, fuente adicional, undo y edición del límite |
+| 9 | Límites Bézier | E2E y unitarias conservan curvas exactas, no raster ni polígonos de pantalla |
+| 10 | Agujeros | E2E nonzero y probes raster; validación independiente planar-holes |
+| 11 | Rechazar abiertos | E2E de abertura sin cambios a la fuente |
+| 12 | Tolerancia explícita | E2E de cierre 0,11 mm; originales idénticos y tolerancia persistida |
+| 13 | Reflexión/rotación | E2E Dn: tinta en ambas copias y selección en la instancia pulsada |
+| 14 | Cruce de celdas | E2E del contorno completo 10…30 mm atravesando una frontera, sin partir la fuente |
+| 15 | Bordes entre instancias | E2E de rejilla periódica, órbita verificada y una sola fuente canónica |
+| 16 | Cambiar simetría | E2E stale/conservación/recálculo y undo/redo sin cambiar ID |
+| 17 | Actualizar vinculados | Unitarias topológicas y E2E de edición de trazos/bordes de tesela |
+| 18 | Conservar fijos/congelados | E2E de tesela fija y validación frozen-fill tras eliminar geometría viva |
+| 19 | Teselas editables | E2E de fondo y cara entre teselas, perfil cambiado, fuente/recorte y vínculo |
+| 20 | SVG vectorial dentro de tolerancia | Unitarias contra normales cúbicas densas, afinidad anisótropa, escala 1000 y templates; CairoSVG independiente |
+| 21 | DXF/raster | Seis escenarios v2.2 y regresiones de export previas: Pillow/ezdxf, mm/DPI/probes/huecos/recorte |
+| 22 | Regresiones v1/v2/v2.1 | **75/75 E2E correctos en una corrida de 6,7 min**, incluidos los 50 anteriores de v1/v2/v2.1 |
+
+Validación adicional: **203 unitarias, 9 pruebas del monitor, 6 pruebas de producción estática y 6 escenarios independientes v2.2 correctos**. Ambos builds correctos. Panel 1440/1100/768 px, abierto/cerrado, pin, Escape sin perder Pluma y escala conservada; las capturas del README se inspeccionaron visualmente. El logo sigue usando icono.png. La herramienta Fill aplica al primer clic/toque; la retirada del puntero y el autocierre no pierden el color. Repetir el mismo color no ensucia undo.
+
+Límites comprobados: disposición 1200 curvas/20000 intersecciones/40000 medias aristas/2000 caras; contorno físico con presupuestos y rechazo explícito cuando no puede cumplir tolerancia. Preview informa fallback y permite corregir; exportación no lo sustituye por el eje naranja. DXF conserva contornos 2D en mm, no rellenos sólidos ni alfa; SVG/raster sí conservan el material. Las guías nunca son geometría para Fill ni para la exportación final.
+
+Cierre v2.2 confirmado el 20/11/2026: los 22 criterios obligatorios anteriores tienen evidencia ejecutada. Completos los checks, builds, inspección visual y validación independiente descritos; no quedan criterios v2.2 pendientes conocidos. Servicios de revisión LAN activos y feedback continuo habilitado.
