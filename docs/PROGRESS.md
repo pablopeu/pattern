@@ -219,3 +219,8 @@
 - **200 unitarias y build correctos**. Pruebas contra normales densas de la curva original verifican contorno con afinidad anisótropa, expansión ×1000 y template ×10 dentro de tolerancia física. Tapas exactas y casos de rechazo tienen pruebas geométricas.
 - Se agregaron scripts reproducibles para6 escenarios de export v2.2: guiones/perfiles/alfa/puntos, template escalado, cara planar con agujero nonzero, composición/órbita restringida, hexágono curvo relleno con motivo y aplicación congelada tras vaciar la fuente viva.
 - CairoSVG/Pillow/ezdxf aprobaron los6. Se comprueba cada punto/espacio del punteado, colores, huecos, DPI, crop, unidades mm, contornos 2D y ausencia de overlays/fallbacks. Comparación SVG editable vs expandido: MAE máxima0,067/255; comparación Chrome vs CairoSVG: máxima0,887/255. Reporte .runtime/exports/v22/validation-report.json. Smoke E2E de estilo/perfil/límites pasó antes del último ajuste geométrico; regresión final aún pendiente.
+
+## Privacidad de direcciones LAN
+
+- Por pedido del usuario, documentación pública con `<IP_LOCAL>` en lugar de direcciones concretas. Las IP se consultan sólo en la máquina local; los servicios siguen en los puertos4173 y4174.
+- Se prepara limpieza de los dos valores encontrados en todo el historial publicado de main. Cambios de aplicación en curso y prd_v2.3.txt se conservan sin incluir en este incremento de privacidad.

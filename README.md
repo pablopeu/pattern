@@ -4,10 +4,10 @@ Estudio vectorial estático para dibujar un motivo, construir patrones paramétr
 
 ## Acceso a esta instalación
 
-- Estudio en vivo: **http://<IP_LOCAL>:4173**
-- Avances, commits, cupo y feedback: **http://<IP_LOCAL>:4174**
+- Estudio en vivo: `http://<IP_LOCAL>:4173`
+- Avances, commits, cupo y feedback: `http://<IP_LOCAL>:4174`
 
-También está disponible la interfaz de red `<IP_LOCAL>`. Las direcciones corresponden a esta máquina; pueden cambiar con DHCP. Se mantiene el servidor de desarrollo para que las revisiones aparezcan al guardar código.
+Reemplazar `<IP_LOCAL>` por la dirección de la máquina que ejecuta los servicios. Consultarla localmente con `hostname -I`; puede cambiar con DHCP. Las direcciones concretas se mantienen fuera del repositorio. Se mantiene el servidor de desarrollo para que las revisiones aparezcan al guardar código.
 
 El panel de avances es una herramienta de desarrollo independiente. No se distribuye como requisito del producto ni expone archivos de sesiones, credenciales o proyectos del navegador.
 
@@ -20,7 +20,7 @@ npm ci
 npm run dev
 ```
 
-Abrir `http://localhost:4173` o `http://IP-DE-ESTA-MAQUINA:4173` desde otra PC. El servidor Debian no necesita escritorio ni GPU. El navegador cliente realiza el trabajo geométrico.
+Abrir `http://localhost:4173` o `http://<IP_LOCAL>:4173` desde otra PC. El servidor Debian no necesita escritorio ni GPU. El navegador cliente realiza el trabajo geométrico.
 
 Para mantener y administrar los servicios locales sin una terminal abierta:
 
