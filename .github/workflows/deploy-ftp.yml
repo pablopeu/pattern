@@ -1,0 +1,64 @@
+name: Deploy FTP
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Finish an upload before starting the next one, including pushes to other refs.
+concurrency:
+  group: pattern-ftp-hosting
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check deployment configuration logic
+        run: npm run test:deploy
+
+      - name: TypeScript and unit tests
+        run: npm run check
+
+      - name: Build static site
+        run: npm run build
+        env:
+          BASE_PATH: ./
+
+      - name: Validate secrets and prepare destination
+        id: ftp
+        run: node scripts/prepare-ftp.mjs
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_FOLDER: ${{ secrets.FTP_FOLDER }}
+
+      - name: Upload dist to hosting
+        uses: SamKirkland/FTP-Deploy-Action@110f9186c050f71550953127052e77650219c287 # v4.4.0
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          local-dir: ./dist/
+          server-dir: ${{ steps.ftp.outputs.server-dir }}
+          dangerous-clean-slate: false
+          log-level: minimal

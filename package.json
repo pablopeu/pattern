@@ -21,7 +21,8 @@
     "serve:dist": "python3 -m http.server 4180 --bind 0.0.0.0 --directory dist",
     "test:static": "TEST_STATIC=1 playwright test",
     "validate:exports": "node scripts/validate-exports.mjs",
-    "format": "prettier --write src tests scripts/*.mjs vite.config.ts playwright.config.ts"
+    "format": "prettier --write src tests scripts/*.mjs vite.config.ts playwright.config.ts",
+    "test:deploy": "node --test scripts/prepare-ftp.test.mjs"
   },
   "dependencies": {
     "clipper-lib": "^6.4.2",

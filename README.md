@@ -177,6 +177,38 @@ BASE_PATH=/pattern/ npm run build
 
 Copiar `dist/` al subdirectorio `/pattern/`. No se necesitan reglas de reescritura: la aplicación usa un único documento HTML. HTTP por LAN funciona; no depende de service workers, contexto HTTPS, CDN, fuentes externas ni conexión a Internet. Hace falta servir los archivos por HTTP; no se promete abrir el worker mediante `file://`.
 
+### Despliegue automático por FTP con GitHub Actions
+
+[Deploy FTP](.github/workflows/deploy-ftp.yml) se ejecuta con **cada push**,
+sin filtros de rama ni de archivos, y también desde **Actions → Deploy FTP →
+Run workflow**. Instala con `npm ci`, verifica TypeScript y pruebas, compila
+con rutas relativas y sube únicamente el contenido de `dist/`.
+
+Configurar estos cuatro **Repository secrets** en Settings → Secrets and
+variables → Actions:
+
+| Secret | Contenido |
+| --- | --- |
+| `FTP_HOST` | Host FTP, sin prefijo `ftp://` |
+| `FTP_USERNAME` | Usuario de la cuenta FTP |
+| `FTP_PASSWORD` | Contraseña FTP |
+| `FTP_FOLDER` | Carpeta de la aplicación dentro de `public_html` |
+
+Con `FTP_FOLDER=pattern`, el destino es **`public_html/pattern/`**. No hace
+falta escribir la barra final: el workflow la agrega. También admite
+`pattern/` o `public_html/pattern/` sin duplicar el prefijo. La ruta es relativa
+a la carpeta inicial de la cuenta FTP, que debe tener acceso a `public_html`.
+El build usa `./` como base, independientemente del nombre de esa carpeta.
+
+Las subidas se ejecutan de a una; un push nuevo no interrumpe una transferencia
+activa. Se sincronizan archivos de la aplicación mediante el estado de la
+action, sin vaciar la carpeta completa ni subir el código fuente, el monitor,
+`.runtime/` o las credenciales. El protocolo configurado es FTP, puerto 21.
+Para ver el resultado de una publicación, abrir su ejecución en **Actions**.
+
+Validación local de la normalización del destino: `npm run test:deploy`.
+Referencia: [configuración de FTP Deploy Action](https://github.com/SamKirkland/FTP-Deploy-Action#settings).
+
 ## Desarrollo y seguimiento del trabajo
 
 ### Verificación

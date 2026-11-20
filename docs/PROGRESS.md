@@ -393,3 +393,19 @@
 - Se cierra v2.3 sin criterios pendientes conocidos. README con cinco imágenes
   y cuatro JSON, instrucciones de uso primero e instalación/trabajo al final.
   Servidor temporal de QA detenido; app 4173 y monitor 4174 se conservan vivos.
+
+## Hosting FTP automático · Workflow preparado
+
+- Por pedido de Pablo, publicación de dist/ mediante GitHub Actions con cada
+  push y ejecución manual opcional. Cuatro Repository secrets existentes
+  comprobados por nombre; sus valores no se extraen ni se guardan localmente.
+- FTP_FOLDER se interpreta como subcarpeta de public_html y se normaliza con
+  barra final. Se admiten nombre solo o prefijo public_html sin duplicarlo;
+  no se aceptan destino vacío/raíz, traversal ni saltos de línea en el output.
+- Node24, npm ci, tres pruebas de despliegue, TypeScript +203 unitarias y build
+  antes de subir. Actions fijadas por SHA; permisos de lectura y transferencias
+  serializadas, sin limpieza total de la carpeta. README al final documenta
+  configuración y uso. App4173 y monitor4174 conservados.
+- Verificación local:3 tests de despliegue,203 unitarias/TypeScript, build y
+  actionlint1.7.12 correctos. Pendiente publicar el commit y observar la primera
+  ejecución real de FTP en GitHub.

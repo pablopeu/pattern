@@ -67,3 +67,14 @@ en Preferencias. Capturas de las cuatro resoluciones inspeccionadas. Corrida
 posterior 94/94 correcta en 4,3 min, estado de salida 0 registrado en
 .runtime/v23-full-regression-final.status.json. Ambos builds y3+3 estáticas
 repetidos correctamente. Se registra PROJECT_COMPLETE al publicar este cierre.
+
+## Nueva entrega · Hosting FTP autorizado
+
+Pablo autorizó producción FTP automática con cada push. PROJECT_COMPLETE se
+retiró para esta tarea; v2.3 sigue auditado. Workflow deploy-ftp.yml preparado
+con Repository secrets FTP_HOST/FTP_USERNAME/FTP_PASSWORD/FTP_FOLDER. Destino
+public_html/<FTP_FOLDER>/ (barra final automática), build relativo, sólo dist/,
+FTP21 y sincronización serializada sin vaciar la carpeta.3 pruebas de destino,
+203 unitarias/TypeScript, build y actionlint correctos. Próximo paso inmediato:
+commit/push y seguir la ejecución real hasta confirmar despliegue o documentar
+un bloqueo externo concreto. No duplicar app4173 ni monitor4174.
