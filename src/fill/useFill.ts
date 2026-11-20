@@ -122,6 +122,7 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
     if (!worker.current) start();
     if (ready.current && !queryBusy.current && !pendingCreate.current) {
       queryBusy.current = true;
+      setBusy(true);
       worker.current?.postMessage({
         type: 'query',
         point: clicks.current[0]?.point ?? p,
@@ -165,6 +166,7 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
         setIndex(0);
         setPosition(r.point);
         queryBusy.current = false;
+        setBusy(false);
         const click = clicks.current[0];
         if (
           click &&

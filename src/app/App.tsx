@@ -60,7 +60,6 @@ import { Panels } from '../ui/Panels';
 import { ExportDialog } from '../ui/ExportDialog';
 import { buildScene } from '../patterns/engine';
 const stylePages: { id: StylePage; label: string; icon: typeof Palette }[] = [
-  { id: 'colors', label: 'Colores', icon: Palette },
   { id: 'stroke', label: 'Trazo', icon: Minus },
   { id: 'profile', label: 'Perfil', icon: Activity },
   { id: 'fill', label: 'Fill', icon: PaintBucket },
@@ -739,6 +738,35 @@ export default function App() {
                 <Icon size={18} strokeWidth={1.6} />
               </button>
             ))}
+            <button
+              className="quick-colors"
+              title="Colores de trazo y relleno"
+              aria-label="Colores de trazo y relleno"
+              aria-pressed={s.styleOpen && s.stylePage === 'colors'}
+              onClick={() => {
+                s.setStylePage('colors');
+                s.setStyleOpen(true);
+              }}
+            >
+              <span
+                className="quick-stroke"
+                style={{
+                  background:
+                    s.styleContext.value.stroke === 'none'
+                      ? 'linear-gradient(135deg,white 43%,#af5858 44% 56%,white 57%)'
+                      : s.styleContext.value.stroke,
+                }}
+              />
+              <span
+                className="quick-fill"
+                style={{
+                  background:
+                    s.styleContext.value.fill === 'none'
+                      ? 'linear-gradient(135deg,white 43%,#af5858 44% 56%,white 57%)'
+                      : s.styleContext.value.fill,
+                }}
+              />
+            </button>
             <button
               className="style-panel-toggle"
               title={s.styleOpen ? 'Plegar panel derecho' : 'Desplegar panel derecho'}

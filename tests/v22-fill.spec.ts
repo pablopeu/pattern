@@ -699,6 +699,9 @@ for (const width of [1440, 390]) {
     await paint(page, 10, 10);
     await expect(panel).toHaveCount(0);
     await expect(tool).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByRole('button', { name: 'Cancelar cálculo', exact: true })).toHaveCount(
+      0,
+    );
     const before = await model(page);
     await tool.click();
     await expect(panel).toBeVisible();
@@ -706,6 +709,10 @@ for (const width of [1440, 390]) {
       'aria-selected',
       'true',
     );
+
+    await expect(panel.getByLabel('HEX de relleno', { exact: true })).toBeVisible();
+    await expect(panel.getByRole('tab', { name: 'Colores', exact: true })).toHaveCount(0);
+    await expect(panel.getByLabel('Regla de relleno', { exact: true })).toBeHidden();
     // Clicking an already active Fill also keeps narrow-screen panels exclusive.
     await tool.click();
     await expect(panel).toBeVisible();

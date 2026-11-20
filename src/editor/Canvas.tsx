@@ -169,6 +169,15 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
     actualView,
     s.tool === 'fill' && !previewOnly && s.mode !== 'apply',
   );
+  const [fillSlow, setFillSlow] = useState(false);
+  useEffect(() => {
+    if (!fill.busy) {
+      setFillSlow(false);
+      return;
+    }
+    const timer = window.setTimeout(() => setFillSlow(true), 700);
+    return () => window.clearTimeout(timer);
+  }, [fill.busy]);
   const point = (event: { clientX: number; clientY: number }): Point => {
     const svg = svgRef.current;
     if (!svg) return { x: 0, y: 0 };
@@ -1133,12 +1142,20 @@ export function Canvas({ studio: s, editorOnly = false, previewOnly = false }: P
         </div>
       )}
       {s.tool === 'fill' && !previewOnly && (
-        <div className="fill-actions" role="status" data-fill-applied={fill.applied}>
-          <span>{fill.status}</span>
-          <button disabled={fill.count < 2} onClick={fill.cycle}>
-            Otra región ({fill.count ? fill.index + 1 : 0}/{fill.count})
-          </button>
-          <button onClick={fill.cancel}>Cancelar cálculo</button>
+        <div
+          className="fill-actions"
+          role="status"
+          data-fill-applied={fill.applied}
+          hidden={!fillSlow && fill.count < 2}
+        >
+          <span hidden>{fill.status}</span>
+          {fillSlow && <span>Calculando relleno…</span>}
+          {fill.count > 1 && (
+            <button onClick={fill.cycle}>
+              Otra región ({fill.index + 1}/{fill.count})
+            </button>
+          )}
+          {fillSlow && <button onClick={fill.cancel}>Cancelar cálculo</button>}
         </div>
       )}
       {strokeWarning.message && (

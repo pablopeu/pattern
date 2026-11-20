@@ -181,16 +181,7 @@ for (const width of [1366, 1440, 1920, 390]) {
       }),
     ).toBe(true);
     const before = await project(page);
-    for (const name of [
-      'Colores',
-      'Trazo',
-      'Perfil',
-      'Fill',
-      'Paleta',
-      'Presets',
-      'Opciones',
-      'Objeto',
-    ]) {
+    for (const name of ['Trazo', 'Perfil', 'Fill', 'Paleta', 'Presets', 'Opciones', 'Objeto']) {
       await right.getByRole('tab', { name, exact: true }).click();
       expect(
         await right
@@ -416,7 +407,7 @@ for (const width of [1440, 390]) {
     const rail = page.getByRole('navigation', { name: 'Accesos del panel derecho' });
     const object = rail.getByRole('button', { name: 'Panel derecho: Objeto', exact: true });
     await expect(object).toBeDisabled();
-    for (const tab of ['Colores', 'Trazo', 'Perfil', 'Fill', 'Paleta', 'Presets', 'Opciones']) {
+    for (const tab of ['Trazo', 'Perfil', 'Fill', 'Paleta', 'Presets', 'Opciones']) {
       const button = rail.getByRole('button', { name: `Panel derecho: ${tab}`, exact: true });
       await expect(button).toBeInViewport();
       await button.click();

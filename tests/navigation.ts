@@ -7,7 +7,9 @@ export async function styles(page: Page, tab: string) {
   const panel = page.getByRole('complementary', { name: 'Panel de estilos' });
   if (!(await panel.isVisible()))
     await page.getByRole('button', { name: 'Abrir panel de estilos', exact: true }).click();
-  await panel.getByRole('tab', { name: tab, exact: true }).click();
+  if (tab === 'Colores')
+    await page.getByRole('button', { name: 'Colores de trazo y relleno', exact: true }).click();
+  else await panel.getByRole('tab', { name: tab, exact: true }).click();
   return panel;
 }
 export async function catalog(page: Page) {
@@ -154,7 +156,14 @@ export async function field(page: Page, label: string) {
       .getByRole('dialog', { name: 'Exportar patrón' })
       .getByRole('tab', { name: exportTabs[label], exact: true })
       .click();
-  const locator = page.getByLabel(label, { exact: true });
+  if (label === 'Regla de relleno') {
+    const advanced = page.locator('.fill-advanced');
+    if (!(await advanced.evaluate((el) => (el as HTMLDetailsElement).open)))
+      await advanced.locator('summary').click();
+  }
+  const locator = page.getByLabel(label === 'Editar estilo de' ? 'Aplicar a' : label, {
+    exact: true,
+  });
   await expect(locator).toBeVisible();
   return locator;
 }

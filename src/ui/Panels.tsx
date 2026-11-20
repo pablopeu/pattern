@@ -1136,10 +1136,11 @@ export function Panels({
               <button
                 className="wide-button"
                 onClick={() => {
+                  s.setStylePage(s.tool === 'fill' ? 'fill' : 'stroke');
                   s.setStyleOpen(true);
                 }}
               >
-                Colores y trazo · panel derecho
+                {s.tool === 'fill' ? 'Color y opciones de relleno' : 'Color y opciones de trazo'}
               </button>
             )}
             {category === 'drawing' && (

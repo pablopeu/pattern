@@ -1,3 +1,29 @@
+# Revisión LAN · Fill y color sin saltos entre pestañas
+
+**Sin push hasta aprobación de Pablo; cada push despliega por FTP.**
+Incremento actual por feedback: Fill incluye selector HEX/color y opacidad;
+Trazo incluye su color. Se quita Colores de tabs/accesos superiores y se mantiene
+un acceso de dos muestras al pie de la barra derecha para editar ambos juntos.
+Encabezado contextual (Rellenar región/Trazo/etc.) y Aplicar a sustituyen lenguaje
+genérico de estilos. Regla de relleno sólo en Opciones avanzadas, con explicación.
+
+El antiguo banner de estadísticas queda oculto; sólo se muestran progreso y
+cancelación si una operación tarda al menos700ms. Otra región aparece únicamente
+si existen varias candidatas. Diagnóstico/data-fill-applied conservado oculto
+para automatización, sin tapar el dibujo. Query también informa busy para poder
+cancelar una búsqueda local lenta. No cambia geometría, persistencia ni reglas.
+
+204 unitarias/TypeScript, build y8 E2E dirigidas correctos en cuatro tamaños.
+101/101 E2E integradas y6 estáticas (raíz/subcarpeta) correctas. Evidencia
+fill-flow-{check,build,layout,full-e2e,static-summary,preview}.log.
+Playwright dejó status=passed y failedTests=[] (fill-flow-last-run.json);
+el wrapper npx terminó con143 tras emitir el reporte completo, sin tests fallidos.
+Probes de producción también verifican imagen real y assets. QA temporal cerrada.
+Captura docs/images/penrose-fill.png actualizada desde producción local real.
+Servicios4173/4174 conservados; originales caratula.jpg/favicon_io.zip intactos.
+
+---
+
 # Entrega local para revisión · Fill, panel derecho e iconos actualizados
 
 **No hacer push hasta que Pablo apruebe esta vista previa LAN.** Cada push

@@ -532,3 +532,27 @@
 - Commits locales coherentes:474fa8c (Fill/paneles),2afe5b4 (densidad/móvil),
   52c58eb (recálculo). Actualización final de iconos se guarda local. GitHub sigue
   en4bd8938; **sin push ni publicación** hasta revisión y aprobación de Pablo.
+
+
+## Fill y color en el mismo panel · Revisión de navegación
+
+- Por feedback de Pablo, Fill muestra color/HEX y opacidad directamente, Trazo
+  incluye el color de línea. Colores sale de las pestañas; acceso conjunto de
+  dos muestras queda abajo en la barra derecha. Cabezal contextual y Aplicar a
+  reemplazan etiquetas genéricas. Sin botón para saltar de Fill a Colores.
+- Regla de relleno queda en Opciones avanzadas con explicación de cruces/huecos.
+- Se retira el banner permanente de estadísticas. Progreso/Cancelar cálculo sólo
+  tras700ms ocupado; Otra región sólo si hay varias candidatas. Errores reales
+  mantienen su aviso y la cancelación termina el Worker como antes.
+- 204 unitarias/TypeScript, build y8 E2E de disposición/reapertura correctos.
+  Aserciones nuevas verifican color visible dentro de Fill, ausencia de Colores
+  en tabs, regla oculta y ausencia de cancelar en reposo. Helpers de pruebas
+  navegan por el nuevo acceso conjunto y el avanzado real, sin relajar tinta.
+- README y captura actualizados, vista LAN activa. Checks integrados en curso;
+  sin push, como pide la revisión previa de Pablo.
+
+- Cierre:204 unitarias/TypeScript, build,8 E2E dirigidas,101/101 integradas y6
+  estáticas correctas. Playwright confirma passed/failedTests=[]; wrapper npx
+  recibió143 después del reporte completo. Artefacto copiado a
+  .runtime/fill-flow-last-run.json. Captura de producción e iconos verificados;
+  servicios LAN vivos y QA temporal cerrada. Commit local, sin publicación.

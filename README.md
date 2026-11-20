@@ -42,8 +42,10 @@ durante la sesión y cambiar de contexto conserva el documento y la selección.
 | Aplicación | Perímetro, transformación y vínculo del patrón aplicado |
 | Preferencias | Nombre del documento, guías, snap, unidades y fondo |
 
-A la derecha están **Colores, Trazo, Perfil, Fill, Paleta, Presets, Objeto y
-Opciones**. Al seleccionar un objeto aparecen sus propiedades; sin selección,
+A la derecha están **Trazo, Perfil, Fill, Paleta, Presets, Objeto y Opciones**.
+**Fill** muestra directamente su color y opacidad; **Trazo** reúne color y
+propiedades de línea. Los dos cuadrados de color al pie de la barra abren un
+acceso conjunto a trazo y relleno, sin una pestaña Colores separada. Al seleccionar un objeto aparecen sus propiedades; sin selección,
 se edita el estilo vigente. **Objeto** separa forma, transformación, nodos y
 acciones geométricas. En ventanas estrechas los paneles funcionan como overlays
 temporales y se alternan para dejar disponible el lienzo. Una barra de iconos
@@ -102,6 +104,10 @@ del generador y debajo de los perímetros originales. Se conserva al salir del
 
 ![Una cara de Penrose pintada en rojo, con sus perímetros y los accesos del panel derecho](docs/images/penrose-fill.png)
 
+El lienzo queda libre de avisos permanentes de curvas. El progreso y Cancelar
+cálculo aparecen sólo cuando una operación tarda; Otra región se ofrece cuando
+hay más de una opción bajo el puntero.
+
 Por defecto se exige cierre geométrico dentro del epsilon numérico. Para pequeños huecos, aumentá explícitamente **Tolerancia de cierre de Fill** en el panel derecho; esta opción no modifica los trazos originales. Las guías y los espejos de estructura no cuentan como límites materiales.
 
 ### Construir teselas con bordes curvos
@@ -118,7 +124,7 @@ El dibujo interior y el contorno de tesela son entidades diferentes. Ajustar al 
 
 ### Ajustar apariencia, guardar estilos y componer
 
-Las pestañas del panel derecho ofrecen colores HEX/alfa, grosor, extremos y uniones en **Trazo**, y curva de anchura en **Perfil**. Las paletas y los presets tienen sus propias pestañas. Guardá un estilo con nombre para reutilizar sus valores sin modificar retroactivamente los objetos anteriores. El indicador compacto sigue visible al cerrar el panel; podés fijarlo abierto o dejar que se autocierre al volver al lienzo.
+En el panel derecho, **Fill** ofrece color HEX/alfa y opacidad del relleno; **Trazo**, color de línea, grosor, extremos y uniones; **Perfil**, curva de anchura. La regla de relleno queda en las opciones avanzadas de Fill: decide qué partes se pintan en contornos cruzados o con agujeros. Para el uso habitual se puede dejar Par / impar. Las paletas y los presets tienen sus propias pestañas. Guardá un estilo con nombre para reutilizar sus valores sin modificar retroactivamente los objetos anteriores. El indicador compacto sigue visible al cerrar el panel; podés fijarlo abierto o dejar que se autocierre al volver al lienzo.
 
 **Capas** permite ocultar, bloquear y ordenar objetos; **Objeto → Forma** permite nombrarlos. En **Aplicar**, creá o importá un perímetro cerrado y colocá el conjunto sobre él. Una aplicación congelada conserva su simetría efectiva aunque cambie la principal. El exportador permite elegir el conjunto activo o la composición visible; sólo ofrece una celda común cuando su periodicidad está verificada.
 

@@ -162,27 +162,42 @@ export function StyleControls({
   };
   return (
     <div className="style-controls">
-      <div hidden={s.stylePage !== 'colors'} className="compact-fields">
-        <Paint
-          label="Trazo"
-          value={v.stroke}
-          opacity={v.strokeOpacity}
-          mixed={mixed.has('stroke')}
-          onChange={(stroke, alpha) =>
-            patch({ stroke, ...(alpha !== undefined ? { strokeOpacity: alpha } : {}) })
-          }
-        />
-        <Paint
-          label="Relleno"
-          value={v.fill}
-          opacity={v.fillOpacity}
-          mixed={mixed.has('fill')}
-          onChange={(fill, alpha) =>
-            patch({ fill, ...(alpha !== undefined ? { fillOpacity: alpha } : {}) })
-          }
-        />
-        {numeric('fillOpacity', 'Opacidad de relleno', 0, 1, 0.01, true)}
-      </div>
+      {s.stylePage === 'colors' && (
+        <div className="compact-fields">
+          <Paint
+            label="Trazo"
+            value={v.stroke}
+            opacity={v.strokeOpacity}
+            mixed={mixed.has('stroke')}
+            onChange={(stroke, alpha) =>
+              patch({ stroke, ...(alpha !== undefined ? { strokeOpacity: alpha } : {}) })
+            }
+          />
+          <Paint
+            label="Relleno"
+            value={v.fill}
+            opacity={v.fillOpacity}
+            mixed={mixed.has('fill')}
+            onChange={(fill, alpha) =>
+              patch({ fill, ...(alpha !== undefined ? { fillOpacity: alpha } : {}) })
+            }
+          />
+          {numeric('fillOpacity', 'Opacidad de relleno', 0, 1, 0.01, true)}
+        </div>
+      )}
+      {s.stylePage === 'stroke' && (
+        <div className="stroke-paint compact-fields">
+          <Paint
+            label="Trazo"
+            value={v.stroke}
+            opacity={v.strokeOpacity}
+            mixed={mixed.has('stroke')}
+            onChange={(stroke, alpha) =>
+              patch({ stroke, ...(alpha !== undefined ? { strokeOpacity: alpha } : {}) })
+            }
+          />
+        </div>
+      )}
       <div hidden={s.stylePage !== 'stroke'} className="compact-fields stroke-fields">
         <div className={mixed.has('strokeWidth') ? 'style-mixed' : ''}>
           <Field
@@ -435,16 +450,37 @@ export function StyleControls({
         )}
       </div>
       <div hidden={s.stylePage !== 'fill'} className="compact-fields">
-        <Select
-          label="Regla de relleno"
-          value={mixed.has('fillRule') ? 'mixed' : v.fillRule}
-          options={[
-            ...(mixed.has('fillRule') ? [{ value: 'mixed', label: 'Mixto' }] : []),
-            { value: 'evenodd', label: 'Par / impar (huecos)' },
-            { value: 'nonzero', label: 'No cero (orientación)' },
-          ]}
-          onChange={(fillRule) => patch({ fillRule: fillRule as DrawingStyle['fillRule'] })}
-        />
+        {s.stylePage === 'fill' && (
+          <>
+            <Paint
+              label="Relleno"
+              value={v.fill}
+              opacity={v.fillOpacity}
+              mixed={mixed.has('fill')}
+              onChange={(fill, alpha) =>
+                patch({ fill, ...(alpha !== undefined ? { fillOpacity: alpha } : {}) })
+              }
+            />
+            {numeric('fillOpacity', 'Opacidad de relleno', 0, 1, 0.01, true)}
+          </>
+        )}
+        <details className="fill-advanced">
+          <summary>Opciones avanzadas de relleno</summary>
+          <p>
+            La regla decide qué partes se pintan cuando un contorno se cruza o tiene agujeros. En
+            general podés dejar Par / impar.
+          </p>
+          <Select
+            label="Regla de relleno"
+            value={mixed.has('fillRule') ? 'mixed' : v.fillRule}
+            options={[
+              ...(mixed.has('fillRule') ? [{ value: 'mixed', label: 'Mixto' }] : []),
+              { value: 'evenodd', label: 'Par / impar (huecos)' },
+              { value: 'nonzero', label: 'No cero (orientación)' },
+            ]}
+            onChange={(fillRule) => patch({ fillRule: fillRule as DrawingStyle['fillRule'] })}
+          />
+        </details>
       </div>
       <div hidden={s.stylePage !== 'palette'} className="compact-fields">
         <Select
@@ -628,7 +664,20 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
   return (
     <aside className="style-panel" aria-label="Panel de estilos">
       <header>
-        <strong>Estilos</strong>
+        <strong>
+          {
+            {
+              colors: 'Colores',
+              stroke: 'Trazo',
+              fill: 'Rellenar región',
+              profile: 'Perfil de trazo',
+              palette: 'Paleta',
+              presets: 'Presets',
+              object: 'Objeto',
+              options: 'Opciones',
+            }[s.stylePage]
+          }
+        </strong>
         <div className="panel-style-summary">
           <StyleIndicator studio={s} />
         </div>
@@ -647,18 +696,7 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
         </button>
       </header>
       <div className="context-tabs style-tabs" role="tablist" aria-label="Estilos y propiedades">
-        {(
-          [
-            'colors',
-            'stroke',
-            'profile',
-            'fill',
-            'palette',
-            'presets',
-            'object',
-            'options',
-          ] as const
-        )
+        {(['stroke', 'profile', 'fill', 'palette', 'presets', 'object', 'options'] as const)
           .filter((id) => id !== 'object' || !!s.styleSelection.length)
           .map((id) => (
             <button
@@ -669,7 +707,6 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
             >
               {
                 {
-                  colors: 'Colores',
                   stroke: 'Trazo',
                   profile: 'Perfil',
                   fill: 'Fill',
@@ -684,7 +721,7 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
       </div>
       <div className="style-panel-body">
         <Select
-          label="Editar estilo de"
+          label="Aplicar a"
           value={s.styleTarget}
           options={[
             {
@@ -693,7 +730,7 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
                 ? `Selección (${s.styleSelection.length})`
                 : 'Vigente (sin selección)',
             },
-            { value: 'current', label: 'Vigente · nuevos objetos' },
+            { value: 'current', label: 'Próximos trazos y rellenos' },
           ]}
           onChange={(v) => s.setStyleTarget(v as 'selection' | 'current')}
         />
@@ -715,10 +752,9 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
           />
         </div>
         <div hidden={s.stylePage !== 'fill'} className="compact-fields">
-          <strong>Fill · caras vectoriales</strong>
-          <button className="wide-button" onClick={() => s.setStylePage('colors')}>
-            Color de relleno: {value.fill === 'none' ? 'elegir color' : value.fill} · Colores
-          </button>
+          <p className="fill-help">
+            Elegí el color y hacé clic o tocá dentro de una zona cerrada. El relleno queda aplicado.
+          </p>
           <Toggle
             label="Nuevos rellenos vinculados a sus límites"
             checked={s.project.preferences.fillLinkedDefault}
