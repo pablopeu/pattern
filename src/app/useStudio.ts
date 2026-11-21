@@ -135,7 +135,7 @@ export function useStudio() {
   const change = useCallback(
     (recipe: (p: Project) => void, transient = false, options: { derived?: boolean } = {}) => {
       const next = structuredClone(ref.current);
-      next.schemaVersion = 6;
+      next.schemaVersion = 7;
       recipe(next);
       rememberWorkPreferenceChanges(ref.current, next);
       for (const pat of next.patterns)
@@ -190,6 +190,11 @@ export function useStudio() {
             Object.assign(next.drawingStyle, { [key]: structuredClone(changed[0][key]) });
         }
       }
+      if (
+        next.visualization &&
+        !next.patterns.some((pat) => pat.id === next.visualization!.source.patternId)
+      )
+        delete next.visualization;
       next.metadata.updatedAt = new Date().toISOString();
       replace(next);
       setFileSaved(false);

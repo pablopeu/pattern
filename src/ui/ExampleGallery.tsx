@@ -26,11 +26,13 @@ export function ExampleGallery({
         return {
           ...entry,
           title: catalogTitle(entry),
-          thumbnail: compositionThumbnail(
-            resolvePattern(project.patterns[0], project),
-            undefined,
-            project.preferences.background,
-          ),
+          thumbnail:
+            entry.thumbnail ??
+            compositionThumbnail(
+              resolvePattern(project.patterns[0], project),
+              undefined,
+              project.preferences.background,
+            ),
         };
       }),
     [],

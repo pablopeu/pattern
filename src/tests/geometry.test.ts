@@ -128,7 +128,7 @@ describe('Generadores y recuperación', () => {
     const p = example(0);
     expect(() => parseProject('{')).toThrow();
     expect(() => parseProject(JSON.stringify({ ...p, schemaVersion: 999 }))).toThrow();
-    expect(p.schemaVersion).toBe(6);
+    expect(p.schemaVersion).toBe(7);
   });
   it('undo y redo coherentes y descartado de futuro', () => {
     const h = new History({ x: 0 });

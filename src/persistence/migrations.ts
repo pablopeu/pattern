@@ -1,6 +1,6 @@
 import { defaultDrawingStyle, hexColor } from '../app/styles';
 /** Pure, versioned migrations. V1 p1 always remains wallpaper p1. */
-export const LATEST_SCHEMA_VERSION = 6;
+export const LATEST_SCHEMA_VERSION = 7;
 type Versioned = { schemaVersion: number } & Record<string, unknown>;
 export function migratePatternV1(value: unknown): unknown {
   if (!value || typeof value !== 'object') return value;
@@ -17,6 +17,7 @@ export function migratePatternV1(value: unknown): unknown {
   };
 }
 const migrations: Record<number, (value: Versioned) => Versioned> = {
+  6: (doc) => ({ ...structuredClone(doc), schemaVersion: 7 }),
   5: (doc) => ({ ...structuredClone(doc), schemaVersion: 6 }),
   4: (doc) => ({ ...structuredClone(doc), schemaVersion: 5 }),
   3: (doc) => {

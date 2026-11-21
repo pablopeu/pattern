@@ -120,7 +120,7 @@ const xml = (s: string) =>
     /[&<>"']/g,
     (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[c]!,
   );
-/** Diagnostic SVG in physical mm, independent of app export routes. */
+/** Physical SVG for the derived view and its diagnostics; flat exports stay separate. */
 export function diskPreviewSVG(disk: DiskRepresentation, structure = false) {
   const r = disk.radiusMm,
     diameter = 2 * r;

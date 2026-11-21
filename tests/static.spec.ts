@@ -97,7 +97,7 @@ test('v3 estático: ejemplos originales, receta portable y raster sin Internet',
   await page.getByRole('button', { name: 'Guardar proyecto', exact: true }).click();
   await page.getByRole('button', { name: 'Guardar archivo', exact: true }).click();
   const project = JSON.parse(await readFile((await (await download).path())!, 'utf8'));
-  expect(project.schemaVersion).toBe(6);
+  expect(project.schemaVersion).toBe(7);
   expect(project.patterns[0].sourceGeometry).toHaveLength(10);
   expect(project.patterns[0].composition.recipe).toBe('square-limit');
   expect(project.metadata.example.artwork).toBe('original');
@@ -329,7 +329,7 @@ test('v2.2 estático: panel derecho, Fill vectorial, perfiles/preset y workers s
   await page.getByRole('button', { name: 'Guardar archivo', exact: true }).click();
   let file = await downloaded;
   const project = JSON.parse(await readFile((await file.path())!, 'utf8'));
-  expect(project.schemaVersion).toBe(6);
+  expect(project.schemaVersion).toBe(7);
   expect(project.patterns[0].sourceGeometry).toHaveLength(6);
   expect(project.patterns[0].sourceGeometry.filter((g: any) => g.fillRegion)).toHaveLength(1);
   expect(project.patterns[0].sourceGeometry.at(-1).strokeProfile.kind).toBe('taper-both');
@@ -347,4 +347,40 @@ test('v2.2 estático: panel derecho, Fill vectorial, perfiles/preset y workers s
   expect(file.suggestedFilename()).toMatch(/\.svg$/);
   expect(external).toEqual([]);
   expect(errors).toEqual([]);
+});
+
+test('Poincaré estático: galería, worker y SVG físico sin Internet', async ({ page, baseURL }) => {
+  const errors: string[] = [],
+    external: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.route('**/*', (route) => {
+    const url = new URL(route.request().url());
+    if (url.protocol.startsWith('http') && url.origin !== new URL(baseURL!).origin) {
+      external.push(url.href);
+      return route.abort();
+    }
+    return route.continue();
+  });
+  await page.goto(baseURL!);
+  await page.locator('.main-menu summary').click();
+  await page.getByRole('button', { name: 'Galería de ejemplos', exact: true }).click();
+  const gallery = page.getByRole('dialog', { name: 'Galería de ejemplos', exact: true });
+  await gallery.getByLabel('Categoría de ejemplos').selectOption('Poincaré');
+  await gallery
+    .getByRole('button', { name: 'Abrir ejemplo Aves en Poincaré · {5,4}', exact: true })
+    .click();
+  const disk = page.getByRole('dialog', { name: 'Visualización de Poincaré', exact: true });
+  await expect(
+    disk.getByRole('img', { name: 'Disco de Poincaré derivado de la fuente plana', exact: true }),
+  ).toBeVisible({ timeout: 20000 });
+  await expect(disk.getByRole('button', { name: 'SVG', exact: true })).toBeEnabled();
+  const wait = page.waitForEvent('download');
+  await disk.getByRole('button', { name: 'SVG', exact: true }).click();
+  const svg = await readFile((await (await wait).path())!, 'utf8');
+  expect(svg).toContain('width="200mm"');
+  expect(svg).toContain('flatPreparation');
+  await disk.getByRole('button', { name: 'Volver a la fuente', exact: true }).click();
+  await expect(page.locator('.studio-canvas')).toBeVisible();
+  expect(errors).toEqual([]);
+  expect(external).toEqual([]);
 });

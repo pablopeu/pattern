@@ -98,6 +98,11 @@ export function deriveProjectDisk(
   const prepared = prepareFlatDiskSource(project, patternId, selection, settings.p, settings.q, {
     tolerance: settings.strokeTolerance,
   });
-  return { ...derivePreparedDisk(prepared.source, settings), flatSource: prepared.report };
+  const disk = derivePreparedDisk(prepared.source, settings);
+  return {
+    ...disk,
+    report: { ...disk.report, source: { ...disk.report.source, flatPreparation: prepared.report } },
+    flatSource: prepared.report,
+  };
 }
 export type ProjectDiskRepresentation = ReturnType<typeof deriveProjectDisk>;

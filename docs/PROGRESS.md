@@ -1227,3 +1227,29 @@ inicia otro incremento. Monitor conserva timer real, secundaria sólo avisa.
 - Regresión179/179(4,8min/exit0), build y10 estáticas raíz/subcarpeta correctos.
   Logs flat-source-* en .runtime. Contrato nativo/UI/artística/ejemplos pendientes:
   no completa Fase4. Servicios LAN conservados, sin feedback nuevo pendiente.
+
+## Fase4 · Integración nativa y vista geométrica verificadas
+
+- Fuente finita publicada7541051 con946 unidades,179 E2E y10 estáticas/build.
+- Nuevo contrato de visualización independiente del generador, JSON7 y migración
+  pura desde6. Versiones/modelos/parámetros inválidos y fuentes inexistentes se
+  rechazan.952 unidades/TypeScript correctos, incluida conservación de fuentes.
+- Vista no editable de Poincaré en verificación: fuente/celda/ventana, p/q,
+  cámara, precisión, estructura, cancelación, vuelta a fuente y guardado nativo;
+  SVG físico y raster PNG/JPEG. 5 pruebas dirigidas finales correctas, incluidos escritorio y móvil.
+  Primeros fallos de prueba por selector ambiguo de imágenes/iconos y etiqueta
+  incorrecta del diálogo Guardar; corregidos sin relajar las aserciones.
+
+- Regresión184/184(4,9min/exit0),5 dirigidas finales después de impedir guardar
+  opciones sin actualizar también tras cancelar un cálculo sin resultado; build
+  y12 estáticas finales raíz/subcarpeta correctos, con galería/worker/SVG sin Internet.
+- Comprobado con el build anterior REAL: lector JSON6 rechaza documento JSON7,
+  sin abrirlo como fuente plana.952 unidades/TypeScript finales correctos.
+- Galería23: peces{7,3} y aves{5,4}, originales adaptados,100 celdas y170477/
+  119989 segmentos bajo250000. JSON/miniaturas/capturas reales desktop/mobile;
+  fuente editable intacta. Motivos compartidos en módulo sin ciclo de imports.
+- README actualizado con instrucciones, imágenes, límites y JSON antes de
+  instalación. Sin IP privadas en archivos públicos. Servicios LAN conservados;
+  push autorizado sin inspeccionar despliegue. Fase4 sigue parcial: modalidad
+  artística, bordes pareados canónicos y color por clase pendientes, además de
+  fases5–7. No PROJECT_COMPLETE.

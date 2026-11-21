@@ -1,3 +1,4 @@
+import { visualizationSchema } from '../visualization/schema';
 import { girihDefinition } from '../girih/model';
 import type { Generator } from '../app/model';
 import { compositionSchema } from '../composition/schema';
@@ -344,7 +345,8 @@ export const drawingStyleSchema = geometrySchema
     if (issue) ctx.addIssue({ code: 'custom', message: issue });
   });
 export const projectSchema = z.object({
-  schemaVersion: z.literal(6),
+  schemaVersion: z.literal(7),
+  visualization: visualizationSchema.optional(),
   drawingStyle: drawingStyleSchema,
   stylePresets: z
     .array(
@@ -446,6 +448,8 @@ export function parseProject(text: string): Project {
     throw Error(`Proyecto inválido en ${issue.path.join('.')}: ${issue.message}`);
   }
   const p = result.data;
+  if (p.visualization && !p.patterns.some((pat) => pat.id === p.visualization!.source.patternId))
+    throw Error('La visualización tiene un conjunto fuente inexistente.');
   const checkMatrix = (m: readonly number[]) => {
     if (Math.abs(m[0] * m[3] - m[1] * m[2]) < 1e-8)
       throw Error('El proyecto contiene una transformación no invertible.');
@@ -545,4 +549,4 @@ export function parseProject(text: string): Project {
   return p as Project;
 }
 export const serialize = (project: Project) =>
-  JSON.stringify({ ...project, schemaVersion: 6 }, null, 2);
+  JSON.stringify({ ...project, schemaVersion: 7 }, null, 2);

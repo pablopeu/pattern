@@ -24,6 +24,7 @@ export default defineConfig({
         '**/work-protection.spec.ts',
         '**/frame-weld.spec.ts',
         '**/navigation-feedback.spec.ts',
+        '**/poincare.spec.ts',
       ],
   timeout: 45000,
   expect: { timeout: 8000 },

@@ -1,3 +1,4 @@
+import type { Visualization } from '../visualization/model';
 import type { GirihOptions } from '../girih/model';
 import type { Composition } from '../composition/model';
 import type { AperiodicOptions } from '../aperiodic/model';
@@ -123,7 +124,8 @@ export interface Project {
   drawingStyle: DrawingStyle;
   stylePresets: StylePreset[];
   palette: ProjectPalette;
-  schemaVersion: 6;
+  schemaVersion: 7;
+  visualization?: Visualization;
   mainSymmetry: Symmetry;
   mainSymmetryProfiles: Record<string, Symmetry>;
   metadata: {
@@ -236,7 +238,7 @@ export function newPattern(): Pattern {
 export function newProject(): Project {
   const now = new Date().toISOString();
   return {
-    schemaVersion: 6,
+    schemaVersion: 7,
     drawingStyle: { ...defaultDrawingStyle(), fill: '#3b82f6' },
     stylePresets: [],
     palette: { colors: [], recent: [], favorites: [] },

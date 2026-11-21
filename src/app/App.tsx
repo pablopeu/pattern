@@ -1,3 +1,5 @@
+import { DiskDialog } from '../ui/DiskDialog';
+import { defaultVisualization } from '../visualization/model';
 import { finiteGenerator } from '../aperiodic/model';
 import { ExampleGallery } from '../ui/ExampleGallery';
 import { ReferencesDialog } from '../ui/ReferencesDialog';
@@ -106,6 +108,18 @@ export default function App() {
     [importText, setImportText] = useState<string | null>(null),
     [importWidth, setImportWidth] = useState(100),
     [library, setLibrary] = useState<Awaited<ReturnType<typeof savedProjects>> | null>(null);
+  const openVisualization = () => {
+    s.setStyleOpen(false);
+    s.change((p) => {
+      p.visualization = p.visualization
+        ? { ...p.visualization, active: true }
+        : defaultVisualization(p, s.pattern.id);
+    });
+  };
+  const closeVisualization = () =>
+    s.change((p) => {
+      if (p.visualization) p.visualization.active = false;
+    });
   const openExport = () => {
     s.setStyleOpen(false);
     setExportOpen(true);
@@ -174,6 +188,7 @@ export default function App() {
   }, []);
   useEffect(() => {
     if (
+      s.project.visualization?.active ||
       examplesOpen ||
       saveOpen ||
       exportOpen ||
@@ -189,6 +204,7 @@ export default function App() {
       if (menu) menu.open = false;
     }
   }, [
+    s.project.visualization?.active,
     examplesOpen,
     saveOpen,
     exportOpen,
@@ -798,6 +814,14 @@ export default function App() {
               <strong>{s.pattern.name}</strong>
             </div>
             <div className="workspace-actions">
+              <button
+                aria-label="Visualización de Poincaré"
+                title="Visualización derivada de Poincaré"
+                onClick={openVisualization}
+              >
+                <Circle size={17} />
+                <span>Visualizar</span>
+              </button>
               <StyleIndicator studio={s} />
               <button
                 title="Deshacer (Ctrl+Z)"
@@ -1040,6 +1064,14 @@ export default function App() {
               s.requestFit();
             });
           }}
+        />
+      )}
+      {s.loaded && s.project.visualization?.active && (
+        <DiskDialog
+          key={s.project.metadata.id}
+          studio={s}
+          onClose={closeVisualization}
+          onSave={() => setSaveOpen(true)}
         />
       )}
       {saveOpen && (

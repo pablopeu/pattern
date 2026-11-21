@@ -132,7 +132,7 @@ test('v3 editar fuente regenera recursión, undo, JSON y SVG reales sin clonar p
   await page.getByRole('button', { name: 'Guardar archivo', exact: true }).click();
   const file = await downloaded,
     data = JSON.parse(await readFile((await file.path())!, 'utf8'));
-  expect(data.schemaVersion).toBe(6);
+  expect(data.schemaVersion).toBe(7);
   expect(data.patterns[0].sourceGeometry).toHaveLength(10);
   expect(data.patterns[0].sourceGeometry).toEqual(changed);
   expect(data.patterns[0].composition.depth).toBe(2);

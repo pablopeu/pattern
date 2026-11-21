@@ -1,3 +1,40 @@
+# Fase4 · Poincaré geométrico integrado y verificado
+
+Vista geométrica pública: botón Visualizar, modal no editable con fuente/celda/
+ventana, p/q, cámara, precisión/detalle/estructura, Actualizar/Cancelar y retorno
+al editor. Configuración separada de Generator; JSON7/visualización1, migración
+pura desde6 y rechazo explícito de tipos/parámetros/versiones/fuentes inválidos.
+El lector real anterior JSON6 rechaza7 (build congelado .runtime/flat-source-static).
+No hay caída silenciosa a plano. Eliminar conjunto fuente retira su visualización.
+
+Descargas propias SVG físico, PNG/JPEG con DPI; editor conserva exportación plana.
+Guardado usa diálogo existente. Parámetros modificados sin actualizar deshabilitan
+exportar/guardar incluso después de cancelar un cálculo sin resultado. Fuente
+intacta al entrar, regenerar, cancelar, guardar, recargar y volver. Worker prepara
+fuente finita también; ambos cálculos/raster tienen cancelación real.
+
+Galería23 con2 nuevos originales Poincaré: peces{7,3}/aves{5,4},100 celdas,
+170477/119989 segmentos, bajo250000. Fuente plana editable, adaptación marcada
+APPROXIMATED/bordes no garantizados. Miniaturas desde worker, JSON7 y capturas
+reales desktop/mobile; README explicaciones/imágenes antes de instalación.
+
+952 unidades/TypeScript. Regresión184/184(4,9min/exit0),5 E2E finales tras ajuste
+mínimo de guardado sin actualización, build y12 estáticas raíz/subcarpeta correctos.
+Lector anterior real/PNG-JPEG DPI/worker cancelado/galería verificados. Logs
+.runtime/disk-ui-*; no repetir checks amplios sin cambios/fallo/preocupación nueva.
+Escaneo público sin IP privadas. Servicios4173/4174 originales vivos,0 feedback
+pendiente;193816e atendido antes. Incremento listo para commit/push autorizado
+sin inspeccionar Actions/FTP. No PROJECT_COMPLETE.
+
+Siguiente: modalidad de disco artístico con mapa radial explícitamente ARTISTIC,
+fuente finita, cota numérica separada de preparación, UI/worker/exportación y
+sus ejemplos. Faltan también adaptación canónica de bordes pareados y color por
+clase; auditar todos los criterios antes de declarar Fase4 completa. Fases5–7
+pendientes. Primaria5h disponible (72% restante en última lectura); secundaria
+sólo avisa y Pablo decide banked resets. No cambiar timer a secundaria.
+
+---
+
 # Fase4 · Fuente finita preparada; integración nativa/UI siguiente
 
 Ventana primaria renovada, lectura real recibida (97% restante al retomar).

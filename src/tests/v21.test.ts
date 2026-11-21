@@ -148,7 +148,7 @@ describe('captura vacía canónica', () => {
     delete old.preferences.structureVisible;
     delete old.preferences.structureOpacity;
     const restored = parseProject(JSON.stringify(old));
-    expect(restored.schemaVersion).toBe(6);
+    expect(restored.schemaVersion).toBe(7);
     expect(restored.patterns).toEqual(old.patterns);
     expect(restored.preferences.structureVisible).toBe(false);
     expect(restored.preferences.structureOpacity).toBe(0.22);

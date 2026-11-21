@@ -218,3 +218,44 @@ Artefactos reproducibles en `.runtime/flat-source-proof.{svg,png}`.
 
 Todavía faltan contrato nativo, interfaz pública, modalidad artística, ejemplos
 de galería y exportaciones integradas; este incremento no completa Fase4.
+
+
+## Vista geométrica integrada y contrato nativo
+
+La visualización tiene su propio registro version1/kind poincare, separado de
+Generator y de su versión. JSON7 migra desde6 sin agregar visualización ni
+cambiar geometrías/generadores. Guarda fuente/celda/ventana, p/q, cámara, detalle,
+medidas y precisión; el resultado no se guarda como fuente sustituta. Un ID
+fuente inexistente, versión/tipo desconocido, p/q no hiperbólicos o presupuesto
+inválido se rechazan. Eliminar el conjunto fuente retira su visualización.
+
+La vista modal es no editable. Se regenera al entrar/recargar; Actualizar aplica
+los parámetros nuevos, aborta el worker anterior y prepara la fuente actual.
+Volver a la fuente sólo desactiva la visualización y conserva sus parámetros.
+Cálculo y rasterización tienen cancelación, sin publicar resultados tardíos.
+Opciones sin actualizar deshabilitan descarga/guardado; los datos inválidos no
+reemplazan la configuración válida. El guardado usa el diálogo existente y la
+misma persistencia local/portátil del estudio.
+
+SVG conserva diámetro2R mm y metadatos de preparación/proyección; PNG/JPEG usan
+el rasterizador físico con DPI/pHYs/JFIF, límite64M píxeles y cancelación. PNG
+transparente, JPEG blanco. Exportar del editor conserva su alcance plano; la
+vista derivada ofrece sus propias descargas y no ofrece DXF. Modelo exacto
+frente a adaptación aproximada/bordes no garantizados visibles en UI y metadatos.
+
+Dos ejemplos originales con fuentes Bézier/detalles editables: peces {7,3},
+100 celdas/170477 segmentos; aves {5,4},100 celdas/119989 segmentos; presupuesto
+250000 y proyección0,03mm. Miniaturas generadas por el mismo worker que la vista,
+no imágenes externas. Capture-poincare-examples y capture-poincare-studio generan
+JSON/miniaturas/capturas reproducibles. Motivos existentes se movieron a motifs.ts
+para compartir sus fuentes sin dependencias circulares ni copiar otro dibujo.
+
+952 unidades/TypeScript y5 E2E específicas correctas (escritorio/móvil, datos
+inválidos, vuelta a fuente, guardado/reapertura, SVG/PNG/JPEG físicos, cancelación
+y galería). validate-v30-older-reader.mjs abre el build real anterior JSON6 y
+comprueba que rechaza un documento JSON7; no simula el lector ni permite una
+caída silenciosa a plano. Requiere conservar ese build en una carpeta local.
+
+Continúan pendientes proyección artística, correspondencia canónica de bordes
+pareados, coloración por clase y auditoría restante de Fase4. La vista geométrica
+integrada por sí sola no completa el PRD. Fases5–7 pendientes.

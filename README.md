@@ -264,6 +264,40 @@ con bordes y contactos verificados, sin afirmar cobertura infinita.
 [Roseta Girih editable](docs/examples/v30-girih-rosette.json) ·
 [Red entrelazada editable](docs/examples/v30-girih-rhombus-grid.json).
 
+### Ver el dibujo en un disco de Poincaré
+
+El botón **Visualizar** del área de trabajo abre una vista derivada no editable.
+Elegí el conjunto fuente y una celda o ventana finita, configurá **p/q**, centro,
+orientación y detalle, y pulsá **Actualizar vista**. Las combinaciones deben
+cumplir `(p−2)·(q−2)>4`. Podés cancelar el cálculo y volver a intentarlo.
+
+**Volver a la fuente** devuelve al editor plano con sus nodos, trazos y Fill
+intactos. Al reabrir la vista se prepara otra vez la fuente actual. **Guardar
+estudio** conserva dibujo y configuración en JSON7; al abrirlo se regenera el
+disco. Los archivos anteriores migran y las versiones anteriores de la aplicación
+rechazan este formato para evitar mostrar una proyección como si fuera plana.
+
+![Vista real de Poincaré con controles y fuente editable](docs/images/poincare-studio.png)
+
+La teselación y sus geodésicas tienen construcción hiperbólica; el motivo es una
+adaptación numérica dentro de sus celdas. **No se garantiza continuidad de sus
+bordes**. El resumen muestra límites de detalle y distingue la cota de proyección
+de las aproximaciones del recorte y contorneado. La vista no permite dibujar,
+editar nodos ni aplicar Fill directamente.
+
+**SVG** conserva el diámetro físico en milímetros. **PNG/JPEG** usan el DPI
+elegido; PNG permite transparencia y JPEG usa fondo blanco. Estas descargas se
+hacen dentro de la vista derivada; el exportador del editor sigue exportando el
+trabajo plano. En esta vista no se ofrece DXF.
+
+En **Archivo → Galería de ejemplos → Poincaré** hay dos motivos originales,
+rotulados como adaptaciones y con su fuente plana editable:
+
+| Peces · {7,3} | Aves · {5,4} |
+| --- | --- |
+| ![Peces originales en Poincaré](public/examples/poincare-fish.png) | ![Aves originales en Poincaré](public/examples/poincare-bird.png) |
+| [Abrir JSON editable](docs/examples/poincare-fish.pattern.json) | [Abrir JSON editable](docs/examples/poincare-bird.pattern.json) |
+
 ### Explorar un motivo sin perder el dibujo original
 
 En **Archivo → Ejemplos editables**, abrí **Hexagonal · p6m** para obtener la escena de la primera imagen. Entrá en **Simetrías → Explorar todas las simetrías**. Pasá por p1, p4m y p6m y confirmá una opción. Las miniaturas se actualizan con tu motivo; la selección, la herramienta y las fuentes siguen disponibles. [Descargar este proyecto de ejemplo](docs/examples/studio-symmetry.json).
@@ -384,7 +418,7 @@ Si ya hay trabajo, crear o abrir otro proyecto, cargar un ejemplo o recuperar un
 
 ![Confirmación antes de reemplazar el trabajo actual](docs/images/work-protection.png)
 
-La galería de Archivo reúne veintiún ejemplos editables y conserva ocho accesos rápidos. Abrir ejemplos o crear proyectos conserva los anteriores en **Biblioteca de este navegador**. El logo visible usa el archivo local `src/assets/icono.png` aportado por el usuario.
+La galería de Archivo reúne veintitrés ejemplos editables y conserva ocho accesos rápidos. Abrir ejemplos o crear proyectos conserva los anteriores en **Biblioteca de este navegador**. El logo visible usa el archivo local `src/assets/icono.png` aportado por el usuario.
 
 ## Alcances y límites
 
@@ -491,7 +525,7 @@ npm run test:e2e
 npm run benchmark
 ```
 
-Avance v3.0: **946 pruebas unitarias/TypeScript**, **179 flujos E2E** de las funciones públicas y **10 pruebas estáticas** verificadas. Las fases0–3 incluyen93 IH, composición, Hat/Spectre y Girih. La fase4 tiene un núcleo Poincaré y preparación finita de fuente probados; su interfaz, persistencia y exportador final siguen pendientes. Estado detallado: [aceptación v3.0](docs/ACCEPTANCE_V30.md).
+Avance v3.0: **952 pruebas unitarias/TypeScript**, **184 flujos E2E** de las funciones públicas y **12 pruebas estáticas** verificadas. Las fases0–3 incluyen93 IH, composición, Hat/Spectre y Girih. La fase4 ya tiene vista geométrica de Poincaré, fuente finita, JSON7 y exportación SVG/PNG/JPEG; modalidad artística, adaptación canónica de bordes y otros criterios siguen pendientes. Estado detallado: [aceptación v3.0](docs/ACCEPTANCE_V30.md).
 
 Baseline histórico v2.3: **203 pruebas unitarias, 94 flujos E2E, 9 pruebas del monitor y 6 pruebas estáticas**. Se conservan los 75 recorridos anteriores. Builds raíz/subdirectorio y validación independiente de exportaciones correctos.
 

@@ -362,3 +362,15 @@ borrado, permite visibilidad/desbloqueo. Nueva guía/capturas en README.
 Logs .runtime/navigation-feedback-* y frame-weld-*. Primera completa169/179
 identificó fixtures de textos/alcance/overlay y fallos de espacio/captura,
 corregidos antes de la pasada final. Ver WORKSPACE_GUIDE.md para conducta actual.
+
+
+## Poincaré geométrico integrado · 21/11/2026
+
+952 unidades/TypeScript,184 E2E(4,9min/exit0),5 específicas finales(26,3s),
+build y12 estáticas raíz/subcarpeta. Proyección no editable, fuente intacta,
+parámetros inválidos, guardado/reapertura JSON7, cámara, cancelación real y
+reintento; SVG80mm/PNG-JPEG302px a96DPI con densidad y metadatos. Galería fuente
+original23 entradas,2 derivadas regenerables. Lector anterior real JSON6 rechaza7.
+Logs disk-ui-* y artefactos locales excluidos de Git. Preparación de fuente tiene
+aproximaciones de recorte/contorno separadas de cota del mapeo. No prueba todavía
+modalidad artística, bordes canónicos pareados, esfera ni animación.

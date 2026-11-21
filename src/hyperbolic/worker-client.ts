@@ -24,7 +24,14 @@ export async function deriveProjectDiskInWorker(
     signal,
   );
   if (!result.flatSource) throw Error('Falta el informe de preparación plana.');
-  return { ...result, flatSource: result.flatSource };
+  return {
+    ...result,
+    report: {
+      ...result.report,
+      source: { ...result.report.source, flatPreparation: result.flatSource },
+    },
+    flatSource: result.flatSource,
+  };
 }
 function runDiskWorker(
   request: DiskWorkerRequest,
