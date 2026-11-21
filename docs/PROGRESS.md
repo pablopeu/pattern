@@ -1128,3 +1128,10 @@
 - Fase4 parcial: integración nativa/UI, preparación de escena/recortes, modo
   artístico, ejemplos públicos/exportaciones aún pendientes. Cierre de ventana
   al umbral primario, servicios y monitor conservados; push autorizado a main.
+
+
+Cierre de ventana: primaria90% usado; timer confirmado 2026-11-21 12:32:53 ART, sin esperar
+secundaria (44%).905 pruebas/TypeScript y build final correctos. Historial
+publicado en main hasta fb00c80; revisión textual pública sin IPv4 privadas.
+4173/4174 conservados con los mismos procesos, sin duplicados. Última nota de
+continuidad se publica en commit separado. No se inició otro incremento.

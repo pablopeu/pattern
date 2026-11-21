@@ -2,9 +2,8 @@
 
 Worker cancelable src/hyperbolic/worker-client.ts/worker.ts verificado en
 Chromium:85 celdas,21 ticks observados sin bloquear, fuente intacta, aborto
-previo/activo y recuperación de error/nuevo trabajo.905 pruebas/TypeScript.
-El compositor valida {p,q} antes de preparar fuente. Build anterior final
-correcto; aplicación pública sin cambios tras él (worker aún no conectado).
+previo/activo y recuperación de error/nuevo trabajo.905 pruebas/TypeScript y build final correctos.
+El compositor valida {p,q} antes de preparar fuente. Build final905/worker correcto; aplicación pública aún sin controles de esta familia.
 
 Fases0–3 verificadas. Fase4 tiene núcleo/compositor/cámara/LOD/contornos/worker,
 pero NO UI ni contrato nativo. Continuar representación separada de generador,
@@ -14,7 +13,10 @@ Leer HYPERBOLIC_CORE.md para cotas y límites; no editar directamente sobre disc
 905 unidades,164 E2E públicos de Fase3 y10 estáticas vigentes. README actualizado.
 No marcar PROJECT_COMPLETE; Fases4–7 pendientes. Sin feedback nuevo.
 
-Cierre al umbral de la primaria5h; secundaria sólo avisa. Conservar servicios
+Cierre verificado: primaria90% usado, secundaria44% usado (sólo avisa).
+Timer real confirmado para 2026-11-21 12:32:53 ART. Git main publicado hasta
+fb00c80 antes de esta nota; árbol limpio. Sin IPv4 privadas en archivos
+textuales rastreados; marcador PROJECT_COMPLETE ausente. Conservar servicios
 4173/4174 y su monitor/timer de reset real. Historial autorizado para push a main;
 no inspeccionar Actions/FTP. Comprobar Git/cupo al reanudar antes de continuar.
 
