@@ -1,3 +1,41 @@
+# Fase4 · Cámaras reflejadas integradas; cierre de ventana primaria
+
+634831d publicado (núcleo), integración pública actual lista y en verificación
+final. Selector Adaptación del motivo: inscrita predeterminada/cámaras reflejadas
+opcionales; al elegir cámaras baja detalle inicial a profundidad≤1/8 celdas.
+Dispatcher nativo→worker real de cada modo; C0 explícito, tangente/simetría plana
+no garantizadas. Fuente intacta, guardar/reabrir, móvil/escritorio, cancelación y
+reintento, SVG físico verificados en14 pruebas específicas iniciales y en la
+regresión completa posterior(194 flujos).
+
+JSON global7 se conserva; componente Poincaré2 añade adaptación y maxCurves.
+Migración pura de componente1 a inscrita/4096; artistic-disk sigue1. Build previo
+REAL congelado en .runtime/chambers-core-static rechaza componente2 explícito,
+sin fallback plano. Galería26: nuevo Bordes compartidos {7,3}, fuente original
+campo con hueco+Bézier,24 celdas/336 cámaras/119420 segmentos/876 reutilizaciones.
+JSON/miniatura/captura real generados con scripts/capture-chamber-example.mjs.
+README explica modos y límites antes de instalación.
+
+1080 unidades/TypeScript correctas;194/194 E2E completas(5,1min/exit0) y build
+correctos;16 estáticas finales(8 raíz+8 subcarpeta), sin recursos de Internet. Evidencia chambers-ui-* privada.
+Servicios originales4173/4174 vivos;0 feedback pendiente. Sin PROJECT_COMPLETE.
+La primera estática nueva falló por buscar un botón dentro de sí mismo; se
+corrigió sólo el selector de prueba. Ambos empaquetados completos pasaron después.
+No repetir suites correctas sin cambios/fallos/preocupación nueva.
+
+Primaria95% usada (5% restante): NO iniciar otro incremento. Monitor ya programó
+reanudación en1795311263 (22/11/2026 01:34:23UTC,21/11 22:34:23ART), después del
+reset real primario+60s. Secundaria sólo avisa, Pablo decide banked resets. Cerrar
+checks/docs/commit/push autorizado y finalizar. No inspeccionar Actions/FTP.
+
+Al reanudar: comprobar uso/feedback/Git/servicios antes de continuar. Pendiente
+Fase4 color por celda/clase de orientación y auditoría de todos sus criterios;
+no afirmar Fase4 completa. Luego fases5–7 (esfera/animación/exportación/auditoría).
+Reutilizar pruebas/evidencia ya correctas; no repetir suites amplias sin cambios,
+fallos ni preocupación nueva. Mantener APIs bajas de adaptación inscrita.
+
+---
+
 # Fase4 · Núcleo de cámaras/bordes compartidos verificado; conectar UI
 
 5a5e6ad publicado: Poincaré y disco artístico públicos, JSON7, galería25,

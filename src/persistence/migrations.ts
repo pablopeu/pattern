@@ -126,5 +126,26 @@ export function migrateDocument(raw: unknown): unknown {
     if (next.schemaVersion <= doc.schemaVersion) throw Error('Migración de proyecto inválida.');
     doc = next;
   }
+  const v = doc.visualization;
+  if (
+    v &&
+    typeof v === 'object' &&
+    'kind' in v &&
+    v.kind === 'poincare' &&
+    'version' in v &&
+    v.version === 1 &&
+    'settings' in v &&
+    v.settings &&
+    typeof v.settings === 'object' &&
+    !Array.isArray(v.settings)
+  ) {
+    if ('adaptation' in v.settings || 'maxCurves' in v.settings)
+      throw Error('La visualización1 contiene parámetros de una versión posterior.');
+    doc.visualization = {
+      ...v,
+      version: 2,
+      settings: { ...v.settings, adaptation: 'inscribed', maxCurves: 4096 },
+    };
+  }
   return doc;
 }

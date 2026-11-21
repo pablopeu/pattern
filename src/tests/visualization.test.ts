@@ -1,3 +1,5 @@
+import { chamberProject } from '../examples/chambers';
+import { deriveChamberDisk } from '../hyperbolic/chambers';
 import { artisticDiskProject } from '../examples/artistic';
 import { deriveArtisticDisk } from '../artistic/disk';
 import { hyperbolicProject } from '../examples/hyperbolic';
@@ -41,7 +43,7 @@ it('rejects unknown future schema/view versions, foreign kinds, invalid p/q and 
   const p = newProject();
   p.visualization = defaultVisualization(p, p.patterns[0].id);
   for (const patch of [
-    { version: 2 },
+    { version: 3 },
     { kind: 'sphere' },
     { source: { ...p.visualization.source, patternId: 'missing' } },
     { settings: { ...p.visualization.settings, p: 4, q: 4 } },
@@ -162,3 +164,54 @@ it.each(['fish', 'rings'] as const)(
     expect(restored).toEqual(original);
   },
 );
+
+it('migrates component Poincare1 to2 purely and preserves an inscribed source', () => {
+  const project = newStudy(),
+    v = defaultVisualization(project, project.patterns[0].id),
+    settings: Record<string, unknown> = { ...v.settings };
+  delete settings.adaptation;
+  delete settings.maxCurves;
+  const legacy = { ...project, visualization: { ...v, version: 1, settings } },
+    before = structuredClone(legacy),
+    restored = parseProject(JSON.stringify(legacy));
+  expect(restored.visualization?.version).toBe(2);
+  if (restored.visualization?.kind !== 'poincare') throw Error('Expected geometric migration');
+  expect(restored.visualization.settings.adaptation).toBe('inscribed');
+  expect(restored.visualization.settings.maxCurves).toBe(4096);
+  expect(restored.patterns).toEqual(project.patterns);
+  expect(legacy).toEqual(before);
+  expect(() =>
+    parseProject(JSON.stringify({ ...project, visualization: { ...v, version: 1 } })),
+  ).toThrow(/visualización1/);
+});
+it('component2 preserves chamber adaptation and rejects unknown methods without replacing the source', () => {
+  const project = newStudy();
+  project.visualization = defaultVisualization(project, project.patterns[0].id);
+  project.visualization.settings.adaptation = 'mirrored-chambers';
+  expect(parseProject(serialize(project))).toEqual(project);
+  expect(() =>
+    parseProject(
+      JSON.stringify({
+        ...project,
+        visualization: {
+          ...project.visualization,
+          settings: { ...project.visualization!.settings, adaptation: 'affine' },
+        },
+      }),
+    ),
+  ).toThrow();
+});
+
+it('original chamber gallery example regenerates within its explicit budgets after JSON', () => {
+  const project = chamberProject(),
+    restored = parseProject(serialize(project)),
+    v = restored.visualization!;
+  if (v.kind !== 'poincare') throw Error('Expected geometric fixture');
+  expect(restored).toEqual(project);
+  const before = structuredClone(restored),
+    disk = deriveChamberDisk(restored, v.source.patternId, v.source.selection, v.settings);
+  expect(disk.report.motif.borderCorrespondence).toBe('CANONICAL_C0');
+  expect(disk.report.resources.segments).toBeLessThanOrEqual(v.settings.maxSegments);
+  expect(disk.report.resources.visible).toBeGreaterThan(0);
+  expect(restored).toEqual(before);
+});

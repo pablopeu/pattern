@@ -280,8 +280,10 @@ rechazan este formato para evitar mostrar una proyección como si fuera plana.
 ![Vista real de Poincaré con controles y fuente editable](docs/images/poincare-studio.png)
 
 La teselación y sus geodésicas tienen construcción hiperbólica; el motivo es una
-adaptación numérica dentro de sus celdas. **No se garantiza continuidad de sus
-bordes**. El resumen muestra límites de detalle y distingue la cota de proyección
+adaptación numérica. **Motivo inscrito** conserva la adaptación dentro de cada
+celda, sin garantizar correspondencia de bordes. **Triángulos reflejados** adapta
+la fuente a cámaras con bordes compartidos: sus posiciones coinciden (C0), aunque
+la tangente puede cambiar y aparecen simetrías adicionales. El resumen muestra límites de detalle y distingue la cota de proyección
 de las aproximaciones del recorte y contorneado. La vista no permite dibujar,
 editar nodos ni aplicar Fill directamente.
 
@@ -290,13 +292,24 @@ elegido; PNG permite transparencia y JPEG usa fondo blanco. Estas descargas se
 hacen dentro de la vista derivada; el exportador del editor sigue exportando el
 trabajo plano. En esta vista no se ofrece DXF.
 
-En **Archivo → Galería de ejemplos → Poincaré** hay dos motivos originales,
+En **Archivo → Galería de ejemplos → Poincaré** hay tres ejemplos originales,
 rotulados como adaptaciones y con su fuente plana editable:
 
 | Peces · {7,3} | Aves · {5,4} |
 | --- | --- |
 | ![Peces originales en Poincaré](public/examples/poincare-fish.png) | ![Aves originales en Poincaré](public/examples/poincare-bird.png) |
 | [Abrir JSON editable](docs/examples/poincare-fish.pattern.json) | [Abrir JSON editable](docs/examples/poincare-bird.pattern.json) |
+
+El ejemplo **Bordes compartidos · {7,3}** combina un campo con hueco y una curva.
+Se abre directamente con **Triángulos reflejados**. Podés volver a la fuente,
+editarla y regenerar el disco. Esta adaptación requiere más cálculo; al elegirla
+manualmente comienza con un detalle reducido que podés aumentar.
+
+![Triángulos reflejados y controles en la aplicación](docs/images/poincare-chambers.png)
+
+[Descargar su JSON editable](docs/examples/poincare-chambers.pattern.json).
+El archivo conserva JSON7 y usa el componente Poincaré versión2; la versión1
+migra a motivo inscrito. Un lector anterior rechaza la versión2 explícitamente.
 
 ### Crear un disco artístico
 
@@ -551,7 +564,7 @@ npm run test:e2e
 npm run benchmark
 ```
 
-Avance v3.0: **1077 pruebas unitarias/TypeScript**, **189 flujos E2E** de las funciones públicas y **14 pruebas estáticas** verificadas. Las fases0–3 incluyen93 IH, composición, Hat/Spectre y Girih. La fase4 ya tiene vista geométrica de Poincaré y disco artístico, fuente finita, JSON7 y exportación SVG/PNG/JPEG; adaptación canónica de bordes, color por clase y otros criterios siguen pendientes. Estado detallado: [aceptación v3.0](docs/ACCEPTANCE_V30.md).
+Avance v3.0: **1080 pruebas unitarias/TypeScript**, **194 flujos E2E** y **16 pruebas estáticas** verificadas. Las fases0–3 incluyen93 IH, composición, Hat/Spectre y Girih. La fase4 ya tiene vista geométrica de Poincaré y disco artístico, fuente finita, JSON7 y exportación SVG/PNG/JPEG; adaptación con bordes compartidos ya está disponible; color por clase y otros criterios siguen pendientes. Estado detallado: [aceptación v3.0](docs/ACCEPTANCE_V30.md).
 
 Baseline histórico v2.3: **203 pruebas unitarias, 94 flujos E2E, 9 pruebas del monitor y 6 pruebas estáticas**. Se conservan los 75 recorridos anteriores. Builds raíz/subdirectorio y validación independiente de exportaciones correctos.
 

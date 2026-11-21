@@ -3,7 +3,7 @@ import { validPQ } from '../hyperbolic/disk';
 const finite = z.number().finite();
 export const poincareVisualizationSchema = z
   .object({
-    version: z.literal(1),
+    version: z.literal(2),
     kind: z.literal('poincare'),
     active: z.boolean(),
     source: z
@@ -29,6 +29,8 @@ export const poincareVisualizationSchema = z
       .strict(),
     settings: z
       .object({
+        adaptation: z.enum(['inscribed', 'mirrored-chambers']),
+        maxCurves: finite.int().min(1).max(24000),
         p: finite.int().min(3).max(12),
         q: finite.int().min(3).max(12),
         radiusMm: finite.min(1).max(2000),

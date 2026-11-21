@@ -15,9 +15,15 @@ export interface DiskSettings extends Partial<HyperbolicOptions> {
   minimumDiameter?: number;
   maxSegments?: number;
   strokeTolerance?: number;
+  maxCurves?: number;
 }
 export function validateDiskSettings(settings: DiskSettings) {
   if (!validPQ(settings.p, settings.q)) throw Error('Poincaré: p/q enteros3–12 y (p−2)(q−2)>4.');
+  if (
+    settings.maxCurves !== undefined &&
+    (!Number.isInteger(settings.maxCurves) || settings.maxCurves < 1 || settings.maxCurves > 24000)
+  )
+    throw Error('Presupuesto de fuente inválido.');
   const maximum = settings.maxSegments ?? 250000;
   if (
     !Number.isInteger(maximum) ||
@@ -39,6 +45,7 @@ export function deriveDisk(shapes: Geometry[], settings: DiskSettings) {
   return derivePreparedDisk(
     prepareDiskSource(shapes, settings.p, settings.q, {
       strokeTolerance: settings.strokeTolerance,
+      maxCurves: settings.maxCurves,
     }),
     settings,
   );

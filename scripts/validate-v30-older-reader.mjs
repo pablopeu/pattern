@@ -1,4 +1,4 @@
-/** Verify rejection with the REAL frozen JSON6 build, not a simulated old parser.
+/** Verify rejection with a REAL frozen prior build, not a simulated old parser.
  * Before building current code, retain the previous dist in the supplied folder.
  */
 import { createServer } from 'node:http';
@@ -6,7 +6,8 @@ import { readFile } from 'node:fs/promises';
 import { resolve, extname } from 'node:path';
 import { chromium, expect } from '@playwright/test';
 const root = resolve(process.argv[2] ?? '.runtime/flat-source-static'),
-  artistic = process.argv[3] === 'artistic';
+  artistic = process.argv[3] === 'artistic',
+  chambers = process.argv[3] === 'chambers';
 await readFile(resolve(root, 'index.html'));
 const server = createServer(async (req, res) => {
   let path = new URL(req.url, 'http://localhost').pathname;
@@ -39,19 +40,24 @@ const browser = await chromium.launch();
 try {
   const source = await browser.newPage();
   await source.goto('http://127.0.0.1:4173');
-  const native = await source.evaluate(async (artistic) => {
-    const { newProject, geometry, node } = await import('/src/app/model.ts'),
-      { defaultVisualization, defaultArtisticVisualization } = await import(
-        '/src/visualization/model.ts'
-      ),
-      { serialize } = await import('/src/persistence/schema.ts');
-    const p = newProject();
-    p.patterns[0].sourceGeometry = [geometry('path', [node(1, 1), node(2, 2)])];
-    p.visualization = artistic
-      ? defaultArtisticVisualization(p, p.patterns[0].id)
-      : defaultVisualization(p, p.patterns[0].id);
-    return serialize(p);
-  }, artistic);
+  const native = await source.evaluate(
+    async ({ artistic, chambers }) => {
+      const { newProject, geometry, node } = await import('/src/app/model.ts'),
+        { defaultVisualization, defaultArtisticVisualization } = await import(
+          '/src/visualization/model.ts'
+        ),
+        { serialize } = await import('/src/persistence/schema.ts');
+      const p = newProject();
+      p.patterns[0].sourceGeometry = [geometry('path', [node(1, 1), node(2, 2)])];
+      p.visualization = artistic
+        ? defaultArtisticVisualization(p, p.patterns[0].id)
+        : defaultVisualization(p, p.patterns[0].id);
+      if (chambers && p.visualization.kind === 'poincare')
+        p.visualization.settings.adaptation = 'mirrored-chambers';
+      return serialize(p);
+    },
+    { artistic, chambers },
+  );
   const older = await browser.newPage();
   await older.goto('http://127.0.0.1:4181');
   await expect(older.locator('.save-indicator')).toHaveText(/Guardado local/);
@@ -62,9 +68,11 @@ try {
   });
   await expect(
     older.getByText(
-      artistic
-        ? /Proyecto inválido en visualization.kind/
-        : /Este archivo usa la versión 7; esta aplicación admite hasta la versión 6\./,
+      chambers
+        ? /Proyecto inválido en visualization.version/
+        : artistic
+          ? /Proyecto inválido en visualization.kind/
+          : /Este archivo usa la versión 7; esta aplicación admite hasta la versión 6\./,
     ),
   ).toBeVisible();
   await expect(
@@ -72,8 +80,8 @@ try {
   ).toHaveCount(0);
   console.log(
     JSON.stringify({
-      olderReader: artistic ? 'JSON7 geometric' : 6,
-      rejectedKind: artistic ? 'artistic-disk' : 'poincare',
+      olderReader: chambers ? 'Poincare component1' : artistic ? 'JSON7 geometric' : 6,
+      rejectedKind: chambers ? 'poincare component2' : artistic ? 'artistic-disk' : 'poincare',
       rejectedDocument: 7,
       actualFrozenBuild: true,
       silentFlatFallback: false,

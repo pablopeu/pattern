@@ -1,8 +1,8 @@
 # Adaptación por cámaras reflejadas · núcleo verificado
 
-El núcleo está implementado y verificado; integración nativa/UI y ejemplos
-públicos pendientes. La adaptación pública actual aún inscribe el motivo dentro
-de cada celda y declara correspondencia de bordes NO garantizada.
+El núcleo y la integración nativa/UI están implementados. En Visualizar →
+Poincaré geométrico → Adaptación del motivo se puede elegir Triángulos reflejados.
+Motivo inscrito sigue siendo el valor predeterminado, sin garantía de bordes.
 
 ## Objetivo y alcance
 
@@ -139,5 +139,26 @@ píxel que contiene el punto analítico, manteniendo aserciones de color/alfa.
 
 10 E2E de modalidades públicas, build y14 estáticas raíz/subcarpeta correctos
 tras el núcleo. Referencias añade los dos trabajos primarios consultados;
-conserva18 repositorios. Núcleo todavía sin selector/registro nativo propio de
-adaptación ni ejemplo de galería. No declarar Fase4/PRD completos.
+conserva18 repositorios. Esta evidencia corresponde al núcleo antes de la
+integración pública descrita a continuación. No declarar Fase4/PRD completos.
+
+
+## Integración pública y ejemplo
+
+Selector geométrico con adaptación inscrita predeterminada y cámaras reflejadas
+opcionales. Elegir cámaras inicia con profundidad≤1/máximo8 celdas para controlar
+el costo; el usuario puede aumentar detalle. Fuente, medida, agujeros y estilos
+siguen en el editor plano. El dispatcher nativo selecciona el worker correcto;
+cancelación real termina el worker, y los tres modos comparten las descargas.
+
+Global JSON7 se conserva. Poincaré componente2 añade adaptación y presupuesto de
+curvas; componente1 migra de forma pura a inscrita/4096 curvas. Artistic-disk
+sigue1. Se comprobó con un build congelado REAL que el lector Poincaré1 rechaza2,
+sin aplanar silenciosamente. El esquema rechaza métodos/versiones desconocidos.
+
+El ejemplo original Bordes compartidos · {7,3} incluye un campo con hueco y una
+Bézier abierta, recortados a ventana60×60mm.24 celdas/336 cámaras/119420 segmentos
+bajo250000;876 reutilizaciones de borde. JSON y miniatura se regeneran mediante
+scripts/capture-chamber-example.mjs. Captura de la interfaz real en README.
+Pruebas incluyen escritorio/móvil, guardar/reabrir, exportación física, regreso
+sin modificar fuente, cancelación/reintento y carga desde galería.

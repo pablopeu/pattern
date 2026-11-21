@@ -26,6 +26,7 @@ export default defineConfig({
         '**/navigation-feedback.spec.ts',
         '**/poincare.spec.ts',
         '**/artistic.spec.ts',
+        '**/chambers.spec.ts',
       ],
   timeout: 45000,
   expect: { timeout: 8000 },

@@ -421,3 +421,44 @@ test('disco artístico estático: miniatura/worker/SVG desde subcarpeta sin Inte
   expect(errors).toEqual([]);
   expect(external).toEqual([]);
 });
+
+test('cámaras estáticas: galería y worker con bordes compartidos sin Internet', async ({
+  page,
+  baseURL,
+}) => {
+  const errors: string[] = [],
+    external: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.route('**/*', (route) => {
+    const url = new URL(route.request().url());
+    if (url.protocol.startsWith('http') && url.origin !== new URL(baseURL!).origin) {
+      external.push(url.href);
+      return route.abort();
+    }
+    return route.continue();
+  });
+  await page.goto(baseURL!);
+  await page.locator('.main-menu summary').click();
+  await page.getByRole('button', { name: 'Galería de ejemplos', exact: true }).click();
+  const gallery = page.getByRole('dialog', { name: 'Galería de ejemplos', exact: true });
+  await gallery.getByLabel('Categoría de ejemplos').selectOption('Poincaré');
+  const card = gallery.locator('.example-card').filter({ hasText: 'Bordes compartidos · {7,3}' });
+  expect((await page.request.get((await card.locator('img').getAttribute('src'))!)).ok()).toBe(
+    true,
+  );
+  await gallery
+    .getByRole('button', { name: 'Abrir ejemplo Bordes compartidos · {7,3}', exact: true })
+    .click();
+  const disk = page.getByRole('dialog', { name: 'Visualización de Poincaré', exact: true });
+  await expect(disk.getByRole('button', { name: 'SVG', exact: true })).toBeEnabled({
+    timeout: 20000,
+  });
+  const wait = page.waitForEvent('download');
+  await disk.getByRole('button', { name: 'SVG', exact: true }).click();
+  const svg = await readFile((await (await wait).path())!, 'utf8');
+  expect(svg).toContain('width="200mm"');
+  expect(svg).toContain('CANONICAL_C0');
+  await disk.getByRole('button', { name: 'Volver a la fuente', exact: true }).click();
+  expect(errors).toEqual([]);
+  expect(external).toEqual([]);
+});

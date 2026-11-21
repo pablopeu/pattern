@@ -352,6 +352,7 @@ export function deriveChamberDisk(
     : [];
   return {
     cells,
+    flatSource: flat.report,
     edges,
     boundaryTraces,
     radiusMm: settings.radiusMm,

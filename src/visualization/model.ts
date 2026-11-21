@@ -7,11 +7,11 @@ import { resolvePattern } from '../symmetry/config';
 
 /** A derived view is independent of generators, canonical geometry and edit mode. */
 export interface PoincareVisualization {
-  version: 1;
+  version: 2;
   kind: 'poincare';
   active: boolean;
   source: { patternId: string; selection: FlatSourceSelection };
-  settings: Required<DiskSettings>;
+  settings: Required<DiskSettings> & { adaptation: 'inscribed' | 'mirrored-chambers' };
   showStructure: boolean;
 }
 export interface ArtisticVisualization {
@@ -33,7 +33,7 @@ export function defaultVisualization(project: Project, patternId: string): Poinc
       !flat.composition?.enabled &&
       (flat.tiling || flat.symmetry.family === 'wallpaper');
   return {
-    version: 1,
+    version: 2,
     kind: 'poincare',
     active: true,
     source: {
@@ -46,6 +46,8 @@ export function defaultVisualization(project: Project, patternId: string): Poinc
           },
     },
     settings: {
+      adaptation: 'inscribed',
+      maxCurves: 4096,
       p: 7,
       q: 3,
       radiusMm: 100,
@@ -95,7 +97,13 @@ export function changeVisualizationKind(
       : defaultArtisticVisualization(project, current.source.patternId);
   next.active = current.active;
   next.source = structuredClone(current.source);
-  for (const key of ['radiusMm', 'toleranceMm', 'strokeTolerance', 'maxSegments'] as const)
+  for (const key of [
+    'radiusMm',
+    'toleranceMm',
+    'strokeTolerance',
+    'maxSegments',
+    'maxCurves',
+  ] as const)
     next.settings[key] = current.settings[key];
   next.settings.view.angle = current.settings.view.angle;
   const c = current.settings.view.center,

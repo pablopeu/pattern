@@ -387,3 +387,31 @@ regeneración. Lectura con el build geométrico7 anterior REAL rechaza artistic-
 Primer test de cambio de centro detectó1ULP por encima de0,9; corregido dejando
 margen de clamp, sin relajar la validación. No verifica todavía bordes pareados
 canónicos ni coloración por clase de Poincaré, esfera/animación pendientes.
+
+
+## Fase4 · Integración de cámaras reflejadas
+
+1080 unidades/TypeScript: migración pura Poincaré1→2 con motivo inscrito,
+contrato de adaptación y rechazo de métodos inválidos, regeneración del ejemplo
+con presupuesto explícito.14 E2E iniciales de las tres modalidades correctas;
+194/194 E2E completas(5,1min/exit0), build y16 estáticas finales correctos
+(8 raíz+8 subcarpeta,23s cada suite). El primer caso estático nuevo buscaba un
+botón dentro de la tarjeta que ya era el botón; corregido sólo el selector,
+sin cambios de aplicación/aserciones. Ambas suites completas correctas después. Evidencia local chambers-ui-*.
+
+Pruebas públicas de cámaras en1440/390px: cambiar desde inscrita con detalle
+prudente, fuente intacta, guardar JSON7/componente2 y reabrir con el mismo mapa;
+SVG120mm con CANONICAL_C0; cancelar worker real/reintentar y abrir el ejemplo.
+El lector previo REAL (build634831d) se sirve aislado y rechaza componente2,
+sin caída silenciosa a la vista plana:
+
+```bash
+node scripts/validate-v30-older-reader.mjs .runtime/chambers-core-static chambers
+node scripts/capture-chamber-example.mjs
+```
+
+Galería26; nuevo ejemplo24 celdas/336 cámaras/119420 segmentos/876 reutilizaciones
+de borde, menor al presupuesto250000. Fuente campo con hueco y curva original;
+JSON/miniatura/captura se crean con worker real, sin transformar geometría fuente.
+No se reejecutan pruebas independientes del núcleo sin cambios en su algoritmo:
+sus evidencias anteriores y límites constan en HYPERBOLIC_CHAMBERS.md.

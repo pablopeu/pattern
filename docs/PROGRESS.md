@@ -1323,3 +1323,25 @@ inicia otro incremento. Monitor conserva timer real, secundaria sólo avisa.
   HYPERBOLIC_CHAMBERS.md detalla construcción y pruebas. Todavía sin UI/nativo/
   ejemplo público de esta adaptación; siguiente incremento los conecta. Color
   por clase y fases5–7 pendientes. No PROJECT_COMPLETE. Servicios LAN conservados.
+
+
+## Fase4 · Cámaras reflejadas públicas, contrato y ejemplo
+
+- Selector de adaptación inscrita/cámaras reflejadas en Poincaré; detalle inicial
+  prudente, controles compartidos, aviso C0/tangente y fuente plana editable.
+  Dispatcher validado dirige cada contrato al worker correcto. Exportación física,
+  cancelar/reintentar, guardar/reabrir y retorno con fuente intacta, móvil/desktop.
+- JSON7 con Poincaré componente2; migración pura desde1 a inscrita/4096 curvas.
+  Lector anterior REAL congelado rechaza2, sin interpretar el disco como plano;
+  métodos desconocidos rechazados. Artistic-disk permanece1.
+- Galería26, nuevo original Bordes compartidos {7,3}: campo con hueco+Bézier,
+  ventana60×60mm,24 celdas/336 cámaras/119420 segmentos/876 curvas reutilizadas.
+  Miniatura, JSON y captura real; README uso e imágenes antes de instalación.
+- 1080 unidades/TypeScript,14 E2E específicas iniciales y194/194 de regresión
+  completa(5,1min/exit0), build y16 estáticas finales correctos(8 raíz+8 subcarpeta).
+  Primer intento estático expuso selector de prueba anidado en el mismo botón;
+  corregido sólo el selector y ambas suites completas correctas después.
+- Monitor95% primaria usado: cierre de incremento, sin comenzar otro. Reanuda
+  después del reset primario real; secundaria sólo aviso. Servicios LAN originales
+  conservados,0 feedback pendiente. Color por clase, auditoría Fase4 y fases5–7
+  pendientes. No PROJECT_COMPLETE ni inspección Actions/FTP tras el push.

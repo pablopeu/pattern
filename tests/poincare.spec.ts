@@ -165,7 +165,7 @@ test('galería Poincaré ofrece ejemplos reales y permite volver a sus fuentes e
   await page.getByRole('button', { name: 'Galería de ejemplos', exact: true }).click();
   const gallery = page.getByRole('dialog', { name: 'Galería de ejemplos', exact: true });
   await gallery.getByLabel('Categoría de ejemplos').selectOption('Poincaré');
-  await expect(gallery.locator('.example-card')).toHaveCount(2);
+  await expect(gallery.locator('.example-card')).toHaveCount(3);
   const images = await gallery
     .locator('.example-card img')
     .evaluateAll((rows) => rows.map((row) => (row as HTMLImageElement).src));

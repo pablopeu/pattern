@@ -34,6 +34,7 @@ export function deriveProjectDisk(
 ) {
   const prepared = prepareFlatDiskSource(project, patternId, selection, settings.p, settings.q, {
     tolerance: settings.strokeTolerance,
+    maxCurves: settings.maxCurves,
   });
   const disk = derivePreparedDisk(prepared.source, settings);
   return {

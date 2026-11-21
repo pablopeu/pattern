@@ -1,5 +1,4 @@
-import { deriveArtisticDiskInWorker } from '../artistic/worker-client';
-import { artisticDiskSVG, type ArtisticDiskRepresentation } from '../artistic/disk';
+import { deriveVisualizationInWorker, type DerivedDisk } from '../visualization/worker-client';
 import { useEffect, useRef, useState } from 'react';
 import { Download, RotateCcw, Save, Square, X } from 'lucide-react';
 import type { Studio } from '../app/useStudio';
@@ -11,9 +10,6 @@ import {
   type ArtisticVisualization,
 } from '../visualization/model';
 import { visualizationSchema } from '../visualization/schema';
-import { deriveProjectDiskInWorker } from '../hyperbolic/worker-client';
-import { diskPreviewSVG } from '../hyperbolic/representation';
-import type { ProjectDiskRepresentation } from '../hyperbolic/flat-source';
 import { download } from '../persistence/storage';
 import { rasterize } from '../export/raster';
 import { Field, Select, Toggle } from './Controls';
@@ -32,7 +28,7 @@ export function DiskDialog({
       structuredClone(s.project.visualization ?? defaultVisualization(s.project, s.pattern.id)),
     ),
     [output, setOutput] = useState<{
-      disk: ProjectDiskRepresentation | ArtisticDiskRepresentation;
+      disk: DerivedDisk;
       record: Visualization;
       svg: string;
     } | null>(null),
@@ -81,35 +77,12 @@ export function DiskDialog({
       p.visualization = snapshot;
     });
     try {
-      const publish = (
-        disk: ProjectDiskRepresentation | ArtisticDiskRepresentation,
-        svg: string,
-      ) => {
-        if (!current.signal.aborted && mounted.current) setOutput({ disk, record: snapshot, svg });
-      };
-      if (snapshot.kind === 'poincare') {
-        const disk = await deriveProjectDiskInWorker(
-          s.projectRef.current,
-          snapshot.source.patternId,
-          snapshot.source.selection,
-          snapshot.settings,
-          current.signal,
-        );
-        publish(disk, diskPreviewSVG(disk, snapshot.showStructure));
-      } else {
-        const disk = await deriveArtisticDiskInWorker(
-          s.projectRef.current,
-          snapshot.source.patternId,
-          snapshot.source.selection,
-          {
-            ...snapshot.settings,
-            angle: snapshot.settings.view.angle,
-            center: snapshot.settings.view.center,
-          },
-          current.signal,
-        );
-        publish(disk, artisticDiskSVG(disk));
-      }
+      const result = await deriveVisualizationInWorker(
+        s.projectRef.current,
+        snapshot,
+        current.signal,
+      );
+      if (!current.signal.aborted && mounted.current) setOutput({ ...result, record: snapshot });
     } catch (e) {
       if (mounted.current && controller.current === current)
         setError(
@@ -208,6 +181,37 @@ export function DiskDialog({
               })
             }
           />
+          {record.kind === 'poincare' && (
+            <Select
+              label="Adaptación del motivo"
+              value={record.settings.adaptation}
+              options={[
+                { value: 'inscribed', label: 'Motivo inscrito' },
+                { value: 'mirrored-chambers', label: 'Triángulos reflejados · bordes compartidos' },
+              ]}
+              onChange={(value) =>
+                setRecord((r) =>
+                  r.kind === 'poincare'
+                    ? {
+                        ...r,
+                        settings: {
+                          ...r.settings,
+                          adaptation: value as 'inscribed' | 'mirrored-chambers',
+                          depth:
+                            value === 'mirrored-chambers'
+                              ? Math.min(1, r.settings.depth)
+                              : r.settings.depth,
+                          maxCells:
+                            value === 'mirrored-chambers'
+                              ? Math.min(8, r.settings.maxCells)
+                              : r.settings.maxCells,
+                        },
+                      }
+                    : r,
+                )
+              }
+            />
+          )}
           <Select
             label="Conjunto fuente"
             value={record.source.patternId}
@@ -401,7 +405,9 @@ export function DiskDialog({
           <p>
             {artistic
               ? 'Deformación radial artística · ARTISTIC. Simetrías y correspondencia de bordes sin garantía.'
-              : 'Teselación geométrica {p,q}. Motivo adaptado; correspondencia de bordes no garantizada.'}
+              : record.settings.adaptation === 'mirrored-chambers'
+                ? 'Triángulos reflejados: bordes de cámara compartidos. Motivo adaptado con simetrías adicionales; la tangente puede cambiar.'
+                : 'Teselación geométrica {p,q}. Motivo adaptado; correspondencia de bordes no garantizada.'}
           </p>
           <div className="disk-image">
             {preview && (
@@ -466,8 +472,8 @@ export function DiskDialog({
               )}
               <p>
                 Cota del mapeo: {output.disk.report.numeric.curveProjectionBoundMm.toFixed(5)}mm.
-                Preparación por recorte/contorneado numérico; esa cota no certifica el proceso
-                completo.
+                Recorte, contorneado y ajustes numéricos se informan aparte; esa cota no certifica
+                el proceso completo.
               </p>
               {('cells' in output.disk
                 ? output.disk.flatSource.warnings
