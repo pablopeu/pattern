@@ -11,9 +11,9 @@ No se declara completo v3.0: proyecciones y animaciones pendientes.
 |06|IH1–IH93|93/93 verificados/integrados;81 geométricos+12 marcados propios, pruebas individuales/Scene/JSON y exportación independiente de los12 marcados|
 |07|Figurativas|Verificado: 3 figuras C1 y ornamento IH63; bordes relacionados, fuente/detalles conservados, silueta en vivo y composición|
 |08–09|Recursión/espirales|Verificado: operadores/inversas, determinismo, fuente única, detalle/IDs, UI/undo/JSON/exportaciones|
-|10|Hat/Spectre|Implementados por sustitución publicada,13 semillas/quiralidad/áreas; tres ejemplos, UI/JSON/exportaciones; fase3 aún requiere Girih|
+|10|Hat/Spectre|Implementados por sustitución publicada,13 semillas/quiralidad/áreas; tres ejemplos, UI/JSON/exportaciones verificados|
 |11|Girih|Verificado:5 formas/adyacencias, ensamblado, rayos54°, hebras globales, conflictos/cortes explícitos y regiones vectoriales; SVG/raster/DXF independientes|
-|12–14|Hiperbólica/artística/esférica|Pendiente|
+|12–14|Hiperbólica/artística/esférica|Parcial: núcleo Poincaré y27 pruebas/6 diagnósticos independientes; UI/nativo/exportaciones/artística/esférica pendientes|
 |15|Fuente intacta|Base verificada; nuevos recorridos pendientes|
 |16–19|Timeline/loop/GIF/video|Pendiente|
 |20|Exportación|Base SVG/PNG/JPEG/DXF; nuevas familias pendientes|

@@ -1061,3 +1061,19 @@
   PNG/JPEG96DPI/240mm y DXF2D/mm; fuente1/0 objetos respectivamente.
 - Fase3 cerrada; Fases4–7 pendientes. Próximo: núcleo Poincaré, sin declarar
   representación lista hasta completar UI/JSON/exportación y fuente intacta.
+
+
+## Fase4 · Núcleo Poincaré, sin interfaz todavía
+
+- Tres módulos matemáticos MIT fijados por hash, sin DOM, avisos distribuidos.
+  Adaptador de polígonos {p,q}, marcos canónicos estables, arcos/adyacencias,
+  culling por distancia al polígono y límites finitos explícitos.
+- Proyección cúbica adaptativa con cota derivativa certificada, detecta lazos/S;
+  rechazo si presupuesto/profundidad no permiten la precisión solicitada.
+-704 unidades/TypeScript, build y10 estáticas correctos,27 nuevas. Seis modelos con70–337 polígonos
+  renderizados por CairoSVG frente a muestreo Möbius independiente: error medio
+  máximo0,029/255. Motivos rellenos con cota≤0,01mm en disco200mm. Diagnósticos
+  locales, sin afirmar exportador/UI ni continuidad de bordes del motivo.
+- Detalles, límites y pasos pendientes en HYPERBOLIC_CORE.md. Fase4 parcial;
+  faltan representación derivada, fuente/regreso, cámara/LOD, trazos, nativo,
+  artística, ejemplos y exportación antes de auditar AC12–13.

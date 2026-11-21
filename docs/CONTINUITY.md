@@ -1,3 +1,24 @@
+# Fase4 · Núcleo Poincaré verificado, representación pendiente
+
+Núcleo puro src/hyperbolic: polígonos regulares {p,q}, isometrías, arcos,
+adyacencias, marcos estables y proyección adaptativa cúbica con cota certificada.
+Tres módulos MIT de Pisan incorporados sin modificar/hash; avisos actualizados.
+704 unidades/TypeScript, build y10 estáticas raíz/subcarpeta correctos. Seis diagnósticos CairoSVG vs muestreo Möbius
+independiente: máximo error medio0,029/255, contornos rellenos≤0,01mm en disco200mm.
+No hay aún función hiperbólica en UI ni JSON/exportación: NO completar Fase4.
+Leer docs/HYPERBOLIC_CORE.md para fórmulas, límites y continuación.
+
+Fases0–3 verificadas; commits locales a93651b y6be3bc6. Próximo: adaptación
+de geometría fuente/contornos de trazo y separación de representación derivada
+de generador, con migración/flujo fuente-regreso, cámara/LOD y modo artístico.
+No editar sobre disco. No exponer una función incompleta sin validación integral.
+
+Primaria5h comprobada disponible; secundaria sólo avisa. Sin feedback nuevo.
+Servicios4173/4174 conservados, PROJECT_COMPLETE ausente. Push autorizado a main,
+sin inspeccionar Actions/FTP. Cerrar incremento al90% usado y esperar timer real.
+
+---
+
 # Fase3 verificada · Continuar Fase4 (Poincaré y representación artística)
 
 Girih integrado en Teselas junto a Encastre/Aperiódicas: catálogo de5 polígonos,

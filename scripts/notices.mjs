@@ -42,5 +42,9 @@ notices.push(
     'https://github.com/isohedral/hatviz\nhttps://cs.uwaterloo.ca/~csk/spectre/\n\n' +
     (await readFile('src/vendor/aperiodic/LICENSE', 'utf8')),
 );
+notices.push(
+  '\nPoincaré Paint mathematical core · Yusuf Pisan2026\nhttps://github.com/pisan-labs/poincare-paint\n\n' +
+    (await readFile('src/vendor/poincare/LICENSE', 'utf8')),
+);
 await writeFile('public/THIRD_PARTY_NOTICES.txt', notices.join('\n') + '\n');
 console.log('Generated public/THIRD_PARTY_NOTICES.txt');

@@ -1,0 +1,8 @@
+{
+  "commit": "38abc004bb57133c894b7abeb1e8b07a255d1b77",
+  "sha256": {
+    "iso.ts": "7955b4e6017ac27af444bbd2c3ede74e4e55de6952b95c551ba8ab10eb0266eb",
+    "geometry.ts": "6c56a1b2e2d84756fd65bd6f39fae18896de9c989e4ce03c926ffd6136cdf494",
+    "tiling.ts": "1f2625e1968b0ac29d42167d7e53466c69f12e77f4e0e842f8ad01f8e95112fb"
+  }
+}

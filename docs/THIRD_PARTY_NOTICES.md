@@ -88,3 +88,13 @@ no code, approximate decoration coordinates, textures or artwork were copied.
 The new implementation derives its polygons and contact rays mathematically,
 with references to Kaplan2005 and the Bielefeld Tilings Encyclopedia. Existing
 Paper.js/Clipper provide boolean regions; no additional dependency is bundled.
+
+
+## Poincaré · mathematical core
+
+[Poincaré Paint](https://github.com/pisan-labs/poincare-paint), MIT,
+Copyright2026 Yusuf Pisan. Three unmodified headless modules (iso, geometry,
+tiling), pinned commit38abc004bb57133c894b7abeb1e8b07a255d1b77; SHA256 and full
+license in src/vendor/poincare. Distributed software notices include MIT terms.
+No UI/editor/media/storage copied. Own finite-polygon adapter and certified
+cubic projection in src/hyperbolic. User-facing representation remains pending.
