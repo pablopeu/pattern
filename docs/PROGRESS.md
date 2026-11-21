@@ -801,3 +801,17 @@
   relaciones generales e IH. Referencia BSD TactileJS sólo cubre81 tipos; los12
   marcados adicionales requieren implementación/validación propia. No hay93
   tipos implementados aún. Servicios LAN/monitor primario conservados.
+
+
+## V3.0 Fase2 · Núcleo isoédrico81 verificado
+
+- Motor independiente con definiciones canónicas, matrices, partes J/U/S/I,
+  parámetros y órbitas. TactileJS BSD3 fijado por SHA, archivo intacto/hash
+  verificado y licencia distribuida; sin imágenes/demos ni dependencias nuevas.
+- 387 unidades/TypeScript correctas (164 nuevas), dos por cada uno de81 tipos,
+  además de cobertura y rechazos. Área/densidad,2π en vértices, isometrías/inversas,
+  contornos Bézier, autointersecciones, orientación, solapamientos y presupuesto.
+  Build correcto. Logs v30-iso-core-* en.runtime.
+- Integración UI/modelo/JSON/exportaciones aún pendiente; no se declara completa
+  Fase2. Doce IH marcados explícitamente pendientes, sin aliases ficticios.
+  Fase1 publicada en0a9a3ce; no se inspeccionaron Actions/FTP.

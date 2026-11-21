@@ -18,4 +18,25 @@ originales registrarán autores/procedencia, clasificación matemática y parám
 reproducibles. Las reproducciones fieles requieren evidencia de derechos conforme
 al PRD15.3; su ausencia no bloquea los ejemplos de inspiración original.
 
-No se añadieron dependencias ni recursos gráficos de terceros en esta auditoría.
+No se añadieron dependencias ni recursos gráficos de terceros en Fase0.
+
+## Fase2 · Motor de referencia compatible
+
+[TactileJS](https://github.com/isohedral/tactile-js) y su
+[licencia BSD-3-Clause](https://github.com/isohedral/tactile-js/blob/fd58ec372a4398e3dfc22663d120da186790834e/LICENSE)
+revisados. Se incorpora únicamente `lib/tactile.js` sin modificaciones, commit
+fd58ec372a4398e3dfc22663d120da186790834e, Git blob
+3d3df7097d91116c1f49041a3b02505c28fab1e8. Licencia y procedencia junto al
+módulo en src/vendor/tactile; declaraciones TypeScript y adaptador propios.
+Copyright2018 Craig S. Kaplan, atribución distribuida en THIRD_PARTY_NOTICES.
+No se incluyen demos, ilustraciones, P5.js ni QuickSettings. No hay dependencia
+npm nueva. El hash de la fuente se verifica en pruebas y Prettier la excluye.
+
+La biblioteca cubre81 tipos geométricos. El
+[artículo primario de Kaplan/Schattschneider](https://isohedral.ca/isohedral-tiles-tilings-and-notations/)
+explica que12 tipos adicionales necesitan marcas interiores porque sus bordes
+rectos fuerzan demasiada simetría. Se mantienen explícitamente pendientes:
+IH19,35,48,60,63,65,70,75,80,87,89,92. No se presentan como aliases de otros tipos.
+Las tablas/fórmulas afines tienen tests propios de matrices, área, cobertura,
+ciclos alrededor de vértices y contornos Bézier; usar esta biblioteca no sustituye
+la validación ni la futura integración UX/exportación del estudio.

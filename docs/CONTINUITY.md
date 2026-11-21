@@ -1,3 +1,28 @@
+# V3.0 · Fase2: núcleo isoédrico81 verificado, integración pendiente
+
+Fase1 publicada en0a9a3ce. Nuevo módulo puro isohedral/{model,engine,validate},
+adaptador propio a matrices SVG, partes canónicas J/U/S/I, contornos Bézier y
+órbitas por red/aspectos. TactileJS BSD3 vendored sin modificar y con hash/licencia
+verificados. Ningún asset de referencia copiado; notices incluye atribución.
+
+387 unitarias/TypeScript correctas:164 nuevas, incluyendo dos casos por cada
+uno de81 tipos. Prueban área/densidad, isometrías e inversas, IDs determinísticos,
+cierre angular2π sin huecos/solapamientos alrededor de cada vértice, deformaciones
+Bézier y restricciones de espejo recto, errores y presupuesto. Validador revisa
+autointersección, orientación, área y solapamiento con vecinos. Log
+.runtime/v30-iso-core-check.log; build correcto en v30-iso-core-build.log.
+
+TODAVÍA no integrado a Pattern.tiling, archivos, renderer/captura, UI, Fill o
+exportaciones: la aplicación publicada sigue mostrando sólo las5 familias
+geométricas anteriores. Próximo incremento: conectar el nuevo motor sin alterar
+formatos legados ni duplicar bordes, galería IH y edición de siluetas. Fase2 NO
+completa:12 tipos marcados también pendientes, lista en REFERENCES_V30.md.
+
+Servicios4173/4174 activos, PROJECT_COMPLETE ausente; sólo primaria5h pausa.
+Secundaria100% sólo avisa. No hay suites E2E activas; pueden editarse módulos.
+
+---
+
 # V3.0 · Fase1 verificada; continuar Fase2
 
 Recursión y semejanzas integradas sin duplicar fuentes: UI contextual, cuatro

@@ -3,7 +3,7 @@ import { readFile, readdir, writeFile, mkdir } from 'node:fs/promises';
 const lock = JSON.parse(await readFile('package-lock.json', 'utf8'));
 const notices = [
   'Pattern Studio 2D — Third-party software notices\n',
-  'No third-party application source or proprietary assets were copied from the visual references.\n',
+  'Original illustrative examples; third-party dependencies and vendored modules are credited below.\n',
 ];
 for (const [path, entry] of Object.entries(lock.packages)) {
   if (!path || entry.dev || entry.link) continue;
@@ -29,5 +29,13 @@ for (const [path, entry] of Object.entries(lock.packages)) {
   }
 }
 await mkdir('public', { recursive: true });
+notices.push(
+  '\n' +
+    '='.repeat(72) +
+    '\nTactileJS · Craig S. Kaplan\n' +
+    'Pinned upstream commit fd58ec372a4398e3dfc22663d120da186790834e\n' +
+    'https://github.com/isohedral/tactile-js\n\n' +
+    (await readFile('src/vendor/tactile/LICENSE', 'utf8')),
+);
 await writeFile('public/THIRD_PARTY_NOTICES.txt', notices.join('\n') + '\n');
 console.log('Generated public/THIRD_PARTY_NOTICES.txt');
