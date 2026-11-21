@@ -71,6 +71,9 @@ activo, vuelve a abrir sus controles; también funciona con **F**.
 «teselas», «grosor» o «exportar SVG». Flechas y Enter eligen una acción;
 Escape cierra el buscador. La búsqueda usa las mismas acciones del editor.
 
+**Referencias**, junto al botón de ayuda de atajos, abre un modal con scroll y
+enlaces a los repositorios consultados y las bibliotecas del estudio.
+
 ## Ejemplos de uso
 
 ### Peces, aves, recursión y espirales

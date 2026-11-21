@@ -6,7 +6,7 @@ Implementar `prd_v3.0.txt` como evolución no destructiva del estado actual; con
 - Consultar `docs/CONTINUITY.md`, `docs/PROGRESS.md` y feedback pendiente en `.runtime/feedback.jsonl` antes de continuar. No duplicar servicios activos.
 - Mantener vista LAN en puerto 4173 y monitor en 4174. El usuario revisa desde otra PC; mantener los servicios en funcionamiento.
 - Commits pequeños por avances coherentes; actualizar documentación con verificaciones reales y pendientes explícitos. No declarar completo el PRD sin auditar sus criterios.
-- No copiar código de referencias sin licencia compatible. Motor independiente de React, fuente canónica y transformaciones de instancias.
+- Reutilizar código de referencias conservando sus avisos y atribuciones. Motor independiente de React, fuente canónica y transformaciones de instancias.
 - Usar npm y package-lock.json; TypeScript estricto. Pruebas de geometría, persistencia y E2E reales.
 
 - Si el usuario solicita cambios después de un cierre verificado, retirar `.runtime/PROJECT_COMPLETE`: el monitor continúa vivo y retoma la vigilancia. No borrar este marcador como parte de una prueba.
@@ -27,3 +27,9 @@ Implementar `prd_v3.0.txt` como evolución no destructiva del estado actual; con
   timer al reset semanal. Reanudación basada en el reset real primario+60s.
   Próxima tarea: prd_v3.0.txt, incluidos los ejemplos, desde Fase0 sin implementar
   antes del reset primario solicitado.
+
+- Pablo autorizó reutilizar código open source, incluidas referencias copyleft,
+  sin una investigación extensa de licencias. Mantener los avisos originales y
+  actualizar THIRD_PARTY_NOTICES.md con lo efectivamente incorporado.
+  Botón Referencias junto a Ayuda: modal con scroll de todos los repositorios
+  consultados. Ampliar su lista al consultar nuevas fuentes durante el PRD.

@@ -5,7 +5,7 @@ se haya integrado su código ni que todos sus requisitos estén implementados.
 
 | Referencia primaria | Evidencia consultada | Decisión |
 |---|---|---|
-|[Programming with Escher](https://mapio.github.io/programming-with-escher/)|Notebook declara GPLv3; operadores de geometría funcional|Sólo conceptos; implementación independiente. No copiar código ni peces del notebook|
+|[Programming with Escher](https://mapio.github.io/programming-with-escher/)|Notebook declara GPLv3; operadores de geometría funcional|Implementación actual independiente; Pablo autoriza reutilizar referencias open source conservando avisos. No se copiaron ilustraciones|
 |[Henderson, Functional Geometry](https://eprints.soton.ac.uk/257577/1/funcgeo2.pdf)|Enlace académico desde el notebook; acceso403 en esta revisión|No afirmar lectura del PDF; fórmulas afines propias y pruebas independientes|
 |[looeee/hyperbolic-tiling](https://github.com/looeee/hyperbolic-tiling)|README y listado raíz; sin LICENSE raíz confirmada|Referencia de alcance; no reutilizar código/assets sin evidencia adicional|
 |[Poincaré Paint LICENSE](https://github.com/pisan-labs/poincare-paint/blob/main/LICENSE)|MIT, Copyright2026 Yusuf Pisan|Compatible con atribución si se reutiliza; todavía no integrado|

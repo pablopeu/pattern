@@ -26,7 +26,7 @@ Las versiones exactas y transitivas están fijadas en `package-lock.json`. TypeS
 - Inkscape [Tiling tool](https://wiki.inkscape.org/wiki/Tiling_tool) y [OnCanvasSymmetryTool](https://wiki.inkscape.org/wiki/OnCanvasSymmetryTool): clones enlazados y edición desde instancias.
 - [SVG del W3C](https://www.w3.org/TR/SVG/), MDN [pattern](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/pattern) y [clipPath](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/clipPath): coordenadas, repetición y recorte.
 
-El motor del proyecto tiene implementación propia de los contratos y transformaciones matemáticas descritos. Las operaciones geométricas robustas reutilizan Paper.js y Clipper. No se incorporó código de aplicaciones de referencia. La subdivisión Penrose y Mulberry32 implementan algoritmos matemáticos conocidos; su salida y versión están documentadas y comprobadas mediante pruebas.
+El motor del proyecto tiene implementación propia de los contratos y transformaciones matemáticas descritos. Las operaciones geométricas robustas reutilizan Paper.js y Clipper. Hasta v2.3 no se incorporó código de aplicaciones de referencia; las incorporaciones v3.0 se detallan al final. La subdivisión Penrose y Mulberry32 implementan algoritmos matemáticos conocidos; su salida y versión están documentadas y comprobadas mediante pruebas.
 
 ## Referencias conceptuales de v2
 
@@ -41,3 +41,25 @@ V2 conserva las mismas dependencias de ejecución y licencias; no incorpora bibl
 ## Recursos del incremento v2.1
 
 `icono.png` fue aportado por el usuario y se integra sin modificar el bitmap. No procede de iOrnament ni de otra referencia investigada. Las construcciones de teselas y el overlay son código propio sobre las matrices y dependencias ya existentes; no se añaden paquetes ni servicios externos.
+
+
+## Recursos v3.0 y referencias visibles
+
+- TactileJS, Craig S. Kaplan: `lib/tactile.js` sin modificaciones, commit
+  fd58ec372a4398e3dfc22663d120da186790834e, BSD-3-Clause. Motor isoédrico
+  en src/vendor/tactile; licencia original y atribución incluidas en los avisos
+  distribuidos. El adaptador TypeScript, validación y pruebas son propios.
+- Composición funcional y cuatro ejemplos de peces/aves: implementación y
+  vectores originales. Programming with Escher se consultó como referencia
+  conceptual; no se incorporó código ni ilustraciones de ese notebook.
+- Los repositorios de hiperbólicas y otras familias se agregan al registro
+  cuando son consultados. Consultar no significa que todo su código esté integrado.
+
+**Referencias**, junto a la ayuda de atajos, abre un modal con scroll y enlaces
+a los repositorios consultados, bibliotecas y referencias visuales/matemáticas.
+La lista visible se mantiene en src/ui/ReferencesDialog.tsx. El enlace de avisos
+completos funciona también en despliegues estáticos dentro de una subcarpeta.
+
+Pablo autorizó usar referencias open source, incluidas copyleft, y pidió mantener
+las atribuciones sin dedicar trabajo a una investigación extensa de licencias.
+Al integrar código se conservan su licencia y avisos originales.

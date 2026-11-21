@@ -815,3 +815,16 @@
 - Integración UI/modelo/JSON/exportaciones aún pendiente; no se declara completa
   Fase2. Doce IH marcados explícitamente pendientes, sin aliases ficticios.
   Fase1 publicada en0a9a3ce; no se inspeccionaron Actions/FTP.
+
+
+## Referencias visibles · Feedback de Pablo
+
+- Botón de libro junto a Ayuda abre modal nativo con scroll:16 repositorios
+  consultados/bibliotecas más referencias matemáticas y visuales. Enlaces
+  externos y avisos completos; búsqueda Ctrl+K. Se actualizará con nuevas fuentes.
+- 387 unidades/TypeScript y build correctos. Navegador real a1366/1440/1920/390:
+  scroll efectivo,16 enlaces, bounds completos, Escape/restauración de foco y
+  estado del documento conservados. Logs references-{check,build,browser}.log.
+- THIRD_PARTY_NOTICES/README/AGENTS actualizados según pedido: reutilizar
+  referencias open source y mantener avisos/atribuciones, sin investigación
+  extensa de licencias. Continúa integración IH del PRD3.0.

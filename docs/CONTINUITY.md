@@ -1,3 +1,21 @@
+# Pedido de Pablo · Referencias visibles, continuar PRD3.0
+
+Nuevo botón Referencias (libro) junto a Ayuda, modal nativo con scroll,16 enlaces
+a repositorios consultados/bibliotecas y otras referencias. Ctrl+K encuentra
+Repositorios y referencias. Lista ampliable en src/ui/ReferencesDialog.tsx.
+No cambia el documento; Escape restaura foco y cierre siempre accesible.
+387 unidades/TypeScript,build y revisión real1366/1440/1920/390 correctos:
+.runtime/references-{check,build,browser}.log; capturas references-*.png.
+Pablo pidió reutilizar código open source sin investigación extensa de licencias;
+conservar avisos y actualizar este modal/THIRD_PARTY_NOTICES al usar más fuentes.
+
+Monitor confirmó un reset real nuevo: primaria2%/secundaria0% a00:31UTC;
+00:37 primaria8% y secundaria1%. No se cambió timer manualmente. Continuar
+el PRD, próxima integración del núcleo IH81 a modelo/archivos/UI/exportaciones.
+Fase2 y12 IH marcados pendientes. App4173/monitor4174 vivos.
+
+---
+
 # V3.0 · Fase2: núcleo isoédrico81 verificado, integración pendiente
 
 Fase1 publicada en0a9a3ce. Nuevo módulo puro isohedral/{model,engine,validate},

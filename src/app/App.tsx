@@ -1,4 +1,5 @@
 import { ExampleGallery } from '../ui/ExampleGallery';
+import { ReferencesDialog } from '../ui/ReferencesDialog';
 import { compositionExample } from '../examples/catalog';
 import { SaveDialog } from '../ui/SaveDialog';
 import { studyFileName } from './naming';
@@ -49,6 +50,7 @@ import {
   Settings2,
   ExternalLink,
   HelpCircle,
+  BookOpen,
   Trash2,
 } from 'lucide-react';
 import { useStudio, type Tool, type StylePage } from './useStudio';
@@ -94,6 +96,7 @@ export default function App() {
     [collapsed, setCollapsed] = useState(() => innerWidth <= 900),
     [category, setCategory] = useState<Category>('drawing'),
     [help, setHelp] = useState(false),
+    [referencesOpen, setReferencesOpen] = useState(false),
     [importText, setImportText] = useState<string | null>(null),
     [importWidth, setImportWidth] = useState(100),
     [library, setLibrary] = useState<Awaited<ReturnType<typeof savedProjects>> | null>(null);
@@ -160,13 +163,14 @@ export default function App() {
       exportOpen ||
       commandOpen ||
       help ||
+      referencesOpen ||
       importText !== null ||
       library
     ) {
       const menu = document.querySelector<HTMLDetailsElement>('.main-menu');
       if (menu) menu.open = false;
     }
-  }, [examplesOpen, saveOpen, exportOpen, commandOpen, help, importText, library]);
+  }, [examplesOpen, saveOpen, exportOpen, commandOpen, help, referencesOpen, importText, library]);
   const openCategory = (next: Category) => {
     setCategory(next);
     setCollapsed(false);
@@ -228,6 +232,12 @@ export default function App() {
     setExamplesOpen(true);
   };
   const commands: Command[] = [
+    {
+      id: 'references',
+      label: 'Repositorios y referencias',
+      keywords: 'código fuentes proyectos consultados',
+      run: () => setReferencesOpen(true),
+    },
     {
       id: 'composition-recursive',
       label: 'Explorar composición recursiva',
@@ -616,6 +626,13 @@ export default function App() {
             <button title="Ayuda y atajos" aria-label="Ayuda" onClick={() => setHelp(true)}>
               <HelpCircle size={19} />
             </button>
+            <button
+              title="Repositorios y referencias"
+              aria-label="Referencias"
+              onClick={() => setReferencesOpen(true)}
+            >
+              <BookOpen size={19} />
+            </button>
           </div>
         </nav>
         <Panels
@@ -985,6 +1002,7 @@ export default function App() {
           </section>
         </Modal>
       )}
+      {referencesOpen && <ReferencesDialog onClose={() => setReferencesOpen(false)} />}
       {help && (
         <Modal label="Ayuda" className="simple-modal" onClose={() => setHelp(false)}>
           <section className="small-dialog help-dialog">

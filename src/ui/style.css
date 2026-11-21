@@ -2126,9 +2126,11 @@ input[type='color']::-webkit-color-swatch {
   margin: 3px auto;
 }
 .rail-bottom {
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: repeat(2, 32px);
   gap: 0;
 }
+.rail-bottom > button:first-child { grid-column: 1 / -1; justify-self: center; }
 .rail-bottom button {
   width: 32px;
   height: 30px;
@@ -2194,6 +2196,19 @@ input[type='color']::-webkit-color-swatch {
 .studio-modal::backdrop {
   background: #17231966;
 }
+.references-modal { width:640px; }
+.references-modal .modal-content { display:flex; flex-direction:column; max-height:calc(100dvh - 36px); }
+.references-modal .modal-content > header { flex-shrink:0; }
+.references-scroll { min-height:0; max-height:60dvh; overflow:auto; overscroll-behavior:contain; padding-right:10px; }
+.references-scroll h3 { font-size:13px; margin:20px 0 10px; }
+.references-scroll h3:first-child { margin-top:10px; }
+.references-scroll ul { list-style:none; padding:0; margin:0; }
+.references-scroll li { padding:10px 0; border-bottom:1px solid var(--line); }
+.references-scroll a { color:var(--ink); display:flex; align-items:center; gap:8px; font-size:13px; overflow-wrap:anywhere; }
+.references-scroll a span { min-width:0; }
+.references-scroll a svg { flex-shrink:0; }
+.references-scroll p { font-size:12px; color:var(--muted); margin:5px 0 0; }
+.references-notices { margin-top:20px; margin-bottom:4px; }
 .modal-content {
   padding: 20px;
 }
