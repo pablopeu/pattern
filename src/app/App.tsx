@@ -59,7 +59,7 @@ import {
 } from 'lucide-react';
 import { useStudio, type Tool, type StylePage } from './useStudio';
 import { example, exampleNames } from './examples';
-import { newStudy, geometry, uid } from './model';
+import { newStudy, geometry, uid, type Project } from './model';
 import { freezePattern } from '../symmetry/config';
 import { IDENTITY } from '../geometry/matrix';
 import { parseProject, serialize } from '../persistence/schema';
@@ -95,6 +95,7 @@ export default function App() {
   const s = useStudio(),
     [exportOpen, setExportOpen] = useState(false),
     [saveOpen, setSaveOpen] = useState(false),
+    [saving, setSaving] = useState(false),
     [examplesOpen, setExamplesOpen] = useState(false),
     [commandOpen, setCommandOpen] = useState(false),
     [collapsed, setCollapsed] = useState(() => innerWidth <= 900),
@@ -174,7 +175,8 @@ export default function App() {
       referencesOpen ||
       isohedralOpen ||
       importText !== null ||
-      library
+      library ||
+      s.pendingAction
     ) {
       const menu = document.querySelector<HTMLDetailsElement>('.main-menu');
       if (menu) menu.open = false;
@@ -189,6 +191,7 @@ export default function App() {
     isohedralOpen,
     importText,
     library,
+    s.pendingAction,
   ]);
   const openCategory = (next: Category) => {
     setCategory(next);
@@ -224,27 +227,53 @@ export default function App() {
     setSaveOpen(true);
   };
   const saveNamed = async (name: string) => {
+    if (saving) return;
+    const pending = s.pendingAction;
     let project = structuredClone(s.projectRef.current);
     project.metadata.name = studyFileName(name);
+    setSaving(true);
     try {
       parseProject(serialize(project));
-    } catch (e) {
-      s.setMessage('No se puede guardar: ' + (e as Error).message);
-      return;
+      s.change((p) => {
+        p.metadata.name = project.metadata.name;
+      });
+      project = s.projectRef.current;
+      try {
+        await autosave(project);
+      } catch (error) {
+        if (pending)
+          throw Error(
+            'No se pudo guardar en este navegador. El trabajo se conserva; reintentá o cancelá. ' +
+              (error as Error).message,
+          );
+      }
+      download(serialize(project), project.metadata.name + '.pattern.json');
+      s.setFileSaved(s.projectRef.current === project);
+      if (pending && s.projectRef.current !== project) {
+        s.setMessage(
+          'El trabajo cambió durante el guardado. Guardalo nuevamente antes de continuar.',
+        );
+        return;
+      }
+      setSaveOpen(false);
+      s.setMessage('Proyecto guardado como archivo JSON editable.');
+      if (pending) s.continueDestructive(pending);
+    } catch (error) {
+      s.setMessage('No se puede guardar: ' + (error as Error).message);
+    } finally {
+      setSaving(false);
     }
-    s.change((p) => {
-      p.metadata.name = project.metadata.name;
+  };
+  const replaceProject = (
+    project: Project,
+    label: string,
+    after: () => void = () => {},
+    options: { fresh?: boolean } = {},
+  ) => {
+    s.requestDestructive(label, () => {
+      s.load(project, options);
+      after();
     });
-    project = s.projectRef.current;
-    setSaveOpen(false);
-    try {
-      await autosave(project);
-    } catch {
-      /* The portable file remains available if local storage fails. */
-    }
-    download(serialize(project), project.metadata.name + '.pattern.json');
-    s.setFileSaved(s.projectRef.current === project);
-    s.setMessage('Proyecto guardado como archivo JSON editable.');
   };
   const openExamples = () => {
     s.setStyleOpen(false);
@@ -364,8 +393,9 @@ export default function App() {
   const open = async (file: File | undefined) => {
     if (!file) return;
     try {
-      s.load(parseProject(await file.text()));
-      s.setMessage('Proyecto recuperado.');
+      replaceProject(parseProject(await file.text()), 'abrir otro proyecto', () =>
+        s.setMessage('Proyecto recuperado.'),
+      );
     } catch (e) {
       s.setMessage((e as Error).message);
     }
@@ -503,10 +533,16 @@ export default function App() {
               </label>
               <button
                 onClick={() => {
-                  s.load(newStudy(), { fresh: true });
-                  s.setMode('edit');
-                  setCategory('drawing');
-                  setCollapsed(innerWidth <= 900);
+                  replaceProject(
+                    newStudy(),
+                    'crear un proyecto nuevo',
+                    () => {
+                      s.setMode('edit');
+                      setCategory('drawing');
+                      setCollapsed(innerWidth <= 900);
+                    },
+                    { fresh: true },
+                  );
                 }}
               >
                 <Plus size={15} /> Nuevo proyecto
@@ -522,7 +558,7 @@ export default function App() {
                   const p = structuredClone(s.project);
                   p.metadata.id = uid();
                   p.metadata.name += ' copia';
-                  s.load(p);
+                  replaceProject(p, 'duplicar el proyecto');
                 }}
               >
                 <Copy size={15} /> Duplicar proyecto
@@ -548,8 +584,9 @@ export default function App() {
                 <button
                   key={name}
                   onClick={() => {
-                    s.load(example(index));
-                    s.setMode(index === 6 ? 'apply' : 'edit');
+                    replaceProject(example(index), 'cargar un ejemplo', () =>
+                      s.setMode(index === 6 ? 'apply' : 'edit'),
+                    );
                   }}
                 >
                   {name}
@@ -954,22 +991,23 @@ export default function App() {
           onClose={() => setExamplesOpen(false)}
           onSelect={(id) => {
             const project = compositionExample(id);
-            s.load(project);
-            s.setMode('edit');
             setExamplesOpen(false);
-            s.setSelected([]);
-            if (
-              (project.patterns[0].tiling || finiteGenerator(project.patterns[0].generator)) &&
-              !project.patterns[0].composition?.enabled
-            ) {
-              setCategory('tiles');
-              s.setTileTab('shape');
-            } else {
-              setCategory('symmetry');
-              s.openComposition();
-            }
-            setCollapsed(innerWidth <= 900);
-            s.requestFit();
+            replaceProject(project, 'cargar un ejemplo', () => {
+              s.setMode('edit');
+              s.setSelected([]);
+              if (
+                (project.patterns[0].tiling || finiteGenerator(project.patterns[0].generator)) &&
+                !project.patterns[0].composition?.enabled
+              ) {
+                setCategory('tiles');
+                s.setTileTab('shape');
+              } else {
+                setCategory('symmetry');
+                s.openComposition();
+              }
+              setCollapsed(innerWidth <= 900);
+              s.requestFit();
+            });
           }}
         />
       )}
@@ -977,8 +1015,29 @@ export default function App() {
         <SaveDialog
           name={s.project.metadata.name}
           onSave={saveNamed}
-          onClose={() => setSaveOpen(false)}
+          busy={saving}
+          onClose={() => {
+            setSaveOpen(false);
+            s.cancelDestructive();
+          }}
         />
+      )}
+      {s.pendingAction && !saveOpen && (
+        <Modal label="Conservar el trabajo" className="simple-modal" onClose={s.cancelDestructive}>
+          <section className="small-dialog">
+            <h2>¿Qué querés hacer con el trabajo actual?</h2>
+            <p>Antes de {s.pendingAction.label}, podés guardar el proyecto editable.</p>
+            <div className="save-actions destructive-actions">
+              <button autoFocus onClick={s.cancelDestructive}>
+                Cancelar
+              </button>
+              <button onClick={() => setSaveOpen(true)}>Guardar trabajo y continuar</button>
+              <button className="danger-text" onClick={() => s.continueDestructive()}>
+                Descartar y continuar
+              </button>
+            </div>
+          </section>
+        </Modal>
       )}
       {exportOpen && <ExportDialog studio={s} onClose={() => setExportOpen(false)} />}
       {importText !== null && (
@@ -1037,8 +1096,9 @@ export default function App() {
                   key={p.id}
                   onClick={async () => {
                     try {
-                      s.load(await loadSavedProject(p.id));
+                      const project = await loadSavedProject(p.id);
                       setLibrary(null);
+                      replaceProject(project, 'abrir un proyecto de la biblioteca');
                     } catch (e) {
                       s.setMessage((e as Error).message);
                     }

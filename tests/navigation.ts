@@ -181,3 +181,11 @@ export async function pureSource(page: Page) {
   await section.getByLabel('Fuente pura (edición avanzada)', { exact: true }).click();
   await page.getByRole('button', { name: 'Cerrar panel izquierdo', exact: true }).click();
 }
+
+/** Fixture replacement is now an explicit user decision; keep geometry assertions unchanged. */
+export async function discardExistingWork(page: Page) {
+  const dialog = page.getByRole('dialog', { name: 'Conservar el trabajo', exact: true });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole('button', { name: 'Descartar y continuar', exact: true }).click();
+  await expect(dialog).toHaveCount(0);
+}

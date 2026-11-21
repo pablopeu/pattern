@@ -1,3 +1,4 @@
+import { discardExistingWork } from './navigation';
 import { test, expect, type Page } from '@playwright/test';
 
 test('footer móvil completo al girar y redimensionar la pantalla', async ({ page }) => {
@@ -100,12 +101,13 @@ for (const viewport of [
     });
     const input = page.locator('input[type=file][accept=".json,application/json"]'),
       svg = page.locator('.studio-canvas');
-    for (const fixture of fixtures) {
+    for (const [index, fixture] of fixtures.entries()) {
       await input.setInputFiles({
         name: `IH${fixture.id}.pattern.json`,
         mimeType: 'application/json',
         buffer: Buffer.from(fixture.json),
       });
+      if (index > 0) await discardExistingWork(page);
       await expect(svg.locator('[data-tiled-pattern]').first()).toHaveAttribute(
         'data-tiled-pattern',
         fixture.patternId,

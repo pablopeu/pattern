@@ -2716,3 +2716,7 @@ input[type='color']::-webkit-color-swatch {
 .girih-catalog-grid svg { height:90px; width:100%; }
 .girih-catalog-grid small { font-size:10px; overflow-wrap:anywhere; }
 @media(max-width:650px) { .girih-catalog-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .girih-catalog-grid svg { height:60px; } }
+
+.destructive-actions { display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; }
+.destructive-actions button { white-space:normal; min-height:40px; }
+@media(max-width:650px) { .destructive-actions {flex-direction:column;} .destructive-actions button {width:100%;} }

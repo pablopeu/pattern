@@ -1,3 +1,30 @@
+# Feedback · Protección del trabajo verificada; revisar feedback nuevo antes de PRD
+
+Modal Cancelar / Guardar trabajo y continuar / Descartar y continuar antes de
+reemplazar proyectos (nuevo/JSON/ejemplos/biblioteca/duplicado) y borrar selección,
+aplicación o instancia. Una fuente vacía no pregunta. Guardar valida y espera
+IndexedDB antes de continuar; fallo no reemplaza; cancelar diálogo invalida
+la continuación, y Escape cancela. Archivos inválidos no alteran el proyecto.
+Trabajo incluye geometrías ocultas, perímetros y construcciones sin dibujo.
+
+907 unidades/TypeScript,6 E2E nuevas,regresión170/170(271,7s),build y14 pruebas
+del monitor correctos. 10 estáticas finales raíz/subcarpeta correctas. Primera pasada166/170 por
+fixtures sin confirmar y lecturas de importación previas al autosave; corregido
+el consentimiento/la espera del ID persistido, sin reducir exigencias.
+README con captura real y scripts reproducibles. Monitor: feedback y avances
+recientes primero, commits al final; Chromium verifica orden/texto seguro.
+No reiniciar servicios: dashboard.html se lee en cada GET, recargar su página.
+
+Pablo pidió revisar su feedback nuevo al terminar este incremento: leer
+.runtime/feedback.jsonl/ledger DESPUÉS del commit y antes de seguir Fase4.
+Fases0–3 verificadas; Fase4 todavía núcleo/compositor/worker sin UI/nativo.
+Seguir contrato/migración, escena/recortes/Fill, fuente-regreso, artístico,
+ejemplos/exportaciones. No PROJECT_COMPLETE. Primaria nueva comprobada;
+secundaria sólo avisa. Servicios4173/4174 conservados. Push autorizado, sin
+inspeccionar Actions/FTP.
+
+---
+
 # Fase4 parcial · Cierre del incremento; seguir integración nativa/UI
 
 Worker cancelable src/hyperbolic/worker-client.ts/worker.ts verificado en

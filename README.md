@@ -360,7 +360,11 @@ El autosave transaccional usa IndexedDB y guarda cada proyecto por su ID. Los fa
 
 El guardado explícito descarga un archivo completo y también intenta completar la escritura local. Si el navegador rechaza IndexedDB, la aplicación informa el error y el JSON sigue disponible. Un perímetro a medio dibujar no reemplaza el último autosave válido.
 
-La galería de Archivo reúne doce ejemplos editables y conserva ocho accesos rápidos. Abrir ejemplos o crear proyectos conserva los anteriores en **Biblioteca de este navegador**. El logo visible usa el archivo local `src/assets/icono.png` aportado por el usuario.
+Si ya hay trabajo, crear o abrir otro proyecto, cargar un ejemplo o recuperar uno de la biblioteca ofrece **Cancelar**, **Guardar trabajo y continuar** o **Descartar y continuar**. También se confirma la eliminación de una selección, aplicación o instancia. Cancelar y Escape conservan el trabajo; cancelar el diálogo de guardado también cancela la operación pendiente. Si el guardado local falla, la operación queda bloqueada y podés reintentar.
+
+![Confirmación antes de reemplazar el trabajo actual](docs/images/work-protection.png)
+
+La galería de Archivo reúne veintiún ejemplos editables y conserva ocho accesos rápidos. Abrir ejemplos o crear proyectos conserva los anteriores en **Biblioteca de este navegador**. El logo visible usa el archivo local `src/assets/icono.png` aportado por el usuario.
 
 ## Alcances y límites
 
@@ -467,7 +471,7 @@ npm run test:e2e
 npm run benchmark
 ```
 
-Avance v3.0: **905 pruebas unitarias/TypeScript**, **164 flujos E2E** de las funciones públicas y **10 pruebas estáticas** verificadas. Las fases0–3 incluyen93 IH, composición, Hat/Spectre y Girih. La fase4 tiene un núcleo Poincaré probado; su interfaz, persistencia y exportador final siguen pendientes. Estado detallado: [aceptación v3.0](docs/ACCEPTANCE_V30.md).
+Avance v3.0: **907 pruebas unitarias/TypeScript**, **170 flujos E2E** de las funciones públicas y **10 pruebas estáticas** verificadas. Las fases0–3 incluyen93 IH, composición, Hat/Spectre y Girih. La fase4 tiene un núcleo Poincaré probado; su interfaz, persistencia y exportador final siguen pendientes. Estado detallado: [aceptación v3.0](docs/ACCEPTANCE_V30.md).
 
 Baseline histórico v2.3: **203 pruebas unitarias, 94 flujos E2E, 9 pruebas del monitor y 6 pruebas estáticas**. Se conservan los 75 recorridos anteriores. Builds raíz/subdirectorio y validación independiente de exportaciones correctos.
 
@@ -485,6 +489,8 @@ python3 scripts/work_monitor.py --status
 Lee únicamente los eventos `rate_limits` del hilo local identificado por `CODEX_THREAD_ID`, `--thread` o el ID recordado en `.runtime/thread-id`. Publica porcentajes, timestamps de observación y reset, historial Git local y documentación.
 
 Con 10% o menos disponible en la ventana primaria de 5 horas, pide cerrar el incremento y guarda un timer. Después del reset real primario +60 segundos solicita reanudar **el mismo hilo** mediante `codex queue --resume`. El cupo secundario/semanal sólo envía un aviso: Pablo decide si usa un banked reset; no pausa el trabajo ni retrasa el timer al reset semanal. No cambia límites ni inventa un cupo nuevo al vencer el reloj. El agente verifica la telemetría al continuar. La reanudación necesita que la máquina y el daemon local de Codex sigan disponibles; cualquier fallo queda registrado en `.runtime/monitor-events.jsonl`.
+
+El monitor muestra primero el feedback y después los avances documentados, ambos de más nuevo a más viejo. Los commits conservan su orden y quedan al final.
 
 El feedback del panel se guarda en `.runtime/feedback.jsonl` y se envía a esta conversación mediante una cola independiente del cupo, aunque el agente esté trabajando o esperando el reset. El dashboard distingue **Entrega pendiente**, **En conversación** y **Revisado**. Los fallos se reintentan; el registro local de entregas evita reenvíos normales tras reiniciar. «En conversación» confirma el encolado, no que el agente ya lo haya leído. El archivo `.runtime/STOP` desactiva el ciclo del monitor; `.runtime/PROJECT_COMPLETE` indica que el PRD fue verificado y cancela reanudaciones pendientes. Los procesos de revisión permanecen en LAN. Remoto de código autorizado: [pablopeu/pattern](https://github.com/pablopeu/pattern), rama `main`.
 

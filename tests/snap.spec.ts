@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { context } from './navigation';
+import { context, discardExistingWork } from './navigation';
 
 test('Bézier abierta conserva el color elegido pero sólo pinta al cerrarse', async ({ page }) => {
   await page.goto('/');
@@ -20,6 +20,7 @@ test('Bézier abierta conserva el color elegido pero sólo pinta al cerrarse', a
       mimeType: 'application/json',
       buffer: Buffer.from(JSON.stringify(raw)),
     });
+    if (closed) await discardExistingWork(page);
     await model(page);
     await expect(
       page.locator('.studio-canvas path[d^="M0 0C0 10 10 10 10 0"]').first(),

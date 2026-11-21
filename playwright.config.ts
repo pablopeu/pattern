@@ -21,6 +21,7 @@ export default defineConfig({
         '**/tile-colors.spec.ts',
         '**/aperiodic.spec.ts',
         '**/girih.spec.ts',
+        '**/work-protection.spec.ts',
       ],
   timeout: 45000,
   expect: { timeout: 8000 },

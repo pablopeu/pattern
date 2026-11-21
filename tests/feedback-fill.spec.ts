@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { context } from './navigation';
+import { context, discardExistingWork } from './navigation';
 async function model(page: Page) {
   await expect(page.locator('.save-indicator')).toHaveText(/Guardado local/);
   return page.evaluate(async () => (await import('/src/persistence/storage.ts')).recover());
@@ -35,6 +35,7 @@ for (const width of [1440, 390]) {
     await model(page);
     await page.locator('.main-menu summary').click();
     await page.getByRole('button', { name: 'Nuevo proyecto', exact: true }).click();
+    await discardExistingWork(page);
     let p = (await model(page))!;
     expect(p.patterns[0].sourceGeometry).toEqual([]);
     expect(p.mainSymmetry.group).toBe('p3');

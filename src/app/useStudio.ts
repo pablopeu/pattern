@@ -1,3 +1,4 @@
+import { useDestructiveAction } from './destructive-action';
 import { axesFingerprint } from '../fill/service';
 import {
   withWorkPreferences,
@@ -70,6 +71,7 @@ export function useStudio() {
     history = useRef(new History(project)),
     hydrated = useRef(false),
     gesture = useRef(false);
+  const destructive = useDestructiveAction(ref);
   const [loaded, setLoaded] = useState(false),
     [saved, setSaved] = useState('Recuperando…'),
     [message, setMessage] = useState(''),
@@ -671,19 +673,22 @@ export function useStudio() {
     [change, regionId, patternId, mode],
   );
   const deleteSelected = useCallback(() => {
-    if (mode === 'apply' && region && region.geometry.every((s) => selected.includes(s.id))) {
-      change((p) => {
-        p.regions = p.regions.filter((r) => r.id !== regionId);
-        p.applications = p.applications.filter((a) => a.regionId !== regionId);
-      });
-      setRegionId('');
-    } else
-      editObjects((shapes) => {
-        for (let i = shapes.length - 1; i >= 0; i--)
-          if (selected.includes(shapes[i].id)) shapes.splice(i, 1);
-      });
-    setSelected([]);
-  }, [change, editObjects, selected, mode, region, regionId]);
+    if (!selected.length) return;
+    destructive.requestDestructive('eliminar la selección', () => {
+      if (mode === 'apply' && region && region.geometry.every((s) => selected.includes(s.id))) {
+        change((p) => {
+          p.regions = p.regions.filter((r) => r.id !== regionId);
+          p.applications = p.applications.filter((a) => a.regionId !== regionId);
+        });
+        setRegionId('');
+      } else
+        editObjects((shapes) => {
+          for (let i = shapes.length - 1; i >= 0; i--)
+            if (selected.includes(shapes[i].id)) shapes.splice(i, 1);
+        });
+      setSelected([]);
+    });
+  }, [change, editObjects, selected, mode, region, regionId, destructive.requestDestructive]);
   const duplicate = useCallback(() => {
     const ids: string[] = [],
       groups = new Map<string, string>();
@@ -847,6 +852,7 @@ export function useStudio() {
     undo,
     redo,
     deleteSelected,
+    ...destructive,
     duplicate,
     canUndo: history.current.canUndo,
     canRedo: history.current.canRedo,

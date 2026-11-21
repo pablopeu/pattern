@@ -1135,3 +1135,22 @@ secundaria (44%).905 pruebas/TypeScript y build final correctos. Historial
 publicado en main hasta fb00c80; revisión textual pública sin IPv4 privadas.
 4173/4174 conservados con los mismos procesos, sin duplicados. Última nota de
 continuidad se publica en commit separado. No se inició otro incremento.
+
+
+## Feedback · Proteger el trabajo y ordenar el monitor
+
+- Confirmación antes de reemplazar proyectos/ejemplos/biblioteca y eliminar
+  selecciones, aplicaciones o instancias: Cancelar / Guardar / Descartar.
+  Escape cancela; guardar espera la transacción local, no reemplaza si falla.
+  Cancelar el guardado invalida también la operación pendiente.
+- Monitor: feedback primero y avances después, ambos recientes primero; commits
+  al final con orden conservado. HTML se sirve en vivo sin duplicar/reiniciar servicio.
+-907 unidades/TypeScript,6 E2E dirigidas y14 pruebas del monitor correctas.
+  Chromium confirma orden/texto seguro. Captura real y README actualizados.
+- Regresión completa170/170(271,7s/exit0) y build correctos. Pasada anterior
+  166/170: dos fixtures sin confirmar reemplazo y dos lecturas antes de persistir
+  el ID de importación; corregida sincronización/consentimiento de pruebas,
+  conservando las aserciones de contenido. 10 estáticas raíz/subcarpeta finales correctas.
+- Después del commit, revisar el nuevo feedback que Pablo avisó por conversación.
+- Primaria renovada comprobada; secundaria sólo avisa. Después del feedback,
+  continuar integración nativa/UI de Fase4; núcleo no completa el PRD.

@@ -4,10 +4,12 @@ import { studyFileName } from '../app/naming';
 
 export function SaveDialog({
   name,
+  busy = false,
   onSave,
   onClose,
 }: {
   name: string;
+  busy?: boolean;
   onSave: (name: string) => void;
   onClose: () => void;
 }) {
@@ -39,8 +41,8 @@ export function SaveDialog({
           <button type="button" onClick={onClose}>
             Cancelar
           </button>
-          <button type="submit" className="primary">
-            Guardar archivo
+          <button type="submit" className="primary" disabled={busy}>
+            {busy ? 'Guardando…' : 'Guardar archivo'}
           </button>
         </div>
       </form>

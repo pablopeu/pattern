@@ -1,4 +1,4 @@
-import { context, styles, catalog, symmetry, field } from './navigation';
+import { context, styles, catalog, symmetry, field, discardExistingWork } from './navigation';
 import { test, expect, type Page } from '@playwright/test';
 async function ready(page: Page) {
   await page.goto('/');
@@ -14,6 +14,7 @@ async function menu(page: Page, name: string) {
 }
 async function newProject(page: Page) {
   await menu(page, 'Nuevo proyecto');
+  await discardExistingWork(page);
   await expect(page.locator('.empty-canvas')).toBeVisible();
 }
 async function model(page: Page) {
@@ -183,6 +184,7 @@ test('exportación real SVG, PNG, JPEG y DXF desde worker', async ({ page }) => 
 test('aplicación a perímetro y SVG expandido sin máscara', async ({ page }) => {
   await ready(page);
   await menu(page, 'Jardín en un perímetro');
+  await discardExistingWork(page);
   await page.getByRole('button', { name: 'Exportar', exact: true }).click();
   await (await field(page, 'Representación')).selectOption('expanded');
   await expect(page.getByRole('button', { name: 'Descargar archivo', exact: true })).toBeEnabled({
@@ -265,9 +267,11 @@ test('presets y biblioteca conservan proyectos al restaurar ejemplos', async ({ 
   await (await field(page, 'Nombre del proyecto')).fill('Mi proyecto conservado');
   await expect(page.locator('.save-indicator')).toHaveText(/Guardado local/);
   await menu(page, 'Espejos · p4m');
+  await discardExistingWork(page);
   await menu(page, 'Biblioteca de este navegador');
   const dialog = page.getByRole('dialog', { name: 'Biblioteca de proyectos' });
   await dialog.getByRole('button', { name: /Mi proyecto conservado/ }).click();
+  await discardExistingWork(page);
   await expect(await field(page, 'Nombre del proyecto')).toHaveValue('Mi proyecto conservado');
   const d = page.waitForEvent('download');
   await menu(page, 'Exportar preset del patrón');

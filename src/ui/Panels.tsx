@@ -780,14 +780,16 @@ export function Panels({
                           </button>
                           <button
                             className="wide-button danger-text"
-                            onClick={() => {
-                              s.change((p) => {
-                                p.applications = p.applications.filter(
-                                  (a) => a.id !== s.applicationId,
-                                );
-                              });
-                              s.setApplicationId('');
-                            }}
+                            onClick={() =>
+                              s.requestDestructive('eliminar la aplicación', () => {
+                                s.change((p) => {
+                                  p.applications = p.applications.filter(
+                                    (a) => a.id !== s.applicationId,
+                                  );
+                                });
+                                s.setApplicationId('');
+                              })
+                            }
                           >
                             <Trash2 size={14} /> Eliminar aplicación
                           </button>
@@ -1015,9 +1017,11 @@ export function Panels({
                           <button
                             title="Eliminar instancia"
                             onClick={() =>
-                              updatePattern((p) => {
-                                p.generator.placements.splice(i, 1);
-                              })
+                              s.requestDestructive('eliminar la instancia', () =>
+                                updatePattern((p) => {
+                                  p.generator.placements.splice(i, 1);
+                                }),
+                              )
                             }
                           >
                             <Trash2 size={12} />
