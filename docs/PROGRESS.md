@@ -1090,3 +1090,14 @@
   variable bajo identidad, traslación periférica y reflexión; proyección≤0,005mm.
 - Aún sin UI ni cambio de JSON; Fase4 parcial. Falta adaptación desde escena
   y presupuesto entre celdas, cámara/LOD, flujo fuente/regreso/artística/export.
+
+
+## Fase4 · Cámara hiperbólica y detalle conservador
+
+- Cámara SU(1,1) con centro seguro, semilla bajo la vista, marcos mundo/display
+  separados; motivo no cambia de orientación al navegar. Filtro LOD por cota
+  del círculo circunscrito, sin afirmar aceleración del BFS.
+-717 pruebas/TypeScript y build; seis pruebas nuevas. Ocho diagnósticos
+  independientes correctos, dos con cámara desplazada (70/343 celdas).
+- UI/nativo/artística/exportación final siguen pendientes. Próximo: compositor
+  derivado con presupuesto global entre celdas y reporte de propiedades separado.

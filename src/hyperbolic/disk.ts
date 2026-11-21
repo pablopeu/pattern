@@ -1,5 +1,5 @@
 import * as iso from '../vendor/poincare/iso';
-import { makeTiling, type Tiling } from '../vendor/poincare/tiling';
+import { makeTiling, fold, type Tiling } from '../vendor/poincare/tiling';
 import { geodesicPath, type GeodesicPath } from '../vendor/poincare/geometry';
 import type { Point, Matrix } from '../geometry/matrix';
 export interface HyperbolicCell {
@@ -9,6 +9,7 @@ export interface HyperbolicCell {
   vertices: Point[];
   depth: number;
   neighbors: (string | null)[];
+  display: { frame: iso.Iso; center: Point; vertices: Point[] };
 }
 export interface HyperbolicPatch {
   p: number;
@@ -19,11 +20,13 @@ export interface HyperbolicPatch {
   circumradius: number;
   area: number;
   limited: { depth: boolean; budget: boolean; numeric: number };
+  view: iso.Iso;
 }
 export interface HyperbolicOptions {
   depth: number;
   maxCells: number;
   radius: number;
+  view?: { center: Point; angle: number };
 }
 const defaults: HyperbolicOptions = { depth: 6, maxCells: 1024, radius: 0.97 };
 export function validPQ(p: number, q: number) {
@@ -110,6 +113,18 @@ export function regularHyperbolicPatch(
     o.radius > 0.995
   )
     throw Error('Límites de parche hiperbólico inválidos.');
+  const camera = o.view ?? { center: { x: 0, y: 0 }, angle: 0 };
+  if (
+    !Number.isFinite(camera.center.x) ||
+    !Number.isFinite(camera.center.y) ||
+    norm(camera.center) > 0.9 ||
+    !Number.isFinite(camera.angle)
+  )
+    throw Error('Centro de vista fuera del disco seguro o ángulo inválido.');
+  const view = iso.compose(
+    iso.rotation(camera.angle),
+    iso.translation(-camera.center.x, -camera.center.y),
+  );
   const t = makeTiling(p, q),
     r = Math.hypot(...t.vertex),
     root = Array.from({ length: p }, (_, i) => ({
@@ -131,13 +146,23 @@ export function regularHyperbolicPatch(
       old = seen.get(id);
     if (old) return old;
     let vertices = root.map((p) => diskPoint(frame, p));
-    if (minimumRadius(t, frame, vertices) > o.radius + 1e-9) return null;
+    const displayed = iso.compose(view, frame);
+    if (
+      minimumRadius(
+        t,
+        displayed,
+        root.map((p) => diskPoint(displayed, p)),
+      ) >
+      o.radius + 1e-9
+    )
+      return null;
     if (cells.length >= o.maxCells) {
       limited.budget = true;
       return null;
     }
     frame = canonicalFrame(center, vertices, p);
     vertices = root.map((p) => diskPoint(frame, p));
+    const displayFrame = iso.compose(view, frame);
     const cell = {
       id: `h-${p}-${q}/${id}`,
       center,
@@ -145,12 +170,20 @@ export function regularHyperbolicPatch(
       vertices,
       depth,
       neighbors: Array<string | null>(p).fill(null),
+      display: {
+        frame: displayFrame,
+        center: diskPoint(displayFrame, { x: 0, y: 0 }),
+        vertices: root.map((p) => diskPoint(displayFrame, p)),
+      },
     };
     cells.push(cell);
     seen.set(id, cell);
     return cell;
   };
-  add(iso.IDENTITY, 0);
+  // Start at the polygon containing the view center, instead of walking from
+  // the old origin and exhausting the budget before reaching the visible disk.
+  const seed = fold(t, camera.center.x, camera.center.y);
+  add(iso.inverse(seed.fold), 0);
   for (let i = 0; i < cells.length; i++) {
     const cell = cells[i];
     if (cell.depth >= o.depth) {
@@ -189,7 +222,23 @@ export function regularHyperbolicPatch(
     circumradius: r,
     area: Math.PI * (p - 2 - (2 * p) / q),
     limited,
+    view,
   };
+}
+/** Conservative screen-space LOD: a polygon fits inside its hyperbolic
+ * circumcircle. This filters expensive motif projection; BFS is still bounded
+ * by the patch limits. It does not pretend to accelerate tessellation itself.
+ */
+export function visibleHyperbolicCells(patch: HyperbolicPatch, minimumDiameter: number) {
+  if (!Number.isFinite(minimumDiameter) || minimumDiameter < 0 || minimumDiameter > 2)
+    throw Error('Umbral de detalle inválido.');
+  const r = patch.circumradius;
+  const cells = patch.cells.filter((cell) => {
+    const c2 = cell.display.center.x ** 2 + cell.display.center.y ** 2;
+    const diameter = (2 * r * (1 - c2)) / (1 - r * r * c2);
+    return diameter >= minimumDiameter;
+  });
+  return { cells, omitted: patch.cells.length - cells.length };
 }
 export function hyperbolicCellPath(vertices: Point[], radius = 1) {
   if (!Number.isFinite(radius) || radius <= 0) throw Error('Radio físico inválido.');

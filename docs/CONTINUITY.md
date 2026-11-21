@@ -1,3 +1,20 @@
+# Fase4 · Cámara/LOD del núcleo verificados; conectar representación derivada
+
+Cámara SU(1,1) en regularHyperbolicPatch, centro seguro≤0,9 y ángulo radianes.
+BFS empieza bajo vista; marcos mundo estables separados de cell.display.frame/
+vertices/center para render. visibleHyperbolicCells usa cota conservadora del
+círculo circunscrito para evitar proyectar motivos minúsculos; BFS aún acotado
+por límites normales, no acelera su generación.717 pruebas/TypeScript/build.
+Ocho diagnósticos independientes (dos de cámara), todos correctos.
+
+Próximo: compositor de fuente+parche+proyección con presupuesto entre celdas,
+reportes separados modelo/adaptación, y luego contrato nativo/flujo UI/export.
+No hay todavía vista hiperbólica pública. Fase4 parcial;5–7 pendientes.
+Leer HYPERBOLIC_CORE.md. Sólo primaria5h pausa al90%; secundaria avisa.
+Servicios4173/4174 conservados. Push main autorizado sin revisar Actions/FTP.
+
+---
+
 # Fase4 · Fuente derivada preparada; seguir cámara/LOD e integración
 
 Nuevo src/hyperbolic/source.ts: geometrías finitas preparadas a contornos de

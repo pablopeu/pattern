@@ -110,3 +110,21 @@ relleno rojo de la línea abierta. Proyección≤0,005mm en disco200mm. Certific
 sólo del paso cúbica→polilínea; no afirmar precisión certificada de primitivas
 convertidas por Paper ni del contorneado. Faltan preparación desde escena,
 recortes/Fill vinculados, presupuesto compartido entre celdas, UI/nativo/export.
+
+## Cámara y detalle del núcleo
+
+717 pruebas/TypeScript y build correctos. Cámara como isometría SU(1,1),
+centro de norma≤0,9 y orientación en radianes. La celda inicial se obtiene
+plegando el centro de vista al triángulo fundamental: no se consume el
+presupuesto recorriendo desde el origen anterior. Marcos/IDs de mundo se
+conservan; display contiene marco/centro/vértices transformados.
+
+visibleHyperbolicCells omite proyecciones de motivos cuyo círculo hiperbólico
+circunscrito tiene diámetro euclidiano menor al umbral. Es una cota conservadora:
+no se infiere tamaño de sólo una arista. No acelera todavía el BFS geométrico,
+que sigue limitado por profundidad/celdas/radio. El consumidor debe transformar
+con cell.display.frame cuando hay cámara; cell.frame conserva el marco fuente.
+
+Seis pruebas de cámara/LOD y dos diagnósticos adicionales de cámara periférica
+{3,7}/{7,3}:70/343 celdas, arcos CairoSVG vs interpolación independiente con
+error medio≤0,027/255. Todos los modelos originales siguen correctos.
