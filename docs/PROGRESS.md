@@ -901,3 +901,28 @@
   caso dirigido y corrida completa128 posteriores correctos. Sin relajar aserciones.
 - PRD Fase2 aún pendiente de figuras/flujo hacia composición/colores alternados;
   fases3–7 pendientes. Servicios LAN y monitor conservados; sin cierre del PRD.
+
+
+## Snap de nodos independiente, vértices unidos y curvas abiertas
+
+- Snap de barra controla proximidad entre nodos; grilla independiente en
+  Preferencias. Distancia1–40px (inicial8), constante al variar zoom. Búsqueda
+  del más cercano en coordenadas visibles, incluidas copias transformadas;
+  indicador de destino. Preferencias completo en cuatro resoluciones.
+- Al arrastrar un vértice coincidente se desplazan los extremos unidos, con
+  matrices inversas propias y tangentes conservadas. Unión inferida por
+  coordenadas, persistente al guardar/abrir; Alt permite separar, bloqueados
+  excluidos. No se agregó propagación para mover objetos o editar números.
+- Dos áreas comparten una línea:5 trazos,2 rellenos, sin duplicar el borde.
+  Comprobados snap con grilla apagada,3 extremos movidos juntos y undo/redo.
+- Bézier abierta sin relleno implícito en SVG/preview/hit-test/recorte expandido;
+  color conservado para cerrar después. Fill sobre región de varios trazos
+  sigue siendo independiente. Probado abierto/cerrado en navegador.
+- 529 unidades/TypeScript, build,131/131 E2E(210,5s/exit0) y10 estáticas
+  raíz/subcarpeta correctos. Evidencia node-snap-* en.runtime. Primera corrida
+  detectó overflow de Preferencias1366; compactado y cuatro tamaños/final
+  correctos. Prueba de arrastre exige coincidencia exacta de extremos y
+  tolerancia4 decimales frente a ratón/DOM float32. README actualizado.
+- Cierre por primaria95% usada; monitor programa reset primario real+60s,
+  secundaria sólo avisa. Servicios LAN conservados. PRD v3.0 aún pendiente
+  de ejemplos figurativos/flujo de composición/colores y fases3–7.

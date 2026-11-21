@@ -1,5 +1,6 @@
 import { generatedBounds } from '../composition/generated';
 import { geometryHit } from './hitGeometry';
+import { nearestNode, junctionNodes, type JunctionNode } from './snap';
 import { sceneLayers } from '../patterns/layers';
 import { useFill } from '../fill/useFill';
 import { TileEditor } from '../tiling/TileEditor';
@@ -51,7 +52,7 @@ import {
 } from '../geometry/matrix';
 import { pathData, simplifyPoints } from '../geometry/paths';
 import { paperPath, smoothNodes } from '../geometry/paper';
-import { buildScene, sceneScaleBound, type Scene } from '../patterns/engine';
+import { buildScene, expandedTransforms, sceneScaleBound, type Scene } from '../patterns/engine';
 import { lattice, latticeVectors, fundamentalDomain, type Bounds } from '../symmetry/groups';
 import { symmetryGuides, verifyPeriodicity } from '../symmetry/guides';
 import { geometryBounds, regionData, hasClosedGeometry } from '../application/clipping';
@@ -77,6 +78,7 @@ interface Drag {
   index?: number;
   handle?: 'node' | 'in' | 'out';
   baseNode?: Node;
+  junction?: JunctionNode[];
   shape?: Geometry;
 }
 function safeScene(
@@ -107,6 +109,7 @@ export function Canvas({
   const [view, setView] = useState<Bounds>({ x: -110, y: -100, width: 300, height: 240 }),
     [size, setSize] = useState({ width: 1000, height: 800 }),
     [cursor, setCursor] = useState<Point>({ x: 0, y: 0 }),
+    [snapTarget, setSnapTarget] = useState<Point | null>(null),
     [marquee, setMarquee] = useState<{ start: Point; end: Point } | null>(null);
   const freshView = useRef(false),
     viewSize = useRef(size),
@@ -368,15 +371,29 @@ export function Canvas({
     const p = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
     return { x: p.x, y: p.y };
   };
+  const snapMatrices = useMemo(
+    () => (s.mode !== 'apply' && !editorOnly && scene ? expandedTransforms(scene) : [IDENTITY]),
+    [s.mode, editorOnly, scene],
+  );
+  const nodeSnap = (p: Point, exclude?: { id: string; index?: number }): Point | null => {
+    const target =
+      (s.project.preferences.snapNodes ?? true)
+        ? nearestNode(
+            p,
+            s.mode !== 'apply' && !editorOnly && scene ? scene.generated.geometry : s.objects,
+            snapMatrices,
+            (s.project.preferences.snapRadiusPx ?? 8) / scalePx,
+            exclude,
+            drag.current?.junction,
+          )
+        : null;
+    setSnapTarget(target);
+    return target;
+  };
   const snap = (p: Point): Point => {
+    const target = nodeSnap(p, { id: drag.current?.id ?? pathDraft.current?.id ?? '' });
+    if (target) return target;
     if (!s.project.preferences.snap) return p;
-    const limit = 8 / scalePx;
-    for (const g of s.objects)
-      if (!s.selected.includes(g.id))
-        for (const n of g.nodes) {
-          const q = apply(g.transform, n);
-          if (distance(p, q) < limit) return q;
-        }
     const grid = 5;
     return { x: Math.round(p.x / grid) * grid, y: Math.round(p.y / grid) * grid };
   };
@@ -650,6 +667,12 @@ export function Canvas({
       index,
       handle,
       baseNode: structuredClone(shape.nodes[index]),
+      junction:
+        handle === 'node' && !event.altKey
+          ? junctionNodes(apply(matrix, shape.nodes[index]), s.objects, snapMatrices).filter(
+              (n) => n.id !== id || n.index !== index,
+            )
+          : [],
     };
   };
   useEffect(() => {
@@ -855,13 +878,13 @@ export function Canvas({
       }, true);
     }
     if (d.type === 'node') {
-      const q = apply(inverse(d.matrix!), p);
+      const target = d.handle === 'node' ? nodeSnap(p, { id: d.id!, index: d.index }) : null,
+        q = apply(inverse(d.matrix!), target ?? p);
       updateShape(d.id!, (g) => {
         const n = g.nodes[d.index!];
         if (d.handle === 'node') {
-          const snapped = s.project.preferences.snap
-            ? { x: Math.round(q.x), y: Math.round(q.y) }
-            : q;
+          const snapped =
+            s.project.preferences.snap && !target ? { x: Math.round(q.x), y: Math.round(q.y) } : q;
           n.x = snapped.x;
           n.y = snapped.y;
         } else {
@@ -872,6 +895,23 @@ export function Canvas({
           }
         }
       });
+      if (d.handle === 'node' && d.junction?.length) {
+        const moved = s.projectRef.current.patterns
+            .flatMap((pat) => pat.sourceGeometry)
+            .concat(s.projectRef.current.regions.flatMap((region) => region.geometry))
+            .find((g) => g.id === d.id)!,
+          world = apply(d.matrix!, moved.nodes[d.index!]);
+        s.change((project) => {
+          const objects = project.patterns
+            .flatMap((pat) => pat.sourceGeometry)
+            .concat(project.regions.flatMap((region) => region.geometry));
+          for (const member of d.junction!) {
+            const g = objects.find((g) => g.id === member.id),
+              n = g?.nodes[member.index];
+            if (n) Object.assign(n, apply(inverse(member.matrix), world));
+          }
+        }, true);
+      }
     }
     if (d.type === 'draw') {
       const q = d.capture
@@ -905,6 +945,7 @@ export function Canvas({
     if (d.type === 'marquee') setMarquee({ start: d.start, end: p });
   };
   const pointerUp = (event: RPointerEvent<SVGSVGElement>) => {
+    setSnapTarget(null);
     const d = drag.current;
     if (!d) return;
     if (d.type === 'draw' && (d.capture?.tool ?? s.tool) === 'pencil')
@@ -1833,6 +1874,18 @@ export function Canvas({
               </g>
             ))}
         </g>
+        {snapTarget && (
+          <circle
+            aria-label="Atracción a nodo"
+            cx={snapTarget.x}
+            cy={snapTarget.y}
+            r={7 / scalePx}
+            fill="none"
+            stroke="#247b57"
+            strokeWidth={2 / scalePx}
+            pointerEvents="none"
+          />
+        )}
         {s.mode !== 'apply' &&
           !editorOnly &&
           activePattern.symmetry.family !== 'none' &&

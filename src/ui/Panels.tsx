@@ -1080,13 +1080,26 @@ export function Panels({
                   />
                 </label>
                 <Toggle
-                  label="Ajustar a grilla y nodos"
+                  label="Ajustar a grilla"
                   checked={s.project.preferences.snap}
                   onChange={(v) =>
                     s.change((p) => {
                       p.preferences.snap = v;
                     })
                   }
+                />
+                <Toggle
+                  label="Atracción entre nodos"
+                  checked={s.project.preferences.snapNodes ?? true}
+                  onChange={(value) => s.updateViewPreferences({ snapNodes: value })}
+                />
+                <Field
+                  label="Distancia de atracción a nodos"
+                  unit="px"
+                  min={1}
+                  max={40}
+                  value={s.project.preferences.snapRadiusPx ?? 8}
+                  onChange={(value) => s.updateViewPreferences({ snapRadiusPx: value })}
                 />
                 <Toggle
                   label="Guías detalladas"
@@ -1201,7 +1214,7 @@ export function Panels({
                   {s.tool === 'fill'
                     ? 'Hacé clic o tocá una región cerrada. El color queda aplicado; la tolerancia y los vínculos están en Fill, a la derecha.'
                     : s.tool === 'nodes'
-                      ? 'Seleccioná un nodo o una tangente en el lienzo. Alt separa tangentes; Objeto → Nodos ofrece edición numérica.'
+                      ? 'Acercá un extremo a otro nodo para unir sus posiciones. Distancia en Preferencias → Atracción a nodos; Alt separa tangentes.'
                       : s.tool === 'pen'
                         ? 'Clic crea un nodo; arrastrá para dar tangentes. Enter termina, Shift+Enter cierra y Escape cancela.'
                         : s.tool === 'pencil'

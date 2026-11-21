@@ -2459,6 +2459,10 @@ input[type='color']::-webkit-color-swatch {
 .context-preferences .section-content, .context-symmetry .section-content, .tile-controls { gap:9px; }
 .context-preferences .panel-section > summary, .context-symmetry .panel-section > summary { height:34px; }
 .context-preferences .toggle { min-height:29px; }
+.context-preferences .section-content { gap:6px; }
+.context-preferences .toggle { min-height:26px; }
+.context-preferences .field { flex-wrap:nowrap; }
+.context-preferences .field .number-wrap { flex:0 0 72px; }
 .command-modal { width:520px; }
 .command-modal input { width:100%; padding:12px; border:1px solid var(--line); border-radius:7px; margin-bottom:10px; }
 .command-modal [role=listbox] { display:grid; gap:4px; }

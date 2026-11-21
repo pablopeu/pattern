@@ -1,5 +1,13 @@
 import type { Geometry, Node } from '../app/model';
 import { apply, distance, type Matrix, type Point } from './matrix';
+/** SVG implicitly closes open curves for fill; editable paths must close explicitly/geometrically. */
+export function hasFillBoundary(shape: Geometry): boolean {
+  return (
+    shape.kind !== 'path' ||
+    shape.closed ||
+    (shape.nodes.length > 1 && distance(shape.nodes[0], shape.nodes.at(-1)!) < 1e-7)
+  );
+}
 export function pathData(shape: Geometry): string {
   if (shape.kind === 'compound' && shape.pathData) return shape.pathData;
   const p = shape.parameters;

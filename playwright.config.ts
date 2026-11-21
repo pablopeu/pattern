@@ -14,6 +14,7 @@ export default defineConfig({
         '**/v30.spec.ts',
         '**/v30-iso.spec.ts',
         '**/v30-view.spec.ts',
+        '**/snap.spec.ts',
       ],
   timeout: 45000,
   expect: { timeout: 8000 },

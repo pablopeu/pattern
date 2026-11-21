@@ -308,6 +308,8 @@ export const projectSchema = z.object({
     structureOpacity: z.number().min(0.03).max(0.8),
     grid: z.boolean(),
     snap: z.boolean(),
+    snapRadiusPx: n.min(1).max(40).default(8),
+    snapNodes: z.boolean().default(true),
     guides: z.boolean(),
     split: z.boolean(),
     background: z.string().regex(/^#[0-9a-fA-F]{6}$/),

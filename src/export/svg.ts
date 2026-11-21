@@ -20,7 +20,7 @@ import {
   type Region,
 } from '../app/model';
 import { IDENTITY, matrixString, multiply, inverse, type Matrix } from '../geometry/matrix';
-import { pathData } from '../geometry/paths';
+import { pathData, hasFillBoundary } from '../geometry/paths';
 import { buildScene, expandedTransforms, sceneScaleBound } from '../patterns/engine';
 import { geometryBounds, clipGeometry, regionData } from '../application/clipping';
 import {
@@ -111,6 +111,8 @@ export function previewSVGPathAtTolerance(shape: Geometry, tolerance: number): s
   return markup;
 }
 export function svgPathAtTolerance(shape: Geometry, tolerance: number): string {
+  if (!hasFillBoundary(shape) && shape.fill !== 'none')
+    return svgPathAtTolerance({ ...shape, fill: 'none' }, tolerance);
   if (
     (shape.strokeProfile.kind !== 'uniform' || shape.strokeDash.includes(0)) &&
     shape.stroke !== 'none' &&

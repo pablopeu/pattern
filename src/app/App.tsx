@@ -760,12 +760,12 @@ export default function App() {
                 </button>
               )}
               <button
-                title="Snapping"
-                className={s.project.preferences.snap ? 'active' : ''}
+                title="Snap · Distancia de atracción en Preferencias"
+                className={(s.project.preferences.snapNodes ?? true) ? 'active' : ''}
                 aria-label="Snapping"
                 onClick={() =>
                   s.change((p) => {
-                    p.preferences.snap = !p.preferences.snap;
+                    p.preferences.snapNodes = !(p.preferences.snapNodes ?? true);
                   })
                 }
               >

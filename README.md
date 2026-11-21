@@ -37,6 +37,28 @@ de simetría; **Snap** controla por separado el ajuste a grilla y nodos.
 
 La pluma termina con Enter, se cierra con Shift+Enter o un clic sobre el primer nodo y se cancela con Esc. Espacio permite arrastrar la vista; Ctrl + rueda controla el zoom.
 
+Con **Snap** activo, al dibujar o arrastrar un nodo éste se atrae al nodo más
+cercano: aparece un círculo verde y las posiciones coinciden exactamente al
+soltar. Funciona también sobre copias transformadas y permite acercar ambos
+extremos de un mismo trazado. Ajustá **Preferencias → Distancia de atracción a
+nodos** entre **1 y 40 px** (inicialmente **8 px**); la distancia visual se mantiene
+al cambiar el zoom. El ajuste de nodos tiene prioridad sobre la grilla.
+**Snap** en la barra controla la atracción entre nodos. **Preferencias → Ajustar
+a grilla** es independiente: podés desactivarlo y mantener la atracción activa.
+Los nodos que coinciden forman un vértice compartido: al arrastrar uno acompañan
+los demás trazos unidos, incluso después de guardar y abrir el archivo. Alt al
+iniciar el arrastre permite separar un extremo; los objetos bloqueados no se mueven.
+
+Para rellenar áreas contiguas, dibujá su borde compartido una sola vez y completá
+los otros lados. **Rellenar región** detecta cada área por separado aunque sus
+límites sean trazos independientes; no hace falta fusionarlos en un único objeto.
+La **Tolerancia de cierre de Fill**, en el panel derecho de Fill, permite salvar
+pequeños huecos al calcular el relleno, sin mover los nodos originales. Es un
+ajuste distinto de la distancia de atracción.
+Las curvas Bézier abiertas se dibujan sin relleno implícito. El color elegido se
+conserva para cuando se cierre el trazado; si se cierra con otros trazos, usá Fill
+sobre el área resultante.
+
 **Desplazar vista** está junto a los controles de zoom del área de trabajo.
 En **Una celda**, la referencia permanece centrada y se puede acercar o alejar;
 **Ajustar contenido** y **Restablecer vista** vuelven a mostrarla completa.

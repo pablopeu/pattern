@@ -134,6 +134,8 @@ export interface Project {
     structureOpacity: number;
     grid: boolean;
     snap: boolean;
+    snapRadiusPx: number;
+    snapNodes: boolean;
     guides: boolean;
     split: boolean;
     background: string;
@@ -242,6 +244,8 @@ export function newProject(): Project {
       structureOpacity: 0.22,
       grid: true,
       snap: true,
+      snapRadiusPx: 8,
+      snapNodes: true,
       guides: true,
       split: false,
       background: '#f8faf5',

@@ -1,3 +1,49 @@
+# Cierre por cupo · Snap independiente, vértices compartidos y Bézier abiertas
+
+Incremento de feedback en cierre; no iniciar otro mientras primaria<=10%.
+Snap de barra controla Atracción entre nodos; Preferencias separa Ajustar a
+grilla y Atracción entre nodos, con Distancia de atracción a nodos1–40px
+(inicial8), visualmente constante con zoom. Cercanía se calcula en coordenadas
+visibles de instancias/placements y transform de cada geometría; nodo más cercano
+antes que grilla, círculo verde de destino, no se atrae al propio nodo móvil.
+
+Al iniciar arrastre se detectan nodos coincidentes a1e-7 en la vista y se mueven
+juntos usando la inversa de cada matriz. Unión geométrica inferida de coordenadas,
+sin IDs/cachés nuevos: persiste al guardar/abrir. Objetos ocultos/bloqueados y
+rellenos derivados excluidos. Alt al iniciar permite separar el extremo.
+Fuentes siguen independientes y tangentes se conservan. Esta propagación se
+aplica al arrastre de nodos; no se añadió un grafo de restricciones para mover
+objetos completos ni para cambios numéricos del inspector.
+
+Relleno de paths abiertos desactivado en SVG/preview/hit-test/recorte expandido;
+se conserva color elegido, se habilita sólo con cierre explícito o extremos
+coincidentes. Para cerrar con otras líneas, Fill detecta la región de conjunto.
+Dos triángulos comparten un borde usando5 trazos y2 rellenos independientes.
+La tolerancia de Fill sigue siendo distinta del radio de snap.
+
+529 unidades/TypeScript y build correctos. Prueba de navegador confirmó snap
+con grilla apagada, tres extremos que se desplazan exactamente juntos, undo/redo,
+radio guardado y2 rellenos sin duplicar borde. Bézier abierta/cerrada también
+pasó en navegador. Primera regresión129/130 detectó overflow en Preferencias
+1366; compactado sin ocultar controles. Cuatro tamaños dirigidos ya pasaron.
+La prueba de arrastre continuo usa precisión física4decimales para posición
+solicitada por ratón y coincidencia EXACTA entre líneas: SVG/DOM usa float32.
+
+REGRESIÓN FINAL131/131 CORRECTA (210,5s, exit0):
+.runtime/node-snap-final-full.log y node-snap-final-full-result.json. Build final
+y10 estáticas (5 raíz+5 subcarpeta), con output separado, también correctos.
+Logs node-snap-final-{build,static-summary}.log. README actualizado.
+No hay suites activas. Incremento listo para commit/push y finalizar el turno.
+
+Servicios4173/4174 conservados; primaria95% usada a02:34UTC, reset real seguido
+por monitor (+60s); secundaria sólo avisa. PROJECT_COMPLETE ausente. Después del
+reset continuar Fase2 del PRD en docs/prd/prd_v3.0.txt: figuras originales,
+silueta enlazada→composición y colores alternados con período de exportación
+correcto; luego fases3–7. No declarar PRD completo. Push main autorizado;
+no revisar Actions/FTP. Feedback anterior de.runtime revisado, sin otros nuevos.
+
+---
+
 # Vistas completas, Desplazar vista y footer móvil · Verificado
 
 Footer apilado hasta900px: texto, invitación y enlaces sociales completos, sin

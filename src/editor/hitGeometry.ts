@@ -1,4 +1,5 @@
 import type { Geometry } from '../app/model';
+import { hasFillBoundary } from '../geometry/paths';
 import { distance, linearScaleBound, type Point } from '../geometry/matrix';
 import { paperPath, scope } from '../geometry/paper';
 import { strokeExtent } from '../geometry/stroke-bounds';
@@ -13,7 +14,7 @@ export function geometryHit(
   const p = new scope.Point(point.x, point.y),
     nearest = path.getNearestPoint(p),
     axisDistance = nearest ? distance(point, nearest) : Infinity;
-  if (g.fill !== 'none' && path.contains(p)) return true;
+  if (hasFillBoundary(g) && g.fill !== 'none' && path.contains(p)) return true;
   if (axisDistance <= tolerance) return true;
   const extent = strokeExtent(g);
   if (

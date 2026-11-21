@@ -3,7 +3,7 @@ export { strokeRegion } from '../geometry/stroke-outline';
 import type { Geometry, Region } from '../app/model';
 import { IDENTITY, multiply, type Matrix } from '../geometry/matrix';
 import { paperPath, paperData, pathToGeometry, scope } from '../geometry/paper';
-import { pathData } from '../geometry/paths';
+import { pathData, hasFillBoundary } from '../geometry/paths';
 export function regionPath(region: Region): paper.CompoundPath {
   if (!region.geometry.length) return new scope.CompoundPath({ insert: false });
   let result = paperPath(region.geometry[0]);
@@ -47,7 +47,11 @@ export function clipGeometry(
   const mask = regionPath(region),
     out: Geometry[] = [];
   try {
-    if (shape.closed && shape.fill !== 'none') {
+    if (
+      (shape.closed || shape.kind === 'path') &&
+      hasFillBoundary(shape) &&
+      shape.fill !== 'none'
+    ) {
       const source = paperPath(shape, transform);
       const result = source.intersect(mask, { insert: false });
       source.remove();
