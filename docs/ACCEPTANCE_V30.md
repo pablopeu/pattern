@@ -8,7 +8,7 @@ No se declara completo v3.0 ni su catálogo IH, proyecciones o animaciones.
 |01|Compatibilidad|Base:206 unitarias/111 E2E; repetir sobre nuevos formatos/familias|
 |02–03|Navegación/scroll|Base UX v2.3 conservada; nuevas familias pendientes|
 |04–05|Edición/simetría|Base euclidiana verificada; extensiones pendientes|
-|06|IH1–IH93|81/93 geométricos verificados/integrados;12 con marcas interiores pendientes|
+|06|IH1–IH93|93/93 verificados/integrados;81 geométricos+12 marcados propios, pruebas individuales/Scene/JSON y exportación independiente de los12 marcados|
 |07|Figurativas|Bordes existentes válidos; ampliación de relaciones pendiente|
 |08–09|Recursión/espirales|Verificado: operadores/inversas, determinismo, fuente única, detalle/IDs, UI/undo/JSON/exportaciones|
 |10|Hat/Spectre|Pendiente; Penrose previo conservado|
@@ -19,7 +19,7 @@ No se declara completo v3.0 ni su catálogo IH, proyecciones o animaciones.
 |20|Exportación|Base SVG/PNG/JPEG/DXF; nuevas familias pendientes|
 |21–22|Ejemplos/derechos|12 ejemplos:8 legados+4 originales portables; familias posteriores pendientes; sin assets Escher copiados|
 |23–24|Acceso/rendimiento|Base verificada; mediciones de nuevas familias pendientes|
-|25|Regresiones|IH81:123/123 E2E,475 unidades,10 estáticas,build; baseline12 monitor. Repetir tras próximas fases|
+|25|Regresiones|IH93:124/124 E2E,524 unidades,10 estáticas,build; baseline12 monitor. Repetir tras próximas fases|
 
 Baseline: .runtime/v30-baseline-{check,monitor,build,full}.log,
 v30-baseline-full-result.json y v30-baseline-static-summary.log. Logs/artefactos

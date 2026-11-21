@@ -124,7 +124,7 @@ describe('adaptación IH a teselas y archivos existentes', () => {
   );
   it('rechaza IH no implementados/definiciones ausentes y conserva las cinco familias legadas', () => {
     const project = projectFor(1);
-    project.patterns[0].tiling!.isohedral!.type = 19;
+    project.patterns[0].tiling!.isohedral!.type = 94;
     expect(() => parseProject(serialize(project))).toThrow();
     delete project.patterns[0].tiling!.isohedral;
     expect(() => parseProject(serialize(project))).toThrow();

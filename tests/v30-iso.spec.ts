@@ -58,7 +58,7 @@ for (const viewport of [
       )
       .toBe(true);
     await dialog.getByLabel('Buscar tipo IH').fill('IH19');
-    await expect(dialog.getByRole('button', { name: 'Usar IH19', exact: true })).toBeDisabled();
+    await expect(dialog.getByRole('button', { name: 'Usar IH19', exact: true })).toBeEnabled();
     await dialog.getByRole('button', { name: 'Cerrar catálogo isoédrico' }).click();
     expect(await project(page)).toEqual(before);
     const p = await useType(page, 1, true);
@@ -74,6 +74,11 @@ for (const viewport of [
       expect(overflow.x).toBeLessThanOrEqual(1);
       expect(overflow.y).toBeLessThanOrEqual(1);
     }
+    await useType(page, 19);
+    const markedOverflow = await panel
+      .locator('.panel-scroll')
+      .evaluate((el) => el.scrollHeight - el.clientHeight);
+    expect(markedOverflow).toBeLessThanOrEqual(1);
   });
 }
 test('IH41: gesto real, nodo sin cambiar contorno, rechazo de inversión, Fill/undo y archivos', async ({
@@ -166,4 +171,67 @@ test('IH93 y búsqueda Ctrl+K: espejo recto y fuente intacta', async ({ page }) 
   expect((await project(page)).patterns[0].sourceGeometry).toEqual(
     before.patterns[0].sourceGeometry,
   );
+});
+test('IH19 marcado: seis detalles interiores comparten una fuente editable y exportan paths', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await project(page);
+  await symmetry(page, 'Simetría Libre');
+  await page.getByRole('button', { name: 'Rectángulo', exact: true }).click();
+  const a = await screen(page, 17, 5),
+    b = await screen(page, 25, 9);
+  await page.mouse.move(a.x, a.y);
+  await page.mouse.down();
+  await page.mouse.move(b.x, b.y, { steps: 3 });
+  await page.mouse.up();
+  const original = (await project(page)).patterns[0].sourceGeometry;
+  await useType(page, 19);
+  expect((await project(page)).patterns[0].sourceGeometry).toEqual(original);
+  const summary = await page.evaluate(async () => {
+    const p = (await (await import('/src/persistence/storage.ts')).recover())!;
+    const { buildScene } = await import('/src/patterns/engine.ts'),
+      { resolvePattern } = await import('/src/symmetry/config.ts');
+    const pattern = resolvePattern(p.patterns[0], p),
+      scene = buildScene(pattern, { x: -100, y: -100, width: 200, height: 200 });
+    return {
+      objects: scene.generated.geometry.length,
+      interior: scene.tiling!.inner.instances.length,
+      reflected: scene.tiling!.inner.instances.filter(
+        (i) => i.matrix[0] * i.matrix[3] - i.matrix[1] * i.matrix[2] < 0,
+      ).length,
+    };
+  });
+  expect(summary.objects).toBe(1);
+  expect(summary.interior).toBeGreaterThanOrEqual(6);
+  expect(summary.reflected).toBeGreaterThan(0);
+  await page.getByRole('button', { name: 'Una celda', exact: true }).click();
+  await page.getByRole('button', { name: 'Seleccionar', exact: true }).click();
+  const point = await screen(page, 21, 5);
+  await page.mouse.click(point.x, point.y);
+  await (await field(page, 'Ancho')).fill('12');
+  await expect
+    .poll(async () => (await project(page)).patterns[0].sourceGeometry[0].parameters!.width)
+    .toBe(12);
+  expect((await project(page)).patterns[0].sourceGeometry).toHaveLength(1);
+  await page.getByRole('button', { name: 'Cerrar panel de estilos' }).click();
+  await page.getByRole('button', { name: 'Deshacer', exact: true }).click();
+  expect((await project(page)).patterns[0].sourceGeometry).toEqual(original);
+  await page.getByRole('button', { name: 'Exportar', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Exportar patrón' });
+  await dialog.getByRole('tab', { name: 'Precisión', exact: true }).click();
+  await dialog.getByLabel('Representación', { exact: true }).selectOption('expanded');
+  await expect
+    .poll(async () =>
+      decodeURIComponent(
+        (await dialog.getByAltText('Previsualización de exportación').getAttribute('src')) ?? '',
+      ),
+    )
+    .not.toContain('<use');
+  const download = page.waitForEvent('download');
+  await dialog.getByRole('button', { name: 'Descargar archivo', exact: true }).click();
+  const svg = await readFile((await (await download).path())!, 'utf8');
+  expect(svg).not.toContain('<use');
+  expect(svg).toContain('isohedral');
+  expect((svg.match(/<path /g) ?? []).length).toBeGreaterThanOrEqual(6);
 });

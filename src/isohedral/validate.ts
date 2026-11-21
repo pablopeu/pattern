@@ -37,6 +37,20 @@ export function isohedralIssue(def: IsohedralDefinition, size = 60): string | nu
         edge.some((n) => Math.abs(n.y) + Math.abs(n.in.y) + Math.abs(n.out.y) > 1e-9)
       )
         return 'Este borde es un eje de espejo: debe conservarse recto.';
+      if (
+        constraints[i] === 'straight' &&
+        edge.some(
+          (n, j) =>
+            n.x < -1e-9 ||
+            n.x > 1 + 1e-9 ||
+            (j > 0 &&
+              (n.x < edge[j - 1].x - 1e-9 ||
+                n.in.x > 1e-9 ||
+                n.x + n.in.x < edge[j - 1].x - 1e-9)) ||
+            (j + 1 < edge.length && (n.out.x < -1e-9 || n.x + n.out.x > edge[j + 1].x + 1e-9)),
+        )
+      )
+        return 'Un borde recto no puede retroceder sobre sí mismo.';
     }
     const layout = isohedralLayout(def, size),
       path = paperPath(layout.boundary),

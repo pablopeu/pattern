@@ -138,3 +138,42 @@ de una composición finita; las regiones de órbita mantienen sus matrices captu
 
 EXACT describe las transformaciones de estas recetas, no el encastre de siluetas
 ni una teselación hiperbólica. Los cuatro ejemplos nuevos son dibujos originales.
+
+
+## IH1–IH93 y marcas interiores
+
+El motor usa81 definiciones geométricas de TactileJS y12 construcciones propias
+por reflexión de polígonos, no aliases. Todas mantienen bordes canónicos,
+parámetros, una red B y aspectos afines. Para los12 tipos marcados se añade el
+estabilizador interior H: el motivo deriva instancias H sin duplicar su fuente.
+
+| IH | Polígono | H | Aspectos por celda | Grupo |
+|---|---|---|---|---|
+|19|Hexágono regular|D3|1|p3m1|
+|35|Rombo60°|D1, diagonal corta|3|p3m1|
+|48|Rectángulo|C1|4|pmm|
+|60|Rectángulo|C2|2|cmm|
+|63|Cuadrado|C4|2|p4g|
+|65|Rectángulo|D1, eje central|2|pmm|
+|70|Cuadrado|D1, diagonal|4|p4m|
+|75|Cuadrado|D2, diagonales|2|p4m|
+|80|Triángulo45–45–90°|C1|8|p4m|
+|87|Triángulo equilátero|C1|6|p3m1|
+|89|Triángulo equilátero|C3|2|p31m|
+|92|Triángulo equilátero|D1|6|p6m|
+
+Para cada reflexión S_e sobre un borde, la vecina satisface
+`A_i · S_e = T(B·n) · A_j · h`, n entero y h en H. Las pruebas verifican esta
+clausura para cada aspecto/borde, clausura de H, preservación del polígono y
+orden puntual del grupo. También comprueban `|det B| = área(P) · aspectos`,
+cobertura angular2π en vértices, ausencia de solapamientos y curvas/transformaciones.
+Densidad periódica1 e interiores disjuntos descartan huecos de área positiva.
+
+Datos propios congelados en isohedral/marked-data.json;
+`node scripts/generate-marked-isohedral.mjs` los reproduce por un recorrido de
+reflexiones, deriva la red primitiva y detecta ciclos incompatibles. Por defecto
+sólo verifica; --write requiere una actualización explícita del archivo. Las
+proporciones variables de los tres rectángulos preservan las isometrías.
+Los bordes marcados son rectos: no se ofrecen deformaciones que invaliden el tipo.
+La clasificación describe la construcción y la simetría exigida a sus marcas;
+un dibujo con simetrías accidentales puede tener un grupo mayor.

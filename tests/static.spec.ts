@@ -30,9 +30,9 @@ test('IH y referencias estáticos: catálogo real, JSON y worker desde subcarpet
   await context(page, 'Teselas');
   await page.getByRole('button', { name: 'Explorar catálogo IH1–IH93', exact: true }).click();
   const gallery = page.getByRole('dialog', { name: 'Catálogo isoédrico' });
-  await gallery.getByLabel('Buscar tipo IH').fill('IH41');
+  await gallery.getByLabel('Buscar tipo IH').fill('IH19');
   await gallery.getByLabel('Bordes iniciales del catálogo').selectOption('true');
-  await gallery.getByRole('button', { name: 'Usar IH41', exact: true }).click();
+  await gallery.getByRole('button', { name: 'Usar IH19', exact: true }).click();
   await page.getByRole('button', { name: 'Rectángulo', exact: true }).click();
   const points = await page.locator('.studio-canvas').evaluate((svg) =>
     [new DOMPoint(20, 20), new DOMPoint(30, 30)].map((p) => {
@@ -49,7 +49,7 @@ test('IH y referencias estáticos: catálogo real, JSON y worker desde subcarpet
   await page.getByRole('button', { name: 'Guardar proyecto', exact: true }).click();
   await page.getByRole('button', { name: 'Guardar archivo', exact: true }).click();
   const project = JSON.parse(await readFile((await (await download).path())!, 'utf8'));
-  expect(project.patterns[0].tiling.isohedral.type).toBe(41);
+  expect(project.patterns[0].tiling.isohedral.type).toBe(19);
   expect(project.patterns[0].sourceGeometry).toHaveLength(1);
   await page.getByRole('button', { name: 'Exportar', exact: true }).click();
   await expect(page.getByAltText('Previsualización de exportación')).toBeVisible();

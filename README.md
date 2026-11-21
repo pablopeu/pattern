@@ -199,12 +199,15 @@ tangentes. Los detalles del motivo se conservan al cambiar de construcción.
 
 ![Catálogo isoédrico con tesela y mosaico reales, filtros y cobertura explícita](docs/images/isohedral-catalog.png)
 
-La cobertura actual es **81 tipos geométricos verificados**; los doce que
-requieren marcas interiores figuran pendientes. **Forma** muestra sus parámetros
+Los **93 tipos están verificados**:81 se expresan mediante su geometría y12
+requieren marcas interiores. En estos últimos los bordes son rectos y el motivo
+se repite también dentro de la tesela para respetar su grupo. **Forma** muestra sus parámetros
 por páginas; **Bordes** y **Tangentes** controlan las curvas relacionadas. Añadir
 un nodo conserva la curva. Si una edición cruza la silueta, invierte su
 orientación o solapa vecinos, se conserva la última versión válida. Los bordes
 que deben ser ejes de espejo permanecen rectos. Ctrl+K encuentra el catálogo.
+
+![Tipos con marcas interiores y sus mosaicos generados por simetría](docs/images/isohedral-marked.png)
 
 ### Ajustar apariencia, guardar estilos y componer
 

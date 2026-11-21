@@ -1,4 +1,6 @@
 import { composeGenerated } from '../composition/generated';
+import { isohedralLayout } from '../isohedral/engine';
+import { isohedralDefinition } from '../tiling/tiles';
 import { strokePadding } from '../geometry/stroke-bounds';
 import { tileFillContour } from '../fill/coordinates';
 import {
@@ -56,6 +58,21 @@ export function buildScene(
         prepared,
       ),
       tiles = tileInstances(definition, bounds);
+    // Marked IH types also require their interior markings to respect the tile stabilizer.
+    if (definition.isohedral) {
+      const internal = isohedralLayout(
+        isohedralDefinition(definition),
+        definition.width,
+      ).motifSymmetries;
+      if (internal.length > 1)
+        inner.instances = internal.flatMap((h, index) =>
+          inner.instances.map((item) => ({
+            ...item,
+            id: `interior-${index}/${item.id}`,
+            matrix: multiply(h, item.matrix),
+          })),
+        );
+    }
     // Continue a stroke across paired boundaries without splitting its canonical source.
     const base = geometryBounds(inner.generated.geometry),
       corners = [

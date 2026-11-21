@@ -870,3 +870,17 @@
 - Fase2 sigue pendiente:12 tipos marcados y ejemplos figurativos. Prototipo
   independiente de las12 construcciones cerró ciclos/redes/aspectos sin
   conflictos, pero aún no está integrado al editor ni se declara completo.
+
+
+## IH1–IH93 · Catálogo completo verificado
+
+- 12 construcciones propias por reflexión/estabilizador interior completan los
+  81 tipos de referencia. Datos reproducibles y pruebas de clausura de cada
+  borde/aspecto, grupo H, área, cobertura, isometrías y orientación.
+- 524 unidades/TypeScript,124/124 E2E (207,8s),10 estáticas y build correctos.
+  Siete E2E dirigidas incluyen fuente IH19 editable con copias internas.
+- Los12 marcados pasaron CairoSVG/Pillow/ezdxf: tinta interior, SVG
+  editable/expandido(error máximo0,067/255), PNG/JPEG96DPI y DXF2D/mm;
+  fuentes JSON conservadas. Sin nuevos paquetes ni assets externos.
+- AC06 verificado; Fase2 sigue pendiente de ejemplos figurativos y del flujo
+  silueta enlazada→composición. Fases3–7 aún pendientes.

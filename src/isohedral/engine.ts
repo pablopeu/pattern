@@ -1,6 +1,7 @@
-import { geometry, node, type Node } from '../app/model';
+import { node, type Node } from '../app/model';
 import {
   apply,
+  IDENTITY,
   inverse,
   multiply,
   scale,
@@ -15,11 +16,13 @@ import {
   type TactileMatrix,
 } from '../vendor/tactile/tactile';
 import type { Bounds } from '../symmetry/groups';
-import type { EdgeConstraint, IsohedralDefinition } from './model';
+import type { EdgeConstraint, IsohedralDefinition, IsohedralLayout } from './model';
+import { markedLayout, markedTypes, newMarkedIsohedral } from './marked';
+import { boundaryFromEdges, mapCanonicalNodes } from './edit';
 
-export const supportedIsohedralTypes: readonly number[] = Object.freeze([...tilingTypes]);
-export const markedIsohedralTypes: readonly number[] = Object.freeze(
-  Array.from({ length: 93 }, (_, i) => i + 1).filter((id) => !supportedIsohedralTypes.includes(id)),
+export const markedIsohedralTypes: readonly number[] = markedTypes;
+export const supportedIsohedralTypes: readonly number[] = Object.freeze(
+  [...tilingTypes, ...markedTypes].sort((a, b) => a - b),
 );
 const constraint = (shape: number): EdgeConstraint =>
   shape === EdgeShape.I
@@ -33,7 +36,7 @@ const constraint = (shape: number): EdgeConstraint =>
 export const tactileMatrix = (m: TactileMatrix): Matrix => [m[0], m[3], m[1], m[4], m[2], m[5]];
 
 function tiling(def: IsohedralDefinition): IsohedralTiling {
-  if (def.version !== 1 || !supportedIsohedralTypes.includes(def.type))
+  if (def.version !== 1 || !tilingTypes.includes(def.type))
     throw Error(`IH${def.type} no está implementado en este motor; no se sustituye por otro tipo.`);
   const t = new IsohedralTiling(def.type);
   if (
@@ -47,6 +50,7 @@ function tiling(def: IsohedralDefinition): IsohedralTiling {
   return t;
 }
 export function newIsohedral(type: number): IsohedralDefinition {
+  if (markedTypes.includes(type)) return newMarkedIsohedral(type);
   if (!supportedIsohedralTypes.includes(type)) throw Error(`IH${type} no implementado.`);
   const t = new IsohedralTiling(type);
   return {
@@ -57,19 +61,16 @@ export function newIsohedral(type: number): IsohedralDefinition {
   };
 }
 export function isohedralConstraints(def: IsohedralDefinition): EdgeConstraint[] {
+  if (markedTypes.includes(def.type)) {
+    markedLayout(def, 1);
+    return def.edges.map(() => 'straight');
+  }
   const t = tiling(def);
   return def.edges.map((_, i) => constraint(t.getEdgeShape(i)));
 }
-function mapNodes(nodes: Node[], m: Matrix, reverse: boolean): Node[] {
-  const vector = (p: Point) => ({ x: m[0] * p.x + m[2] * p.y, y: m[1] * p.x + m[3] * p.y });
-  return (reverse ? [...nodes].reverse() : nodes).map((n) => ({
-    ...apply(m, n),
-    in: vector(reverse ? n.out : n.in),
-    out: vector(reverse ? n.in : n.out),
-  }));
-}
-export function isohedralLayout(def: IsohedralDefinition, size = 60) {
+export function isohedralLayout(def: IsohedralDefinition, size = 60): IsohedralLayout {
   if (!Number.isFinite(size) || size < 1 || size > 1000) throw Error('Escala de tesela inválida.');
+  if (markedTypes.includes(def.type)) return markedLayout(def, size);
   const t = tiling(def),
     toMm = scale(size),
     fromMm = scale(1 / size),
@@ -84,30 +85,22 @@ export function isohedralLayout(def: IsohedralDefinition, size = 60) {
       reverse: p.rev,
       second: p.second,
     })),
-    edges = parts.map((p) => mapNodes(def.edges[p.master], p.matrix, p.reverse)),
-    nodes: Node[] = [];
-  for (const [i, raw] of edges.entries()) {
-    if (raw.length < 2) throw Error('Borde isoédrico incompleto.');
-    const edge = structuredClone(raw),
-      previous = edges[(i + edges.length - 1) % edges.length].at(-1)!;
-    if (Math.hypot(edge[0].x - previous.x, edge[0].y - previous.y) > 1e-7 * size)
-      throw Error('Los bordes relacionados no cierran en sus vértices.');
-    edge[0].in = { ...previous.in };
-    nodes.push(...edge.slice(0, -1));
-  }
-  const boundary = {
-      ...geometry('path', nodes, true),
-      id: 'isohedral-boundary',
-      name: `Silueta IH${def.type}`,
-      fill: 'none',
-      stroke: '#6d8977',
-      strokeWidth: 0.25,
-    },
+    edges = parts.map((p) => mapCanonicalNodes(def.edges[p.master], p.matrix, p.reverse)),
+    boundary = boundaryFromEdges(edges, `Silueta IH${def.type}`, size * 1e-7),
     aspects = Array.from({ length: t.numAspects() }, (_, i) =>
       multiply(toMm, multiply(tactileMatrix(t.getAspectTransform(i)), fromMm)),
     ),
     vertices = t.vertices().map((p) => apply(toMm, p));
-  return { basis, parts, edges, boundary, aspects, vertices };
+  return {
+    basis,
+    parts,
+    edges,
+    boundary,
+    aspects,
+    vertices,
+    motifSymmetries: [IDENTITY],
+    marked: false,
+  };
 }
 export function isohedralParameterDefaults(type: number): number[] {
   return newIsohedral(type).parameters;

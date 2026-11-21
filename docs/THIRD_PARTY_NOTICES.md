@@ -63,3 +63,9 @@ completos funciona también en despliegues estáticos dentro de una subcarpeta.
 Pablo autorizó usar referencias open source, incluidas copyleft, y pidió mantener
 las atribuciones sin dedicar trabajo a una investigación extensa de licencias.
 Al integrar código se conservan su licencia y avisos originales.
+
+
+Los12 tipos IH marcados se construyen con código y datos propios mediante
+reflexiones, red primitiva y estabilizadores interiores. Su clasificación se
+contrasta con Kaplan/Schattschneider; no son aliases de los81 tipos de Tactile
+ni contienen imágenes de la tabla. El catálogo visible enlaza las referencias.

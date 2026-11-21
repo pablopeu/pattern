@@ -31,7 +31,7 @@ export function IsohedralGallery({
         return (
           (!q || `${row.id} ${row.group} ${row.topology}`.toLowerCase().includes(q)) &&
           (family === 'Todas' ||
-            (family === 'Marcas interiores' ? !row.implemented : row.family === family))
+            (family === 'Marcas interiores' ? row.marked : row.family === family))
         );
       }),
     [query, family],
@@ -41,13 +41,11 @@ export function IsohedralGallery({
     current = Math.min(page, total - 1);
   const cards = useMemo(
     () =>
-      entries
-        .slice(current * size, current * size + size)
-        .map((row) => ({
-          ...row,
-          shape: row.implemented ? isohedralThumbnail(row.id, false, curved) : '',
-          tiling: row.implemented ? isohedralThumbnail(row.id, true, curved) : '',
-        })),
+      entries.slice(current * size, current * size + size).map((row) => ({
+        ...row,
+        shape: row.implemented ? isohedralThumbnail(row.id, false, curved) : '',
+        tiling: row.implemented ? isohedralThumbnail(row.id, true, curved) : '',
+      })),
     [entries, current, size, curved],
   );
   return (
@@ -55,7 +53,7 @@ export function IsohedralGallery({
       <header>
         <div>
           <h2>Teselas isoédricas</h2>
-          <p>81 tipos geométricos verificados · 12 con marcas interiores pendientes</p>
+          <p>93 tipos verificados · 81 geométricos y 12 con marcas interiores</p>
         </div>
         <button aria-label="Cerrar catálogo isoédrico" onClick={onClose}>
           <X size={20} />
@@ -122,13 +120,16 @@ export function IsohedralGallery({
               {row.topology} · tesela {row.tileSymmetry}
             </small>
             <div className="isohedral-badges">
+              {row.marked && <span>Marcas interiores</span>}
               {row.reflection && <span>Reflexiones</span>}
               {row.rotation && <span>Giros</span>}
               {row.group === 'p1' && <span>Traslaciones</span>}
             </div>
             <p>
               {row.implemented
-                ? 'Geometría y encastre verificados · editable'
+                ? row.marked
+                  ? 'Bordes rectos · el motivo define las marcas'
+                  : 'Geometría y encastre verificados · editable'
                 : 'Pendiente de construcción y validación'}
             </p>
           </button>

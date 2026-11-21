@@ -1,5 +1,5 @@
 import metadata from './catalog.json';
-import { newIsohedral, supportedIsohedralTypes } from './engine';
+import { newIsohedral, supportedIsohedralTypes, markedIsohedralTypes } from './engine';
 import type { IsohedralDefinition } from './model';
 import { isohedralConstraints } from './engine';
 
@@ -7,6 +7,7 @@ import { isohedralConstraints } from './engine';
 export const isohedralCatalog = metadata.map((row) => ({
   ...row,
   implemented: supportedIsohedralTypes.includes(row.id),
+  marked: markedIsohedralTypes.includes(row.id),
   family:
     row.group === 'p1'
       ? 'Traslaciones'

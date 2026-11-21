@@ -18,16 +18,16 @@ import { isohedralCatalog, isohedralPreset } from '../isohedral/catalog';
 import { splitCanonicalEdge } from '../isohedral/edit';
 
 describe('IH · definiciones independientes por tipo', () => {
-  it('declara81 tipos geométricos y12 marcados pendientes, sin aliases ficticios', () => {
-    expect(supportedIsohedralTypes).toHaveLength(81);
-    expect(new Set(supportedIsohedralTypes).size).toBe(81);
+  it('declara93 tipos:81 geométricos y12 construcciones marcadas propias', () => {
+    expect(supportedIsohedralTypes).toHaveLength(93);
+    expect(new Set(supportedIsohedralTypes).size).toBe(93);
     expect(isohedralCatalog).toHaveLength(93);
     expect(isohedralCatalog.filter((t) => t.implemented).map((t) => t.id)).toEqual([
       ...supportedIsohedralTypes,
     ]);
     expect(markedIsohedralTypes).toEqual([19, 35, 48, 60, 63, 65, 70, 75, 80, 87, 89, 92]);
     for (const id of markedIsohedralTypes)
-      expect(() => newIsohedral(id)).toThrow(/no implementado/);
+      expect(isohedralLayout(newIsohedral(id)).marked).toBe(true);
     expect(() => newIsohedral(94)).toThrow();
     const source = readFileSync('src/vendor/tactile/tactile.js');
     const blob = createHash('sha1').update(`blob ${source.length}\0`).update(source).digest('hex');
@@ -120,5 +120,8 @@ describe('IH · definiciones independientes por tipo', () => {
     const crossing = newIsohedral(1);
     crossing.edges[0] = [node(0, 0), node(0.8, 0.4), node(0.2, 0.4), node(0.8, -0.4), node(1, 0)];
     expect(isohedralIssue(crossing)).not.toBeNull();
+    const straight = newIsohedral(93);
+    straight.edges[0][0].out.x = 4;
+    expect(isohedralIssue(straight)).toMatch(/retroceder/);
   });
 });

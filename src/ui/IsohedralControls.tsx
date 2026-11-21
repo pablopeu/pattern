@@ -21,6 +21,12 @@ export function IsohedralControls({ studio: s }: { studio: Studio }) {
         <br />
         {t.edges.length} bordes maestros · encastre verificado
       </p>
+      {metadata.marked && (
+        <p className="help-text">
+          El motivo se repite también dentro de la tesela para respetar este tipo. Dibujá detalles
+          para distinguir sus marcas interiores.
+        </p>
+      )}
       {params.length > 0 ? (
         <>
           <div className="two-fields">

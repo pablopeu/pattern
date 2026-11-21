@@ -235,3 +235,26 @@ colocaciones solicitadas y28667 nodos; en una vista10×10mm quedan24 visibles
 y4072 descartadas. Mediana de20 evaluaciones5,4ms y p95 observado12,5ms, luego
 de5 calentamientos. Es tiempo del motor, sin render/protocolo; no garantiza FPS.
 Datos en `.runtime/v30-exports/manifest.json`.
+
+
+## IH1–IH93 · Verificación matemática e independiente
+
+524 pruebas unitarias/TypeScript, incluidos dos casos geométricos por cada tipo,
+93 recorridos Scene/JSON,13 casos adicionales de marcas interiores, de Casteljau
+y exportaciones. Siete E2E dirigidas verifican cuatro resoluciones, gestos,
+rechazos sin perder estado, Fill, JSON/SVG, IH93 y edición de una única fuente
+con copias interiores IH19. Regresión integrada124/124 en207,8s y10 estáticas
+raíz/subcarpeta correctas; build correcto. Logs v30-iso93-* en.runtime.
+
+```bash
+node scripts/generate-marked-isohedral.mjs
+node scripts/validate-v30-isohedral.mjs
+.runtime/validation-env/bin/python scripts/validate_v30_isohedral.py
+```
+
+El primer comando verifica las12 definiciones congeladas sin escribir. QA se
+ejecutó con Node24.22.3. Los otros generan/analizan SVG editable/expandido,
+PNG/JPEG96DPI, DXF2D y JSON de los12 tipos marcados. Se comprueba tinta interior
+real, no sólo fondos: CairoSVG frente a navegador y geometría expandida. Error
+medio máximo observado0,067/255 entre SVG editable y expandido. Fuente de dos
+objetos conservada, unidades180×140mm y contornos dentro de región verificadas.

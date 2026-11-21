@@ -1,3 +1,34 @@
+# V3.0 · IH93 verificado; seguir ejemplos figurativos para cerrar Fase2
+
+93 tipos integrados:81 de TactileJS y12 propios por reflexión/estabilizador
+interior. Los12 no son aliases; matrices/bases/aspectos congelados en
+isohedral/marked-data.json y generador reproducible. El motivo se proyecta por H
+en Scene sin duplicar su fuente; los bordes marcados permanecen rectos.
+Catálogo93 habilitado, filtro Marcas interiores y miniaturas con marca genérica.
+
+524 unitarias/TypeScript,124/124 E2E (207,8s/exit0),10 estáticas,build correctos.
+Los12 marcados pasaron exportaciones independientes CairoSVG/Pillow/ezdxf:
+tinta interior real, SVG editable/expandido(error máx0,067/255), PNG/JPEG96DPI,
+DXF2D/mm y JSON2 fuentes. Siete E2E dirigidas también correctas, edición real de
+una fuente IH19 con seis copias interiores y exportación expandida. Logs
+.runtime/v30-iso93-* y generador v30-iso-marked-generator.log.
+
+Fase2 NO completa: faltan ejemplos figurativos originales y cierre del flujo
+figura→composición. Próximo incremento previsto: peces IH43, aves IH44, reptiles
+IH1 y ejemplo de marcas IH63. Evaluar Fill.kind=tile con scope=source como
+silueta-motivo enlazada: refreshLinkedFills ya trata kind tile, pero Scene
+exterior debe pintar esa silueta una sola vez por tesela; la composición debe
+recibirla como parte fuente. Detalles siempre independientes. Colores alternados
+requieren una red de exportación que respete su período; no reutilizar la red
+geométrica como si incluyera automáticamente el período de color.
+
+No hay suites activas. Servicios4173/4174 vivos; primaria44% usada a01:24UTC
+observada, secundaria sólo avisa. PROJECT_COMPLETE ausente. PRD en
+docs/prd/prd_v3.0.txt, documentación en docs/, logo src/assets/icono.png; raíz
+ordenada y referencias públicas ya publicadas en d4868c6. No revisar Actions/FTP.
+
+---
+
 # V3.0 · IH81 y reorganización verificados; continuar12 marcados/figuras
 
 Integración IH81 en83158ab, raíz organizada en85d22aa, Referencias fe3d74c.
