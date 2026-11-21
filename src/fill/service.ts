@@ -1,4 +1,5 @@
 import { tileFillContour } from './coordinates';
+import { compositionGeometryContext } from '../composition/model';
 import { geometry, type Geometry, type Pattern, type Project } from '../app/model';
 import type { Scene } from '../patterns/engine';
 import { expandedTransforms } from '../patterns/engine';
@@ -111,7 +112,7 @@ export function collectFillInputs(layers: FillLayer[], bounds: Bounds): Captured
             tile && scene.tiling ? clipAxis(g, matrix, scene.tiling.boundary, tile.matrix) : g;
           if (geometry.kind === 'compound' && !geometry.pathData) continue;
           result.push({
-            id: `${pattern.id}/${instance.id}/${placementIndex}/${g.id}`,
+            id: `${pattern.id}/${instance.id}/${scene.generated.composition?.ids[placementIndex] ?? placementIndex}/${g.id}`,
             patternId: pattern.id,
             shapeId: g.id,
             geometry,
@@ -174,7 +175,7 @@ export function localFillArrangement(
         seeds++;
         try {
           const inputs = geometry.map((g, i) => ({
-            id: `${pattern.id}/${instance.id}/${placementIndex}/${g.id}`,
+            id: `${pattern.id}/${instance.id}/${scene.generated.composition?.ids[placementIndex] ?? placementIndex}/${g.id}`,
             patternId: pattern.id,
             shapeId: g.id,
             geometry: g,
@@ -344,6 +345,9 @@ export function fillContext(
             placement: p.placementTransform,
             tiling: p.tiling,
             visible: p.visible,
+            ...(p.composition?.enabled
+              ? { composition: compositionGeometryContext(p.composition) }
+              : {}),
           };
     }),
   );
@@ -544,6 +548,7 @@ export function axesFingerprint(project: Project): string {
       p.symmetryMode,
       p.placementTransform,
       p.tiling,
+      compositionGeometryContext(p.composition),
       p.sourceGeometry.map((g) => [
         g.id,
         g.kind,

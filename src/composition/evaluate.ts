@@ -156,11 +156,16 @@ export function compositionTree(c: Composition): CompositionNode {
       multiply(translate(0.5, 0.5), multiply(scale(c.ratio), translate(-0.5, -0.5))),
     ),
   );
+  let truncated = false;
   for (let arm = 0; arm < arms; arm++)
     for (let i = 0; i < c.count; i++) {
       const factor = c.ratio ** i;
       // Stop numerically tiny or huge branches before building singular matrices.
-      if (factor * c.size * 0.14 < c.minSize || factor > 10000) break;
+      if (factor > 10000) {
+        truncated = true;
+        break;
+      }
+      if (factor * c.size * 0.14 < c.minSize) break;
       const base = c.mirror && i % 2 ? flip(motif(i)) : motif(i);
       let matrix: Matrix;
       if (c.recipe === 'logarithmic' || c.recipe === 'rosette') {
@@ -179,29 +184,48 @@ export function compositionTree(c: Composition): CompositionNode {
       }
       leaves.push(transform('subdivide', matrix, base));
     }
-  return over(...leaves);
+  return { ...over(...leaves), truncated };
+}
+
+export function sourceNormalization(c: Composition): Matrix {
+  const source = c.sourceFrame;
+  return multiply(
+    translate(0.5, 0.5),
+    multiply(
+      scale(1 / Math.max(source.width, source.height)),
+      translate(-source.x - source.width / 2, -source.y - source.height / 2),
+    ),
+  );
 }
 
 export function compileComposition(
   c: Composition,
-  options: { bounds?: Bounds; minSize?: number; maxInstances?: number } = {},
+  options: {
+    bounds?: Bounds;
+    contentBounds?: Bounds;
+    minSize?: number;
+    maxInstances?: number;
+  } = {},
 ): CompositionReport {
   const root = compositionTree(c),
     source = c.sourceFrame,
-    normalize = multiply(
-      translate(0.5, 0.5),
-      multiply(
-        scale(1 / Math.max(source.width, source.height)),
-        translate(-source.x - source.width / 2, -source.y - source.height / 2),
-      ),
-    ),
+    normalize = sourceNormalization(c),
     world = multiply(translate(c.center.x - c.size / 2, c.center.y - c.size / 2), scale(c.size));
+  const content = options.contentBounds,
+    corners = content
+      ? [
+          { x: content.x, y: content.y },
+          { x: content.x + content.width, y: content.y },
+          { x: content.x + content.width, y: content.y + content.height },
+          { x: content.x, y: content.y + content.height },
+        ]
+      : square;
   const report: CompositionReport = {
     leaves: [],
     nodes: [],
     culled: 0,
     detailOmitted: 0,
-    limited: false,
+    limited: !!root.truncated,
     validity: 'EXACT',
     periodicity: 'FINITE_NONPERIODIC',
   };
@@ -210,6 +234,7 @@ export function compileComposition(
       options.maxInstances ?? MAX_COMPOSITION_INSTANCES,
     ),
     minSize = Math.max(c.minSize, options.minSize ?? 0);
+  let eligible = 0;
   const visit = (node: CompositionNode, parent: Matrix, id: string) => {
     if (report.nodes.length >= MAX_NODES) {
       report.limited = true;
@@ -232,22 +257,23 @@ export function compileComposition(
         report.detailOmitted++;
         return;
       }
+      // Choose the same finite prefix before viewport culling at every camera position.
+      if (eligible++ >= limit) {
+        report.limited = true;
+        return;
+      }
       if (options.bounds) {
-        const corners = square.map((p) => apply(matrix, p)),
+        const points = corners.map((p) => apply(matrix, p)),
           b = options.bounds;
         if (
-          Math.max(...corners.map((p) => p.x)) < b.x ||
-          Math.min(...corners.map((p) => p.x)) > b.x + b.width ||
-          Math.max(...corners.map((p) => p.y)) < b.y ||
-          Math.min(...corners.map((p) => p.y)) > b.y + b.height
+          Math.max(...points.map((p) => p.x)) < b.x ||
+          Math.min(...points.map((p) => p.x)) > b.x + b.width ||
+          Math.max(...points.map((p) => p.y)) < b.y ||
+          Math.min(...points.map((p) => p.y)) > b.y + b.height
         ) {
           report.culled++;
           return;
         }
-      }
-      if (report.leaves.length >= limit) {
-        report.limited = true;
-        return;
       }
       const placement = multiply(matrix, normalize);
       if (!placement.every(Number.isFinite) || linearScaleBound(placement) > 1e6) {

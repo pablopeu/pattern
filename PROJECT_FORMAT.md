@@ -6,7 +6,7 @@ El archivo nativo es JSON UTF-8, extensión sugerida `.pattern.json`. Versión a
 
 ```json
 {
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "metadata": { "id": "uuid", "name": "Mi estudio", "createdAt": "ISO-8601", "updatedAt": "ISO-8601" },
   "documentUnits": "mm",
   "mainSymmetry": { "family": "none", "group": "none", "width": 60, "height": 60, "angle": 90, "sectors": 8, "center": {"x": 0, "y": 0}, "origin": {"x": 0, "y": 0}, "orientation": 0 },
@@ -21,7 +21,7 @@ El archivo nativo es JSON UTF-8, extensión sugerida `.pattern.json`. Versión a
 }
 ```
 
-El proyecto real requiere al menos un patrón. Los valores completos pueden inspeccionarse exportando cualquiera de los ocho ejemplos.
+El proyecto real requiere al menos un patrón. Los valores completos pueden inspeccionarse exportando cualquiera de los doce ejemplos de la galería.
 
 | Campo | Contenido |
 |---|---|

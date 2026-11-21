@@ -1,13 +1,13 @@
 # Inventario UX · v3.0
 
 El inventario UX_V23_INVENTORY.md conserva todas sus rutas y correcciones
-posteriores. Esta tabla es un plan de incorporación, no evidencia de aceptación.
+posteriores. La tabla distingue accesos verificados en Fase1 de incorporaciones pendientes.
 
 | Función | Acceso previsto | Estado |
 |---|---|---|
-|Recetas recursivas/espirales|Simetrías → Composición; tarjetas visuales|Pendiente Fase1|
-|Editar fuente/ver resultado|Acciones del contexto Composición|Pendiente Fase1|
-|Galería artística/matemática|Archivo → Galería de ejemplos; buscar/filtrar|Pendiente Fase1 e incrementos posteriores|
+|Recetas recursivas/espirales|Simetrías → Composición; tarjetas visuales|Verificado4 resoluciones/E2E|
+|Editar fuente/ver resultado|Acciones del contexto Composición|Verificado4 resoluciones/E2E|
+|Galería artística/matemática|Archivo → Galería de ejemplos; buscar/filtrar|Verificado12 ejemplos; ampliación en próximas fases|
 |Figurativas/isoédricas|Teselas → familia/catálogo visual|Pendiente Fase2|
 |Hat/Spectre/Girih|Teselas → Aperiódicas/Ornamentales|Pendiente Fase3|
 |Representaciones|Selector Visualizaciones sobre lienzo|Pendiente Fase4/5|

@@ -115,6 +115,11 @@ describe('composiciones finitas', () => {
     const bounded = compileComposition(c, { maxInstances: 10 });
     expect(bounded.leaves).toHaveLength(10);
     expect(bounded.limited).toBe(true);
+    const windowed = compileComposition(c, {
+      maxInstances: 10,
+      bounds: { x: -8, y: -8, width: 16, height: 16 },
+    });
+    for (const leaf of windowed.leaves) expect(bounded.leaves).toContainEqual(leaf);
   });
   it.each(['discrete', 'logarithmic', 'rosette', 'fixed-point'] as const)(
     'espiral %s es finita e invertible y llega hacia el centro',

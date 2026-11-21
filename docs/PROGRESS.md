@@ -783,3 +783,21 @@
   defs SVG necesarias para composición sobre Libre. Logs v30-* en .runtime.
 - Cierre de Fase1 todavía pendiente: culling/contextos Fill, mediciones, validación
   independiente/exportaciones, README visual y regresiones generales.
+
+
+## V3.0 Fase1 · Verificada y documentada
+
+- Culling integrado al lienzo con tinta real, colocación inversa, IDs estables
+  y detalle por píxel; exportación con detalle físico guardado. Presupuesto
+  previo al culling. Contextos Fill incluyen composición geométrica; paleta no
+  invalida topología. Fondo de tesela queda guardado para reactivar cobertura.
+- 223 unidades/TypeScript,117/117 E2E (205,2s/exit0),build,8 estáticas sin
+  Internet (4 raíz+4 subcarpeta) correctos. Cuatro ejemplos comparados por
+  CairoSVG/Pillow/ezdxf: tinta, paletas, mm/DPI, editable/expandido y DXF2D.
+- README actualizado con capturas de la aplicación, cuatro proyectos JSON
+  portables y explicaciones antes de instalación/trabajo. Medición local del
+  motor4096 colocaciones: mediana5,4ms/p9512,5ms, sin promesas de FPS.
+- Fase1 y AC08/09 verificados; Fases2–7 siguen pendientes. Próxima Fase2:
+  relaciones generales e IH. Referencia BSD TactileJS sólo cubre81 tipos; los12
+  marcados adicionales requieren implementación/validación propia. No hay93
+  tipos implementados aún. Servicios LAN/monitor primario conservados.

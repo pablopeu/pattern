@@ -1,6 +1,58 @@
 import { context, styles, catalog, symmetry, field } from './navigation';
 import { readFile } from 'node:fs/promises';
 import { test, expect } from '@playwright/test';
+test('v3 estático: ejemplos originales, receta portable y raster sin Internet', async ({
+  page,
+  baseURL,
+}) => {
+  const external: string[] = [],
+    errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.route('**/*', (route) => {
+    const url = new URL(route.request().url());
+    if (url.protocol.startsWith('http') && url.origin !== new URL(baseURL!).origin) {
+      external.push(url.href);
+      return route.abort();
+    }
+    return route.continue();
+  });
+  await page.goto(baseURL!);
+  await expect(page.locator('.save-indicator')).toHaveText(/Guardado local/);
+  await page.locator('.main-menu summary').click();
+  await page.getByRole('button', { name: 'Galería de ejemplos', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Galería de ejemplos' });
+  await expect
+    .poll(() =>
+      dialog
+        .locator('img')
+        .evaluateAll((images) => images.every((i) => (i as HTMLImageElement).naturalWidth > 0)),
+    )
+    .toBe(true);
+  await dialog
+    .getByRole('button', { name: 'Abrir ejemplo Peces al límite · original', exact: true })
+    .click();
+  await expect(page.locator('[data-composition-level="1"]')).toBeVisible();
+  let download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Guardar proyecto', exact: true }).click();
+  await page.getByRole('button', { name: 'Guardar archivo', exact: true }).click();
+  const project = JSON.parse(await readFile((await (await download).path())!, 'utf8'));
+  expect(project.schemaVersion).toBe(5);
+  expect(project.patterns[0].sourceGeometry).toHaveLength(10);
+  expect(project.patterns[0].composition.recipe).toBe('square-limit');
+  expect(project.metadata.example.artwork).toBe('original');
+  await page.getByRole('button', { name: 'Exportar', exact: true }).click();
+  const preview = page.getByAltText('Previsualización de exportación');
+  await expect(preview).toBeVisible();
+  expect(decodeURIComponent((await preview.getAttribute('src'))!)).toContain('FINITE_NONPERIODIC');
+  await page.getByLabel('Formato', { exact: true }).selectOption('png');
+  download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Descargar archivo', exact: true }).click();
+  const raster = await download;
+  expect(raster.suggestedFilename()).toMatch(/\.png$/);
+  expect((await readFile((await raster.path())!)).subarray(1, 4).toString()).toBe('PNG');
+  expect(external).toEqual([]);
+  expect(errors).toEqual([]);
+});
 test('build estático por HTTP: edición y exportación sin recursos de Internet', async ({
   page,
   baseURL,

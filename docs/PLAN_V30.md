@@ -69,3 +69,11 @@ a una deformación circular. Adaptación de contenido y construcción geométric
 se validan por separado. Versiones, límites numéricos, exportaciones y navegación
 se prueban antes de considerar cada fase terminada. Los parámetros de vista no
 agregan undo geométrico. No editar módulos/build durante suites E2E activas.
+
+
+Fase1 verificada21/11/2026UTC:223 unidades,117 E2E,8 estáticas,build y
+exportaciones independientes de cuatro ejemplos. Esquema5 evita pérdida
+silenciosa en lectores4. Evidencia en continuidad/progreso/aceptaciones.
+Fase2: TactileJS (BSD3, SHA fd58ec372a4398e3dfc22663d120da186790834e) es
+referencia compatible para81 tipos; el catálogo93 exige además12 tipos marcados.
+No se certificarán sin pruebas por tipo, ciclos, cobertura y relaciones reales.

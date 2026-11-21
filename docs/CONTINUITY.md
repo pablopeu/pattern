@@ -1,3 +1,39 @@
+# V3.0 · Fase1 verificada; continuar Fase2
+
+Recursión y semejanzas integradas sin duplicar fuentes: UI contextual, cuatro
+ejemplos originales, galería de12 proyectos, recetas personales y portables,
+JSON/presets5 (migración4 pura), captura inversa y SVG/PNG/JPEG/DXF.
+Culling del lienzo conserva IDs/matrices, usa tinta fuera del marco original y
+presupuesto previo al descarte. Exportación usa detalle físico, independiente
+del zoom. Fill reconoce cambios geométricos de composición, no de paleta;
+suspende fondos de tesela sin borrar fuentes y conserva regiones de órbita.
+
+Verificación real:223 unidades/TypeScript,117/117 E2E en205,2s (exit0),build,
+8 estáticas raíz/subcarpeta sin solicitudes externas. Cuatro ejemplos originales
+validados con CairoSVG/Pillow/ezdxf: editable/expandido con error medio máximo
+0,184/255, paletas/tinta, medidas180mm,120DPI y DXF2D en mm/región correcta.
+Logs .runtime/v30-{culling-check,culling-build,phase1-full,static-summary,
+independent-artifacts,independent-check}*, resultados full JSON exit0.
+Medición local10 fuentes/4096 colocaciones:24 visibles/4072 descartadas,
+28667 nodos, mediana5,4ms/p9512,5ms. No es garantía de FPS.
+README: galería, peces y roseta con capturas reales; cuatro JSON descargables
+correctos. Cinco capturas revisadas; scripts validate-v30-composition.mjs y
+validate_v30_composition.py reproducen artefactos.
+
+Fase1 satisface AC08/09; PRD entero NO completo. Seguir Fase2 (relaciones de
+bordes, figurativas e IH1–IH93). Investigación inicial: TactileJS BSD3, commit
+fd58ec372a4398e3dfc22663d120da186790834e, implementa81 tipos, NO93. Los12
+restantes requieren marcas interiores según Kaplan/Schattschneider2025. No
+presentar81 como93. Fuente/licencia de referencia descargadas sólo en.runtime;
+ningún código de terceros integrado todavía. No copiar assets del artículo.
+
+Monitor00:08UTC: primaria52% usada, secundaria99% sólo avisa. Servicios4173/4174
+conservados, PROJECT_COMPLETE ausente. Git main/push autorizado; no revisar FTP.
+Originales no seguidos caratula.jpg/favicon_io.zip intactos. No editar módulos
+ni generar notices/build mientras corran E2E. Ahora no hay suites activas.
+
+---
+
 # V3.0 · Fase1 integrada, cierre de validación pendiente
 
 Núcleo en abbda26; Fase0 en f12c78d. Integrados Pattern.composition, esquema5

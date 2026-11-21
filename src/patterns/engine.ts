@@ -12,7 +12,14 @@ import {
 import type { Geometry } from '../app/model';
 import type { Pattern } from '../app/model';
 import { generate, type Generated } from '../generators';
-import { IDENTITY, multiply, apply, linearScaleBound, type Matrix } from '../geometry/matrix';
+import {
+  IDENTITY,
+  inverse,
+  multiply,
+  apply,
+  linearScaleBound,
+  type Matrix,
+} from '../geometry/matrix';
 import { visibleInstances, type Bounds, type Instance, type Periodicity } from '../symmetry/groups';
 import { geometryBounds, clipGeometry } from '../application/clipping';
 export interface Scene {
@@ -28,7 +35,12 @@ export interface Scene {
   status: Periodicity;
   message: string;
 }
-export function buildScene(pattern: Pattern, bounds: Bounds, prepared?: Generated): Scene {
+export function buildScene(
+  pattern: Pattern,
+  bounds: Bounds,
+  prepared?: Generated,
+  pixelsPerMm?: number,
+): Scene {
   if (pattern.tiling && pattern.generator.kind !== 'penrose' && !pattern.composition?.enabled) {
     const definition = pattern.tiling,
       boundary = tileBoundary(definition),
@@ -141,7 +153,33 @@ export function buildScene(pattern: Pattern, bounds: Bounds, prepared?: Generate
       (order.get(a.id) ?? pattern.sourceGeometry.length) -
       (order.get(b.id) ?? pattern.sourceGeometry.length),
   );
-  if (pattern.composition?.enabled) generated = composeGenerated(generated, pattern.composition);
+  if (pattern.composition?.enabled) {
+    const placement = pattern.placementTransform ?? IDENTITY,
+      inv = inverse(placement),
+      corners = [
+        { x: bounds.x, y: bounds.y },
+        { x: bounds.x + bounds.width, y: bounds.y },
+        { x: bounds.x + bounds.width, y: bounds.y + bounds.height },
+        { x: bounds.x, y: bounds.y + bounds.height },
+      ].map((p) => apply(inv, p)),
+      x = Math.min(...corners.map((p) => p.x)),
+      y = Math.min(...corners.map((p) => p.y));
+    generated = composeGenerated(
+      generated,
+      pattern.composition,
+      pixelsPerMm
+        ? {
+            bounds: {
+              x,
+              y,
+              width: Math.max(...corners.map((p) => p.x)) - x,
+              height: Math.max(...corners.map((p) => p.y)) - y,
+            },
+            minSize: 0.65 / (pixelsPerMm * Math.max(1e-6, linearScaleBound(placement))),
+          }
+        : {},
+    );
+  }
   generated.placements = generated.placements.map((m) =>
     multiply(pattern.placementTransform ?? IDENTITY, m),
   );
@@ -171,7 +209,12 @@ export function buildScene(pattern: Pattern, bounds: Bounds, prepared?: Generate
     : visibleInstances(pattern.symmetry, bounds, motif);
   return {
     fills: derived
-      .filter((g) => g.visible && g.fillRegion!.scope !== 'source')
+      .filter(
+        (g) =>
+          g.visible &&
+          g.fillRegion!.scope !== 'source' &&
+          !(pattern.composition?.enabled && g.fillRegion!.scope === 'tile'),
+      )
       .map((g) => ({
         geometry: g,
         matrices:

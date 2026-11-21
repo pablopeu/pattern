@@ -74,9 +74,10 @@ interface Drag {
 function safeScene(
   pattern: Studio['pattern'],
   bounds: Bounds,
+  pixelsPerMm?: number,
 ): { scene: Scene | null; error: string } {
   try {
-    return { scene: buildScene(pattern, bounds), error: '' };
+    return { scene: buildScene(pattern, bounds, undefined, pixelsPerMm), error: '' };
   } catch (e) {
     return { scene: null, error: (e as Error).message };
   }
@@ -193,15 +194,15 @@ export function Canvas({
     ],
   );
   const { scene, error } = useMemo(
-    () => safeScene(activePattern, actualView),
-    [activePattern, actualView],
+    () => safeScene(activePattern, actualView, scalePx),
+    [activePattern, actualView, scalePx],
   );
   const patternLayers = useMemo(
     () =>
       s.visiblePatterns
         .filter((p) => !cellOnly || p.id === activePattern.id)
-        .map((pattern) => ({ pattern, ...safeScene(pattern, actualView) })),
-    [s.visiblePatterns, actualView, cellOnly, activePattern.id],
+        .map((pattern) => ({ pattern, ...safeScene(pattern, actualView, scalePx) })),
+    [s.visiblePatterns, actualView, cellOnly, activePattern.id, scalePx],
   );
   const split = s.project.preferences.split && s.mode === 'edit';
   const periodic =
@@ -975,8 +976,7 @@ export function Canvas({
     freshView.current = false;
     let b: Bounds;
     if (focusCell) b = cellBounds;
-    else if (activePattern.composition?.enabled && scene && !editorOnly)
-      b = generatedBounds(scene.generated);
+    else if (activePattern.composition?.enabled && !editorOnly) b = cellBounds;
     else if (s.mode === 'apply' && s.region) b = geometryBounds(s.region.geometry);
     else if (patternView && activePattern.tiling && activePattern.generator.kind !== 'penrose')
       b = tileWorldBounds(activePattern.tiling);

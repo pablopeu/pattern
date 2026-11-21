@@ -108,3 +108,33 @@ El perfil usa anchos relativos de 0 a 4 a lo largo de la longitud normalizada, c
 El contorno evalúa tangentes/normales cúbicas por lado de cada unión y refina eje y bordes. La tolerancia local se divide por la cota singular de la matriz total, incluidas colocaciones externas de templates. Cuantización al menos 100.000 y hasta 1.000 millones de unidades/mm; enteros efectivos no superan 1e14. Si la precisión no es representable se rechaza, sin fingir precisión mediante un clamp. Presupuestos: 24.000 muestras,100.000 polígonos,400.000 vértices,4.096 curvas,2.048 segmentos pintados y4.096 subdivisiones de arco. SVG expande los puntos de longitud cero para evitar diferencias nativas entre Chrome y CairoSVG.
 
 Fill utiliza ejes vectoriales materiales, no raster ni overlays. El epsilon de unión numérica es 1e-6 mm; el cierre ampliado 0–5 mm es explícito y sólo altera el cálculo derivado. Presupuestos por disposición: 1.200 curvas/entradas,20.000 intersecciones,40.000 medias aristas y2.000 caras. Las aristas coincidentes se normalizan y los agujeros se orientan para respetar evenodd/nonzero. La selección de cara y su vínculo se basan en referencias topológicas y contexto; un punto aproximado no prueba equivalencia.
+
+
+## Composición funcional v3.0
+
+`composition/` mantiene operadores, recetas y evaluación pura, separados de React.
+El árbol referencia una sola fuente; sus hojas producen matrices, IDs por ruta y
+niveles. El orden final es `P · C · Q · S`: colocación del conjunto, composición
+(incluida normalización del marco), generador y transform del objeto. Composición
+suspende temporalmente wallpaper/teselas guardados; no los borra ni certifica una
+periodicidad inexistente. Las isometrías y semejanzas se calculan con matrices afines.
+
+Los anillos diádicos y cuadrantes son recursivos; las espirales combinan giro,
+razón de escala y traslación. Las potencias afines usan multiplicación por cuadrados.
+Las recetas son determinísticas. Los cortes explícitos son4096 instancias,60000
+nodos de árbol, profundidad máxima6 y detalle físico mínimo. El evaluador avisa
+cuando el presupuesto o el rango numérico limitan la petición.
+
+El lienzo omite copias fuera de vista usando el contenido real y alcance del trazo,
+incluido el motivo editado fuera del marco original, e ignora detalle menor que
+0,65px. Conserva IDs/matrices al desplazar la cámara y aplica el presupuesto antes
+del descarte por vista. La exportación no usa ese corte por píxeles: conserva el
+detalle físico guardado. La captura invierte la misma matriz que se renderiza.
+Paletas por nivel se aplican sólo a la primera clase de relleno del motivo; ojos,
+contrastes y fuente original se conservan. Fill enlazado reconoce cambios
+geométricos de composición; cambiar la paleta no altera su contexto topológico.
+Los fondos de tesela se conservan con su cobertura y no se dibujan como fondos
+de una composición finita; las regiones de órbita mantienen sus matrices capturadas.
+
+EXACT describe las transformaciones de estas recetas, no el encastre de siluetas
+ni una teselación hiperbólica. Los cuatro ejemplos nuevos son dibujos originales.

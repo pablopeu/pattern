@@ -31,6 +31,12 @@ export interface SpiralComposition extends CompositionBase {
   mirror: boolean;
 }
 export type Composition = RecursiveComposition | SpiralComposition;
+/** Only geometry affects linked regions; changing a palette does not change topology. */
+export function compositionGeometryContext(c?: Composition) {
+  if (!c?.enabled) return undefined;
+  const { palette: _palette, colorByLevel: _colorByLevel, ...geometry } = c;
+  return geometry;
+}
 export type Operator =
   | 'motif'
   | 'rotate'
@@ -49,6 +55,7 @@ export interface CompositionNode {
   matrix: Matrix;
   level: number;
   source?: 'motif';
+  truncated?: boolean;
   children: CompositionNode[];
 }
 export interface CompiledLeaf {

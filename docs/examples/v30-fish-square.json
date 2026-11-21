@@ -1,0 +1,958 @@
+{
+  "schemaVersion": 5,
+  "drawingStyle": {
+    "stroke": "#233b2d",
+    "fill": "none",
+    "strokeWidth": 0.65,
+    "strokeCap": "round",
+    "strokeJoin": "round",
+    "miterLimit": 10,
+    "opacity": 1,
+    "fillOpacity": 1,
+    "strokeOpacity": 1,
+    "fillRule": "evenodd",
+    "strokeDash": [],
+    "strokeDashOffset": 0,
+    "strokeProfile": {
+      "version": 1,
+      "kind": "uniform",
+      "points": [
+        {
+          "at": 0,
+          "width": 1
+        },
+        {
+          "at": 1,
+          "width": 1
+        }
+      ]
+    }
+  },
+  "stylePresets": [],
+  "palette": {
+    "colors": [],
+    "recent": [],
+    "favorites": []
+  },
+  "mainSymmetry": {
+    "family": "none",
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "orientation": 0,
+    "group": "none",
+    "width": 60,
+    "height": 60,
+    "angle": 90,
+    "sectors": 8,
+    "center": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "mainSymmetryProfiles": {},
+  "metadata": {
+    "id": "bf4686e9-8457-4718-bc06-889172a49a7f",
+    "name": "Peces al límite · original",
+    "createdAt": "2026-11-21T00:04:39.495Z",
+    "updatedAt": "2026-11-21T00:04:39.495Z",
+    "example": {
+      "id": "fish-square",
+      "category": "Recursivas",
+      "description": "Peces originales orientados en anillos que disminuyen hacia los bordes de un cuadrado.",
+      "construction": "Anillos diádicos · composición afín finita",
+      "validity": "EXACT",
+      "artwork": "original",
+      "author": "Pattern Studio",
+      "references": [
+        {
+          "title": "Geometría funcional · referencia conceptual",
+          "url": "https://mapio.github.io/programming-with-escher/"
+        }
+      ]
+    }
+  },
+  "documentUnits": "mm",
+  "patterns": [
+    {
+      "composition": {
+        "version": 1,
+        "enabled": true,
+        "size": 160,
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "sourceFrame": {
+          "x": -27,
+          "y": -15,
+          "width": 47,
+          "height": 29
+        },
+        "minSize": 0.08,
+        "colorByLevel": true,
+        "palette": [
+          "#c78039",
+          "#356a70",
+          "#9b514b",
+          "#7c874d",
+          "#c8aa73"
+        ],
+        "kind": "recursive",
+        "recipe": "square-limit",
+        "depth": 3,
+        "ratio": 0.5,
+        "angle": 0,
+        "mirror": false
+      },
+      "id": "1a727c46-18b4-403a-bead-052b10c2677b",
+      "name": "Peces · fuente única",
+      "sourceGeometry": [
+        {
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "id": "dc7d9e10-71f8-4829-b313-986b6a4186db",
+          "name": "Pez · silueta editable",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": -17,
+              "y": -3,
+              "in": {
+                "x": 2,
+                "y": -2
+              },
+              "out": {
+                "x": -4,
+                "y": -1
+              }
+            },
+            {
+              "x": -27,
+              "y": -11,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 1,
+                "y": 5
+              }
+            },
+            {
+              "x": -23,
+              "y": 0,
+              "in": {
+                "x": -1,
+                "y": -4
+              },
+              "out": {
+                "x": -1,
+                "y": 4
+              }
+            },
+            {
+              "x": -27,
+              "y": 11,
+              "in": {
+                "x": 1,
+                "y": -5
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": -17,
+              "y": 3,
+              "in": {
+                "x": -4,
+                "y": 1
+              },
+              "out": {
+                "x": 3,
+                "y": 5
+              }
+            },
+            {
+              "x": -6,
+              "y": 10,
+              "in": {
+                "x": -5,
+                "y": -1
+              },
+              "out": {
+                "x": 5,
+                "y": 3
+              }
+            },
+            {
+              "x": 9,
+              "y": 8,
+              "in": {
+                "x": -5,
+                "y": 3
+              },
+              "out": {
+                "x": 5,
+                "y": -2
+              }
+            },
+            {
+              "x": 20,
+              "y": 0,
+              "in": {
+                "x": -3,
+                "y": 3
+              },
+              "out": {
+                "x": -3,
+                "y": -3
+              }
+            },
+            {
+              "x": 9,
+              "y": -8,
+              "in": {
+                "x": 5,
+                "y": 2
+              },
+              "out": {
+                "x": -5,
+                "y": -3
+              }
+            },
+            {
+              "x": -6,
+              "y": -10,
+              "in": {
+                "x": 5,
+                "y": -3
+              },
+              "out": {
+                "x": -5,
+                "y": 1
+              }
+            }
+          ],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#173b40",
+          "fill": "#c78039",
+          "strokeWidth": 0.45,
+          "visible": true,
+          "locked": false,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd"
+        },
+        {
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "id": "088b2999-d657-4530-b7cb-0d944eba1132",
+          "name": "Aleta dorsal",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": -11,
+              "y": -8,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": -4,
+              "y": -15,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 4,
+              "y": -10,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": -5,
+                "y": -1
+              }
+            }
+          ],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#173b40",
+          "fill": "#e5c59a",
+          "strokeWidth": 0.35,
+          "visible": true,
+          "locked": false,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd"
+        },
+        {
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "id": "b573edd9-46b4-475d-9b62-d746005982a0",
+          "name": "Aleta ventral",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": -6,
+              "y": 8,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 1,
+              "y": 14,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 7,
+              "y": 8,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#173b40",
+          "fill": "#e5c59a",
+          "strokeWidth": 0.35,
+          "visible": true,
+          "locked": false,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd"
+        },
+        {
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "id": "3efd4a58-cc5f-43fb-beac-170a450e6ad7",
+          "name": "Ojo · blanco",
+          "kind": "ellipse",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "none",
+          "fill": "#f8f0db",
+          "strokeWidth": 0.65,
+          "visible": true,
+          "locked": false,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "parameters": {
+            "x": 9,
+            "y": -4,
+            "width": 4,
+            "height": 4,
+            "radius": 0,
+            "sides": 4
+          }
+        },
+        {
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "id": "011e35e6-dcc3-4c85-b1cd-8d5b421fd82b",
+          "name": "Ojo · pupila",
+          "kind": "ellipse",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "none",
+          "fill": "#173b40",
+          "strokeWidth": 0.65,
+          "visible": true,
+          "locked": false,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "parameters": {
+            "x": 10.6,
+            "y": -3,
+            "width": 1.65,
+            "height": 1.65,
+            "radius": 0,
+            "sides": 4
+          }
+        },
+        {
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "id": "d0f14b1c-b5d3-453b-bfb4-87ba872387f7",
+          "name": "Ojo · luz",
+          "kind": "ellipse",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "none",
+          "fill": "#ffffff",
+          "strokeWidth": 0.65,
+          "visible": true,
+          "locked": false,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "parameters": {
+            "x": 10.8,
+            "y": -3,
+            "width": 0.5,
+            "height": 0.5,
+            "radius": 0,
+            "sides": 4
+          }
+        },
+        {
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "id": "1e0cd4dd-269e-4947-999f-ba5b99255c85",
+          "name": "Branquia",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": 4,
+              "y": -6,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 5,
+                "y": 2
+              }
+            },
+            {
+              "x": 4,
+              "y": 6,
+              "in": {
+                "x": 5,
+                "y": -2
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "closed": false,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#f4dfbb",
+          "fill": "none",
+          "strokeWidth": 0.7,
+          "visible": true,
+          "locked": false,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd"
+        },
+        {
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "id": "bb576067-68d2-4ab7-883c-7d7c9a6083b4",
+          "name": "Escama 1",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": -2,
+              "y": -5,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": -5,
+                "y": 3
+              }
+            },
+            {
+              "x": -2,
+              "y": 5,
+              "in": {
+                "x": -5,
+                "y": -3
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "closed": false,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#e8bd84",
+          "fill": "none",
+          "strokeWidth": 0.5,
+          "visible": true,
+          "locked": false,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd"
+        },
+        {
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "id": "e930a00f-4494-44ca-93b3-00a57436813f",
+          "name": "Escama 2",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": -8,
+              "y": -4,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": -4,
+                "y": 2
+              }
+            },
+            {
+              "x": -8,
+              "y": 4,
+              "in": {
+                "x": -4,
+                "y": -2
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "closed": false,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#e8bd84",
+          "fill": "none",
+          "strokeWidth": 0.5,
+          "visible": true,
+          "locked": false,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd"
+        },
+        {
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "id": "d33dc84e-b2aa-4217-bc90-98b73ba4917d",
+          "name": "Cola · radios",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": -24,
+              "y": -7,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": -18,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": -24,
+              "y": 7,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "closed": false,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#efd6ae",
+          "fill": "none",
+          "strokeWidth": 0.55,
+          "visible": true,
+          "locked": false,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd"
+        }
+      ],
+      "generator": {
+        "kind": "motif",
+        "version": 1,
+        "seed": 42,
+        "count": 12,
+        "rows": 4,
+        "columns": 4,
+        "spacing": 22,
+        "offset": 0.5,
+        "aspectRatio": 1,
+        "staggerAxis": "rows",
+        "rotation": 0,
+        "scale": 1,
+        "scaleRatio": 0.9,
+        "amplitude": 6,
+        "frequency": 3,
+        "phase": 0,
+        "radius": 28,
+        "ratio": 0.35,
+        "distribution": "rectangular",
+        "periodicWarp": true,
+        "placements": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        ]
+      },
+      "symmetry": {
+        "family": "none",
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "orientation": 0,
+        "group": "none",
+        "width": 60,
+        "height": 60,
+        "angle": 90,
+        "sectors": 8,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "symmetryMode": "free",
+      "symmetryProfiles": {},
+      "placementTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "visible": true
+    }
+  ],
+  "regions": [],
+  "applications": [],
+  "preferences": {
+    "styleDefaultsFollowSelection": true,
+    "stylePanelPinned": false,
+    "fillCloseTolerance": 0,
+    "fillLinkedDefault": true,
+    "structureVisible": false,
+    "structureOpacity": 0.22,
+    "grid": false,
+    "snap": false,
+    "guides": false,
+    "split": false,
+    "background": "#f3eddf",
+    "fundamental": false,
+    "axes": false,
+    "centers": false,
+    "continuity": false,
+    "outside": false,
+    "sourceView": false,
+    "repetitionView": "extended"
+  }
+}

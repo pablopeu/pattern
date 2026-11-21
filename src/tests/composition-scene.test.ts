@@ -9,6 +9,10 @@ import { parsePreset } from '../persistence/presets';
 import { prepareExport, type ExportOptions } from '../export/svg';
 import { commonRectangularCell } from '../symmetry/config';
 import { newTiling } from '../tiling/tiles';
+import { apply, multiply, rotate, translate } from '../geometry/matrix';
+import { axesFingerprint, collectFillInputs, createTileFill, fillContext } from '../fill/service';
+import { drawingStyle } from '../app/styles';
+import { exampleCatalog } from '../examples/catalog';
 
 function fixture() {
   const project = newProject(),
@@ -30,6 +34,87 @@ function fixture() {
 }
 const viewport = { x: -100, y: -100, width: 200, height: 200 };
 describe('composición integrada con fuente/archivos/Scene', () => {
+  it('todos los ejemplos nuevos son originales, portables y reproducen la misma disposición', () => {
+    expect(exampleCatalog).toHaveLength(12);
+    expect(new Set(exampleCatalog.map((e) => e.id)).size).toBe(12);
+    for (const entry of exampleCatalog.filter((e) => e.featured)) {
+      const project = entry.create(),
+        restored = parseProject(serialize(project));
+      expect(project.metadata.example?.artwork).toBe('original');
+      expect(project.metadata.example?.references).toEqual(entry.references);
+      for (const reference of entry.references) expect(reference.url).toMatch(/^https:\/\//);
+      expect(restored).toEqual(project);
+      const a = buildScene(project.patterns[0], viewport),
+        b = buildScene(entry.create().patterns[0], viewport);
+      expect(a.generated.placements).toEqual(b.generated.placements);
+      expect(a.generated.composition!.ids).toEqual(b.generated.composition!.ids);
+      expect(a.generated.geometry.length).toBeLessThan(12);
+    }
+  });
+  it('culling respeta la colocación, IDs y tinta editada fuera del marco original', () => {
+    const p = fixture().patterns[0];
+    p.placementTransform = multiply(translate(21, -13), rotate(23));
+    p.sourceGeometry[0].stroke = '#000000';
+    p.sourceGeometry[0].transform = translate(80, 50);
+    const full = buildScene(p, viewport),
+      m = full.generated.placements[0],
+      point = apply(m, { x: 90, y: 55 }),
+      crop = { x: point.x - 1, y: point.y - 1, width: 2, height: 2 },
+      visible = buildScene(p, crop, undefined, 8);
+    expect(visible.generated.placements.length).toBeGreaterThan(0);
+    expect(visible.generated.placements.length).toBeLessThan(full.generated.placements.length);
+    expect(visible.generated.composition!.report.culled).toBeGreaterThan(0);
+    for (const [i, id] of visible.generated.composition!.ids.entries())
+      expect(visible.generated.placements[i]).toEqual(
+        full.generated.placements[full.generated.composition!.ids.indexOf(id)],
+      );
+    const all = collectFillInputs([{ pattern: p, scene: full }], crop),
+      culled = collectFillInputs([{ pattern: p, scene: visible }], crop);
+    expect(culled.map((c) => c.id)).toEqual(all.map((c) => c.id));
+    const lowDetail = buildScene(p, viewport, undefined, 0.01);
+    expect(lowDetail.generated.composition!.report.detailOmitted).toBeGreaterThan(0);
+    // Export/model evaluation never depends on the viewport's pixel scale.
+    expect(buildScene(p, crop).generated.placements).toEqual(full.generated.placements);
+  });
+  it('Fill distingue cambios geométricos de paletas y suspende sólo el fondo de tesela', () => {
+    const project = fixture(),
+      p = project.patterns[0],
+      context = fillContext(project, [p.id]),
+      axes = axesFingerprint(project);
+    p.composition!.palette[0] = '#123456';
+    p.composition!.colorByLevel = !p.composition!.colorByLevel;
+    expect(fillContext(project, [p.id])).toBe(context);
+    expect(axesFingerprint(project)).toBe(axes);
+    p.composition!.angle += 5;
+    expect(fillContext(project, [p.id])).not.toBe(context);
+    expect(axesFingerprint(project)).not.toBe(axes);
+    p.tiling = newTiling('square');
+    const background = createTileFill(
+      project,
+      p,
+      {
+        kind: 'tile',
+        key: 'tile',
+        pathData: '',
+        patternId: p.id,
+        matrix: [1, 0, 0, 1, 0, 0],
+        z: 0,
+      },
+      drawingStyle({}),
+    );
+    const orbit = structuredClone(background);
+    orbit.id = 'orbit';
+    orbit.fillRegion!.scope = 'orbit';
+    orbit.fillRegion!.kind = 'face';
+    p.sourceGeometry.push(background, orbit);
+    const source = structuredClone(p.sourceGeometry),
+      finite = buildScene(p, viewport);
+    expect(finite.fills.map((f) => f.geometry.id)).toEqual([orbit.id]);
+    expect(finite.generated.geometry).toHaveLength(2);
+    p.composition!.enabled = false;
+    expect(buildScene(p, viewport).fills.map((f) => f.geometry.id)).toContain(background.id);
+    expect(p.sourceGeometry).toEqual(source);
+  });
   it('evalúa matrices finitas, suspende wallpaper y conserva fuente/configuración anterior', () => {
     const project = fixture(),
       p = project.patterns[0],

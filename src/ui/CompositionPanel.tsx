@@ -57,7 +57,13 @@ export function CompositionPanel({
     [name, setName] = useState('');
   const c = s.pattern.composition;
   const frame = useMemo(
-    () => generatedBounds(generate(s.pattern.generator, s.pattern.sourceGeometry)),
+    () =>
+      generatedBounds(
+        generate(
+          s.pattern.generator,
+          s.pattern.sourceGeometry.filter((g) => !g.fillRegion || g.fillRegion.scope === 'source'),
+        ),
+      ),
     [s.pattern.generator, s.pattern.sourceGeometry],
   );
   const cards = useMemo(

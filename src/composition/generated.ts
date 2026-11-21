@@ -4,7 +4,8 @@ import { geometryBounds } from '../application/clipping';
 import { apply, multiply, type Matrix } from '../geometry/matrix';
 import type { Bounds } from '../symmetry/groups';
 import type { Composition } from './model';
-import { compileComposition, MAX_COMPOSITION_INSTANCES } from './evaluate';
+import { compileComposition, MAX_COMPOSITION_INSTANCES, sourceNormalization } from './evaluate';
+import { strokePadding } from '../geometry/stroke-bounds';
 
 export function generatedBounds(generated: Pick<Generated, 'geometry' | 'placements'>): Bounds {
   const b = geometryBounds(generated.geometry),
@@ -25,12 +26,31 @@ export function generatedBounds(generated: Pick<Generated, 'geometry' | 'placeme
     height: Math.max(...points.map((p) => p.y)) - y,
   };
 }
-export function composeGenerated(base: Generated, c: Composition): Generated {
+export function composeGenerated(
+  base: Generated,
+  c: Composition,
+  options: { bounds?: Bounds; minSize?: number } = {},
+): Generated {
+  const content = generatedBounds(base),
+    padding = strokePadding(base.geometry, base.placements),
+    normalized = [
+      { x: content.x - padding, y: content.y - padding },
+      { x: content.x + content.width + padding, y: content.y + content.height + padding },
+    ].map((p) => apply(sourceNormalization(c), p));
   const maximum = Math.max(
       1,
       Math.floor(MAX_COMPOSITION_INSTANCES / Math.max(1, base.placements.length)),
     ),
-    report = compileComposition(c, { maxInstances: maximum }),
+    report = compileComposition(c, {
+      ...options,
+      maxInstances: maximum,
+      contentBounds: {
+        x: normalized[0].x,
+        y: normalized[0].y,
+        width: normalized[1].x - normalized[0].x,
+        height: normalized[1].y - normalized[0].y,
+      },
+    }),
     placements: Matrix[] = [],
     levels: number[] = [],
     ids: string[] = [];

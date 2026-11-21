@@ -13,6 +13,7 @@ Funciona en el navegador, procesa toda la geometría localmente y se puede despl
 - Trazos continuos, punteados o personalizados; perfiles de ancho variable, colores, opacidades, paletas y estilos guardados.
 - Rellenos vectoriales de objetos cerrados o de regiones delimitadas por varios trazos, incluso desde copias reflejadas o rotadas.
 - Teselas encastrables con bordes curvos y patrones aplicados sobre perímetros con agujeros.
+- Composiciones recursivas y espirales con un motivo editable, paletas por nivel y recetas guardadas.
 - Archivos JSON editables y exportaciones SVG, PNG, JPEG y DXF.
 
 ## Primeros pasos
@@ -47,7 +48,7 @@ durante la sesión y cambiar de contexto conserva el documento y la selección.
 | --- | --- |
 | Dibujo | Herramienta activa, instrucciones de pluma/lápiz/Fill/nodos y acceso a sus opciones |
 | Formas | Polígono paramétrico con nombre y preview; figuras directas en la barra |
-| Simetrías | Selector activo, recientes/favoritos, catálogo completo, red, colocación y generadores |
+| Simetrías | Selector activo, recientes/favoritos, catálogo completo, red, colocación, generadores y composición |
 | Teselas | Forma, colocación, bordes y tangentes |
 | Capas | Objetos y conjuntos, visibilidad, bloqueo y orden |
 | Aplicación | Perímetro, transformación y vínculo del patrón aplicado |
@@ -71,6 +72,50 @@ activo, vuelve a abrir sus controles; también funciona con **F**.
 Escape cierra el buscador. La búsqueda usa las mismas acciones del editor.
 
 ## Ejemplos de uso
+
+### Peces, aves, recursión y espirales
+
+Abrí **Archivo → Galería de ejemplos**: hay doce proyectos editables, con búsqueda,
+filtros y miniaturas del resultado real. Los cuatro nuevos son dibujos vectoriales
+originales. Los ocho ejemplos anteriores conservan sus accesos rápidos.
+
+![Galería visual de ejemplos originales con clasificación y construcción](docs/images/v30-gallery.png)
+
+En **Peces al límite · original**, un único pez con aletas, ojos y detalles se
+organiza en anillos cada vez menores hacia un borde cuadrado. Entrá en
+**Simetrías → Composición** para cambiar la profundidad o activar reflejos.
+**Editar motivo fuente** permite cambiar los nodos del pez; **Ver composición**
+muestra el resultado actualizado. Las copias se calculan sin duplicar la fuente.
+
+![Peces originales en anillos recursivos, con controles y fuente única](docs/images/v30-fish-square.png)
+
+[Descargar peces al límite](docs/examples/v30-fish-square.json) ·
+[Descargar aves en cuadrantes](docs/examples/v30-birds-quadrants.json).
+
+En **Aves en roseta · original**, seis brazos combinan giro y escala sobre fondo
+oscuro. La pestaña **Geometría** agrupa forma, posición y detalle: probá el ángulo,
+la razón de escala o la cantidad de brazos. **Color** cambia la paleta por nivel
+sin recolorear los ojos. Podés desactivar ese color por nivel para ver los colores
+del motivo. **Guardadas** conserva recetas personales en este navegador; el JSON
+del proyecto incluye la receta activa para trasladarla a otra PC.
+
+![Roseta de aves originales con giro, escala y paleta por nivel](docs/images/v30-birds-rosette.png)
+
+[Descargar aves en roseta](docs/examples/v30-birds-rosette.json) ·
+[Descargar cardumen en espiral](docs/examples/v30-fish-spiral.json).
+
+También podés componer tu propio dibujo: **Simetrías → Composición → Recursiva o
+Espiral**. Recursiva ofrece anillos, cuadrantes y ramificación; Espiral ofrece
+repetición discreta, logarítmica, roseta y convergencia hacia un punto fijo.
+**Ajustar composición** encuadra todo el resultado. Ctrl+K encuentra estas funciones.
+
+Son composiciones **finitas**, con transformaciones afines verificadas; no se
+certifican como teselados sin huecos ni como geometría hiperbólica. Al activarlas,
+la simetría y las teselas previas quedan guardadas; al desactivarlas vuelven a
+usarse. El fondo de una tesela queda asociado a esa cobertura. El límite de detalle
+y el presupuesto evitan una recursión ilimitada. SVG, PNG, JPEG y DXF usan la receta
+guardada y medidas físicas independientes del zoom; DXF transporta contornos,
+sin colores de relleno. La procedencia de cada ejemplo viaja en el JSON.
 
 ### Explorar un motivo sin perder el dibujo original
 

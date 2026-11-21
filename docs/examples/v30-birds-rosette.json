@@ -1,0 +1,819 @@
+{
+  "schemaVersion": 5,
+  "drawingStyle": {
+    "stroke": "#233b2d",
+    "fill": "none",
+    "strokeWidth": 0.65,
+    "strokeCap": "round",
+    "strokeJoin": "round",
+    "miterLimit": 10,
+    "opacity": 1,
+    "fillOpacity": 1,
+    "strokeOpacity": 1,
+    "fillRule": "evenodd",
+    "strokeDash": [],
+    "strokeDashOffset": 0,
+    "strokeProfile": {
+      "version": 1,
+      "kind": "uniform",
+      "points": [
+        {
+          "at": 0,
+          "width": 1
+        },
+        {
+          "at": 1,
+          "width": 1
+        }
+      ]
+    }
+  },
+  "stylePresets": [],
+  "palette": {
+    "colors": [],
+    "recent": [],
+    "favorites": []
+  },
+  "mainSymmetry": {
+    "family": "none",
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "orientation": 0,
+    "group": "none",
+    "width": 60,
+    "height": 60,
+    "angle": 90,
+    "sectors": 8,
+    "center": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "mainSymmetryProfiles": {},
+  "metadata": {
+    "id": "0586501c-b00b-4698-86f7-481b6f1a8916",
+    "name": "Aves en roseta · original",
+    "createdAt": "2026-11-21T00:04:44.146Z",
+    "updatedAt": "2026-11-21T00:04:44.146Z",
+    "example": {
+      "id": "birds-rosette",
+      "category": "Espirales",
+      "description": "Seis brazos de aves en una roseta autosimilar sobre fondo oscuro.",
+      "construction": "Roseta finita de semejanzas · seis brazos",
+      "validity": "EXACT",
+      "artwork": "original",
+      "author": "Pattern Studio",
+      "references": []
+    }
+  },
+  "documentUnits": "mm",
+  "patterns": [
+    {
+      "composition": {
+        "version": 1,
+        "enabled": true,
+        "size": 160,
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "sourceFrame": {
+          "x": -27,
+          "y": -16,
+          "width": 52,
+          "height": 36
+        },
+        "minSize": 0.08,
+        "colorByLevel": true,
+        "palette": [
+          "#d7bf84",
+          "#91b4ae",
+          "#cf8c6c",
+          "#d3d9bd"
+        ],
+        "kind": "spiral",
+        "recipe": "rosette",
+        "count": 24,
+        "ratio": 0.88,
+        "angle": 19,
+        "direction": 1,
+        "offset": {
+          "x": 0,
+          "y": 0
+        },
+        "arms": 6,
+        "mirror": false
+      },
+      "id": "3f011952-2cdd-40ec-97f6-f6f83c0cb68b",
+      "name": "Aves · fuente única",
+      "sourceGeometry": [
+        {
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "id": "f8193dca-15be-4051-aa0b-f47953807cf9",
+          "name": "Ave · silueta editable",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": 21,
+              "y": -4,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": -2,
+                "y": -1
+              }
+            },
+            {
+              "x": 15,
+              "y": -7,
+              "in": {
+                "x": 3,
+                "y": -1
+              },
+              "out": {
+                "x": -3,
+                "y": 0
+              }
+            },
+            {
+              "x": 8,
+              "y": -4,
+              "in": {
+                "x": 2,
+                "y": -2
+              },
+              "out": {
+                "x": -3,
+                "y": -3
+              }
+            },
+            {
+              "x": 0,
+              "y": -16,
+              "in": {
+                "x": 1,
+                "y": 4
+              },
+              "out": {
+                "x": -3,
+                "y": 4
+              }
+            },
+            {
+              "x": -9,
+              "y": -5,
+              "in": {
+                "x": 3,
+                "y": -2
+              },
+              "out": {
+                "x": -6,
+                "y": -1
+              }
+            },
+            {
+              "x": -27,
+              "y": -12,
+              "in": {
+                "x": 5,
+                "y": 4
+              },
+              "out": {
+                "x": 4,
+                "y": 5
+              }
+            },
+            {
+              "x": -17,
+              "y": 0,
+              "in": {
+                "x": -3,
+                "y": -4
+              },
+              "out": {
+                "x": -3,
+                "y": 5
+              }
+            },
+            {
+              "x": -27,
+              "y": 14,
+              "in": {
+                "x": 3,
+                "y": -5
+              },
+              "out": {
+                "x": 5,
+                "y": -1
+              }
+            },
+            {
+              "x": -10,
+              "y": 7,
+              "in": {
+                "x": -5,
+                "y": 2
+              },
+              "out": {
+                "x": 4,
+                "y": 1
+              }
+            },
+            {
+              "x": -5,
+              "y": 20,
+              "in": {
+                "x": -1,
+                "y": -4
+              },
+              "out": {
+                "x": 5,
+                "y": -5
+              }
+            },
+            {
+              "x": 7,
+              "y": 4,
+              "in": {
+                "x": -2,
+                "y": 6
+              },
+              "out": {
+                "x": 5,
+                "y": -2
+              }
+            },
+            {
+              "x": 17,
+              "y": 1,
+              "in": {
+                "x": -4,
+                "y": 1
+              },
+              "out": {
+                "x": 2,
+                "y": -1
+              }
+            },
+            {
+              "x": 25,
+              "y": -2,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#173b40",
+          "fill": "#356a70",
+          "strokeWidth": 0.45,
+          "visible": true,
+          "locked": false,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd"
+        },
+        {
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "id": "e2bb9555-4b38-4161-a352-c79e530393b3",
+          "name": "Ala · luz",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": -20,
+              "y": -7,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": -8,
+              "y": -2,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 5,
+                "y": 0
+              }
+            },
+            {
+              "x": 4,
+              "y": 1,
+              "in": {
+                "x": -4,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "closed": false,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#cbd9c5",
+          "fill": "none",
+          "strokeWidth": 0.8,
+          "visible": true,
+          "locked": false,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd"
+        },
+        {
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "id": "3a07377b-561c-4cf6-8464-739f7e4b7753",
+          "name": "Pluma interior",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": -3,
+              "y": -10,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": -1,
+              "y": -2,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 3,
+              "y": 2,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "closed": false,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#a2bdb6",
+          "fill": "none",
+          "strokeWidth": 0.6,
+          "visible": true,
+          "locked": false,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd"
+        },
+        {
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "id": "b27f8878-8b07-4f8a-8de8-d2f339d0098e",
+          "name": "Pluma inferior",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": -5,
+              "y": 13,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": -1,
+              "y": 5,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 3,
+              "y": 3,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "closed": false,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#a2bdb6",
+          "fill": "none",
+          "strokeWidth": 0.6,
+          "visible": true,
+          "locked": false,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd"
+        },
+        {
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "id": "663ad16e-bc72-47ec-b04c-ab95305839a5",
+          "name": "Ojo · blanco",
+          "kind": "ellipse",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "none",
+          "fill": "#f8efd8",
+          "strokeWidth": 0.65,
+          "visible": true,
+          "locked": false,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "parameters": {
+            "x": 14,
+            "y": -4,
+            "width": 2.5,
+            "height": 2.5,
+            "radius": 0,
+            "sides": 4
+          }
+        },
+        {
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "id": "7c41b312-5903-4732-bcc1-a6a8d14ad952",
+          "name": "Ojo · pupila",
+          "kind": "ellipse",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "none",
+          "fill": "#173b40",
+          "strokeWidth": 0.65,
+          "visible": true,
+          "locked": false,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "parameters": {
+            "x": 15,
+            "y": -3.5,
+            "width": 1.1,
+            "height": 1.1,
+            "radius": 0,
+            "sides": 4
+          }
+        },
+        {
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "id": "be829cad-8636-4fce-a01b-b125d3927b92",
+          "name": "Pico",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": 21,
+              "y": -4,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 25,
+              "y": -2,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 20,
+              "y": -1,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#173b40",
+          "fill": "#c29348",
+          "strokeWidth": 0.25,
+          "visible": true,
+          "locked": false,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd"
+        }
+      ],
+      "generator": {
+        "kind": "motif",
+        "version": 1,
+        "seed": 42,
+        "count": 12,
+        "rows": 4,
+        "columns": 4,
+        "spacing": 22,
+        "offset": 0.5,
+        "aspectRatio": 1,
+        "staggerAxis": "rows",
+        "rotation": 0,
+        "scale": 1,
+        "scaleRatio": 0.9,
+        "amplitude": 6,
+        "frequency": 3,
+        "phase": 0,
+        "radius": 28,
+        "ratio": 0.35,
+        "distribution": "rectangular",
+        "periodicWarp": true,
+        "placements": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        ]
+      },
+      "symmetry": {
+        "family": "none",
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "orientation": 0,
+        "group": "none",
+        "width": 60,
+        "height": 60,
+        "angle": 90,
+        "sectors": 8,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "symmetryMode": "free",
+      "symmetryProfiles": {},
+      "placementTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "visible": true
+    }
+  ],
+  "regions": [],
+  "applications": [],
+  "preferences": {
+    "styleDefaultsFollowSelection": true,
+    "stylePanelPinned": false,
+    "fillCloseTolerance": 0,
+    "fillLinkedDefault": true,
+    "structureVisible": false,
+    "structureOpacity": 0.22,
+    "grid": false,
+    "snap": false,
+    "guides": false,
+    "split": false,
+    "background": "#17333a",
+    "fundamental": false,
+    "axes": false,
+    "centers": false,
+    "continuity": false,
+    "outside": false,
+    "sourceView": false,
+    "repetitionView": "extended"
+  }
+}

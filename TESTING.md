@@ -204,3 +204,34 @@ a 390px. Se corrigieron con dos filas y una etiqueta Archivo visible. El E2E
 comprueba los bounds completos de esas acciones, y el nombre del documento
 se puede editar desde Preferencias también en móvil. Sobre este ajuste final
 pasaron nuevamente 94 E2E,203 unitarias y ambos builds con 6 estáticas.
+
+
+## v3.0 · Recursión y semejanzas
+
+`composition.test.ts` y `composition-scene.test.ts` verifican operadores, inversas,
+potencias, IDs/niveles, cortes por presupuesto/detalle/vista, conservación de
+fuentes y contextos Fill, paletas, migración4→5, presets/snapshots y SVG.
+`v30.spec.ts` cubre galería sin mutación al cancelar, cuatro resoluciones, fuente
+editada con nodos/undo, regeneración, descargas JSON/SVG y recetas personales.
+`static.spec.ts` incluye galería, receta nativa5 y PNG con orígenes externos bloqueados.
+
+Para producir artefactos independientes y mediciones, con la app4173 activa:
+
+```bash
+node scripts/validate-v30-composition.mjs
+.runtime/validation-env/bin/python scripts/validate_v30_composition.py
+# Opcional: actualizar cinco capturas reales y cuatro JSON para el README
+node scripts/validate-v30-composition.mjs --capture
+```
+
+Dependencias opcionales de QA: las mismas CairoSVG, Pillow y ezdxf del apartado
+anterior. Los archivos quedan en `.runtime/v30-exports/`. Se comparan SVG
+editable/expandido y raster navegador/Cairo; se comprueban tinta, paletas, medidas,
+DPI, JSON5 y DXF plano en mm dentro de la región solicitada. Ningún script
+reemplaza proyectos del navegador del autor; usa un contexto aislado.
+
+Medición local21/11/2026UTC: cuadrantes de profundidad6 con10 fuentes,4096
+colocaciones solicitadas y28667 nodos; en una vista10×10mm quedan24 visibles
+y4072 descartadas. Mediana de20 evaluaciones5,4ms y p95 observado12,5ms, luego
+de5 calentamientos. Es tiempo del motor, sin render/protocolo; no garantiza FPS.
+Datos en `.runtime/v30-exports/manifest.json`.
