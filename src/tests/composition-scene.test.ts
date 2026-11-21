@@ -35,8 +35,8 @@ function fixture() {
 const viewport = { x: -100, y: -100, width: 200, height: 200 };
 describe('composición integrada con fuente/archivos/Scene', () => {
   it('todos los ejemplos nuevos son originales, portables y reproducen la misma disposición', () => {
-    expect(exampleCatalog).toHaveLength(12);
-    expect(new Set(exampleCatalog.map((e) => e.id)).size).toBe(12);
+    expect(exampleCatalog).toHaveLength(16);
+    expect(new Set(exampleCatalog.map((e) => e.id)).size).toBe(16);
     for (const entry of exampleCatalog.filter((e) => e.featured)) {
       const project = entry.create(),
         restored = parseProject(serialize(project));
@@ -47,7 +47,9 @@ describe('composición integrada con fuente/archivos/Scene', () => {
       const a = buildScene(project.patterns[0], viewport),
         b = buildScene(entry.create().patterns[0], viewport);
       expect(a.generated.placements).toEqual(b.generated.placements);
-      expect(a.generated.composition!.ids).toEqual(b.generated.composition!.ids);
+      expect(a.generated.composition?.ids).toEqual(b.generated.composition?.ids);
+      if (a.tiling)
+        expect(a.tiling.tiles.map((t) => t.matrix)).toEqual(b.tiling!.tiles.map((t) => t.matrix));
       expect(a.generated.geometry.length).toBeLessThan(12);
     }
   });

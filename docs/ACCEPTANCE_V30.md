@@ -9,7 +9,7 @@ No se declara completo v3.0 ni su catálogo IH, proyecciones o animaciones.
 |02–03|Navegación/scroll|Base UX v2.3 conservada; nuevas familias pendientes|
 |04–05|Edición/simetría|Base euclidiana verificada; extensiones pendientes|
 |06|IH1–IH93|93/93 verificados/integrados;81 geométricos+12 marcados propios, pruebas individuales/Scene/JSON y exportación independiente de los12 marcados|
-|07|Figurativas|Bordes existentes válidos; ampliación de relaciones pendiente|
+|07|Figurativas|Verificado: 3 figuras C1 y ornamento IH63; bordes relacionados, fuente/detalles conservados, silueta en vivo y composición|
 |08–09|Recursión/espirales|Verificado: operadores/inversas, determinismo, fuente única, detalle/IDs, UI/undo/JSON/exportaciones|
 |10|Hat/Spectre|Pendiente; Penrose previo conservado|
 |11|Girih|Pendiente|
@@ -17,9 +17,9 @@ No se declara completo v3.0 ni su catálogo IH, proyecciones o animaciones.
 |15|Fuente intacta|Base verificada; nuevos recorridos pendientes|
 |16–19|Timeline/loop/GIF/video|Pendiente|
 |20|Exportación|Base SVG/PNG/JPEG/DXF; nuevas familias pendientes|
-|21–22|Ejemplos/derechos|12 ejemplos:8 legados+4 originales portables; familias posteriores pendientes; sin assets Escher copiados|
+|21–22|Ejemplos/derechos|16 ejemplos:8 legados+8 originales portables,4 JSON figurativos/4 de composición; familias posteriores pendientes; sin assets Escher copiados|
 |23–24|Acceso/rendimiento|Base verificada; mediciones de nuevas familias pendientes|
-|25|Regresiones|Feedback/JSON6:140/140 E2E,537 unidades,10 estáticas,build y14 monitor. Repetir tras próximas fases|
+|25|Regresiones|Figuras/JSON6:145/145 E2E,542 unidades,10 estáticas,build y14 monitor. Repetir tras próximas fases|
 
 Baseline: .runtime/v30-baseline-{check,monitor,build,full}.log,
 v30-baseline-full-result.json y v30-baseline-static-summary.log. Logs/artefactos

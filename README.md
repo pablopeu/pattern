@@ -120,8 +120,8 @@ enlaces a los repositorios consultados y las bibliotecas del estudio.
 
 ### Peces, aves, recursión y espirales
 
-Abrí **Archivo → Galería de ejemplos**: hay doce proyectos editables, con búsqueda,
-filtros y miniaturas del resultado real. Los cuatro nuevos son dibujos vectoriales
+Abrí **Archivo → Galería de ejemplos**: hay dieciséis proyectos editables, con búsqueda,
+filtros y miniaturas del resultado real. Ocho contienen dibujos vectoriales
 originales. Los ocho ejemplos anteriores conservan sus accesos rápidos.
 
 ![Galería visual de ejemplos originales con clasificación y construcción](docs/images/v30-gallery.png)
@@ -161,6 +161,29 @@ usarse. El fondo de una tesela queda asociado a esa cobertura. El límite de det
 y el presupuesto evitan una recursión ilimitada. SVG, PNG, JPEG y DXF usan la receta
 guardada y medidas físicas independientes del zoom; DXF transporta contornos,
 sin colores de relleno. La procedencia de cada ejemplo viaja en el JSON.
+
+### Figuras que encastran: peces, aves y reptiles
+
+En la categoría **Figurativas** hay peces **IH43**, aves **IH44**, reptiles
+estilizados **IH1** y un ornamento de cuatro giros **IH63**. Son dibujos propios,
+inspirados en la idea de división regular del plano; no son calcos de Escher.
+Cada ejemplo incluye su clasificación y referencias.
+
+![Galería de cuatro ejemplos figurativos originales y sus mosaicos reales](docs/images/v30-figurative-gallery.png)
+
+Abrí **Peces encastrados → Teselas → Bordes** y arrastrá un nodo: el borde
+relacionado y la silueta se actualizan juntos. Ojos, aletas, plumas y escamas
+siguen siendo objetos independientes. Las deformaciones inválidas conservan la
+última forma válida. En **Simetrías → Composición**, una receta recursiva o espiral
+puede usar la figura con su silueta enlazada, sin duplicar sus fuentes. El
+ornamento IH63 muestra además sus marcas interiores de giro.
+
+![Peces encastrados con bordes Bézier editables y detalles conservados](docs/images/v30-figurative-fish.png)
+
+[Descargar peces IH43](docs/examples/v30-figurative-fish.json) ·
+[Descargar aves IH44](docs/examples/v30-figurative-bird.json) ·
+[Descargar reptiles IH1](docs/examples/v30-figurative-reptile.json) ·
+[Descargar ornamento IH63](docs/examples/v30-figurative-abstract.json).
 
 ### Explorar un motivo sin perder el dibujo original
 

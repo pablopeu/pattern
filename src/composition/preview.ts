@@ -5,6 +5,8 @@ import { sceneLayers } from '../patterns/layers';
 import { generatedBounds } from './generated';
 import { matrixString, multiply } from '../geometry/matrix';
 import { svgDocument, previewSVGPathAtTolerance } from '../export/svg';
+import { tileCellBounds } from '../tiling/tiles';
+import { tiledMarkup } from '../tiling/render';
 
 /** Real scene, reduced detail for the thumbnail only; the stored recipe is untouched. */
 export function compositionThumbnail(
@@ -36,6 +38,35 @@ export function compositionThumbnail(
           width: p.symmetry.width * 1.6,
           height: p.symmetry.width * 1.6,
         };
+  if (p.tiling && !composition?.enabled) {
+    const cell = tileCellBounds(p.tiling),
+      view = {
+        x: cell.x - cell.width * 0.6,
+        y: cell.y - cell.height * 0.6,
+        width: cell.width * 2.2,
+        height: cell.height * 2.2,
+      },
+      tiled = buildScene(p, view),
+      markup = sceneLayers(tiled, p)
+        .map((layer, index) =>
+          layer.kind === 'fill'
+            ? layer.matrices
+                .map((m) =>
+                  previewSVGPathAtTolerance(
+                    { ...layer.geometry, transform: multiply(m, layer.geometry.transform) },
+                    0.08,
+                  ),
+                )
+                .join('')
+            : tiledMarkup(
+                { ...tiled, generated: { ...tiled.generated, geometry: layer.geometry } },
+                (g) => previewSVGPathAtTolerance(g, 0.08),
+                `thumb-${index}`,
+              ),
+        )
+        .join('');
+    return 'data:image/svg+xml,' + encodeURIComponent(svgDocument(markup, view, background));
+  }
   let body = '';
   for (const [index, layer] of sceneLayers(scene, p).entries()) {
     if (layer.kind === 'fill') continue;

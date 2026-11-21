@@ -6,6 +6,7 @@ import { defaultComposition, type Composition } from '../composition/model';
 import { generatedBounds } from '../composition/generated';
 import { compositionSchema } from '../composition/schema';
 import { compositionThumbnail } from '../composition/preview';
+import { compositionSource } from '../composition/source';
 import { Field, Select, Toggle } from './Controls';
 
 type SavedRecipe = { name: string; definition: Composition };
@@ -61,17 +62,19 @@ export function CompositionPanel({
       generatedBounds(
         generate(
           s.pattern.generator,
-          s.pattern.sourceGeometry.filter((g) => !g.fillRegion || g.fillRegion.scope === 'source'),
+          compositionSource(s.effectivePattern).filter(
+            (g) => !g.fillRegion || g.fillRegion.scope === 'source',
+          ),
         ),
       ),
-    [s.pattern.generator, s.pattern.sourceGeometry],
+    [s.effectivePattern],
   );
   const cards = useMemo(
     () =>
       (['recursive', 'spiral'] as const).map((kind) => {
         const definition = defaultComposition(kind, frame);
         const pattern = s.pattern.sourceGeometry.length
-          ? s.effectivePattern
+          ? { ...s.effectivePattern, sourceGeometry: compositionSource(s.effectivePattern) }
           : { ...s.effectivePattern, sourceGeometry: [sample] };
         return { kind, definition, thumbnail: compositionThumbnail(pattern, definition) };
       }),
@@ -84,7 +87,9 @@ export function CompositionPanel({
     });
   const activate = (definition: Composition) => {
     s.change((p) => {
-      p.patterns.find((p) => p.id === s.patternId)!.composition = structuredClone(definition);
+      const pattern = p.patterns.find((p) => p.id === s.patternId)!;
+      pattern.sourceGeometry = structuredClone(compositionSource(s.effectivePattern));
+      pattern.composition = structuredClone(definition);
     });
     s.updateViewPreferences({ sourceView: false, split: false, repetitionView: 'extended' });
     s.setStyleOpen(false);

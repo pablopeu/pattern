@@ -4,10 +4,12 @@ import { defaultComposition, type Composition } from '../composition/model';
 import { generatedBounds } from '../composition/generated';
 import { generate } from '../generators';
 import type { ExampleProvenance } from './model';
+import { figurativeExamples } from './figurative';
 
 export interface CatalogExample extends ExampleProvenance {
   create: () => Project;
   featured: boolean;
+  title?: string;
 }
 function path(
   name: string,
@@ -310,6 +312,7 @@ export const exampleCatalog: CatalogExample[] = [
     create: () => artisticProject(index),
     featured: true,
   })),
+  ...figurativeExamples,
   ...exampleNames.map((name, index) => ({
     id: `legacy-${index}`,
     category: 'Clásicos',
@@ -324,6 +327,7 @@ export const exampleCatalog: CatalogExample[] = [
   })),
 ];
 export function catalogTitle(entry: CatalogExample): string {
+  if (entry.title) return entry.title;
   const index = originals.findIndex((row) => row.id === entry.id);
   return index < 0 ? entry.description : titles[index];
 }

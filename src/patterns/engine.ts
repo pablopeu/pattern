@@ -43,6 +43,39 @@ export function buildScene(
   prepared?: Generated,
   pixelsPerMm?: number,
 ): Scene {
+  // A figurative silhouette belongs to the source of a composition as well as
+  // its tile. Derive it during transient border edits, without waiting for autosave/worker.
+  if (
+    pattern.tiling &&
+    pattern.sourceGeometry.some(
+      (g) =>
+        g.fillRegion?.kind === 'tile' &&
+        g.fillRegion.scope === 'source' &&
+        g.fillRegion.linked &&
+        g.fillRegion.status !== 'stale',
+    )
+  ) {
+    const boundary = tileBoundary(pattern.tiling),
+      context = JSON.stringify([
+        {
+          id: pattern.id,
+          kind: pattern.tiling.kind,
+          ...(pattern.tiling.isohedral ? { type: pattern.tiling.isohedral.type } : {}),
+        },
+      ]);
+    pattern = {
+      ...pattern,
+      sourceGeometry: pattern.sourceGeometry.map((g) =>
+        g.fillRegion?.kind === 'tile' &&
+        g.fillRegion.scope === 'source' &&
+        g.fillRegion.linked &&
+        g.fillRegion.status !== 'stale' &&
+        g.fillRegion.context === context
+          ? { ...g, ...tileFillContour(boundary, g.transform) }
+          : g,
+      ),
+    };
+  }
   if (pattern.tiling && pattern.generator.kind !== 'penrose' && !pattern.composition?.enabled) {
     const definition = pattern.tiling,
       boundary = tileBoundary(definition),
@@ -51,7 +84,8 @@ export function buildScene(
           ...pattern,
           tiling: undefined,
           sourceGeometry: pattern.sourceGeometry.filter(
-            (g) => !g.fillRegion || g.fillRegion.scope === 'source',
+            (g) =>
+              !g.fillRegion || (g.fillRegion.scope === 'source' && g.fillRegion.kind !== 'tile'),
           ),
         },
         tileBounds(definition),
@@ -118,7 +152,7 @@ export function buildScene(
       })),
     );
     const fillGeometry = (g: Geometry): Geometry => {
-      if (g.fillRegion!.scope !== 'tile') return g;
+      if (g.fillRegion!.kind !== 'tile') return g;
       if (g.fillRegion!.linked && g.fillRegion!.status !== 'stale')
         return { ...g, ...tileFillContour(boundary, g.transform) };
       const parts = clipGeometry(
@@ -136,11 +170,16 @@ export function buildScene(
     };
     return {
       fills: pattern.sourceGeometry
-        .filter((g) => g.visible && g.fillRegion && g.fillRegion.scope !== 'source')
+        .filter(
+          (g) =>
+            g.visible &&
+            g.fillRegion &&
+            (g.fillRegion.scope !== 'source' || g.fillRegion.kind === 'tile'),
+        )
         .map((g) => ({
           geometry: fillGeometry(g),
           matrices:
-            g.fillRegion!.scope === 'tile'
+            g.fillRegion!.kind === 'tile'
               ? tiles.map((t) => t.matrix)
               : g.fillRegion!.orbitMatrices,
         })),

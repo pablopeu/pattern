@@ -946,12 +946,18 @@ export default function App() {
         <ExampleGallery
           onClose={() => setExamplesOpen(false)}
           onSelect={(id) => {
-            s.load(compositionExample(id));
+            const project = compositionExample(id);
+            s.load(project);
             s.setMode('edit');
             setExamplesOpen(false);
             s.setSelected([]);
-            setCategory('symmetry');
-            s.openComposition();
+            if (project.patterns[0].tiling && !project.patterns[0].composition?.enabled) {
+              setCategory('tiles');
+              s.setTileTab('shape');
+            } else {
+              setCategory('symmetry');
+              s.openComposition();
+            }
             setCollapsed(innerWidth <= 900);
             s.requestFit();
           }}

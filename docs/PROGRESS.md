@@ -988,3 +988,18 @@
   fill-boundary-* en.runtime. Monitor14 Python. README/formato/arquitectura actualizados.
 - Feedback cerrado como incremento; continuar ejemplos figurativos del PRD.
   Fase2 todavía pendiente de figuras/flujo/colores; fases3–7 pendientes.
+
+
+## Fase2 · Cuatro figuras originales y flujo hacia composición
+
+- Galería16 con peces IH43, aves IH44, reptiles IH1 y ornamento IH63, arte
+  propio/fuentes independientes, metadatos/referencias y miniaturas reales.
+- Silueta enlazada se deriva en vivo de los bordes y pasa a composición
+  compatible con detalles intactos. Mosaico la pinta por tesela física;
+  composición finita la incluye como fuente, sin duplicar fuentes canónicas.
+- 542 unidades/TypeScript,145/145 E2E(229,5s),10 estáticas y build correctos.
+ 5 dirigidas de galería/edición/undo/flujo. Exportaciones de4 ejemplos con
+  CairoSVG/Pillow/ezdxf correctas: error máximo SVG0,094/255, PNG/JPEG96DPI
+  y DXF2D/mm. Native6 de los4 conserva sus fuentes.
+- README con2 capturas reales y4 JSON descargables, scripts reproducibles.
+  AC07 verificado; colores alternados y fases3–7 aún pendientes.

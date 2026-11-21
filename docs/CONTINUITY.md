@@ -1,3 +1,41 @@
+# Fase2 · Figuras originales verificadas; seguir colores alternados
+
+Galería16:8 legados,4 composiciones originales y4 figuras nuevas (peces IH43,
+aves IH44, reptiles IH1 y ornamento marcado IH63). Siluetas/detalles propios,
+metadatos/referencias/clasificación, miniaturas reales con recorte de tesela y
+fuentes nativas JSON6. Entrar a figura abre Teselas, no Composición vacía.
+
+C1: silueta Fill.kind tile/scope source enlazada como parte de la figura. En
+mosaico se pinta una vez por tesela física, separada de transformaciones locales
+del motivo; en composición finita se incluye en la fuente. Scene deriva su
+contorno de los bordes actuales también durante arrastre, sin mutar caché/fuente.
+CompositionPanel incorpora fondos vinculados compatibles al activar receta
+(motivo único, localNone y estabilizador interior trivial). Marcados conservan
+fondo como Tile para evitar duplicar opacidad y perder sus marcas al proyectar.
+
+542 unidades/TypeScript,145/145 E2E(229,5s/exit0),10 estáticas raíz/subcarpeta y
+build correctos.5 dirigidas: galería cuatro resoluciones y pez con arrastre real,
+silueta en vivo, detalles conservados, undo y figura→composición/recarga.
+Los4 ejemplos pasaron CairoSVG/Pillow/ezdxf: SVG editable/expandido(error máximo
+0,094/255), PNG/JPEG96DPI y DXF2D/mm. Scripts validate-v30-figurative.mjs y
+validate_v30_figurative.py; imágenes/4 JSON en README reproducibles con
+capture-v30-figurative.mjs. Capturas reales inspeccionadas. Logs figurative-*.
+
+AC07 verificado; Fase2 todavía pendiente de colores alternados. Próximo:
+paletas2–6 por tesela, clases determinísticas por celda/aspecto, sin clonar
+fuentes; la celda exportable debe incluir el período de color (superceldaN×N),
+no reutilizar la red geométrica sola. Guardar en tiling.version2 para que lectores
+anteriores6 rechacen ese nuevo contrato; tiling.kind/color no debe invalidar
+caras ni vínculos geométricos al cambiar RGB. Fill debe recolorear la clase
+clickeada. UI de Color dentro del espacio existente de controles IH, sin añadir
+filas al panel. Después cerrar Fase2 y continuar fases3–7; PRD NO completo.
+
+No hay suites activas. Servicios4173/4174 vivos; PROJECT_COMPLETE ausente.
+Feedback previo ya publicado17a422e; monitor vigente431ad45, sólo primaria pausa.
+Pablo pidió continuar durante la noche. Push autorizado sin inspeccionar FTP.
+
+---
+
 # Feedback nocturno verificado · Seguir Fase2 del PRD
 
 Feedback acumulado atendido: snaps persistentes/menú contextual y clic derecho

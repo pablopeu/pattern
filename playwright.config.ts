@@ -17,6 +17,7 @@ export default defineConfig({
         '**/snap.spec.ts',
         '**/snap-permanent.spec.ts',
         '**/feedback-fill.spec.ts',
+        '**/figurative.spec.ts',
       ],
   timeout: 45000,
   expect: { timeout: 8000 },

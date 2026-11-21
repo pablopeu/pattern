@@ -1,0 +1,1187 @@
+{
+  "schemaVersion": 6,
+  "drawingStyle": {
+    "stroke": "#233b2d",
+    "fill": "#3b82f6",
+    "strokeWidth": 0.65,
+    "strokeCap": "round",
+    "strokeJoin": "round",
+    "miterLimit": 10,
+    "opacity": 1,
+    "fillOpacity": 1,
+    "strokeOpacity": 1,
+    "fillRule": "evenodd",
+    "strokeDash": [],
+    "strokeDashOffset": 0,
+    "strokeProfile": {
+      "version": 1,
+      "kind": "uniform",
+      "points": [
+        {
+          "at": 0,
+          "width": 1
+        },
+        {
+          "at": 1,
+          "width": 1
+        }
+      ]
+    }
+  },
+  "stylePresets": [],
+  "palette": {
+    "colors": [],
+    "recent": [],
+    "favorites": []
+  },
+  "mainSymmetry": {
+    "family": "none",
+    "group": "none",
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "orientation": 0,
+    "width": 60,
+    "height": 60,
+    "angle": 90,
+    "sectors": 8,
+    "center": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "mainSymmetryProfiles": {},
+  "metadata": {
+    "id": "eb123a8a-97cd-49c2-87ac-dd332371226a",
+    "name": "Reptiles del mosaico · IH1",
+    "createdAt": "2026-11-21T06:23:42.592Z",
+    "updatedAt": "2026-11-21T06:23:42.592Z",
+    "example": {
+      "id": "figurative-reptile",
+      "category": "Figurativas",
+      "description": "Reptiles estilizados originales con ojos, lomo, escamas y dedos separados de sus bordes emparejados.",
+      "construction": "IH1 · teselación isoédrica verificada · silueta y detalles independientes",
+      "validity": "EXACT",
+      "artwork": "original",
+      "author": "Pattern Studio",
+      "references": [
+        {
+          "title": "Kaplan / Schattschneider · clasificación isoédrica",
+          "url": "https://isohedral.ca/isohedral-tiles-tilings-and-notations/"
+        }
+      ]
+    }
+  },
+  "documentUnits": "mm",
+  "patterns": [
+    {
+      "id": "d45c3ea5-83f0-4731-9b86-9d65f3faae92",
+      "name": "Reptiles del mosaico · IH1",
+      "sourceGeometry": [
+        {
+          "id": "b77d98b7-46f1-4839-9571-7c36842fd341",
+          "name": "Silueta enlazada · motivo",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": 0,
+              "y": 0,
+              "in": {
+                "x": -1.3856406460488,
+                "y": 2.4
+              },
+              "out": {
+                "x": 3.1038350471546883,
+                "y": 0
+              }
+            },
+            {
+              "x": 9.6994845223584,
+              "y": -0.6928203230256,
+              "in": {
+                "x": -3.1038350471546883,
+                "y": 0
+              },
+              "out": {
+                "x": 1.3302150202091518,
+                "y": 0
+              }
+            },
+            {
+              "x": 13.856406460512,
+              "y": -5.5425625842048,
+              "in": {
+                "x": -1.3302150202091518,
+                "y": 0
+              },
+              "out": {
+                "x": 1.3302150202091518,
+                "y": 0
+              }
+            },
+            {
+              "x": 18.0133283986656,
+              "y": -7.6210235532816,
+              "in": {
+                "x": -1.3302150202091518,
+                "y": 0
+              },
+              "out": {
+                "x": 1.3302150202091518,
+                "y": 0
+              }
+            },
+            {
+              "x": 22.1702503368192,
+              "y": -2.7712812921024,
+              "in": {
+                "x": -1.3302150202091518,
+                "y": 0
+              },
+              "out": {
+                "x": 1.5519175235773441,
+                "y": 0
+              }
+            },
+            {
+              "x": 27.0199925979984,
+              "y": 0.6928203230256,
+              "in": {
+                "x": -1.5519175235773441,
+                "y": 0
+              },
+              "out": {
+                "x": 2.4387275370501116,
+                "y": 0
+              }
+            },
+            {
+              "x": 34.64101615128,
+              "y": 0,
+              "in": {
+                "x": -2.4387275370501116,
+                "y": 0
+              },
+              "out": {
+                "x": 1.6627687752585594,
+                "y": 2.88
+              }
+            },
+            {
+              "x": 38.93716857396299,
+              "y": 9.5196152422683,
+              "in": {
+                "x": -1.6627687752585594,
+                "y": -2.88
+              },
+              "out": {
+                "x": 0.7205331359453758,
+                "y": 1.2480000000000002
+              }
+            },
+            {
+              "x": 45.9888346237923,
+              "y": 10.648333950170702,
+              "in": {
+                "x": -0.7205331359453758,
+                "y": -1.2480000000000002
+              },
+              "out": {
+                "x": 0.6651075101034241,
+                "y": 1.1520000000000006
+              }
+            },
+            {
+              "x": 49.56729559286549,
+              "y": 13.3823085463902,
+              "in": {
+                "x": -0.6651075101034241,
+                "y": -1.1520000000000006
+              },
+              "out": {
+                "x": 0.7205331359453758,
+                "y": 1.2480000000000002
+              }
+            },
+            {
+              "x": 45.818961642694795,
+              "y": 20.746410161512202,
+              "in": {
+                "x": -0.7205331359453758,
+                "y": -1.2480000000000002
+              },
+              "out": {
+                "x": 1.7736200269424631,
+                "y": 3.0719999999999996
+              }
+            },
+            {
+              "x": 51.96152422689,
+              "y": 30,
+              "in": {
+                "x": -1.7736200269424631,
+                "y": -3.0719999999999996
+              },
+              "out": {
+                "x": -1.3856406460487996,
+                "y": 2.4
+              }
+            },
+            {
+              "x": 45.2313972079875,
+              "y": 36.1143593539512,
+              "in": {
+                "x": 1.3856406460487996,
+                "y": -2.4
+              },
+              "out": {
+                "x": -1.3856406460487996,
+                "y": 2.4
+              }
+            },
+            {
+              "x": 45.401270189085004,
+              "y": 46.2124355652927,
+              "in": {
+                "x": 1.3856406460487996,
+                "y": -2.4
+              },
+              "out": {
+                "x": -1.3856406460487996,
+                "y": 2.4
+              }
+            },
+            {
+              "x": 37.4711431701825,
+              "y": 51.6339745962195,
+              "in": {
+                "x": 1.3856406460487996,
+                "y": -2.4
+              },
+              "out": {
+                "x": -1.3856406460487996,
+                "y": 2.4
+              }
+            },
+            {
+              "x": 34.64101615128,
+              "y": 60,
+              "in": {
+                "x": 1.3856406460487996,
+                "y": -2.4
+              },
+              "out": {
+                "x": -2.4387275370501116,
+                "y": 0
+              }
+            },
+            {
+              "x": 27.0199925979984,
+              "y": 60.6928203230256,
+              "in": {
+                "x": 2.4387275370501116,
+                "y": 0
+              },
+              "out": {
+                "x": -1.5519175235773441,
+                "y": 0
+              }
+            },
+            {
+              "x": 22.1702503368192,
+              "y": 57.2287187078976,
+              "in": {
+                "x": 1.5519175235773441,
+                "y": 0
+              },
+              "out": {
+                "x": -1.3302150202091518,
+                "y": 0
+              }
+            },
+            {
+              "x": 18.0133283986656,
+              "y": 52.3789764467184,
+              "in": {
+                "x": 1.3302150202091518,
+                "y": 0
+              },
+              "out": {
+                "x": -1.3302150202091518,
+                "y": 0
+              }
+            },
+            {
+              "x": 13.856406460512,
+              "y": 54.4574374157952,
+              "in": {
+                "x": 1.3302150202091518,
+                "y": 0
+              },
+              "out": {
+                "x": -1.3302150202091518,
+                "y": 0
+              }
+            },
+            {
+              "x": 9.6994845223584,
+              "y": 59.3071796769744,
+              "in": {
+                "x": 1.3302150202091518,
+                "y": 0
+              },
+              "out": {
+                "x": -3.1038350471546883,
+                "y": 0
+              }
+            },
+            {
+              "x": 0,
+              "y": 60,
+              "in": {
+                "x": 3.1038350471546883,
+                "y": 0
+              },
+              "out": {
+                "x": -1.7736200269424638,
+                "y": -3.0719999999999996
+              }
+            },
+            {
+              "x": -6.142562584195199,
+              "y": 50.7464101615122,
+              "in": {
+                "x": 1.7736200269424638,
+                "y": 3.0719999999999996
+              },
+              "out": {
+                "x": -0.720533135945376,
+                "y": -1.2480000000000002
+              }
+            },
+            {
+              "x": -2.3942286340245005,
+              "y": 43.3823085463902,
+              "in": {
+                "x": 0.720533135945376,
+                "y": 1.2480000000000002
+              },
+              "out": {
+                "x": -0.6651075101034243,
+                "y": -1.1520000000000006
+              }
+            },
+            {
+              "x": -5.972689603097699,
+              "y": 40.6483339501707,
+              "in": {
+                "x": 0.6651075101034243,
+                "y": 1.1520000000000006
+              },
+              "out": {
+                "x": -0.720533135945376,
+                "y": -1.2480000000000002
+              }
+            },
+            {
+              "x": -13.024355652927,
+              "y": 39.5196152422683,
+              "in": {
+                "x": 0.720533135945376,
+                "y": 1.2480000000000002
+              },
+              "out": {
+                "x": -1.66276877525856,
+                "y": -2.88
+              }
+            },
+            {
+              "x": -17.32050807561,
+              "y": 30,
+              "in": {
+                "x": 1.66276877525856,
+                "y": 2.88
+              },
+              "out": {
+                "x": 1.3856406460488,
+                "y": -2.4
+              }
+            },
+            {
+              "x": -14.4903810567075,
+              "y": 21.6339745962195,
+              "in": {
+                "x": -1.3856406460488,
+                "y": 2.4
+              },
+              "out": {
+                "x": 1.3856406460488,
+                "y": -2.4
+              }
+            },
+            {
+              "x": -6.5602540378050005,
+              "y": 16.2124355652927,
+              "in": {
+                "x": -1.3856406460488,
+                "y": 2.4
+              },
+              "out": {
+                "x": 1.3856406460488,
+                "y": -2.4
+              }
+            },
+            {
+              "x": -6.7301270189025,
+              "y": 6.1143593539512,
+              "in": {
+                "x": -1.3856406460488,
+                "y": 2.4
+              },
+              "out": {
+                "x": 1.3856406460488,
+                "y": -2.4
+              }
+            }
+          ],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#273f37",
+          "fill": "#7c8f57",
+          "strokeWidth": 0.4,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "fillRegion": {
+            "version": 1,
+            "kind": "tile",
+            "scope": "source",
+            "linked": true,
+            "status": "linked",
+            "faceKey": "tile/d45c3ea5-83f0-4731-9b86-9d65f3faae92",
+            "topologyKey": "tile-interior",
+            "refs": [],
+            "inputs": [],
+            "context": "[{\"id\":\"d45c3ea5-83f0-4731-9b86-9d65f3faae92\",\"kind\":\"isohedral\",\"type\":1}]",
+            "captureMatrix": [
+              1,
+              0,
+              0,
+              1,
+              0,
+              0
+            ],
+            "orbitMatrices": [
+              [
+                1,
+                0,
+                0,
+                1,
+                0,
+                0
+              ]
+            ],
+            "closeTolerance": 0
+          }
+        },
+        {
+          "id": "b366b4d5-5b29-4a76-80b2-45bfc1a70854",
+          "name": "Ojo superior",
+          "kind": "ellipse",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#263f37",
+          "fill": "#fcf5df",
+          "strokeWidth": 0.35,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "parameters": {
+            "x": 39,
+            "y": 23,
+            "width": 4,
+            "height": 4,
+            "sides": 4,
+            "radius": 0
+          }
+        },
+        {
+          "id": "eb28a0b4-4dee-4d65-8235-4a5bdb938417",
+          "name": "Pupila superior",
+          "kind": "ellipse",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "none",
+          "fill": "#273f37",
+          "strokeWidth": 0.35,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "parameters": {
+            "x": 41,
+            "y": 24,
+            "width": 1.8,
+            "height": 1.8,
+            "sides": 4,
+            "radius": 0
+          }
+        },
+        {
+          "id": "debb1924-8a3d-4143-902b-fbd7172e7aa4",
+          "name": "Ojo inferior",
+          "kind": "ellipse",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#263f37",
+          "fill": "#fcf5df",
+          "strokeWidth": 0.35,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "parameters": {
+            "x": 42,
+            "y": 31,
+            "width": 4,
+            "height": 4,
+            "sides": 4,
+            "radius": 0
+          }
+        },
+        {
+          "id": "2bf7d398-e7f4-4353-b1ac-07b066d3fea8",
+          "name": "Pupila inferior",
+          "kind": "ellipse",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "none",
+          "fill": "#273f37",
+          "strokeWidth": 0.35,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "parameters": {
+            "x": 44,
+            "y": 32,
+            "width": 1.8,
+            "height": 1.8,
+            "sides": 4,
+            "radius": 0
+          }
+        },
+        {
+          "id": "34937422-e9fd-428c-84a5-63b6d5e688ad",
+          "name": "Lomo",
+          "kind": "compound",
+          "nodes": [],
+          "closed": false,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#e7dfb4",
+          "fill": "none",
+          "strokeWidth": 1.1,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-7 30C2 22 10 40 21 28S38 28 45 30"
+        },
+        {
+          "id": "101ffe1e-f22b-4460-8d91-6ac1e1ccd97c",
+          "name": "Dedos",
+          "kind": "compound",
+          "nodes": [],
+          "closed": false,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#273f37",
+          "fill": "none",
+          "strokeWidth": 0.65,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M4-5L7-2M7-7L9-2M10-6L11-1M30 63L33 61M33 65L35 61M36 64L37 60"
+        },
+        {
+          "id": "42bfa7b7-2fad-40ea-b899-55c55cd35645",
+          "name": "Escamas",
+          "kind": "compound",
+          "nodes": [],
+          "closed": false,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#354e38",
+          "fill": "none",
+          "strokeWidth": 0.4,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M16 17Q20 20 16 23M24 34Q28 37 24 40M32 19Q35 22 32 25"
+        }
+      ],
+      "generator": {
+        "kind": "motif",
+        "version": 1,
+        "seed": 42,
+        "count": 12,
+        "rows": 4,
+        "columns": 4,
+        "spacing": 22,
+        "offset": 0.5,
+        "aspectRatio": 1,
+        "staggerAxis": "rows",
+        "rotation": 0,
+        "scale": 1,
+        "scaleRatio": 0.9,
+        "amplitude": 6,
+        "frequency": 3,
+        "phase": 0,
+        "radius": 28,
+        "ratio": 0.35,
+        "distribution": "rectangular",
+        "periodicWarp": true,
+        "placements": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        ]
+      },
+      "visible": true,
+      "symmetryMode": "free",
+      "symmetryProfiles": {},
+      "placementTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "symmetry": {
+        "family": "none",
+        "group": "none",
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "orientation": 0,
+        "width": 60,
+        "height": 60,
+        "angle": 90,
+        "sectors": 8,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "tiling": {
+        "version": 1,
+        "kind": "isohedral",
+        "width": 60,
+        "height": 60,
+        "shear": 15,
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "rotation": 0,
+        "edges": [
+          [
+            {
+              "x": 0,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0.08960000000000001,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.28,
+              "y": -0.02,
+              "in": {
+                "x": -0.08960000000000001,
+                "y": 0
+              },
+              "out": {
+                "x": 0.0384,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.4,
+              "y": -0.16,
+              "in": {
+                "x": -0.0384,
+                "y": 0
+              },
+              "out": {
+                "x": 0.0384,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.52,
+              "y": -0.22,
+              "in": {
+                "x": -0.0384,
+                "y": 0
+              },
+              "out": {
+                "x": 0.0384,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.64,
+              "y": -0.08,
+              "in": {
+                "x": -0.0384,
+                "y": 0
+              },
+              "out": {
+                "x": 0.044800000000000006,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.78,
+              "y": 0.02,
+              "in": {
+                "x": -0.044800000000000006,
+                "y": 0
+              },
+              "out": {
+                "x": 0.07039999999999999,
+                "y": 0
+              }
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "in": {
+                "x": -0.07039999999999999,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          [
+            {
+              "x": 0,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0.096,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.3,
+              "y": 0.03,
+              "in": {
+                "x": -0.096,
+                "y": 0
+              },
+              "out": {
+                "x": 0.041600000000000005,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.43,
+              "y": -0.13,
+              "in": {
+                "x": -0.041600000000000005,
+                "y": 0
+              },
+              "out": {
+                "x": 0.03840000000000002,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.55,
+              "y": -0.18,
+              "in": {
+                "x": -0.03840000000000002,
+                "y": 0
+              },
+              "out": {
+                "x": 0.041600000000000005,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.68,
+              "y": 0.02,
+              "in": {
+                "x": -0.041600000000000005,
+                "y": 0
+              },
+              "out": {
+                "x": 0.10239999999999999,
+                "y": 0
+              }
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "in": {
+                "x": -0.10239999999999999,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          [
+            {
+              "x": 0,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0.08,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.25,
+              "y": 0.08,
+              "in": {
+                "x": -0.08,
+                "y": 0
+              },
+              "out": {
+                "x": 0.08,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.5,
+              "y": -0.07,
+              "in": {
+                "x": -0.08,
+                "y": 0
+              },
+              "out": {
+                "x": 0.08,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.75,
+              "y": 0.05,
+              "in": {
+                "x": -0.08,
+                "y": 0
+              },
+              "out": {
+                "x": 0.08,
+                "y": 0
+              }
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "in": {
+                "x": -0.08,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        ],
+        "showOutline": false,
+        "isohedral": {
+          "version": 1,
+          "type": 1,
+          "parameters": [
+            0.12239750492,
+            0.5,
+            0.143395479017,
+            0.625
+          ]
+        }
+      }
+    }
+  ],
+  "regions": [],
+  "applications": [],
+  "preferences": {
+    "styleDefaultsFollowSelection": true,
+    "stylePanelPinned": false,
+    "fillCloseTolerance": 0,
+    "fillLinkedDefault": true,
+    "structureVisible": false,
+    "structureOpacity": 0.22,
+    "grid": false,
+    "snap": false,
+    "snapRadiusPx": 8,
+    "snapNodes": false,
+    "guides": false,
+    "split": false,
+    "background": "#f3eddf",
+    "fundamental": false,
+    "axes": false,
+    "centers": false,
+    "continuity": false,
+    "outside": false,
+    "sourceView": false,
+    "repetitionView": "extended"
+  }
+}
