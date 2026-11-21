@@ -217,7 +217,7 @@ El autosave transaccional usa IndexedDB y guarda cada proyecto por su ID. Los fa
 
 El guardado explícito descarga un archivo completo y también intenta completar la escritura local. Si el navegador rechaza IndexedDB, la aplicación informa el error y el JSON sigue disponible. Un perímetro a medio dibujar no reemplaza el último autosave válido.
 
-Hay ocho ejemplos editables en Archivo. Abrir ejemplos o crear proyectos conserva los anteriores en **Biblioteca de este navegador**. El logo visible usa el archivo local `icono.png` aportado por el usuario.
+La galería de Archivo reúne doce ejemplos editables y conserva ocho accesos rápidos. Abrir ejemplos o crear proyectos conserva los anteriores en **Biblioteca de este navegador**. El logo visible usa el archivo local `src/assets/icono.png` aportado por el usuario.
 
 ## Alcances y límites
 
@@ -326,7 +326,7 @@ npm run benchmark
 
 V2.3 verificado: **203 pruebas unitarias, 94 flujos E2E, 9 pruebas del monitor y 6 pruebas estáticas**. Se conservan los 75 recorridos anteriores. Builds raíz/subdirectorio y validación independiente de exportaciones correctos.
 
-El benchmark necesita el servidor de desarrollo. Las pruebas estáticas y la validación independiente de archivos se explican en [TESTING.md](TESTING.md). Resultados anteriores: [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md). Auditoría UX: [docs/ACCEPTANCE_V23.md](docs/ACCEPTANCE_V23.md) e [inventario de funciones](docs/UX_V23_INVENTORY.md).
+El benchmark necesita el servidor de desarrollo. Las pruebas estáticas y la validación independiente de archivos se explican en [TESTING.md](docs/TESTING.md). Resultados anteriores: [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md). Auditoría UX: [docs/ACCEPTANCE_V23.md](docs/ACCEPTANCE_V23.md) e [inventario de funciones](docs/UX_V23_INVENTORY.md).
 
 Para regenerar las cinco capturas y los cuatro JSON de ejemplo de este README con el servidor local activo: `node scripts/capture-readme.mjs`. Se usa un navegador aislado; no se modifican los proyectos del navegador del usuario.
 
@@ -345,9 +345,9 @@ El feedback del panel se guarda en `.runtime/feedback.jsonl` y se envía a esta 
 
 ### Documentación técnica
 
-- [ARCHITECTURE.md](ARCHITECTURE.md): módulos, flujo de datos y renderizado.
-- [GEOMETRY.md](GEOMETRY.md): grupos, redes, precisión y límites matemáticos.
-- [PROJECT_FORMAT.md](PROJECT_FORMAT.md): formato, recuperación y migraciones.
-- [TESTING.md](TESTING.md): pruebas, benchmark y validadores externos.
-- [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md): dependencias y referencias inspeccionadas.
+- [ARCHITECTURE.md](docs/ARCHITECTURE.md): módulos, flujo de datos y renderizado.
+- [GEOMETRY.md](docs/GEOMETRY.md): grupos, redes, precisión y límites matemáticos.
+- [PROJECT_FORMAT.md](docs/PROJECT_FORMAT.md): formato, recuperación y migraciones.
+- [TESTING.md](docs/TESTING.md): pruebas, benchmark y validadores externos.
+- [THIRD_PARTY_NOTICES.md](docs/THIRD_PARTY_NOTICES.md): dependencias y referencias inspeccionadas.
 - [docs/PROGRESS.md](docs/PROGRESS.md): registro de avances y correcciones.

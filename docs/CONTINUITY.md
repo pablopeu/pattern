@@ -1,3 +1,26 @@
+# Organización pública del repositorio · Antes del próximo push
+
+A pedido de Pablo, documentación técnica en docs/, seis PRD originales en
+docs/prd/, incluido docs/prd/prd_v3.0.txt, y logo original sin cambiar bytes en
+src/assets/icono.png. README/AGENTS y archivos fundamentales de herramientas
+permanecen en raíz. Índice en docs/README.md. Enlaces e importación actualizados.
+
+caratula.jpg/favicon_io.zip originales se conservan en .runtime/original-assets/,
+fuera de Git; public/ conserva los recursos publicados. .gitignore cubre también
+archivos locales de entorno/FTP, logs y originales subidos a raíz. Revisión de185
+archivos seguidos sin IP privadas completas, tokens reconocibles ni claves
+privadas; no se publicó salida sensible ni se reescribió historial. Runtime,
+dist, node_modules y test-results siguen sin seguimiento.
+
+475 unidades/TypeScript y build actuales correctos; enlaces locales revisados.
+Integración IH81 en trabajo: catálogo/JSON/renderer/Fill conectados, E2E dirigidas:
+5/6 correctas; el caso IH41 encontró una ambigüedad de selector del test entre
+Forma de objeto/tesela, en corrección. No se declara completa Fase2 ni el PRD. Antes de publicar, cerrar
+estas verificaciones y conservar servicios4173/4174. No generar build ni editar
+módulos durante E2E activas. La reanudación debe leer el PRD en su nueva carpeta.
+
+---
+
 # Pedido de Pablo · Referencias visibles, continuar PRD3.0
 
 Nuevo botón Referencias (libro) junto a Ayuda, modal nativo con scroll,16 enlaces

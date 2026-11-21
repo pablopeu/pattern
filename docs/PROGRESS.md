@@ -828,3 +828,17 @@
 - THIRD_PARTY_NOTICES/README/AGENTS actualizados según pedido: reutilizar
   referencias open source y mantener avisos/atribuciones, sin investigación
   extensa de licencias. Continúa integración IH del PRD3.0.
+
+
+## Repositorio público ordenado · Pedido de Pablo
+
+- Cinco documentos técnicos en docs/, seis PRD en docs/prd/ y logo en
+  src/assets/icono.png, con bytes originales de PRD/logo conservados. README
+  enlaza los documentos nuevos y docs/README.md sirve de índice. AGENTS y
+  configuraciones fundamentales siguen en raíz.
+- Originales locales caratula.jpg/favicon_io.zip conservados bajo.runtime,
+  excluidos. .gitignore reforzado para entornos, FTP local, logs y subidas crudas.
+- Revisión185 archivos seguidos sin IP privadas, patrones de tokens ni claves
+  privadas; sin artefactos runtime/dist/dependencias seguidos. Enlaces locales
+  revisados y475 unidades/TypeScript/build correctos sobre el trabajo actual.
+  E2E IH en curso; el próximo push incluirá la reorganización verificada.

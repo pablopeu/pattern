@@ -8,7 +8,7 @@ import { SiteFooter } from '../ui/SiteFooter';
 import { CommandPalette, type Command } from '../ui/CommandPalette';
 import { symmetryCatalog } from '../symmetry/config';
 import { StylePanel, StyleIndicator } from '../ui/StylePanel';
-import logo from '../../icono.png';
+import logo from '../assets/icono.png';
 import { commonRectangularCell, resolvePattern } from '../symmetry/config';
 import { useState, useRef, useEffect } from 'react';
 import { categories, toolCategory, type Category } from '../ui/navigation';

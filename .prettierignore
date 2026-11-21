@@ -1,7 +1,7 @@
 node_modules
 dist
 .runtime
-prd_v1.txt
+docs/prd/
 public/THIRD_PARTY_NOTICES.txt
 package-lock.json
 test-results

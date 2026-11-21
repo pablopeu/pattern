@@ -1,6 +1,6 @@
 # Dependencias y referencias
 
-Los avisos completos de las dependencias distribuidas se generan desde los paquetes instalados y se incluyen en [public/THIRD_PARTY_NOTICES.txt](public/THIRD_PARTY_NOTICES.txt). `npm run notices` los actualiza y `npm run build` los copia a `dist/`.
+Los avisos completos de las dependencias distribuidas se generan desde los paquetes instalados y se incluyen en [public/THIRD_PARTY_NOTICES.txt](../public/THIRD_PARTY_NOTICES.txt). `npm run notices` los actualiza y `npm run build` los copia a `dist/`.
 
 ## Dependencias de ejecución
 

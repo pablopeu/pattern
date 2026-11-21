@@ -7,3 +7,17 @@ playwright-report/
 
 __pycache__/
 *.pyc
+
+# Local configuration, credentials and generated logs
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+/.ftpconfig
+/.vscode/sftp.json
+
+# Uploaded originals; published copies live under public/ or src/assets/
+/*.zip
+/caratula.jpg
+/icono.png

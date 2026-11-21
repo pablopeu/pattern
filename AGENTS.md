@@ -1,6 +1,6 @@
 # Pattern Studio 2D
 
-Implementar `prd_v3.0.txt` como evolución no destructiva del estado actual; conservar las regresiones v1/v2/v2.1/v2.2/v2.3 y el feedback posterior y el logo icono.png. Trabajar con Git local. El usuario autorizó el push del historial a `https://github.com/pablopeu/pattern` en la rama `main`. La revisión de la aplicación se mantiene en LAN. Pablo autorizó también producción por FTP mediante GitHub Actions en cada push; conservar ambos servicios LAN.
+Implementar `docs/prd/prd_v3.0.txt` como evolución no destructiva del estado actual; conservar las regresiones v1/v2/v2.1/v2.2/v2.3 y el feedback posterior y el logo src/assets/icono.png. Trabajar con Git local. El usuario autorizó el push del historial a `https://github.com/pablopeu/pattern` en la rama `main`. La revisión de la aplicación se mantiene en LAN. Pablo autorizó también producción por FTP mediante GitHub Actions en cada push; conservar ambos servicios LAN.
 
 - Comprobar `python3 scripts/work_monitor.py --status` al comenzar y entre entregas. Si queda 10% o menos en la ventana primaria de 5 horas, cerrar el incremento: verificar, documentar, commit y finalizar el turno para esperar el reset. El monitor solicita la reanudación en esta misma conversación después del reset real.
 - Consultar `docs/CONTINUITY.md`, `docs/PROGRESS.md` y feedback pendiente en `.runtime/feedback.jsonl` antes de continuar. No duplicar servicios activos.
@@ -25,11 +25,16 @@ Implementar `prd_v3.0.txt` como evolución no destructiva del estado actual; con
 - Aclaración vigente de Pablo: el cupo secundario/semanal sólo dispara un aviso;
   Pablo decide si usa un banked reset. No pausa automáticamente ni retrasa el
   timer al reset semanal. Reanudación basada en el reset real primario+60s.
-  Próxima tarea: prd_v3.0.txt, incluidos los ejemplos, desde Fase0 sin implementar
-  antes del reset primario solicitado.
+  Continuar docs/prd/prd_v3.0.txt, incluidos sus ejemplos, según la fase vigente
+  de docs/CONTINUITY.md; Fase0 y Fase1 ya verificadas.
 
 - Pablo autorizó reutilizar código open source, incluidas referencias copyleft,
   sin una investigación extensa de licencias. Mantener los avisos originales y
-  actualizar THIRD_PARTY_NOTICES.md con lo efectivamente incorporado.
+  actualizar docs/THIRD_PARTY_NOTICES.md con lo efectivamente incorporado.
   Botón Referencias junto a Ayuda: modal con scroll de todos los repositorios
   consultados. Ampliar su lista al consultar nuevas fuentes durante el PRD.
+
+- Raíz ordenada a pedido de Pablo: documentación técnica en docs/, PRD originales
+  en docs/prd/ y logo en src/assets/icono.png. AGENTS.md sigue en raíz por ser
+  instrucciones de trabajo. Originales locales subidos se conservan en
+  .runtime/original-assets/ y no se publican. Mantener este orden en próximos cambios.

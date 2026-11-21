@@ -97,7 +97,7 @@ El fragmento equivalente v2 conserva p1 propio y añade los campos del marco:
 {"schemaVersion":2,"patterns":[{"id":"motivo-a","symmetryMode":"own","visible":true,"placementTransform":[1,0,0,1,0,0],"symmetryProfiles":{},"symmetry":{"family":"wallpaper","group":"p1","width":60,"height":60,"angle":90,"sectors":8,"center":{"x":0,"y":0},"origin":{"x":0,"y":0},"orientation":0}}]}
 ```
 
-Estos fragmentos muestran sólo los campos afectados, no son documentos autónomos. Los ocho documentos v1 completos están en [fixtures/v1-examples.json](src/tests/fixtures/v1-examples.json); la suite los migra y comprueba su round-trip v2.
+Estos fragmentos muestran sólo los campos afectados, no son documentos autónomos. Los ocho documentos v1 completos están en [fixtures/v1-examples.json](../src/tests/fixtures/v1-examples.json); la suite los migra y comprueba su round-trip v2.
 
 ## Esquema 3 · PRD v2.1
 
