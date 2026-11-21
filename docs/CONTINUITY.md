@@ -1,3 +1,31 @@
+# Fase4 · Fuente finita preparada; integración nativa/UI siguiente
+
+Ventana primaria renovada, lectura real recibida (97% restante al retomar).
+Secundaria sólo avisa. Servicios4173/4174 existentes conservados; Git base275f5b0.
+Sin feedback pendiente;193816e ya implementado y explicado en WORKSPACE_GUIDE.md.
+
+prepareFlatDiskSource toma ventana con origen/celda rectangular/red/fundamental
+por la ruta explícitamente plana del exportador; conserva copias, Fill vinculado,
+huecos y opacidades. ClippedPaint conserva fuente/rol relleno-trazo también al
+materializar teselas. Contorneado ANTES del recorte, sin reiniciar guiones/perfil.
+Presupuestos:256 pinturas por defecto/máximo512,4096 cúbicas/máximo24000;
+rechazo atómico. derivePreparedDisk exige p/q coincidentes; informe separa paso
+numérico de recorte/contorneado de cota certificada del mapeo de las cúbicas.
+
+946 unidades/TypeScript,8 pruebas nuevas correctas. Worker real prepara proyecto
+sin mutación y conserva cancelación/recuperación. Prueba SVG/raster real:29 celdas,
+hueco transparente/azul/línea oscura correctos, proyección≤0,005mm. Scripts y
+límites en HYPERBOLIC_CORE.md. Regresión179/179(4,8min/exit0), build y10
+estáticas raíz/subcarpeta correctos. Incremento listo para commit/publicación.
+
+Siguiente incremento: contrato separado del generador con versión/migración y
+rechazo por lectores anteriores; interfaz derivada no editable con regreso a
+fuente, regeneración/worker/cancelación y exportación física. Después modalidad
+artística, ejemplos y resto Fase4. Fases5–7 pendientes. No PROJECT_COMPLETE.
+Push autorizado en main sin inspeccionar Actions/FTP.
+
+---
+
 # Feedback193816e verificado · Retomar Fase4 tras cierre de ventana
 
 Menús simplificados: cuatro contextos izquierdos, herramientas directas/derecha,

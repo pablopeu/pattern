@@ -37,15 +37,21 @@ export function regionData(region: Region): string {
   p.remove();
   return d;
 }
-export function clipGeometry(
+export interface ClippedPaint {
+  geometry: Geometry;
+  sourceId: string;
+  paint: 'fill' | 'stroke';
+}
+/** Keep the originating paint separate after strokes become filled regions. */
+export function clipPaintGeometry(
   shape: Geometry,
   region: Region,
   transform: Matrix = IDENTITY,
   outlineStroke = false,
   tolerance = 0.02,
-): Geometry[] {
+): ClippedPaint[] {
   const mask = regionPath(region),
-    out: Geometry[] = [];
+    out: ClippedPaint[] = [];
   try {
     if (
       (shape.closed || shape.kind === 'path') &&
@@ -58,7 +64,7 @@ export function clipGeometry(
       if (result.pathData) {
         const g = pathToGeometry(result, shape);
         g.stroke = 'none';
-        out.push(g);
+        out.push({ geometry: g, sourceId: shape.id, paint: 'fill' });
       } else result.remove();
     }
     if (shape.stroke !== 'none' && shape.strokeWidth > 0) {
@@ -87,7 +93,7 @@ export function clipGeometry(
             if (!outlineStroke && joined)
               joined.pathData = (joined.pathData ?? '') + (g.pathData ?? '');
             else {
-              out.push(g);
+              out.push({ geometry: g, sourceId: shape.id, paint: 'stroke' });
               if (!outlineStroke) joined = g;
             }
           } else result.remove();
@@ -100,6 +106,17 @@ export function clipGeometry(
   } finally {
     mask.remove();
   }
+}
+export function clipGeometry(
+  shape: Geometry,
+  region: Region,
+  transform: Matrix = IDENTITY,
+  outlineStroke = false,
+  tolerance = 0.02,
+): Geometry[] {
+  return clipPaintGeometry(shape, region, transform, outlineStroke, tolerance).map(
+    (paint) => paint.geometry,
+  );
 }
 export function geometryBounds(shapes: Geometry[]): {
   x: number;

@@ -6,7 +6,7 @@ import {
   validPQ,
   type HyperbolicOptions,
 } from './disk';
-import { prepareDiskSource, projectDiskSource } from './source';
+import { prepareDiskSource, projectDiskSource, type PreparedDiskSource } from './source';
 export interface DiskSettings extends Partial<HyperbolicOptions> {
   p: number;
   q: number;
@@ -16,10 +16,7 @@ export interface DiskSettings extends Partial<HyperbolicOptions> {
   maxSegments?: number;
   strokeTolerance?: number;
 }
-/** Synchronous bounded worker-friendly core. Not a native/UI representation yet.
- * Throws atomically on excess: consumers must keep the flat source recoverable.
- */
-export function deriveDisk(shapes: Geometry[], settings: DiskSettings) {
+function validateDiskSettings(settings: DiskSettings) {
   if (!validPQ(settings.p, settings.q)) throw Error('Poincaré: p/q enteros3–12 y (p−2)(q−2)>4.');
   const maximum = settings.maxSegments ?? 250000;
   if (
@@ -32,10 +29,26 @@ export function deriveDisk(shapes: Geometry[], settings: DiskSettings) {
     settings.toleranceMm <= 0
   )
     throw Error('Radio, precisión o presupuesto global inválidos.');
-  const source = prepareDiskSource(shapes, settings.p, settings.q, {
+  return maximum;
+}
+/** Synchronous bounded worker-friendly core. Not a native/UI representation yet.
+ * Throws atomically on excess: consumers must keep the flat source recoverable.
+ */
+export function deriveDisk(shapes: Geometry[], settings: DiskSettings) {
+  validateDiskSettings(settings);
+  return derivePreparedDisk(
+    prepareDiskSource(shapes, settings.p, settings.q, {
       strokeTolerance: settings.strokeTolerance,
     }),
-    patch = regularHyperbolicPatch(settings.p, settings.q, settings),
+    settings,
+  );
+}
+/** Reuse a finite prepared source without losing its clipping/outline provenance. */
+export function derivePreparedDisk(source: PreparedDiskSource, settings: DiskSettings) {
+  const maximum = validateDiskSettings(settings);
+  if (source.model.p !== settings.p || source.model.q !== settings.q)
+    throw Error('La fuente preparada corresponde a otra configuración p/q.');
+  const patch = regularHyperbolicPatch(settings.p, settings.q, settings),
     visible = visibleHyperbolicCells(patch, settings.minimumDiameter ?? 0.008);
   let remaining = maximum,
     curveProjectionBoundMm = 0,
@@ -82,6 +95,7 @@ export function deriveDisk(shapes: Geometry[], settings: DiskSettings) {
         requestedToleranceMm: settings.toleranceMm,
         outlineToleranceEstimateMm: outlineEstimateMm,
         hasUncertifiedOutlineStep: source.hasOutlinedStrokes,
+        hasUncertifiedClippingStep: source.hasUncertifiedClippingStep,
       },
       resources: {
         generated: patch.cells.length,

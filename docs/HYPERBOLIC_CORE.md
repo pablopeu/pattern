@@ -170,3 +170,51 @@ Todavía no está conectado a controles de la aplicación ni persistencia nativa
 celdas,21 ticks de respuesta durante el cálculo observado, fuente intacta,
 cancelación previa/activa, error de modelo inválido y nuevo trabajo posterior.
 905 pruebas/TypeScript correctos. Error {p,q} se valida antes de preparar fuente.
+
+## Fuente finita tomada de la escena plana
+
+`prepareFlatDiskSource` utiliza la ruta explícitamente plana del exportador,
+con un conjunto confirmado y selección de ventana (incluido origen X/Y), celda
+rectangular, celda de red o dominio fundamental. Expande las copias que cruzan
+el recorte, resuelve Fill vinculados y materializa el interior de teselas físicas.
+No edita el documento ni convierte una región finita en un teselado seamless.
+
+El contorneado se hace sobre el trazo original antes de recortarlo: conserva
+fase de guiones, perfil de presión, terminaciones y uniones. `ClippedPaint`
+transporta ID de fuente y rol relleno/trazo incluso a través de la materialización
+interna de teselas. La normalización para el disco conserva agujeros, reglas y
+opacidades; todos los rellenos quedan debajo de las líneas. No vuelve a
+contornear regiones que ya representan líneas.
+
+Presupuestos explícitos:256 regiones de pintura por defecto (máximo512),4096
+cúbicas por defecto (máximo24000), además de los límites previos de escena y
+exportación. La salida se rechaza entera si excede un presupuesto o está vacía.
+No se promete que estos límites aceleren por sí solos toda operación booleana.
+`derivePreparedDisk` verifica que la fuente se preparó para los mismos p/q.
+
+La cota certificada corresponde únicamente al mapeo de las cúbicas resultantes.
+`hasUncertifiedClippingStep` distingue las operaciones numéricas de Paper de esa
+cota; `hasUncertifiedOutlineStep` y la estimación del contorneado se conservan
+aunque los trazos ahora sean regiones rellenas. El informe de preparación
+incluye ventana real, tolerancia solicitada, IDs, advertencias y precisión no
+certificada. No declarar una precisión total certificada del proceso.
+
+`deriveProjectDiskInWorker` prepara la escena y proyecta dentro del mismo worker
+desechable: el hilo de UI no hace la expansión/recorte de la fuente. Conserva
+cancelación previa/activa y recuperación posterior. Verificaciones reproducibles:
+
+```bash
+node scripts/validate-v30-hyperbolic-worker.mjs
+node scripts/validate-v30-hyperbolic-flat-source.mjs
+```
+
+946 pruebas/TypeScript correctos;8 nuevas cubren huecos/opacidades, recorte con
+origen, guiones/presión, fuentes fuera de celda, procedencia de líneas en teselas,
+Fill real entre dos Bézier unidas en copias P3, presupuestos y p/q incompatibles.
+Chromium verifica85 celdas del worker de proyecto, fuente intacta y procedencia;
+la prueba de SVG/raster genera29 celdas y comprueba píxeles reales de hueco
+transparente, relleno azul y línea oscura, con cota de proyección≤0,005mm.
+Artefactos reproducibles en `.runtime/flat-source-proof.{svg,png}`.
+
+Todavía faltan contrato nativo, interfaz pública, modalidad artística, ejemplos
+de galería y exportaciones integradas; este incremento no completa Fase4.

@@ -2,6 +2,7 @@ import type { Geometry } from '../app/model';
 import type { Point } from '../geometry/matrix';
 import { apply } from '../geometry/matrix';
 import { hasFillBoundary } from '../geometry/paths';
+import type { ClippedPaint } from '../application/clipping';
 import { paperPath, scope } from '../geometry/paper';
 import { strokeRegion } from '../geometry/stroke-outline';
 import type { Iso } from '../vendor/poincare/iso';
@@ -22,6 +23,8 @@ export interface PreparedDiskSource {
    * It is NOT a certified bound of that algorithm, nor of the whole pipeline. */
   strokeOutlineTolerance: number;
   hasOutlinedStrokes: boolean;
+  hasUncertifiedClippingStep: boolean;
+  model: { p: number; q: number };
 }
 const defaults = { maxShapes: 256, maxCurves: 4096, maxSegments: 100000 };
 /** Consume a prepared finite flat source, not an infinite lattice/whole project.
@@ -33,6 +36,24 @@ export function prepareDiskSource(
   q: number,
   options: { strokeTolerance?: number; maxCurves?: number } = {},
 ): PreparedDiskSource {
+  validateSourceOptions(options);
+  if (shapes.length > defaults.maxShapes)
+    throw Error('La fuente supera256 objetos; prepará un recorte menor.');
+  const tolerance = options.strokeTolerance ?? 0.02,
+    visible = shapes.filter((s) => s.visible && s.opacity > 0),
+    paints: ClippedPaint[] = [];
+  for (const shape of visible)
+    if (hasFillBoundary(shape)) paints.push({ geometry: shape, sourceId: shape.id, paint: 'fill' });
+  for (const shape of visible)
+    if (shape.stroke !== 'none' && shape.strokeWidth > 0 && shape.strokeOpacity > 0)
+      paints.push({
+        geometry: strokeRegion(shape, undefined, tolerance),
+        sourceId: shape.id,
+        paint: 'stroke',
+      });
+  return preparePaintedDiskSource(paints, p, q, options);
+}
+function validateSourceOptions(options: { strokeTolerance?: number; maxCurves?: number }) {
   const tolerance = options.strokeTolerance ?? 0.02,
     maxCurves = options.maxCurves ?? defaults.maxCurves;
   if (
@@ -43,12 +64,25 @@ export function prepareDiskSource(
     maxCurves > 24000
   )
     throw Error('Precisión o presupuesto de fuente inválidos.');
-  if (shapes.length > defaults.maxShapes)
-    throw Error('La fuente supera256 objetos; prepará un recorte menor.');
+}
+/** Accept filled paint regions whose strokes were outlined BEFORE finite clipping.
+ * Source IDs and paint roles survive clipping; there is no second stroke expansion.
+ */
+export function preparePaintedDiskSource(
+  paints: ClippedPaint[],
+  p: number,
+  q: number,
+  options: { strokeTolerance?: number; maxCurves?: number; clipped?: boolean } = {},
+): PreparedDiskSource {
+  validateSourceOptions(options);
+  if (paints.length > defaults.maxShapes * 2)
+    throw Error('La fuente supera512 regiones de pintura; prepará un recorte menor.');
+  const tolerance = options.strokeTolerance ?? 0.02,
+    maxCurves = options.maxCurves ?? defaults.maxCurves;
   const contours: SourceContour[] = [],
     points: Point[] = [];
-  let curveCount = 0,
-    hasOutlinedStrokes = false;
+  let curveCount = 0;
+  const hasOutlinedStrokes = paints.some((entry) => entry.paint === 'stroke');
   const add = (shape: Geometry, sourceId: string, paint: SourceContour['paint']) => {
     if (shape.fill === 'none' || shape.opacity * shape.fillOpacity <= 0) return;
     const item = paperPath(shape);
@@ -93,13 +127,10 @@ export function prepareDiskSource(
       item.remove();
     }
   };
-  const visible = shapes.filter((s) => s.visible && s.opacity > 0);
-  for (const shape of visible) if (hasFillBoundary(shape)) add(shape, shape.id, 'fill');
-  for (const shape of visible)
-    if (shape.stroke !== 'none' && shape.strokeWidth > 0 && shape.strokeOpacity > 0) {
-      add(strokeRegion(shape, undefined, tolerance), shape.id, 'stroke');
-      hasOutlinedStrokes = true;
-    }
+  for (const role of ['fill', 'stroke'] as const)
+    for (const entry of paints)
+      if (entry.paint === role && entry.geometry.visible && entry.geometry.opacity > 0)
+        add(entry.geometry, entry.sourceId, entry.paint);
   if (!points.length) throw Error('La fuente no contiene regiones ni trazos visibles.');
   let left = Infinity,
     top = Infinity,
@@ -121,7 +152,14 @@ export function prepareDiskSource(
     contour.paths = contour.paths.map((path) =>
       path.map((c) => c.map((v) => apply(embedding.matrix, v)) as unknown as Cubic),
     );
-  return { contours, embedding, strokeOutlineTolerance: tolerance, hasOutlinedStrokes };
+  return {
+    contours,
+    embedding,
+    strokeOutlineTolerance: tolerance,
+    hasOutlinedStrokes,
+    hasUncertifiedClippingStep: options.clipped ?? false,
+    model: { p, q },
+  };
 }
 export interface ProjectedDiskContour {
   sourceId: string;
@@ -186,5 +224,6 @@ export function projectDiskSource(
       : 0,
     curveProjectionCertified: true,
     hasUncertifiedOutlineStep: source.hasOutlinedStrokes,
+    hasUncertifiedClippingStep: source.hasUncertifiedClippingStep,
   };
 }

@@ -1,7 +1,7 @@
 import { finiteGenerator } from '../aperiodic/model';
 import type { Pattern, Geometry, Region } from '../app/model';
 import { buildScene, expandedTransforms } from '../patterns/engine';
-import { clipGeometry } from '../application/clipping';
+import { clipPaintGeometry, type ClippedPaint } from '../application/clipping';
 import { IDENTITY } from '../geometry/matrix';
 import type { Bounds } from '../symmetry/groups';
 /** Export-only derived template; never replaces canonical source geometry. */
@@ -10,6 +10,7 @@ export function materializeTiling(
   view: Bounds,
   outlineStrokes = true,
   tolerance = 0.02,
+  onPaint?: (paint: ClippedPaint) => void,
 ): Pattern {
   const t = pattern.tiling;
   if (!t || finiteGenerator(pattern.generator)) return pattern;
@@ -25,7 +26,10 @@ export function materializeTiling(
     );
   for (const matrix of transforms)
     for (const source of inner.generated.geometry)
-      geometry.push(...clipGeometry(source, region, matrix, outlineStrokes, tolerance));
+      for (const paint of clipPaintGeometry(source, region, matrix, outlineStrokes, tolerance)) {
+        onPaint?.(paint);
+        geometry.push(paint.geometry);
+      }
   const original = scene.fills.map(({ geometry: g, matrices }) => ({
     ...g,
     fillRegion: {

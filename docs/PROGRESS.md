@@ -1208,3 +1208,22 @@ Confirmación de cierre: señal de fin de interacción diferida a microtarea des
 del snapping/commit de burbujeo. Nueva completa179/179(285,3s/exit0),938 unidades.
 Primaria90% usado: terminar checks/documentación/commit y esperar reset; no se
 inicia otro incremento. Monitor conserva timer real, secundaria sólo avisa.
+
+
+## Fase4 · Fuente finita desde escena, celda o ventana
+
+- Ruta plana compartida con exportación, con recorte de ventana desplazada,
+  celda rectangular/de red o dominio fundamental. Incluye copias que cruzan el
+  límite y Fill vinculado entre curvas de distintas instancias.
+- Regiones de pintura con ID/rol conservados al recortar y materializar teselas.
+  Guiones/perfiles contorneados antes del recorte; rellenos debajo de líneas,
+  huecos/reglas/opacidades conservados y fuente canónica intacta.
+- Presupuestos explícitos y fallo atómico; fuente preparada ligada a p/q.
+  Informe separa recorte numérico y contorneado de precisión del mapeo cúbico.
+- Worker prepara proyecto y proyecta dentro del hilo desechable, conserva
+  cancelación previa/activa y recuperación.946 unidades/TypeScript correctos,
+  8 nuevas de integración. Chromium:85 celdas del proyecto; SVG/raster29 celdas
+  con píxeles de transparencia/azul/contorno y cota de proyección≤0,005mm.
+- Regresión179/179(4,8min/exit0), build y10 estáticas raíz/subcarpeta correctos.
+  Logs flat-source-* en .runtime. Contrato nativo/UI/artística/ejemplos pendientes:
+  no completa Fase4. Servicios LAN conservados, sin feedback nuevo pendiente.

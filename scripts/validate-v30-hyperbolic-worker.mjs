@@ -5,8 +5,10 @@ try {
   const page = await browser.newPage();
   await page.goto('http://127.0.0.1:4173');
   const result = await page.evaluate(async () => {
-    const { deriveDiskInWorker } = await import('/src/hyperbolic/worker-client.ts'),
-      { geometry } = await import('/src/app/model.ts');
+    const { deriveDiskInWorker, deriveProjectDiskInWorker } = await import(
+        '/src/hyperbolic/worker-client.ts'
+      ),
+      { geometry, newProject } = await import('/src/app/model.ts');
     const shapes = [
         {
           ...geometry('compound', [], true),
@@ -50,11 +52,37 @@ try {
     } catch (error) {
       if (!error.message.includes('Poincaré')) throw error;
     }
+    const project = newProject(),
+      pat = project.patterns[0];
+    project.mainSymmetry = {
+      ...project.mainSymmetry,
+      family: 'wallpaper',
+      group: 'p1',
+      width: 20,
+      height: 20,
+    };
+    pat.sourceGeometry = [
+      { ...shapes[0], pathData: 'M22 2H26V6H22Z', stroke: '#111111', strokeWidth: 0.5 },
+    ];
+    const projectBefore = JSON.stringify(project),
+      prepared = await deriveProjectDiskInWorker(project, pat.id, { target: 'tile' }, settings);
+    if (
+      JSON.stringify(project) !== projectBefore ||
+      prepared.flatSource.target !== 'tile' ||
+      !prepared.report.numeric.hasUncertifiedClippingStep ||
+      !prepared.report.numeric.hasUncertifiedOutlineStep ||
+      !prepared.report.source.ids.includes(pat.sourceGeometry[0].id)
+    )
+      throw Error(
+        'Project worker lost the finite scene, source identity or preparation provenance',
+      );
     const next = await deriveDiskInWorker(shapes, settings);
     if (next.cells.length !== result.cells.length)
       throw Error('Fresh job failed after cancellation');
     return {
       cells: result.cells.length,
+      projectCells: prepared.cells.length,
+      finiteSourcePaints: prepared.flatSource.paints,
       ticks,
       sourceUnchanged: true,
       preAbort: true,

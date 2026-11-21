@@ -31,7 +31,12 @@ import {
 } from '../geometry/matrix';
 import { pathData, hasFillBoundary } from '../geometry/paths';
 import { buildScene, expandedTransforms, sceneScaleBound } from '../patterns/engine';
-import { geometryBounds, clipGeometry, regionData } from '../application/clipping';
+import {
+  geometryBounds,
+  clipPaintGeometry,
+  type ClippedPaint,
+  regionData,
+} from '../application/clipping';
 import {
   rectangularCell,
   latticeVectors,
@@ -137,11 +142,13 @@ export function svgPathAtTolerance(shape: Geometry, tolerance: number): string {
 export function svgDocument(content: string, bounds: Bounds, background?: string): string {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${bounds.width}mm" height="${bounds.height}mm" viewBox="${bounds.x} ${bounds.y} ${bounds.width} ${bounds.height}"><title>Pattern Studio 2D</title>${background ? `<rect x="${bounds.x}" y="${bounds.y}" width="${bounds.width}" height="${bounds.height}" fill="${escapeXML(background)}"/>` : ''}${content}</svg>`;
 }
-function preparePatternExport(
+/** Explicitly flat route, also used to prepare finite derived sources. */
+export function prepareFlatPatternExport(
   project: Project,
   options: ExportOptions,
   onProgress?: (n: number) => void,
   customBounds?: Bounds,
+  onPaint?: (paint: ClippedPaint) => void,
 ): ExportResult {
   const renderPath = (g: Geometry) => svgPathAtTolerance(g, options.tolerance);
   let pattern: Pattern | undefined = project.patterns.find((p) => p.id === options.patternId),
@@ -240,9 +247,18 @@ function preparePatternExport(
     height: Math.max(...corners.map((p) => p.y)) - Math.min(...corners.map((p) => p.y)),
   };
   const expanded = options.representation === 'expanded' || options.format === 'dxf';
+  const paintOrigins = new Map<string, ClippedPaint>();
   const scene = buildScene(
       expanded && tiling
-        ? materializeTiling(pattern, visible, options.outlineStrokes, options.tolerance)
+        ? materializeTiling(
+            pattern,
+            visible,
+            options.outlineStrokes,
+            options.tolerance,
+            (paint) => {
+              paintOrigins.set(paint.geometry.id, paint);
+            },
+          )
         : pattern,
       visible,
     ),
@@ -273,6 +289,12 @@ function preparePatternExport(
     );
   const motifTolerance = options.tolerance / sceneScaleBound(scene, placement),
     renderMotifPath = (g: Geometry) => svgPathAtTolerance(g, motifTolerance);
+  const collect = (...args: Parameters<typeof clipPaintGeometry>): Geometry[] =>
+    clipPaintGeometry(...args).map((paint) => {
+      const origin = paintOrigins.get(paint.sourceId);
+      onPaint?.(origin ? { ...paint, sourceId: origin.sourceId, paint: origin.paint } : paint);
+      return paint.geometry;
+    });
   const layers = sceneLayers(scene, pattern);
   if (expanded) {
     let count = 0;
@@ -280,7 +302,7 @@ function preparePatternExport(
       if (layer.kind === 'fill') {
         for (const m of layer.matrices)
           geometries.push(
-            ...clipGeometry(
+            ...collect(
               layer.geometry,
               cropRegion,
               multiply(placement, m),
@@ -294,7 +316,7 @@ function preparePatternExport(
           : transforms)
           for (const shape of layer.geometry) {
             geometries.push(
-              ...clipGeometry(
+              ...collect(
                 shape,
                 cropRegion,
                 multiply(placement, t),
@@ -308,7 +330,7 @@ function preparePatternExport(
   }
   if (expanded && tiling && options.includeTileOutlines)
     for (const contour of tileContours(tiling, tileInstances(tiling, visible)))
-      geometries.push(...clipGeometry(contour, cropRegion, placement, false, options.tolerance));
+      geometries.push(...collect(contour, cropRegion, placement, false, options.tolerance));
   const mask = region ? regionData(region) : latticeMask,
     motifDefs: string[] = [];
   let decorated = false;
@@ -447,11 +469,11 @@ export function prepareExport(
   onProgress?: (n: number) => void,
 ): ExportResult {
   if (options.scope !== 'composition' || options.target === 'application')
-    return preparePatternExport(project, options, onProgress);
+    return prepareFlatPatternExport(project, options, onProgress);
   const patterns = project.patterns.filter((p) => p.visible).map((p) => resolvePattern(p, project));
   if (!patterns.length) throw Error('La composición no tiene conjuntos visibles.');
   if (patterns.length === 1)
-    return preparePatternExport(
+    return prepareFlatPatternExport(
       { ...project, patterns },
       { ...options, scope: 'pattern', patternId: patterns[0].id },
       onProgress,
@@ -475,7 +497,7 @@ export function prepareExport(
     bounds = { x: 0, y: 0, ...cell };
   }
   const results = patterns.map((pat, i) =>
-    preparePatternExport(
+    prepareFlatPatternExport(
       { ...project, patterns: [pat] },
       { ...options, target: 'view', scope: 'pattern', patternId: pat.id, transparent: true },
       (n) => onProgress?.((i + n) / patterns.length),
