@@ -81,7 +81,6 @@ export function Panels({
   onImport,
   category,
   collapsed,
-  onCreateRegular,
   onCollapse,
   onExamples,
   onIsohedral,
@@ -90,7 +89,6 @@ export function Panels({
   onImport: () => void;
   category: Category;
   collapsed: boolean;
-  onCreateRegular: () => void;
   onCollapse: () => void;
   onExamples: () => void;
   onIsohedral: () => void;
@@ -103,14 +101,16 @@ export function Panels({
   useEffect(() => {
     if (s.compositionRequest) setTabs((old) => ({ ...old, symmetry: 'composition' }));
   }, [s.compositionRequest]);
-  const tab = tabs[category] ?? (category === 'layers' ? 'layers' : 'design');
+  const tab =
+    category === 'layers' && s.mode === 'apply'
+      ? 'layers'
+      : (tabs[category] ?? (category === 'layers' ? 'layers' : 'design'));
   useEffect(() => {
     scrollRef.current?.scrollTo(0, 0);
   }, [category, tab]);
   const setTab = (next: string) => setTabs((old) => ({ ...old, [category]: next }));
   const u = s.project.documentUnits,
-    selected = s.objects.filter((g) => s.selected.includes(g.id)),
-    shape = selected[0];
+    selected = s.objects.filter((g) => !g.locked && s.selected.includes(g.id));
   const updatePattern = (recipe: (p: Studio['pattern']) => void) =>
     s.change((p) => recipe(p.patterns.find((x) => x.id === s.pattern.id)!));
   const units = (value: number) => fromMM(value, u),
@@ -184,7 +184,7 @@ export function Panels({
           ×
         </button>
       </header>
-      {category === 'layers' && (
+      {category === 'layers' && s.mode !== 'apply' && (
         <div className="panel-tabs" role="tablist" aria-label="Organización">
           <button
             role="tab"
@@ -200,7 +200,7 @@ export function Panels({
             className={tab === 'layers' ? 'selected' : ''}
             onClick={() => setTab('layers')}
           >
-            <Layers size={15} /> Capas <span>{s.objects.length}</span>
+            <Layers size={15} /> Objetos <span>{s.objects.length}</span>
           </button>
         </div>
       )}
@@ -235,6 +235,9 @@ export function Panels({
       <div ref={scrollRef} className={`panel-scroll context-${category}`}>
         {category === 'layers' && tab === 'design' && s.mode !== 'apply' && (
           <div className="pattern-set-list" aria-label="Conjuntos de composición">
+            <p className="help-text">
+              Un conjunto agrupa varios trazos y rellenos. Una zona cerrada no crea otro conjunto.
+            </p>
             {s.project.patterns.map((p, i) => (
               <div
                 key={p.id}
@@ -255,7 +258,8 @@ export function Panels({
                       ? 'hereda'
                       : p.symmetryMode === 'free'
                         ? 'Libre'
-                        : p.symmetry.group}
+                        : p.symmetry.group}{' '}
+                    · {p.sourceGeometry.filter((g) => !g.fillRegion).length} trazos
                   </small>
                 </button>
                 <button
@@ -307,16 +311,22 @@ export function Panels({
         {category === 'symmetry' && tab === 'composition' && (
           <CompositionPanel studio={s} onExamples={onExamples} />
         )}
-        {category === 'tiles' && <TilePanel studio={s} expanded onIsohedral={onIsohedral} />}
+        {category === 'tiles' && (
+          <TilePanel key={s.pattern.id} studio={s} onIsohedral={onIsohedral} />
+        )}
         {category === 'layers' && tab === 'layers' ? (
           <>
             <div className="section-caption">
-              GEOMETRÍA FUENTE <span>{s.objects.length} objetos</span>
+              {s.mode === 'apply' ? 'OBJETOS DEL PERÍMETRO' : 'OBJETOS DEL CONJUNTO'}{' '}
+              <span>{s.objects.length} objetos</span>
             </div>
             <div className="layer-list">
               {s.objects.length === 0 && (
                 <p className="help-text">Dibujá una forma para agregar la primera capa.</p>
               )}
+              <p className="help-text">
+                Cada fila es un objeto. El candado evita seleccionarlo y editarlo; sigue visible.
+              </p>
               {[...s.objects].reverse().map((g) => (
                 <div
                   className={`layer-row ${s.selected.includes(g.id) ? 'selected' : ''}`}
@@ -324,6 +334,8 @@ export function Panels({
                 >
                   <button
                     className="layer-name"
+                    disabled={g.locked}
+                    title={g.locked ? 'Desbloqueá el objeto para editarlo' : 'Seleccionar objeto'}
                     onClick={(e) => {
                       s.setSelected(e.shiftKey ? [...new Set([...s.selected, g.id])] : [g.id]);
                       s.setInstance(IDENTITY);
@@ -353,13 +365,16 @@ export function Panels({
                     {g.visible ? <Eye size={14} /> : <EyeOff size={14} />}
                   </button>
                   <button
-                    title={g.locked ? 'Desbloquear' : 'Bloquear'}
-                    onClick={() =>
+                    title={g.locked ? 'Desbloquear para editar' : 'Bloquear para evitar cambios'}
+                    aria-label={`${g.locked ? 'Desbloquear' : 'Bloquear'} ${g.name}`}
+                    aria-pressed={g.locked}
+                    onClick={() => {
                       s.editObjects((gs) => {
                         const o = gs.find((x) => x.id === g.id)!;
                         o.locked = !o.locked;
-                      })
-                    }
+                      });
+                      if (!g.locked) s.setSelected((ids) => ids.filter((id) => id !== g.id));
+                    }}
                   >
                     {g.locked ? <Lock size={14} /> : <Unlock size={14} />}
                   </button>
@@ -401,74 +416,13 @@ export function Panels({
           </>
         ) : (
           <>
-            {category === 'shapes' && (
-              <div className="context-hint">
-                <strong>
-                  {s.tool === 'polygon'
-                    ? 'Polígono libre'
-                    : s.tool === 'rectangle'
-                      ? 'Rectángulo'
-                      : s.tool === 'ellipse'
-                        ? 'Elipse'
-                        : 'Formas paramétricas'}
-                </strong>
-                {s.tool === 'polygon' && (
-                  <p>Clic agrega vértices; Enter termina y Shift+Enter cierra el polígono libre.</p>
-                )}
-                <button className="wide-button" onClick={onCreateRegular}>
-                  Polígono paramétrico · crear
-                </button>
-                <p>
-                  Creá una figura regular; ajustá lados, tamaño y rotación en Objeto, a la derecha.
-                  El color y el trazo usan el estilo vigente.
-                </p>
-                {shape?.parameters && (
-                  <svg
-                    className="shape-context-preview"
-                    viewBox={`${shape.parameters.x - 5} ${shape.parameters.y - 5} ${shape.parameters.width + 10} ${shape.parameters.height + 10}`}
-                    aria-label="Vista previa de forma"
-                  >
-                    <path
-                      d={pathData(shape)}
-                      fill={shape.fill}
-                      stroke={shape.stroke}
-                      strokeWidth={shape.strokeWidth}
-                    />
-                  </svg>
-                )}
-              </div>
-            )}
-            {(category === 'drawing' || category === 'shapes') && shape && (
-              <button
-                className="wide-button"
-                onClick={() => {
-                  s.setStyleOpen(true);
-                  s.setStylePage('object');
-                }}
-              >
-                Propiedades de la selección · panel derecho
-              </button>
-            )}
-            {(category === 'drawing' || category === 'shapes') && !shape && (
-              <p className="context-hint">
-                {category === 'shapes'
-                  ? 'Elegí Rectángulo, Elipse o Polígono en la barra. El polígono regular (+) crea una forma con lados, tamaño y rotación editables.'
-                  : 'Elegí una herramienta en la barra o seleccioná un objeto para editar su geometría. Los colores y trazos están en el panel derecho.'}
-              </p>
-            )}
-            {category === 'application' && s.mode !== 'apply' && (
-              <div className="context-hint">
-                <p>Recortá un patrón dentro de un perímetro cerrado sin deformarlo.</p>
-                <button onClick={() => s.setMode('apply')}>Entrar en Aplicar</button>
-              </div>
-            )}
             {((category === 'layers' && s.mode !== 'apply') ||
               (category === 'application' && s.mode === 'apply')) && (
               <Section title={s.mode === 'apply' ? 'APPLICATION' : 'DESIGN'}>
                 {s.mode !== 'apply' ? (
                   <>
                     <Select
-                      label="Patrón activo"
+                      label="Conjunto activo"
                       value={s.pattern.id}
                       onChange={(id) => {
                         s.setPatternId(id);
@@ -486,10 +440,10 @@ export function Panels({
                           s.setSelected([]);
                         }}
                       >
-                        <Plus size={14} /> Nuevo patrón
+                        <Plus size={14} /> Nuevo conjunto
                       </button>
                       <button
-                        title="Duplicar patrón"
+                        title="Duplicar conjunto"
                         onClick={() => {
                           const p = structuredClone(s.pattern);
                           p.id = uid();
@@ -510,9 +464,9 @@ export function Panels({
                       </button>
                     </div>
                     <label className="text-field">
-                      <span>Nombre del patrón</span>
+                      <span>Nombre del conjunto</span>
                       <input
-                        aria-label="Nombre del patrón"
+                        aria-label="Nombre del conjunto"
                         value={s.pattern.name}
                         onChange={(e) =>
                           updatePattern((p) => {
@@ -1224,59 +1178,6 @@ export function Panels({
                   />
                 </label>
               </Section>
-            )}
-            {category === 'drawing' && (
-              <button
-                className="wide-button"
-                onClick={() => {
-                  s.setStylePage(s.tool === 'fill' ? 'fill' : 'stroke');
-                  s.setStyleOpen(true);
-                }}
-              >
-                {s.tool === 'fill' ? 'Color y opciones de relleno' : 'Color y opciones de trazo'}
-              </button>
-            )}
-            {category === 'drawing' && (
-              <div className="context-hint">
-                <strong>
-                  {
-                    {
-                      select: 'Seleccionar',
-                      nodes: 'Editar nodos Bézier',
-                      pen: 'Pluma Bézier',
-                      pencil: 'Dibujo libre',
-                      line: 'Línea',
-                      fill: 'Rellenar región',
-                      pan: 'Desplazar vista',
-                      region: 'Dibujar perímetro',
-                      rectangle: 'Rectángulo',
-                      ellipse: 'Elipse',
-                      polygon: 'Polígono libre',
-                    }[s.tool]
-                  }
-                </strong>
-                <p>
-                  {s.tool === 'fill'
-                    ? 'Hacé clic o tocá una región cerrada. El color queda aplicado; la tolerancia y los vínculos están en Fill, a la derecha.'
-                    : s.tool === 'nodes'
-                      ? 'Acercá un extremo a otro nodo para unir sus posiciones. Distancia en Preferencias → Atracción a nodos; Alt separa tangentes.'
-                      : s.tool === 'pen'
-                        ? 'Clic crea un nodo; arrastrá para dar tangentes. Enter termina, Shift+Enter cierra y Escape cancela.'
-                        : s.tool === 'pencil'
-                          ? 'Arrastrá para dibujar. Ajustá el grosor en Trazo y la variación de anchura en Perfil.'
-                          : 'Las herramientas de la barra actúan directamente en el lienzo. Los parámetros aparecen a la derecha.'}
-                </p>
-                <button
-                  onClick={() => {
-                    s.setStylePage(
-                      s.tool === 'fill' ? 'fill' : s.tool === 'nodes' ? 'object' : 'stroke',
-                    );
-                    s.setStyleOpen(true);
-                  }}
-                >
-                  Abrir opciones de la herramienta
-                </button>
-              </div>
             )}
           </>
         )}

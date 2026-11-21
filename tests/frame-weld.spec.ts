@@ -90,6 +90,7 @@ for (const width of [1440, 390])
     await expect.poll(async () => (await model(page))?.metadata.id).toBe(fixture.id);
     await assertJoined(page);
     await context(page, 'Simetrías');
+    await page.locator('.symmetry-frame-controls>summary').click();
     for (const [label, value] of [
       ['Origen X', '8'],
       ['Origen Y', '-7'],
@@ -99,9 +100,11 @@ for (const width of [1440, 390])
       await expect
         .poll(async () => {
           const p = (await model(page))!;
+          const sym =
+            p.patterns[0].symmetryMode === 'inherit' ? p.mainSymmetry : p.patterns[0].symmetry;
           return label === 'Orientación de red'
-            ? p.mainSymmetry.orientation
-            : p.mainSymmetry.origin[label.endsWith('X') ? 'x' : 'y'];
+            ? sym.orientation
+            : sym.origin[label.endsWith('X') ? 'x' : 'y'];
         })
         .toBe(Number(value));
       await assertJoined(page);

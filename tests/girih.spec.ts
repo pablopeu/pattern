@@ -8,7 +8,10 @@ async function open(page: Page) {
   await page.goto('/');
   await model(page);
   await context(page, 'Teselas');
-  await page.getByLabel('Categoría de teselación', { exact: true }).selectOption('girih');
+  await page
+    .getByRole('group', { name: 'Familias de teselas' })
+    .getByRole('button', { name: 'Girih', exact: true })
+    .click();
   await page.getByRole('button', { name: 'Activar Girih', exact: true }).click();
   await expect.poll(async () => (await model(page))!.patterns[0].generator.kind).toBe('girih');
 }
@@ -48,7 +51,11 @@ for (const viewport of [
     await page.reload();
     await model(page);
     await context(page, 'Teselas');
-    await expect(page.getByLabel('Categoría de teselación', { exact: true })).toHaveValue('girih');
+    await expect(
+      page
+        .getByRole('group', { name: 'Familias de teselas' })
+        .getByRole('button', { name: 'Girih', exact: true }),
+    ).toHaveAttribute('aria-pressed', 'true');
     expect((await model(page))!.patterns[0].generator.version).toBe(3);
   });
 test('Girih: une un borde, rechaza colisión y conserva custom al recargar', async ({ page }) => {

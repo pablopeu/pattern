@@ -1,6 +1,10 @@
 import { expect, type Page } from '@playwright/test';
 
 export async function context(page: Page, name: string) {
+  if (name === 'Aplicación') {
+    await page.getByRole('tab', { name: 'Aplicar', exact: true }).click();
+    return;
+  }
   await page.getByRole('button', { name: `Abrir ${name}`, exact: true }).click();
 }
 export async function styles(page: Page, tab: string) {
@@ -124,6 +128,16 @@ export async function field(page: Page, label: string) {
   ) {
     await context(page, 'Simetrías');
     await page.getByRole('tab', { name: 'Grupo y red', exact: true }).click();
+    const details = page.locator(
+      /Orientación de red|Origen [XY]|Centro [XY]/.test(label)
+        ? '.symmetry-frame-controls'
+        : '.symmetry-size-controls',
+    );
+    if (
+      (await details.count()) &&
+      !(await details.evaluate((el) => (el as HTMLDetailsElement).open))
+    )
+      await details.locator('summary').click();
   }
   if (
     [
@@ -166,7 +180,13 @@ export async function field(page: Page, label: string) {
     if (!(await advanced.evaluate((el) => (el as HTMLDetailsElement).open)))
       await advanced.locator('summary').click();
   }
-  const locator = page.getByLabel(label === 'Editar estilo de' ? 'Aplicar a' : label, {
+  const renamed: Record<string, string> = {
+    'Editar estilo de': 'Aplicar a',
+    'Editar simetría de': 'Cambiar simetría en',
+    'Simetría del conjunto': 'Repetición de este conjunto',
+    'Patrón activo': 'Conjunto activo',
+  };
+  const locator = page.getByLabel(renamed[label] ?? label, {
     exact: true,
   });
   await expect(locator).toBeVisible();

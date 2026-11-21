@@ -1586,6 +1586,13 @@ export function Canvas({
         tabIndex={0}
         viewBox={`${actualView.x} ${actualView.y} ${actualView.width} ${actualView.height}`}
         style={{ background: s.project.preferences.background }}
+        onPointerDownCapture={(e) => {
+          if (e.button === 0 && !previewOnly) s.interactionActive.current = true;
+        }}
+        // Let snapping and the bubble-phase commit finish before a deferred
+        // panel can change the SVG screen transform.
+        onPointerUpCapture={() => queueMicrotask(s.finishInteraction)}
+        onPointerCancelCapture={() => queueMicrotask(s.finishInteraction)}
         onPointerDown={pointerDown}
         onPointerMove={pointerMove}
         onPointerUp={pointerUp}

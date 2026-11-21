@@ -1,8 +1,8 @@
 {
-  "schemaVersion": 4,
+  "schemaVersion": 6,
   "drawingStyle": {
     "stroke": "#233b2d",
-    "fill": "none",
+    "fill": "#3b82f6",
     "strokeWidth": 0.65,
     "strokeCap": "round",
     "strokeJoin": "round",
@@ -53,15 +53,15 @@
   },
   "mainSymmetryProfiles": {},
   "metadata": {
-    "id": "1e7435d5-f152-4464-9a60-c9202d8d8413",
+    "id": "4f4a861d-51c1-4b9f-84e1-486dda4d0d9e",
     "name": "Hexagonal · p6m",
-    "createdAt": "2026-11-20T07:24:32.616Z",
-    "updatedAt": "2026-11-20T07:24:32.616Z"
+    "createdAt": "2026-11-21T16:35:16.357Z",
+    "updatedAt": "2026-11-21T16:35:16.357Z"
   },
   "documentUnits": "mm",
   "patterns": [
     {
-      "id": "9b95a660-93db-46b9-ab0d-c080dff5bc6a",
+      "id": "afb682f4-9a6e-42a7-b6fc-8be6f261af1d",
       "name": "Hexagonal · p6m",
       "sourceGeometry": [
         {
@@ -81,7 +81,7 @@
               }
             ]
           },
-          "id": "1bc1b7c2-ba57-4f9a-9e88-0e96e3c0da8e",
+          "id": "5af3407e-a027-4dd7-a6a2-eb0837356d38",
           "name": "Trazado",
           "kind": "path",
           "nodes": [
@@ -161,7 +161,7 @@
               }
             ]
           },
-          "id": "244cf868-f350-477a-b46e-badc2be15c8a",
+          "id": "33c59120-acea-4769-a7c6-43f168d2ff76",
           "name": "Elipse",
           "kind": "ellipse",
           "nodes": [],
@@ -269,6 +269,8 @@
     "structureOpacity": 0.22,
     "grid": false,
     "snap": false,
+    "snapRadiusPx": 8,
+    "snapNodes": true,
     "guides": true,
     "split": false,
     "background": "#f8faf5",

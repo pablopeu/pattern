@@ -2720,3 +2720,20 @@ input[type='color']::-webkit-color-swatch {
 .destructive-actions { display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; }
 .destructive-actions button { white-space:normal; min-height:40px; }
 @media(max-width:650px) { .destructive-actions {flex-direction:column;} .destructive-actions button {width:100%;} }
+
+/* Useful contexts only; construction families remain visible without a dropdown. */
+.symmetry-explore-actions {display:flex;align-items:stretch;gap:6px;}
+.symmetry-explore-actions .wide-button {flex:1;min-width:0;white-space:normal;line-height:1.25;}
+.favorite-current {display:grid;place-items:center;min-width:34px;border:1px solid var(--line);border-radius:6px;background:#fffdf5;color:#6f571e;}
+.favorite-current[aria-pressed=true] {background:#eee3c4;}
+.tile-family-cards {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:0 0 3px;}
+.tile-family-cards button {display:flex;align-items:center;justify-content:center;gap:4px;min-width:0;padding:7px 3px;border:1px solid var(--line);border-radius:6px;background:#fbfcf7;font-size:10px;}
+.tile-family-cards button[aria-pressed=true] {border-color:#607b54;background:#edf3e6;color:#273e2b;}
+.tile-family-cards svg {width:18px;height:22px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.2;}
+.layer-name:disabled {opacity:.7;cursor:default;}
+.pattern-set-list>.help-text {margin:0 0 8px;}
+.symmetry-frame-controls,.symmetry-size-controls {border-top:1px solid var(--line);padding-top:6px;}
+.symmetry-frame-controls>summary,.symmetry-size-controls>summary {font-size:11px;font-weight:600;cursor:pointer;padding:4px 0;}
+.symmetry-frame-controls[open]>summary,.symmetry-size-controls[open]>summary {margin-bottom:5px;}
+
+.gallery-controls>.select-field>span {min-height:28px;display:flex;align-items:flex-end;}

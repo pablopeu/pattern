@@ -443,12 +443,12 @@ test('duplicar patrón mantiene fuentes independientes', async ({ page }) => {
   await ready(page);
   await context(page, 'Capas');
   await page.getByRole('tab', { name: 'Conjuntos', exact: true }).click();
-  await page.getByRole('button', { name: 'Duplicar patrón', exact: true }).click();
+  await page.getByRole('button', { name: 'Duplicar conjunto', exact: true }).click();
   await expect.poll(async () => ((await model(page)) as any)?.patterns.length).toBe(2);
   const p: any = await model(page);
   expect(p.patterns[0].sourceGeometry[0].id).not.toBe(p.patterns[1].sourceGeometry[0].id);
   await context(page, 'Capas');
-  await page.getByRole('tab', { name: 'Capas', exact: false }).click();
+  await page.getByRole('tab', { name: 'Objetos', exact: false }).click();
   await page.locator('.layer-name').last().click();
   await styles(page, 'Objeto');
   await (await field(page, 'Nombre del objeto')).fill('Sólo cambia la copia');

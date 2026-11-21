@@ -16,7 +16,7 @@ import { Field, Toggle, Select } from './Controls';
 
 export function ObjectProperties({ studio: s }: { studio: Studio }) {
   const { nodeIndex, setNodeIndex } = s;
-  const selected = s.objects.filter((g) => s.selected.includes(g.id)),
+  const selected = s.objects.filter((g) => !g.locked && s.selected.includes(g.id)),
     shape = selected[0],
     u = s.project.documentUnits;
   const tab = s.objectTab;

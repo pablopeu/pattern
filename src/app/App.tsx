@@ -15,7 +15,7 @@ import { StylePanel, StyleIndicator } from '../ui/StylePanel';
 import logo from '../assets/icono.png';
 import { commonRectangularCell, resolvePattern } from '../symmetry/config';
 import { useState, useRef, useEffect } from 'react';
-import { categories, toolCategory, type Category } from '../ui/navigation';
+import { railCategories, type Category } from '../ui/navigation';
 import {
   Search,
   PaintBucket,
@@ -99,7 +99,7 @@ export default function App() {
     [examplesOpen, setExamplesOpen] = useState(false),
     [commandOpen, setCommandOpen] = useState(false),
     [collapsed, setCollapsed] = useState(() => innerWidth <= 900),
-    [category, setCategory] = useState<Category>('drawing'),
+    [category, setCategory] = useState<Category>('symmetry'),
     [help, setHelp] = useState(false),
     [referencesOpen, setReferencesOpen] = useState(false),
     [isohedralOpen, setIsohedralOpen] = useState(false),
@@ -110,11 +110,14 @@ export default function App() {
     s.setStyleOpen(false);
     setExportOpen(true);
   };
+  const deferredCategory = useRef<Category | null>(null);
+  useEffect(() => {
+    deferredCategory.current = null;
+  }, [s.project.metadata.id]);
   const openRef = useRef<HTMLInputElement>(null),
     svgRef = useRef<HTMLInputElement>(null),
     presetRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    setCategory(toolCategory(s.tool));
     if (s.tool === 'nodes') {
       s.setStylePage('object');
       s.setObjectTab('nodes');
@@ -122,7 +125,11 @@ export default function App() {
     }
   }, [s.tool]);
   useEffect(() => {
-    if (s.mode === 'apply') setCategory('application');
+    if (s.mode === 'apply') {
+      setCategory('application');
+      setCollapsed(false);
+      if (innerWidth <= 900) s.setStyleOpen(false);
+    }
   }, [s.mode]);
   useEffect(() => {
     const requested = s.styleRequest.current;
@@ -194,17 +201,30 @@ export default function App() {
     s.pendingAction,
   ]);
   const openCategory = (next: Category) => {
+    if (s.interactionActive.current) {
+      deferredCategory.current = next;
+      return;
+    }
     setCategory(next);
     setCollapsed(false);
     if (innerWidth <= 900) s.setStyleOpen(false);
   };
+  useEffect(() => {
+    if (s.interactionActive.current || !deferredCategory.current) return;
+    const next = deferredCategory.current;
+    deferredCategory.current = null;
+    setCategory(next);
+    setCollapsed(false);
+    if (innerWidth <= 900) s.setStyleOpen(false);
+  }, [s.interactionVersion]);
   const activateTool = (tool: Tool) => {
-    openCategory(toolCategory(tool));
+    if (tool === 'region') openCategory('application');
+    else setCollapsed(true);
     s.setTool(tool);
     if (tool === 'fill' && innerWidth <= 900) setCollapsed(true);
   };
   const createRegular = () => {
-    openCategory('shapes');
+    setCollapsed(true);
     const g = geometry('polygon', [], true);
     Object.assign(g, s.drawStyle);
     g.parameters = { x: 0, y: 0, width: 30, height: 30, radius: 0, sides: 6 };
@@ -331,7 +351,7 @@ export default function App() {
         activateTool(t.id);
       },
     })),
-    ...categories.map((c) => ({
+    ...railCategories.map((c) => ({
       id: `category-${c.id}`,
       label: `Abrir ${c.label}`,
       run: () => openCategory(c.id),
@@ -467,9 +487,21 @@ export default function App() {
               key={mode}
               role="tab"
               aria-selected={s.mode === mode}
+              title={
+                mode === 'edit'
+                  ? 'Editar el motivo y usar vista dividida'
+                  : mode === 'pattern'
+                    ? 'Ver y editar el patrón en una vista completa'
+                    : 'Recortar el patrón dentro de un perímetro cerrado'
+              }
               className={s.mode === mode ? 'active' : ''}
               onClick={() => {
                 s.setMode(mode);
+                if (mode === 'apply') {
+                  setCategory('application');
+                  setCollapsed(false);
+                  if (innerWidth <= 900) s.setStyleOpen(false);
+                }
                 if ((mode === 'apply') !== (s.mode === 'apply')) {
                   s.setSelected([]);
                   s.setTool('select');
@@ -538,7 +570,7 @@ export default function App() {
                     'crear un proyecto nuevo',
                     () => {
                       s.setMode('edit');
-                      setCategory('drawing');
+                      setCategory('symmetry');
                       setCollapsed(innerWidth <= 900);
                     },
                     { fresh: true },
@@ -629,7 +661,7 @@ export default function App() {
       <main className={`workspace ${collapsed ? 'panel-collapsed' : ''}`}>
         <nav className="tool-rail" aria-label="Herramientas y categorías">
           <div className="category-rail" role="group" aria-label="Categorías">
-            {categories.map(({ id, label }) => (
+            {railCategories.map(({ id, label }) => (
               <button
                 key={id}
                 title={label}
@@ -713,7 +745,6 @@ export default function App() {
           onCollapse={() => setCollapsed(true)}
           onExamples={openExamples}
           onIsohedral={openIsohedral}
-          onCreateRegular={createRegular}
           onImport={() => svgRef.current?.click()}
         />
         <section className="drawing-area">

@@ -4,7 +4,7 @@ import { X, Star } from 'lucide-react';
 import { sceneLayers } from '../patterns/layers';
 import { tiledMarkup } from '../tiling/render';
 import { tileBounds, tileWorldBounds } from '../tiling/tiles';
-import { cachedStructure, structureMarkup } from '../symmetry/structure';
+import { cachedStructure, structureMarkup, rotationOrder } from '../symmetry/structure';
 import { useEffect, useMemo, useRef, useState, memo } from 'react';
 import type { Studio } from '../app/useStudio';
 import type { Symmetry, Pattern } from '../app/model';
@@ -298,6 +298,17 @@ export function SymmetryGallery({
   }, [previewSignature, capturing]);
   const hover = (choice: SymmetryChoice) =>
     s.setSymmetryPreview({ target, patternId: s.pattern.id, choice });
+  const rotationCount = Math.max(
+    1,
+    ...cosets(confirmed)
+      .filter((m) => m[0] * m[3] - m[1] * m[2] > 0)
+      .map((m) =>
+        rotationOrder(m) === 2 && Math.abs(m[0] - 1) < 1e-7 && Math.abs(m[3] - 1) < 1e-7
+          ? 1
+          : rotationOrder(m),
+      ),
+  );
+  const fineOrientation = Math.round((18 / rotationCount) * 10) / 10;
   const previewCurrent = s.symmetryPreview
     ? candidateSymmetry(confirmed, profiles, s.symmetryPreview.choice)
     : confirmed;
@@ -326,54 +337,70 @@ export function SymmetryGallery({
       </summary>
       <div className="gallery-controls">
         <Select
-          label="Editar simetría de"
+          label="Cambiar simetría en"
           value={s.galleryTarget}
           onChange={(v) => {
             s.setSymmetryPreview(null);
             s.setGalleryTarget(v as 'pattern' | 'project');
           }}
           options={[
-            { value: 'pattern', label: 'Conjunto activo' },
-            { value: 'project', label: 'Composición principal' },
+            { value: 'pattern', label: 'Este conjunto' },
+            { value: 'project', label: 'Compartida' },
           ]}
         />
         <Select
-          label="Simetría del conjunto"
+          label="Repetición de este conjunto"
           value={s.pattern.symmetryMode}
           onChange={(v) => s.setSymmetryMode(v as 'own' | 'inherit' | 'free')}
           options={[
             { value: 'own', label: 'Propia' },
-            { value: 'inherit', label: 'Heredar principal' },
-            { value: 'free', label: 'Libre independiente' },
+            { value: 'inherit', label: 'Compartida' },
+            { value: 'free', label: 'Sin repetir' },
           ]}
         />
       </div>
       <div className="compact-symmetry">
-        <button className="wide-button primary-soft" onClick={() => setExpanded(true)}>
-          Explorar todas las simetrías · 27
-        </button>
-        {(['recent', 'favorites'] as const).map((kind) => (
-          <div className="symmetry-shortcuts" key={kind}>
-            <small>{kind === 'recent' ? 'Recientes' : 'Favoritos'}</small>
-            {(kind === 'recent' ? recent : favorites).slice(0, 4).map((key) => {
-              const choice = symmetryCatalog.find((c) => symmetryId(c) === key);
-              return (
-                choice && (
-                  <button
-                    key={key}
-                    title={`${choice.family} ${choice.group}`}
-                    onMouseEnter={() => hover(choice)}
-                    onMouseLeave={() => s.setSymmetryPreview(null)}
-                    onClick={() => choose(choice)}
-                  >
-                    {choice.group === 'none' ? 'Libre' : choice.group}
-                  </button>
-                )
-              );
-            })}
-            {!(kind === 'recent' ? recent : favorites).length && <span>—</span>}
-          </div>
-        ))}
+        <div className="symmetry-explore-actions">
+          <button className="wide-button primary-soft" onClick={() => setExpanded(true)}>
+            Explorar todas las simetrías · 27
+          </button>
+          <button
+            className="favorite-current"
+            aria-label={`Favorito actual ${confirmed.group}`}
+            aria-pressed={favorites.includes(symmetryId(confirmed))}
+            title="Agregar o quitar la simetría actual de favoritos"
+            onClick={() => favorite(symmetryId(confirmed))}
+          >
+            <Star
+              size={16}
+              fill={favorites.includes(symmetryId(confirmed)) ? 'currentColor' : 'none'}
+            />
+          </button>
+        </div>
+        {(['recent', 'favorites'] as const)
+          .filter((kind) => kind === 'recent' || favorites.length > 0)
+          .map((kind) => (
+            <div className="symmetry-shortcuts" key={kind}>
+              <small>{kind === 'recent' ? 'Recientes' : 'Favoritos'}</small>
+              {(kind === 'recent' ? recent : favorites).slice(0, 4).map((key) => {
+                const choice = symmetryCatalog.find((c) => symmetryId(c) === key);
+                return (
+                  choice && (
+                    <button
+                      key={key}
+                      title={`${choice.family} ${choice.group}`}
+                      onMouseEnter={() => hover(choice)}
+                      onMouseLeave={() => s.setSymmetryPreview(null)}
+                      onClick={() => choose(choice)}
+                    >
+                      {choice.group === 'none' ? 'Libre' : choice.group}
+                    </button>
+                  )
+                );
+              })}
+              {!(kind === 'recent' ? recent : favorites).length && <span>—</span>}
+            </div>
+          ))}
       </div>
       {expanded && (
         <Modal label="Catálogo de simetrías" className="symmetry-modal" onClose={closeGallery}>
@@ -540,77 +567,102 @@ export function SymmetryGallery({
           <>
             {confirmed.family !== 'none' && section === 'parameters' && (
               <>
-                <Field
-                  label="Orientación de red"
-                  value={confirmed.orientation}
-                  min={-180}
-                  max={180}
-                  unit="°"
-                  onChange={(v) => s.patchSymmetry({ orientation: v })}
-                />
-                <div className="two-fields">
-                  {(['x', 'y'] as const).map((axis) => (
+                <details
+                  className="symmetry-frame-controls"
+                  name={`symmetry-options-${s.pattern.id}`}
+                >
+                  <summary>Orientación y origen</summary>
+                  <div className="compact-fields">
                     <Field
-                      key={axis}
-                      label={`${confirmed.family === 'radial' ? 'Centro' : 'Origen'} ${axis.toUpperCase()}`}
-                      value={
-                        confirmed.family === 'radial'
-                          ? confirmed.center[axis]
-                          : confirmed.origin[axis]
-                      }
-                      unit="mm"
+                      label="Orientación de red"
+                      value={confirmed.orientation}
+                      min={-180}
+                      max={180}
+                      unit="°"
+                      slider
+                      sliderMin={-fineOrientation}
+                      sliderMax={fineOrientation}
                       step={0.1}
-                      onChange={(v) =>
-                        s.patchSymmetry(
-                          confirmed.family === 'radial'
-                            ? { center: { ...confirmed.center, [axis]: v } }
-                            : { origin: { ...confirmed.origin, [axis]: v } },
-                        )
-                      }
+                      onChange={(v) => s.patchSymmetry({ orientation: v })}
                     />
-                  ))}
-                </div>
-                {confirmed.family === 'radial' ? (
-                  <Field
-                    integer
-                    label="Sectores"
-                    value={confirmed.sectors}
-                    min={2}
-                    max={64}
-                    onChange={(v) => s.patchSymmetry({ sectors: v })}
-                  />
-                ) : (
-                  <>
-                    <Field
-                      label="Ancho de celda"
-                      value={confirmed.width}
-                      min={5}
-                      max={200}
-                      unit="mm"
-                      onChange={(v) => s.patchSymmetry({ width: v })}
-                    />
-                    {!/^p[346]/.test(confirmed.group) && (
+                    <div className="two-fields">
+                      {(['x', 'y'] as const).map((axis) => (
+                        <Field
+                          key={axis}
+                          label={`${confirmed.family === 'radial' ? 'Centro' : 'Origen'} ${axis.toUpperCase()}`}
+                          value={
+                            confirmed.family === 'radial'
+                              ? confirmed.center[axis]
+                              : confirmed.origin[axis]
+                          }
+                          unit="mm"
+                          step={0.1}
+                          slider
+                          sliderMin={-confirmed.width}
+                          sliderMax={confirmed.width}
+                          onChange={(v) =>
+                            s.patchSymmetry(
+                              confirmed.family === 'radial'
+                                ? { center: { ...confirmed.center, [axis]: v } }
+                                : { origin: { ...confirmed.origin, [axis]: v } },
+                            )
+                          }
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </details>
+                <details
+                  className="symmetry-size-controls"
+                  name={`symmetry-options-${s.pattern.id}`}
+                  open
+                >
+                  <summary>Tamaño de red</summary>
+                  <div className="compact-fields">
+                    {confirmed.family === 'radial' ? (
                       <Field
-                        label="Alto de celda"
-                        value={confirmed.height}
-                        min={5}
-                        max={200}
-                        unit="mm"
-                        onChange={(v) => s.patchSymmetry({ height: v })}
+                        integer
+                        label="Sectores"
+                        value={confirmed.sectors}
+                        min={2}
+                        max={64}
+                        onChange={(v) => s.patchSymmetry({ sectors: v })}
                       />
-                    )}{' '}
-                    {confirmed.family === 'wallpaper' && ['p1', 'p2'].includes(confirmed.group) && (
-                      <Field
-                        label="Ángulo de red"
-                        value={confirmed.angle}
-                        min={15}
-                        max={165}
-                        unit="°"
-                        onChange={(v) => s.patchSymmetry({ angle: v })}
-                      />
+                    ) : (
+                      <>
+                        <Field
+                          label="Ancho de celda"
+                          value={confirmed.width}
+                          min={5}
+                          max={200}
+                          unit="mm"
+                          onChange={(v) => s.patchSymmetry({ width: v })}
+                        />
+                        {!/^p[346]/.test(confirmed.group) && (
+                          <Field
+                            label="Alto de celda"
+                            value={confirmed.height}
+                            min={5}
+                            max={200}
+                            unit="mm"
+                            onChange={(v) => s.patchSymmetry({ height: v })}
+                          />
+                        )}{' '}
+                        {confirmed.family === 'wallpaper' &&
+                          ['p1', 'p2'].includes(confirmed.group) && (
+                            <Field
+                              label="Ángulo de red"
+                              value={confirmed.angle}
+                              min={15}
+                              max={165}
+                              unit="°"
+                              onChange={(v) => s.patchSymmetry({ angle: v })}
+                            />
+                          )}
+                      </>
                     )}
-                  </>
-                )}
+                  </div>
+                </details>
               </>
             )}
           </>

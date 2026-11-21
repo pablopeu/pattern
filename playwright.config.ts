@@ -23,6 +23,7 @@ export default defineConfig({
         '**/girih.spec.ts',
         '**/work-protection.spec.ts',
         '**/frame-weld.spec.ts',
+        '**/navigation-feedback.spec.ts',
       ],
   timeout: 45000,
   expect: { timeout: 8000 },

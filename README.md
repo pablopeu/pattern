@@ -85,13 +85,33 @@ durante la sesión y cambiar de contexto conserva el documento y la selección.
 
 | Contexto | Qué contiene |
 | --- | --- |
-| Dibujo | Herramienta activa, instrucciones de pluma/lápiz/Fill/nodos y acceso a sus opciones |
-| Formas | Polígono paramétrico con nombre y preview; figuras directas en la barra |
-| Simetrías | Selector activo, recientes/favoritos, catálogo completo, red, colocación, generadores y composición |
-| Teselas | Forma, colocación, bordes y tangentes |
-| Capas | Objetos y conjuntos, visibilidad, bloqueo y orden |
-| Aplicación | Perímetro, transformación y vínculo del patrón aplicado |
-| Preferencias | Nombre del documento, guías, snap, unidades y fondo |
+| Simetrías | Explorador, recientes/favoritos, red, colocación, generadores y composición |
+| Teselas | Familias visuales Encastre, Aperiódicas y Girih; catálogo IH y parámetros contextuales |
+| Capas | Objetos del conjunto, visibilidad, bloqueo y administración de conjuntos |
+| Preferencias | Guías, Snap, unidades y fondo |
+
+Dibujo y Formas no tienen otra entrada: sus herramientas actúan directamente y
+sus parámetros están a la derecha. El hexágono con **+** crea el polígono regular.
+**Aplicar**, arriba, abre directamente perímetros y colocación, sin otra entrada
+lateral. **Diseño** permite editar y dividir la vista; **Patrón** muestra una vista
+única completa y también permite editar. Los tres usan el mismo documento.
+
+En Simetrías, **Cambiar simetría en → Este conjunto** modifica sólo el activo;
+**Compartida** modifica la configuración seguida por los conjuntos que la usan.
+**Repetición de este conjunto** elige Propia, Compartida o Sin repetir. La estrella
+junto al explorador marca la actual como favorita. **Orientación y origen** reúne
+los deslizadores; su ajuste fino en P3 es provisionalmente±6°, con entrada numérica
+para otros valores. Al mover o girar la red, las uniones entre copias se conservan.
+
+![Simetrías, estrella de favorito y controles de orientación/origen](docs/images/navigation-symmetry.png)
+
+![Familias de Teselas visibles sin un desplegable inicial](docs/images/navigation-tiles.png)
+
+**Capas → Objetos** lista trazos, figuras y rellenos; el candado impide seleccionarlos,
+editarlos o borrarlos por accidente y permite desbloquearlos. **Conjuntos** agrupa
+muchos objetos: otra región cerrada sigue en el mismo conjunto hasta que elijas
+**Nuevo conjunto**. El activo indica dónde agregás los siguientes trazos. La
+[guía del espacio de trabajo](docs/WORKSPACE_GUIDE.md) explica estos controles y modos.
 
 A la derecha están **Trazo, Perfil, Fill, Paleta, Presets, Objeto y Opciones**.
 Fill comienza con azul y muestra el selector de color abierto; el campo HEX queda
@@ -268,7 +288,7 @@ favoritos locales. Hover previsualiza; clic confirma y se puede deshacer.
 
 ### Crear y ajustar un polígono regular
 
-Abrí **Formas → Polígono paramétrico · crear**. En el panel derecho,
+Pulsá el **hexágono con +** de la barra de herramientas. En el panel derecho,
 **Objeto → Forma** muestra lados, ancho, alto, rotación, relleno y trazo.
 Por ejemplo, elegí ocho lados y 42 × 42 mm; cada valor cambia la figura real.
 Para moverla o reflejarla usá **Transformar**; para convertirla a paths,
@@ -342,7 +362,7 @@ En el panel derecho, **Fill** ofrece color HEX/alfa y opacidad del relleno; **Tr
 El pie de página usa negro de alto contraste y destaca en negrita a 13px Patterns, ¿Te gustan los cuchillos? y PEU.NET; «Seguime en:» conserva el peso normal. Reúne los enlaces del autor en una línea: **Patterns — Hecho
 con pasión por un cuchillero. ¿Te gustan los cuchillos? Seguime en:**, con
 Instagram, X, Facebook, WhatsApp, Telegram y PEU.NET. En pantallas estrechas
-se puede recorrer horizontalmente. Los iconos de pestaña, favoritos y pantalla
+se apila para mantener todos los enlaces visibles, sin scroll horizontal. Los iconos de pestaña, favoritos y pantalla
 de inicio usan los archivos actualizados aportados en favicon_io.zip; el manifest
 conserva rutas relativas para raíz y subcarpetas. Sus URLs incluyen una revisión
 para actualizar también los iconos que el navegador tenía en caché.
@@ -471,13 +491,13 @@ npm run test:e2e
 npm run benchmark
 ```
 
-Avance v3.0: **907 pruebas unitarias/TypeScript**, **170 flujos E2E** de las funciones públicas y **10 pruebas estáticas** verificadas. Las fases0–3 incluyen93 IH, composición, Hat/Spectre y Girih. La fase4 tiene un núcleo Poincaré probado; su interfaz, persistencia y exportador final siguen pendientes. Estado detallado: [aceptación v3.0](docs/ACCEPTANCE_V30.md).
+Avance v3.0: **938 pruebas unitarias/TypeScript**, **179 flujos E2E** de las funciones públicas y **10 pruebas estáticas** verificadas. Las fases0–3 incluyen93 IH, composición, Hat/Spectre y Girih. La fase4 tiene un núcleo Poincaré probado; su interfaz, persistencia y exportador final siguen pendientes. Estado detallado: [aceptación v3.0](docs/ACCEPTANCE_V30.md).
 
 Baseline histórico v2.3: **203 pruebas unitarias, 94 flujos E2E, 9 pruebas del monitor y 6 pruebas estáticas**. Se conservan los 75 recorridos anteriores. Builds raíz/subdirectorio y validación independiente de exportaciones correctos.
 
 El benchmark necesita el servidor de desarrollo. Las pruebas estáticas y la validación independiente de archivos se explican en [TESTING.md](docs/TESTING.md). Resultados anteriores: [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md). Auditoría UX: [docs/ACCEPTANCE_V23.md](docs/ACCEPTANCE_V23.md) e [inventario de funciones](docs/UX_V23_INVENTORY.md).
 
-Para regenerar las cinco capturas y los cuatro JSON de ejemplo de este README con el servidor local activo: `node scripts/capture-readme.mjs`. Se usa un navegador aislado; no se modifican los proyectos del navegador del usuario.
+Las capturas de navegación se regeneran con `node scripts/capture-navigation-feedback.mjs` y la confirmación con `node scripts/capture-work-protection.mjs`. Para regenerar las cinco capturas y los cuatro JSON básicos con el servidor local activo: `node scripts/capture-readme.mjs`. Se usa un navegador aislado; no se modifican los proyectos del navegador del usuario.
 
 ### Monitor de cupo y feedback
 

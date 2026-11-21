@@ -10,25 +10,21 @@ import { IsohedralControls } from './IsohedralControls';
 import { newIsohedral, isohedralConstraints } from '../isohedral/engine';
 import { isohedralDefinition } from '../tiling/tiles';
 import { splitCanonicalEdge } from '../isohedral/edit';
-export function TilePanel({
-  studio: s,
-  expanded = false,
-  onIsohedral,
-}: {
-  studio: Studio;
-  expanded?: boolean;
-  onIsohedral: () => void;
-}) {
+export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohedral: () => void }) {
   const [family, setFamily] = useState(
-    finiteGenerator(s.pattern.generator) ? 'aperiodic' : 'periodic',
+    s.pattern.generator.kind === 'girih'
+      ? 'girih'
+      : finiteGenerator(s.pattern.generator)
+        ? 'aperiodic'
+        : 'periodic',
   );
   useEffect(() => {
     if (s.pattern.generator.kind === 'girih') setFamily('girih');
     else if (finiteGenerator(s.pattern.generator)) setFamily('aperiodic');
   }, [s.pattern.id, s.pattern.generator.kind]);
-  const tab = s.tileTab;
-  const tile = s.pattern.tiling,
-    e = tile ? Math.min(s.tileEdge, tile.edges.length - 1) : 0,
+  const tile = s.pattern.tiling;
+  const tab = tile ? s.tileTab : 'shape';
+  const e = tile ? Math.min(s.tileEdge, tile.edges.length - 1) : 0,
     edge = tile?.edges[e],
     n = edge ? Math.min(s.tileNode, edge.length - 1) : 0,
     selected = edge?.[n];
@@ -41,61 +37,70 @@ export function TilePanel({
     s.setInstanceExplicit(false);
   };
   return (
-    <details className="tile-panel" open={expanded}>
-      <summary>
-        <select
-          aria-label="Categoría de teselación"
-          className="tile-family-select"
-          value={family}
-          onChange={(e) => setFamily(e.target.value)}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <option value="periodic">Encastre</option>
-          <option value="aperiodic">Aperiódicas</option>
-          <option value="girih">Girih</option>
-        </select>
-        <strong>
-          {family === 'girih'
-            ? 'Girih'
-            : family === 'aperiodic'
-              ? 'Parche finito'
-              : tile?.isohedral
-                ? `IH${tile.isohedral.type}`
-                : tile
-                  ? tileNames[tile.kind]
-                  : 'Desactivadas'}
-        </strong>
-      </summary>
+    <section className="tile-panel" aria-label="Construcción de teselas">
+      <div className="tile-family-cards" role="group" aria-label="Familias de teselas">
+        {(
+          [
+            [
+              'periodic',
+              'Encastre',
+              'M2 2h13v13H2z M17 2h13v13H17z M2 17h13v13H2z M17 17h13v13H17z',
+            ],
+            [
+              'aperiodic',
+              'Aperiódicas',
+              'M2 8L14 2L20 12L30 18L20 30L10 23L2 25Z M14 2L14 17L2 25 M14 17L30 18',
+            ],
+            ['girih', 'Girih', 'M16 1L20 11L31 11L22 18L25 30L16 23L7 30L10 18L1 11L12 11Z'],
+          ] as const
+        ).map(([id, label, d]) => (
+          <button
+            key={id}
+            aria-pressed={family === id}
+            onClick={() => {
+              setFamily(id);
+              s.setTileTab('shape');
+            }}
+          >
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+              <path d={d} />
+            </svg>
+            <span>{label}</span>
+          </button>
+        ))}
+      </div>
       {family === 'girih' ? (
         <GirihPanel studio={s} />
       ) : family === 'aperiodic' ? (
         <AperiodicPanel studio={s} />
       ) : (
         <>
-          <div className="context-tabs" role="tablist" aria-label="Opciones de tesela">
-            {(['shape', 'placement', 'edge', 'tangents'] as const)
-              .filter((id) => !!tile || id === 'shape')
-              .map((id) => (
-                <button
-                  key={id}
-                  role="tab"
-                  aria-selected={tab === id}
-                  onClick={() => {
-                    s.setTileTab(id);
-                    if (id === 'edge' || id === 'tangents') s.setTileEditing(true);
-                  }}
-                >
-                  {
+          {tile && (
+            <div className="context-tabs" role="tablist" aria-label="Opciones de tesela">
+              {(['shape', 'placement', 'edge', 'tangents'] as const)
+                .filter((id) => !!tile || id === 'shape')
+                .map((id) => (
+                  <button
+                    key={id}
+                    role="tab"
+                    aria-selected={tab === id}
+                    onClick={() => {
+                      s.setTileTab(id);
+                      if (id === 'edge' || id === 'tangents') s.setTileEditing(true);
+                    }}
+                  >
                     {
-                      shape: 'Forma',
-                      placement: 'Colocación',
-                      edge: 'Bordes',
-                      tangents: 'Tangentes',
-                    }[id]
-                  }
-                </button>
-              ))}
-          </div>
+                      {
+                        shape: 'Forma',
+                        placement: 'Colocación',
+                        edge: 'Bordes',
+                        tangents: 'Tangentes',
+                      }[id]
+                    }
+                  </button>
+                ))}
+            </div>
+          )}
           <div className="tile-controls compact-fields">
             <div hidden={tab !== 'shape'} className="compact-fields">
               <p className="help-text" hidden={iso}>
@@ -425,6 +430,6 @@ export function TilePanel({
           </div>
         </>
       )}
-    </details>
+    </section>
   );
 }

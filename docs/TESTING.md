@@ -345,3 +345,20 @@ diagnósticos locales; fórmulas/resultados y comandos en HYPERBOLIC_CORE.md.
 La interfaz pública no incorpora aún esta familia, por lo que la regresión
 UI completa vigente sigue164/164 de Fase3, y10 estáticas del build con avisos MIT.
 No declarar el PRD completo a partir de estos diagnósticos headless.
+
+
+## Feedback de navegación y marcos ·21/11/2026
+
+938 unidades/TypeScript;179/179 E2E(285,3s),10 estáticas y build finales correctos.
+Red rígida con fuentes intactas/Fill actualizado; lente P3 real de dos Bézier en
+copias diferentes, píxel de exportación azul, ambos snaps, undo/redo/recarga.
+Captura por Ctrl+K durante trazo conserva exactamente sus extremos aunque se
+haya solicitado otro contexto; no se fuerza el puntero ni se debilitan aserciones.
+
+Navegación a cuatro resoluciones, categorías retiradas, favoritos directos,
+sliders, alcance propio/compartido, panel vacío tras Bordes→Nuevo, dos áreas en
+un conjunto y nuevo conjunto explícito. Candado probado contra modificación/
+borrado, permite visibilidad/desbloqueo. Nueva guía/capturas en README.
+Logs .runtime/navigation-feedback-* y frame-weld-*. Primera completa169/179
+identificó fixtures de textos/alcance/overlay y fallos de espacio/captura,
+corregidos antes de la pasada final. Ver WORKSPACE_GUIDE.md para conducta actual.

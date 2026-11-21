@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 4,
+  "schemaVersion": 6,
   "drawingStyle": {
     "stroke": "#233b2d",
     "fill": "#dfc48d",
@@ -53,10 +53,10 @@
   },
   "mainSymmetryProfiles": {},
   "metadata": {
-    "id": "006fe2ce-8fef-468c-bc2d-b48d1314a3c7",
+    "id": "aa709a46-7ef5-4409-b77b-d861d699f16f",
     "name": "Teselas hexagonales curvas",
-    "createdAt": "2026-11-20T07:24:38.094Z",
-    "updatedAt": "2026-11-20T07:24:39.469Z"
+    "createdAt": "2026-11-21T16:35:22.984Z",
+    "updatedAt": "2026-11-21T16:35:24.799Z"
   },
   "documentUnits": "mm",
   "patterns": [
@@ -190,7 +190,7 @@
           ]
         ]
       },
-      "id": "d8f5c0bb-8429-4d6f-8f3d-07c27c0306ac",
+      "id": "d1bbb22c-6dfc-4e26-8da7-f3884e9c438f",
       "name": "Patrón 01",
       "sourceGeometry": [
         {
@@ -200,11 +200,11 @@
             "scope": "tile",
             "linked": true,
             "status": "linked",
-            "faceKey": "tile/d8f5c0bb-8429-4d6f-8f3d-07c27c0306ac",
+            "faceKey": "tile/d1bbb22c-6dfc-4e26-8da7-f3884e9c438f",
             "topologyKey": "tile-interior",
             "refs": [],
             "inputs": [],
-            "context": "[{\"id\":\"d8f5c0bb-8429-4d6f-8f3d-07c27c0306ac\",\"kind\":\"hexagon\"}]",
+            "context": "[{\"id\":\"d1bbb22c-6dfc-4e26-8da7-f3884e9c438f\",\"kind\":\"hexagon\"}]",
             "captureMatrix": [
               1,
               0,
@@ -241,7 +241,7 @@
               }
             ]
           },
-          "id": "ec3db560-3297-4bf0-82a5-1ba19cceced5",
+          "id": "16bf568c-2330-4840-9f07-f2276962be9b",
           "name": "Relleno de tesela",
           "kind": "path",
           "nodes": [
@@ -429,7 +429,7 @@
               }
             ]
           },
-          "id": "4fd06f87-d890-4f9a-8c90-a976b71a2b41",
+          "id": "cb4bfa12-0fe6-4cbc-be81-e089fc84698f",
           "name": "Elipse",
           "kind": "ellipse",
           "nodes": [],
@@ -480,7 +480,7 @@
               }
             ]
           },
-          "id": "a0b7e09d-2161-4db9-a57d-5d79e24b1470",
+          "id": "6d3bd027-dc69-491c-8b1b-42da6b34cd5a",
           "name": "Trazado",
           "kind": "path",
           "nodes": [
@@ -605,6 +605,8 @@
     "structureOpacity": 0.22,
     "grid": false,
     "snap": false,
+    "snapRadiusPx": 8,
+    "snapNodes": true,
     "guides": true,
     "split": false,
     "background": "#f8faf5",

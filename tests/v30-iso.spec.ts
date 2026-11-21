@@ -11,7 +11,8 @@ async function project(page: Page) {
 async function catalog(page: Page) {
   await context(page, 'Teselas');
   const panel = page.getByRole('complementary', { name: 'Panel contextual' });
-  await panel.getByRole('tab', { name: 'Forma', exact: true }).click();
+  if (await panel.getByRole('tab', { name: 'Forma', exact: true }).isVisible())
+    await panel.getByRole('tab', { name: 'Forma', exact: true }).click();
   await panel.getByRole('button', { name: 'Explorar catálogo IH1–IH93', exact: true }).click();
   return page.getByRole('dialog', { name: 'Catálogo isoédrico' });
 }

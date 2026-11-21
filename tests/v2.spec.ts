@@ -94,7 +94,8 @@ test('AC-21/29/30/31: Libre, miniaturas reales, hover puro y confirmación por t
   await button.focus();
   await button.press('Enter');
   await saved(page);
-  expect((await model(page))?.mainSymmetry.group).toBe('p4m');
+  expect((await model(page))?.patterns[0].symmetry.group).toBe('p4m');
+  expect((await model(page))?.patterns[0].symmetryMode).toBe('own');
   await expect(page.getByRole('button', { name: 'Línea', exact: true })).toHaveAttribute(
     'aria-pressed',
     'true',
@@ -107,7 +108,8 @@ test('AC-21/29/30/31: Libre, miniaturas reales, hover puro y confirmación por t
   expect((await model(page))?.patterns[0].sourceGeometry).toHaveLength(1);
   await page.getByRole('button', { name: 'Rehacer', exact: true }).click();
   await saved(page);
-  expect((await model(page))?.mainSymmetry.group).toBe('p4m');
+  expect((await model(page))?.patterns[0].symmetry.group).toBe('p4m');
+  expect((await model(page))?.patterns[0].symmetryMode).toBe('own');
   await line(page, [30, 30], [38, 42]);
   await catalog(page);
   await expect(thumb).not.toHaveAttribute('src', original!);
@@ -275,7 +277,7 @@ test('AC-36: conjuntos heredados, propios y libres se editan y componen sin fals
   await page.getByRole('button', { name: 'Seleccionar', exact: true }).click();
   await context(page, 'Simetrías');
   await clickAt(page, 74, 11);
-  await expect(page.getByLabel('Simetría del conjunto', { exact: true })).toHaveValue('free');
+  await expect(page.getByLabel('Repetición de este conjunto', { exact: true })).toHaveValue('free');
   for (const [x, y, name, index] of [
     [74, 11, 'Libre editado', 2],
     [43, 11, 'Radial editado', 1],
@@ -314,7 +316,8 @@ test('AC-27: el contexto se conserva al confirmar un grupo con el puntero captur
   await page.mouse.up();
   await saved(page);
   const p = (await model(page))!;
-  expect(p.mainSymmetry.group).toBe('p6m');
+  expect(p.patterns[0].symmetry.group).toBe('p6m');
+  expect(p.mainSymmetry.group).toBe('none');
   expect(p.patterns[0].sourceGeometry).toHaveLength(1);
   expect(p.patterns[0].sourceGeometry[0].nodes.map((n) => [n.x, n.y])).toEqual([
     [10, 10],
@@ -367,14 +370,14 @@ test('AC-30/31: flechas, Espacio y toque confirman opciones sin reiniciar la her
     const first = page.getByRole('button', { name: 'Simetría p1', exact: true });
     await first.tap();
     await saved(page);
-    expect((await model(page))!.mainSymmetry.group).toBe('p1');
+    expect((await model(page))!.patterns[0].symmetry.group).toBe('p1');
     await first.focus();
     await first.press('ArrowRight');
     await expect(page.getByRole('button', { name: 'Simetría p2', exact: true })).toBeFocused();
-    expect((await model(page))!.mainSymmetry.group).toBe('p1');
+    expect((await model(page))!.patterns[0].symmetry.group).toBe('p1');
     await page.keyboard.press('Space');
     await saved(page);
-    expect((await model(page))!.mainSymmetry.group).toBe('p2');
+    expect((await model(page))!.patterns[0].symmetry.group).toBe('p2');
     await expect(page.getByRole('button', { name: 'Dibujo libre', exact: true })).toHaveAttribute(
       'aria-pressed',
       'true',
@@ -432,7 +435,7 @@ test('AC-31: deshacer un conjunto activo permite seguir dibujando en el conjunto
   await ready(page);
   await context(page, 'Capas');
   await page.getByRole('tab', { name: 'Conjuntos', exact: true }).click();
-  await page.getByRole('button', { name: 'Nuevo patrón', exact: true }).click();
+  await page.getByRole('button', { name: 'Nuevo conjunto', exact: true }).click();
   await saved(page);
   expect((await model(page))!.patterns).toHaveLength(2);
   await page.getByRole('button', { name: 'Deshacer', exact: true }).click();

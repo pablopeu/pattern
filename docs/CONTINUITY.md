@@ -1,3 +1,39 @@
+# Feedback193816e verificado · Retomar Fase4 tras cierre de ventana
+
+Menús simplificados: cuatro contextos izquierdos, herramientas directas/derecha,
+Aplicar arriba abre su contexto. Este conjunto sólo afecta el activo; al editar
+un heredado pasa a propia. Compartida afecta sólo heredados. Favorito actual
+accesible, sliders de orientación/origen en grupos cortos; límite fino P3±6°
+provisional (pregunta opcional6°/60° sin respuesta, se siguió el ejemplo6°).
+Objetos frente a conjuntos explicado; candado efectivo para selección/edición/
+borrado. Teselas con tarjetas de familia, sin Forma aislada ni panel vacío al
+volver desde Bordes a un estudio nuevo.
+
+Fallo Bézier/cierre de red: aad408a mueve motivo con marco rígido sin alterar
+fuentes/uniones, transporta refs de Fill con movimiento común. Editor de conjuntos
+y UI posteriores incluyen alcance independiente correcto. Apertura de panel
+durante captura real de puntero se difiere hasta finalizar, manteniendo puntos.
+938 unidades/TypeScript,179 E2E(285,3s/exit0),10 estáticas/build finales correctos.
+Guía WORKSPACE_GUIDE.md responde todas las dudas de Pablo; README e imágenes
+reales actualizados,4 JSON básicos validados por roundtrip en captura.
+
+Cierre verificado: primaria90% usado; timer confirmado21/11/2026
+17:33:05 ART (reset primario+60s). Feedback193816e implementado y respondido
+en WORKSPACE_GUIDE.md; marcar revisado con el commit. Antes de más trabajo
+leer feedback nuevo y Git/cupo. No repetir pruebas amplias
+si no cambia el código o aparece un fallo. Servicios4173/4174 conservados;
+publicar commits autorizados en main sin inspeccionar Actions/FTP.
+
+Fases0–3 verificadas; Fase4 sólo núcleo Poincaré/compositor/worker, sin función
+pública todavía. Pendiente preparar fuente desde escena/celda/ventana (contornear
+trazos ANTES del recorte para preservar perfiles/dash, contabilizar error de
+preparación aparte de cota de proyección), contrato nativo separado de generador
+con migración/rechazo de lector viejo, UI fuente/regreso/cancelación, modalidad
+artística, ejemplos y exportaciones físicas. Fases5–7 pendientes.
+No PROJECT_COMPLETE. Sólo primaria5h pausa al90% usado; secundaria avisa.
+
+---
+
 # Feedback193816e · Continuar simplificación de UX y explicaciones
 
 Protección del trabajo/orden monitor completa y publicada3488de2:907 unidades,

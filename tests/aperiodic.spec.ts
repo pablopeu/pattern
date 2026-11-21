@@ -8,7 +8,10 @@ async function open(page: Page, kind = 'hat') {
   await page.goto('/');
   await model(page);
   await context(page, 'Teselas');
-  await page.getByLabel('Categoría de teselación', { exact: true }).selectOption('aperiodic');
+  await page
+    .getByRole('group', { name: 'Familias de teselas' })
+    .getByRole('button', { name: 'Aperiódicas', exact: true })
+    .click();
   await page.getByLabel('Construcción aperiódica', { exact: true }).selectOption(kind);
   await model(page);
 }

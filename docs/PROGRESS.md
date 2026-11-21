@@ -1172,3 +1172,39 @@ continuidad se publica en commit separado. No se inició otro incremento.
   también correctas en la primera corrida. Regresión completa se hará con la UX.
 - Continúa feedback193816e: simplificar entradas izquierdas, aclarar conjuntos/
   candados/modos, favoritos accesibles, sliders y entrada visual a Teselas.
+
+
+## Feedback193816e · Navegación útil, controles y bloqueo verificados
+
+- Rail izquierdo reducido a Simetrías/Teselas/Capas/Preferencias. Herramientas
+  directas y propiedades a la derecha; polígono regular en hexágono+. Aplicar
+  arriba abre sus controles, cierra el derecho en móvil y puede reabrirse.
+- Alcance explícito: Este conjunto cambia sólo el activo (pasa a propia si
+  heredaba); Compartida sólo afecta los que la usan. Favorito actual accesible
+  por estrella, recientes conservados. Red en grupos cortos excluyentes de
+  tamaño y orientación/origen; tres sliders, P3 ajuste fino±6° provisional
+  según ejemplo recibido, campo numérico preserva otros valores.
+- Teselas con tarjetas Encastre/Aperiódicas/Girih; Forma sólo con opciones reales.
+  Corregido panel vacío tras nuevo estudio con última pestaña Bordes/Tangentes.
+- Objetos y conjuntos distinguidos; filas muestran cantidad de trazos. Candado
+  impide seleccionar, modificar y borrar; visibilidad/desbloqueo siguen disponibles.
+  Protegido también frente a recetas de edición y selección residual.
+- Abrir otro contexto durante un puntero capturado se difiere hasta terminar el
+  gesto: mantiene las coordenadas originales y permite cambiar de grupo con Ctrl+K.
+  La señal sigue el puntero real, independiente del historial/gestos de paneles.
+-938 unidades/TypeScript,179/179 E2E(285,3s/exit0),10 estáticas raíz/subcarpeta
+  y build finales correctos. Primera completa169/179: fixtures de alcance/labels,
+  dos desbordes de paleta por pocos píxeles y regresión de reflujo durante captura;
+  todos corregidos. Captura fija volvió a pasar con los mismos puntos esperados.
+- Guía WORKSPACE_GUIDE.md responde todas las dudas; README/capturas reales y4 JSON
+  básicos regenerados. Script de capturas espera Fill aplicado aunque el antiguo
+  banner esté oculto, y luego el guardado. No vuelve a mostrar un banner permanente.
+- Fases0–3 verificadas. Fase4 sigue sin contrato nativo/UI/artística/exportador
+  público; no declarar PRD completo. Próximo: fuente preparada desde escena/celda/
+  recorte con estilos contorneados, versión nativa y flujo plano→derivada→fuente.
+
+
+Confirmación de cierre: señal de fin de interacción diferida a microtarea después
+del snapping/commit de burbujeo. Nueva completa179/179(285,3s/exit0),938 unidades.
+Primaria90% usado: terminar checks/documentación/commit y esperar reset; no se
+inicia otro incremento. Monitor conserva timer real, secundaria sólo avisa.

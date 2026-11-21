@@ -27,6 +27,10 @@ export function patchSymmetryFrame(
   else {
     const p = project.patterns.find((p) => p.id === target);
     if (!p) throw Error('No se encontró el conjunto.');
+    if (p.symmetryMode === 'inherit') {
+      p.symmetry = structuredClone(project.mainSymmetry);
+      p.symmetryMode = 'own';
+    }
     p.symmetry = { ...p.symmetry, ...patch };
   }
   for (const p of project.patterns) {

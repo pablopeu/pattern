@@ -107,7 +107,8 @@ async function fillAt(x, y) {
     { x, y },
   );
   await page.mouse.click(q.x, q.y);
-  await page.locator('.fill-actions[data-fill-applied="1"]').waitFor();
+  await page.locator('.fill-actions[data-fill-applied="1"]').waitFor({ state: 'attached' });
+  await page.locator('.save-indicator').filter({ hasText: 'Guardado local' }).waitFor();
   await page.locator('.save-indicator').filter({ hasText: 'Guardado local' }).waitFor();
 }
 await load('overview');

@@ -31,15 +31,7 @@ for (const viewport of [
       expect(box.x).toBeGreaterThanOrEqual(0);
       expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 1);
     }
-    for (const name of [
-      'Dibujo',
-      'Formas',
-      'Simetrías',
-      'Teselas',
-      'Capas',
-      'Aplicación',
-      'Preferencias',
-    ]) {
+    for (const name of ['Simetrías', 'Teselas', 'Capas', 'Preferencias']) {
       const button = page.getByRole('button', { name: `Abrir ${name}`, exact: true });
       await expect(button).toBeInViewport();
       await button.click();
@@ -78,8 +70,7 @@ test('v2.3 polígono paramétrico identificado, controles y estilo vigente', asy
   await page.goto('/');
   await project(page);
   const before = await project(page);
-  await page.getByRole('button', { name: 'Abrir Formas', exact: true }).click();
-  await page.getByRole('button', { name: 'Polígono paramétrico · crear', exact: true }).click();
+  await page.getByRole('button', { name: 'Crear polígono regular', exact: true }).click();
   await expect(page.getByLabel('Lados', { exact: true })).toBeVisible();
   await page.getByLabel('Lados', { exact: true }).fill('8');
   await page.getByLabel('Ancho', { exact: true }).fill('42');
@@ -88,7 +79,9 @@ test('v2.3 polígono paramétrico identificado, controles y estilo vigente', asy
   expect(created.parameters?.sides).toBe(8);
   expect(created.parameters?.width).toBe(42);
   expect(created.stroke).toBe(before!.drawingStyle.stroke);
-  await expect(page.getByLabel('Vista previa de forma')).toBeVisible();
+  const polygon = await page.locator('.studio-canvas defs g path').first().getAttribute('d');
+  expect(polygon!.match(/L/g)).toHaveLength(7);
+  expect(polygon!.endsWith('Z')).toBe(true);
   const style = page.getByRole('complementary', { name: 'Panel de estilos' });
   await expect(style).toBeVisible();
   const box = (await style.boundingBox())!;
@@ -271,7 +264,7 @@ for (const viewport of [
       .toBe(`Proyecto ${viewport.width}`);
     await page.getByRole('tab', { name: 'Aplicar', exact: true }).click();
     await page.getByRole('button', { name: 'Crear polígono regular', exact: true }).click();
-    await page.getByRole('button', { name: 'Abrir Aplicación', exact: true }).click();
+    await context(page, 'Aplicación');
     await page.getByRole('button', { name: 'Aplicar al perímetro', exact: true }).click();
     for (const name of ['Perímetro', 'Transformar', 'Vínculo']) {
       await left.getByRole('tab', { name, exact: true }).click();
@@ -312,7 +305,7 @@ test('v2.3 cobertura de nodos, transformaciones, grupos y booleanas en propiedad
   expect(grouped[0].groupId).toBeTruthy();
   expect(grouped[1].groupId).toBe(grouped[0].groupId);
   await context(page, 'Capas');
-  await page.getByRole('tab', { name: /^Capas/ }).click();
+  await page.getByRole('tab', { name: /^Objetos/ }).click();
   await page.locator('.layer-name').first().click();
   right = await styles(page, 'Objeto');
   await right.getByRole('tab', { name: 'Acciones', exact: true }).click();

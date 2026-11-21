@@ -1,3 +1,4 @@
+import { editUnlocked } from '../editor/locked';
 import { patchSymmetryFrame } from '../symmetry/frame';
 import { useDestructiveAction } from './destructive-action';
 import { axesFingerprint } from '../fill/service';
@@ -59,6 +60,12 @@ export type StylePage =
   | 'options';
 export function useStudio() {
   const inlineNodes = useRef(false);
+  const interactionActive = useRef(false);
+  const [interactionVersion, setInteractionVersion] = useState(0);
+  const finishInteraction = useCallback(() => {
+    interactionActive.current = false;
+    setInteractionVersion((n) => n + 1);
+  }, []);
   const styleRequest = useRef<StylePage | null>(null);
   const [tileTab, setTileTab] = useState<'shape' | 'placement' | 'edge' | 'tangents'>('shape');
   const [catalogOpen, setCatalogOpen] = useState(false);
@@ -199,6 +206,7 @@ export function useStudio() {
   }, []);
   const load = useCallback(
     (p: Project, options: { fresh?: boolean } = {}) => {
+      interactionActive.current = false;
       p = withWorkPreferences(p, !!options.fresh);
       if (options.fresh) {
         setActiveTool('pencil');
@@ -484,8 +492,7 @@ export function useStudio() {
     [project.patterns, project.mainSymmetry, project.mainSymmetryProfiles, symmetryPreview],
   );
   const confirmedSymmetry = resolveSymmetry(pattern, project.mainSymmetry);
-  const symmetryTarget =
-    galleryTarget === 'project' || pattern.symmetryMode === 'inherit' ? null : pattern.id;
+  const symmetryTarget = galleryTarget === 'project' ? null : pattern.id;
   const changeSymmetryChoice = useCallback(
     (choice: SymmetryChoice) => {
       const current =
@@ -507,16 +514,13 @@ export function useStudio() {
     (patch: Partial<Symmetry>, transient = false, activeOnly = false) => {
       let delta: Matrix | undefined;
       change((p) => {
-        const target = activeOnly
-          ? pattern.symmetryMode === 'inherit'
-            ? null
-            : pattern.id
-          : symmetryTarget;
+        const target = activeOnly ? pattern.id : symmetryTarget;
         delta = patchSymmetryFrame(p, target, patch).get(pattern.id);
       }, transient);
-      if (delta) setInstance((previous) => multiply(delta!, previous));
+      if (delta && mode !== 'apply' && !ref.current.preferences.sourceView)
+        setInstance((previous) => multiply(delta!, previous));
     },
-    [change, symmetryTarget, pattern.id, pattern.symmetryMode],
+    [change, symmetryTarget, pattern.id, mode],
   );
   const setSymmetryMode = useCallback(
     (value: 'own' | 'inherit' | 'free') => {
@@ -601,7 +605,7 @@ export function useStudio() {
   const region = project.regions.find((r) => r.id === regionId);
   const application = project.applications.find((a) => a.id === applicationId);
   const objects = mode === 'apply' ? (region?.geometry ?? []) : pattern.sourceGeometry;
-  const styleSelection = objects.filter((g) => selected.includes(g.id)),
+  const styleSelection = objects.filter((g) => !g.locked && selected.includes(g.id)),
     styleContext =
       styleTarget === 'selection' && styleSelection.length
         ? mixedStyle(styleSelection, project.drawingStyle)
@@ -609,7 +613,8 @@ export function useStudio() {
     drawStyle = project.drawingStyle;
   const applyStyle = useCallback(
     (patch: Partial<DrawingStyle>, target: 'selection' | 'current' = styleTarget) => {
-      const chosen = target === 'selection' ? objects.filter((g) => selected.includes(g.id)) : [];
+      const chosen =
+        target === 'selection' ? objects.filter((g) => !g.locked && selected.includes(g.id)) : [];
       for (const old of chosen.length ? chosen : [ref.current.drawingStyle]) {
         const issue = styleIssue({ ...drawingStyle(old), ...patch });
         if (issue) {
@@ -668,14 +673,18 @@ export function useStudio() {
       change((p) => {
         const r = p.regions.find((r) => r.id === regionId);
         const pat = p.patterns.find((x) => x.id === patternId) ?? p.patterns[0];
-        recipe(mode === 'apply' ? (r?.geometry ?? []) : pat.sourceGeometry);
+        editUnlocked(mode === 'apply' ? (r?.geometry ?? []) : pat.sourceGeometry, recipe);
       }, transient),
     [change, regionId, patternId, mode],
   );
   const deleteSelected = useCallback(() => {
     if (!selected.length) return;
     destructive.requestDestructive('eliminar la selección', () => {
-      if (mode === 'apply' && region && region.geometry.every((s) => selected.includes(s.id))) {
+      if (
+        mode === 'apply' &&
+        region &&
+        region.geometry.every((s) => !s.locked && selected.includes(s.id))
+      ) {
         change((p) => {
           p.regions = p.regions.filter((r) => r.id !== regionId);
           p.applications = p.applications.filter((a) => a.regionId !== regionId);
@@ -781,6 +790,9 @@ export function useStudio() {
     styleTarget,
     setStyleTarget,
     beginGesture,
+    interactionActive,
+    interactionVersion,
+    finishInteraction,
     endGesture,
     styleContext,
     styleSelection,

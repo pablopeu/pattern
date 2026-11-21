@@ -5,8 +5,8 @@ No se declara completo v3.0: proyecciones y animaciones pendientes.
 
 | AC | Requisito | Estado y evidencia necesaria |
 |---|---|---|
-|01|Compatibilidad|907 unidades/170 E2E y10 estáticas verificadas tras JSON6 y feedback; repetir con próximas familias|
-|02–03|Navegación/scroll|Base UX v2.3 conservada; nuevas familias pendientes|
+|01|Compatibilidad|938 unidades/179 E2E y10 estáticas verificadas tras JSON6 y feedback; repetir con próximas familias|
+|02–03|Navegación/scroll|UX actualizada por feedback:4 contextos útiles, familias visuales, controles por grupos y sin scroll en4 resoluciones; futuras familias pendientes|
 |04–05|Edición/simetría|Base euclidiana verificada; extensiones pendientes|
 |06|IH1–IH93|93/93 verificados/integrados;81 geométricos+12 marcados propios, pruebas individuales/Scene/JSON y exportación independiente de los12 marcados|
 |07|Figurativas|Verificado: 3 figuras C1 y ornamento IH63; bordes relacionados, fuente/detalles conservados, silueta en vivo y composición|

@@ -139,8 +139,7 @@ for (const width of [1440, 390])
     c = (await model(page))!.patterns[0].sourceGeometry[2];
     expect(c.nodes).toHaveLength(before.nodes.length);
     await page.getByRole('button', { name: 'Pluma Bézier', exact: true }).click();
-    if (width === 390)
-      await page.getByRole('button', { name: 'Cerrar panel izquierdo', exact: true }).click();
+    await expect(page.getByRole('complementary', { name: 'Panel contextual' })).toBeHidden();
     for (const [x, y] of [
       [-10, 0],
       [-8, 12],

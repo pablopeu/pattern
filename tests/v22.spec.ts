@@ -230,7 +230,10 @@ test('feedback LAN: apariencia exclusivamente a la derecha, acceso desde inspect
   expect(rightBox.x).toBeGreaterThanOrEqual(canvasBox.x + canvasBox.width - 1);
   await page.screenshot({ path: 'test-results/v22-right-only-1440.png' });
   await page.getByRole('button', { name: 'Seleccionar', exact: true }).click();
-  const q = await screen(page, 90, 70);
+  const q = await screen(page, 90, 50);
+  expect(
+    await page.evaluate((p) => !!document.elementFromPoint(p.x, p.y)?.closest('.canvas-floats'), q),
+  ).toBe(false);
   await page.mouse.click(q.x, q.y);
   await expect(panel(page)).not.toBeVisible();
   await page.setViewportSize({ width: 768, height: 800 });

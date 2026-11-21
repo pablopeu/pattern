@@ -9,6 +9,7 @@ export function Field({
   unit,
   slider = false,
   sliderMax = max,
+  sliderMin = min,
   integer = false,
 }: {
   label: string;
@@ -20,6 +21,7 @@ export function Field({
   unit?: string;
   slider?: boolean;
   sliderMax?: number;
+  sliderMin?: number;
   integer?: boolean;
 }) {
   const [text, setText] = useState(String(Math.round(value * 10000) / 10000));
@@ -56,10 +58,10 @@ export function Field({
         <input
           aria-label={`${label} deslizador`}
           type="range"
-          min={min}
+          min={sliderMin}
           max={sliderMax}
           step={step}
-          value={Math.min(value, sliderMax)}
+          value={Math.max(sliderMin, Math.min(value, sliderMax))}
           onChange={(e) => onChange(Number(e.target.value))}
         />
       )}

@@ -93,7 +93,7 @@ test('JSON válido y ejemplos piden permiso; JSON inválido conserva el proyecto
   await load(page, await fixture(page));
   const original = await model(page);
   await load(page, '{"schemaVersion":999}');
-  await expect(page.getByRole('status')).toContainText(/versión/);
+  await expect(page.locator('.toast[role=status]')).toContainText(/versión/);
   expect((await model(page))!.metadata.id).toBe(original!.metadata.id);
   await expect(guard(page)).toHaveCount(0);
   const next = await fixture(page, 'Otro estudio');
@@ -150,7 +150,7 @@ test('un error real de IndexedDB impide continuar y conserva el trabajo', async 
   });
   const dialog = page.getByRole('dialog', { name: 'Guardar proyecto', exact: true });
   await dialog.getByRole('button', { name: 'Guardar archivo', exact: true }).click();
-  await expect(page.getByRole('status')).toContainText(/No se puede guardar/);
+  await expect(page.locator('.toast[role=status]')).toContainText(/No se puede guardar/);
   await expect(dialog).toBeVisible();
   await page.evaluate(() => Reflect.get(window, 'restoreTestPut')());
   await dialog.getByRole('button', { name: 'Cancelar', exact: true }).click();

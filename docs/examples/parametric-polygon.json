@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 4,
+  "schemaVersion": 6,
   "drawingStyle": {
     "stroke": "#233b2d",
     "fill": "#dfc48d",
@@ -53,15 +53,15 @@
   },
   "mainSymmetryProfiles": {},
   "metadata": {
-    "id": "b2b40421-e199-4d47-bf1c-11f29b59dd3a",
+    "id": "97b174ad-1612-4a9e-99ff-f7440e57d221",
     "name": "Polígono paramétrico",
-    "createdAt": "2026-11-20T07:24:41.098Z",
-    "updatedAt": "2026-11-20T07:24:42.136Z"
+    "createdAt": "2026-11-21T16:35:26.846Z",
+    "updatedAt": "2026-11-21T16:35:28.053Z"
   },
   "documentUnits": "mm",
   "patterns": [
     {
-      "id": "77d982c9-48a9-4840-b67a-7b447a1422e2",
+      "id": "63c23f91-87f6-40bc-bbc5-841c6ab2aa14",
       "name": "Patrón 01",
       "sourceGeometry": [
         {
@@ -81,7 +81,7 @@
               }
             ]
           },
-          "id": "6dbbaacb-20e4-496c-af23-36a5b36785d9",
+          "id": "da1bbaae-e7f9-43ec-b8d3-88c863e1cf5c",
           "name": "Polígono",
           "kind": "polygon",
           "nodes": [],
@@ -189,6 +189,8 @@
     "structureOpacity": 0.22,
     "grid": false,
     "snap": false,
+    "snapRadiusPx": 8,
+    "snapNodes": true,
     "guides": true,
     "split": false,
     "background": "#f8faf5",

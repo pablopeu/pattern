@@ -130,3 +130,15 @@ it('transports linked fill references along with the drawing without falsely inv
   expect(refreshed.fillRegion!.linked).toBe(true);
   expect(pat.sourceGeometry.filter((g) => !g.fillRegion)).toEqual(source);
 });
+it('editing this set detaches an inherited symmetry without moving the shared frame or other sets', () => {
+  const p = newProject();
+  p.mainSymmetry = { ...p.mainSymmetry, family: 'wallpaper', group: 'p3' };
+  const other = { ...newPattern(), symmetryMode: 'inherit' as const };
+  p.patterns.push(other);
+  patchSymmetryFrame(p, p.patterns[0].id, { origin: { x: 9, y: 8 } });
+  expect(p.patterns[0].symmetryMode).toBe('own');
+  expect(p.patterns[0].symmetry.group).toBe('p3');
+  expect(p.patterns[0].symmetry.origin).toEqual({ x: 9, y: 8 });
+  expect(p.mainSymmetry.origin).toEqual({ x: 0, y: 0 });
+  expect(other.placementTransform).toEqual(IDENTITY);
+});
