@@ -1,3 +1,33 @@
+# V3.0 · IH81 y reorganización verificados; continuar12 marcados/figuras
+
+Integración IH81 en83158ab, raíz organizada en85d22aa, Referencias fe3d74c.
+475 unidades/TypeScript,123/123 E2E integradas (exit0,208,2s),
+10 estáticas (5 raíz+5 subcarpeta), build correctos. Estáticas prueban catálogo
+IH/JSON/worker/SVG y Referencias/avisos, sin orígenes externos. Logs
+.runtime/v30-iso81-{full,static-summary}*, v30-iso-ui-check.log y
+reorganization-build.log. Captura del catálogo en README. Servicios conservados.
+
+Fase2 NO completa. Pendientes12 IH con marcas interiores y ejemplos figurativos
+originales; luego fases3–7. Prototipo puro en.runtime/marked-prototype.mjs y
+marked-data.json:12 construcciones por reflexiones de polígonos, estabilizador
+interior y red primitiva. Todos dieron cero conflictos de ciclos, número de
+aspectos/orden puntual esperado y área de celda correcta. Aún no integrado ni
+verificado en aplicación; no presentar como93 implementados. Datos propios,
+sin copiar gráficos de referencia. Próximo: trasladar a módulo puro, probar
+cada tipo y aplicar simetrías interiores al motivo sin clonar fuentes.
+
+Leer docs/prd/prd_v3.0.txt (ubicación nueva). Docs técnicos en docs/, logo en
+src/assets/icono.png, originales de subidas en.runtime/original-assets excluidos.
+.gitignore reforzado; no reponer documentos ni archivos crudos en raíz.
+Mantener lista de repos consultados en ReferencesDialog; Pablo no quiere
+investigación extensa de licencias, sí referencias visibles/avisos originales.
+
+No hay suites E2E activas. Pueden editarse módulos. Comprobar cupo real sólo
+primaria5h y feedback; mantener4173/4174 sin duplicar. PROJECT_COMPLETE ausente.
+Push autorizado; no inspeccionar Actions/FTP después.
+
+---
+
 # V3.0 · IH81 integrado; verificación transversal y12 marcados a continuación
 
 Motor IH conectado a TilingDefinition (`kind:isohedral`, datos opcionales type/

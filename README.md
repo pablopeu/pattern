@@ -190,6 +190,22 @@ Hay cuadrados, rectángulos, paralelogramos, triángulos equiláteros y hexágon
 
 El dibujo interior y el contorno de tesela son entidades diferentes. Ajustar al patrón encuadra la tesela de referencia. Para incluir el contorno en SVG, DXF o raster, activá **Exportar contornos de teselas**. Las aristas compartidas se deduplican. El generador legado **Motivos escalonados** y la región aperiódica finita de Penrose siguen disponibles por separado.
 
+### Explorar teselas isoédricas
+
+**Teselas → Explorar catálogo IH1–IH93** abre un catálogo con búsqueda por IH,
+filtros de traslaciones/giros/reflexiones y vistas de la tesela y su mosaico.
+Podés elegir bordes rectos o una curva inicial y seguir editando nodos y
+tangentes. Los detalles del motivo se conservan al cambiar de construcción.
+
+![Catálogo isoédrico con tesela y mosaico reales, filtros y cobertura explícita](docs/images/isohedral-catalog.png)
+
+La cobertura actual es **81 tipos geométricos verificados**; los doce que
+requieren marcas interiores figuran pendientes. **Forma** muestra sus parámetros
+por páginas; **Bordes** y **Tangentes** controlan las curvas relacionadas. Añadir
+un nodo conserva la curva. Si una edición cruza la silueta, invierte su
+orientación o solapa vecinos, se conserva la última versión válida. Los bordes
+que deben ser ejes de espejo permanecen rectos. Ctrl+K encuentra el catálogo.
+
 ### Ajustar apariencia, guardar estilos y componer
 
 En el panel derecho, **Fill** ofrece color HEX/alfa y opacidad del relleno; **Trazo**, color de línea, grosor, extremos y uniones; **Perfil**, curva de anchura. La regla de relleno queda en las opciones avanzadas de Fill: decide qué partes se pintan en contornos cruzados o con agujeros. Para el uso habitual se puede dejar Par / impar. Las paletas y los presets tienen sus propias pestañas. Guardá un estilo con nombre para reutilizar sus valores sin modificar retroactivamente los objetos anteriores. El indicador compacto sigue visible al cerrar el panel; podés fijarlo abierto o dejar que se autocierre al volver al lienzo.

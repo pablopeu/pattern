@@ -858,3 +858,15 @@
  123 en curso; nuevas estáticas IH/referencias pendientes.
 - Fase2 todavía pendiente:12 tipos marcados, ejemplos figurativos y cierre
   transversal. Docs/recursos organizados antes del próximo push en85d22aa.
+
+
+## IH81 · Regresión transversal y publicación
+
+- 475 unidades/TypeScript,123/123 E2E integradas (208,2s),10 estáticas
+  raíz/subcarpeta y build correctos. Referencias/avisos también probados en
+  estático. Resultado final exit0 en v30-iso81-full-result.json.
+- Raíz reorganizada, enlaces/documentos actualizados y captura real del catálogo
+  en README. Mantener configuración de herramientas/AGENTS en raíz.
+- Fase2 sigue pendiente:12 tipos marcados y ejemplos figurativos. Prototipo
+  independiente de las12 construcciones cerró ciclos/redes/aspectos sin
+  conflictos, pero aún no está integrado al editor ni se declara completo.
