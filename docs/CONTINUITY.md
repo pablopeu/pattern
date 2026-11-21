@@ -1,3 +1,30 @@
+# Fase4 · Núcleo/compositor verificados; falta integrar representación al producto
+
+Compositor puro src/hyperbolic/representation.ts: fuente preparada una vez,
+parche/cámara/LOD, contornos y presupuesto global250000 segmentos (máx1M);
+fracaso atómico conserva fuente. Reporte separado modelo EXACT/motivo
+APPROXIMATED/bordes NOT_GUARANTEED/cota cúbica/estimación de contornos.
+SVG diagnóstico físico y metadatos XML escapados; NO ruta export del producto.
+
+905 unidades/TypeScript:92 pares {p,q} completos en vértices/adyacencias y
+cámara segura0,9. CairoSVG: dos discos85 celdas,43273/43206 segmentos dentro
+de150000; agujeros/colores/ancho variable reales, proyección≤0,005mm.
+Ocho diagnósticos de arcos independientes≤0,029/255; fuente intacta.
+Leer docs/HYPERBOLIC_CORE.md; scripts validate-v30-hyperbolic*.
+UI pública sigue en Fase3,164 E2E/10 estáticas verificadas; sin nuevas rutas
+de UI ni cambio de JSON (global6/generador3). README explica este límite.
+
+Siguiente: representación separada de generador con contrato/migración nativa,
+preparación desde escena/recortes y Fill vinculados, flujo fuente/regreso/worker/
+cancelación, modo artístico, ejemplos y exportaciones físicas SVG/raster/DXF.
+No edición directa sobre disco. Fase4 parcial,5–7 pendientes; no PROJECT_COMPLETE.
+
+Sólo primaria5h pausa al90% usado; secundaria sólo avisa. Feedback leído, sin
+nuevos pendientes. Servicios4173/4174 conservados. Push main autorizado sin
+revisar Actions/FTP. Actualizar estado Git/cupo al cerrar este incremento.
+
+---
+
 # Fase4 · Cámara/LOD del núcleo verificados; conectar representación derivada
 
 Cámara SU(1,1) en regularHyperbolicPatch, centro seguro≤0,9 y ángulo radianes.

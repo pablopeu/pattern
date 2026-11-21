@@ -8,6 +8,12 @@ root=Path('.runtime/hyperbolic-source-proof')
 for file in sorted(root.glob('*.json')):
  data=json.loads(file.read_text());name=file.stem;svg=ET.parse(root/f'{name}.svg').getroot()
  assert data['curveProjectionBoundMm']<=.005 and data['hasUncertifiedOutlineStep'] is True
+ if name.startswith('pipeline-'):
+  report=json.loads(svg.find('{http://www.w3.org/2000/svg}metadata').text)
+  assert report['model']['validity']=='EXACT' and report['motif']['validity']=='APPROXIMATED'
+  assert report['motif']['borderCorrespondence']=='NOT_GUARANTEED'
+  assert report['resources']['segments']<=150000 and report['resources']['visible']>7
+  assert 'hole<&"' in report['source']['ids']
  for i,sample in enumerate(data['samples']):
   x,y=sample['point']['x']*100,sample['point']['y']*100
   svg.attrib.update({'viewBox':f'{x-1} {y-1} 2 2','width':'2mm','height':'2mm'})

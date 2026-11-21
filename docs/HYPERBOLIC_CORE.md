@@ -128,3 +128,34 @@ con cell.display.frame cuando hay cámara; cell.frame conserva el marco fuente.
 Seis pruebas de cámara/LOD y dos diagnósticos adicionales de cámara periférica
 {3,7}/{7,3}:70/343 celdas, arcos CairoSVG vs interpolación independiente con
 error medio≤0,027/255. Todos los modelos originales siguen correctos.
+
+## Compositor derivado acotado
+
+deriveDisk prepara la fuente una vez, genera el parche visible y proyecta con
+un presupuesto de segmentos compartido entre TODAS las celdas (250000 por
+defecto, máximo1000000). Un exceso falla sin entregar resultado parcial ni
+modificar la fuente. Reporta modelo EXACT/curvatura−1 por separado del motivo
+APPROXIMATED, bordes no garantizados, cota de proyección, estimación de contornos,
+truncamiento geométrico y omisiones LOD. No afirma un patrón seamless del motivo.
+
+diskPreviewSVG produce un diagnóstico con medidas físicas, metadatos XML
+escapados, agujeros y recorte al disco. No está conectado al exportador del
+producto ni reemplaza la conservación del proyecto nativo. Prueba reproducible:
+
+```bash
+node scripts/validate-v30-hyperbolic-source.mjs
+node scripts/validate-v30-hyperbolic-pipeline.mjs
+.runtime/validation-env/bin/python scripts/validate_v30_hyperbolic_source.py
+```
+
+905 pruebas/TypeScript:4 de compositor y184 adicionales auditan los92 pares
+admitidos (3≤p,q≤12): ciclo completo deq polígonos en vértice/adyacencias raíz
+y cámara en centro de norma0,9, sin errores numéricos reportados. Dos discos
+de85 celdas con fuente compuesta, hueco y perfil variable:43273/43206 segmentos
+dentro del presupuesto150000. CairoSVG confirma huecos, colores y ancho variable
+por ambos lados bajo cámara centrada/desplazada; mapeo≤0,005mm. No se confunde
+esta cota con precisión total del contorneador.
+
+Faltan selección/preparación desde escena, recortes/Fill vinculados, contrato
+nativo/migraciones, interfaz/worker/cancelación, modo artístico, ejemplos públicos
+y exportaciones finales SVG/raster/DXF. Este núcleo no completa Fase4.

@@ -332,3 +332,16 @@ comprueba el color del paso superior y transparencia real en el hueco inferior.
 Dos ejemplos: error medio máximo0,025/255 entre editable/expandido, PNG/JPEG
 907²96DPI sobre240mm y DXF2D/mm. JSON conserva una/ninguna fuente canónica
 respectivamente. Capturas públicas desde contexto aislado, sin proyectos del autor.
+
+
+## Fase4 parcial · núcleo Poincaré
+
+905 unidades/TypeScript correctos. Cobertura geométrica de92 pares {p,q},
+ciclos de vértice, cámara segura y límites; contornos nativos, agujeros,
+isometrías y curvas S/lazo con cota de proyección. Compositor con presupuesto
+global y metadatos separados de modelo/motivo/estimación de contornos.
+Los scripts validate-v30-hyperbolic*.mjs y validate_v30_hyperbolic*.py generan
+diagnósticos locales; fórmulas/resultados y comandos en HYPERBOLIC_CORE.md.
+La interfaz pública no incorpora aún esta familia, por lo que la regresión
+UI completa vigente sigue164/164 de Fase3, y10 estáticas del build con avisos MIT.
+No declarar el PRD completo a partir de estos diagnósticos headless.

@@ -1101,3 +1101,19 @@
   independientes correctos, dos con cámara desplazada (70/343 celdas).
 - UI/nativo/artística/exportación final siguen pendientes. Próximo: compositor
   derivado con presupuesto global entre celdas y reporte de propiedades separado.
+
+
+## Fase4 · Compositor acotado y auditoría completa {p,q}
+
+- Fuente preparada una vez; presupuesto global entre celdas, reporte separado
+  modelo EXACT/motivo APPROXIMATED/bordes no garantizados/precisión/truncamiento.
+  SVG diagnóstico con medidas físicas y metadatos escapados, sin ruta UI/export.
+-905 unidades/TypeScript:92 pares válidos auditados en ciclos completos de
+  vértice, adyacencias raíz y cámara de norma0,9; cero errores numéricos.
+- CairoSVG: dos discos de85 celdas,43273/43206 segmentos≤150000, huecos,
+  colores y grosor variable verificados. Proyección≤0,005mm, contorneador
+  estimado por separado. Fuente original intacta en éxito y presupuesto excedido.
+- Fase4 parcial. Próximo: contrato nativo de representación separado del
+  generador y migración pura, selección/preparación desde escena/recortes,
+  flujo fuente/regreso con worker/cancelación, modo artístico, ejemplos y
+  exportaciones físicas finales. Fases5–7 pendientes; PRD no completo.

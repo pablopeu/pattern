@@ -5,7 +5,7 @@ No se declara completo v3.0: proyecciones y animaciones pendientes.
 
 | AC | Requisito | Estado y evidencia necesaria |
 |---|---|---|
-|01|Compatibilidad|677 unidades/164 E2E y10 estáticas verificadas tras JSON6 y feedback; repetir con próximas familias|
+|01|Compatibilidad|905 unidades/164 E2E y10 estáticas verificadas tras JSON6 y feedback; repetir con próximas familias|
 |02–03|Navegación/scroll|Base UX v2.3 conservada; nuevas familias pendientes|
 |04–05|Edición/simetría|Base euclidiana verificada; extensiones pendientes|
 |06|IH1–IH93|93/93 verificados/integrados;81 geométricos+12 marcados propios, pruebas individuales/Scene/JSON y exportación independiente de los12 marcados|
@@ -13,7 +13,7 @@ No se declara completo v3.0: proyecciones y animaciones pendientes.
 |08–09|Recursión/espirales|Verificado: operadores/inversas, determinismo, fuente única, detalle/IDs, UI/undo/JSON/exportaciones|
 |10|Hat/Spectre|Implementados por sustitución publicada,13 semillas/quiralidad/áreas; tres ejemplos, UI/JSON/exportaciones verificados|
 |11|Girih|Verificado:5 formas/adyacencias, ensamblado, rayos54°, hebras globales, conflictos/cortes explícitos y regiones vectoriales; SVG/raster/DXF independientes|
-|12–14|Hiperbólica/artística/esférica|Parcial: núcleo Poincaré y27 pruebas/6 diagnósticos independientes; UI/nativo/exportaciones/artística/esférica pendientes|
+|12–14|Hiperbólica/artística/esférica|Parcial: núcleo/compositor Poincaré:92 pares, cámara/LOD, contornos, presupuestos y diagnósticos independientes; UI/nativo/exportaciones/artística/esférica pendientes|
 |15|Fuente intacta|Base verificada; nuevos recorridos pendientes|
 |16–19|Timeline/loop/GIF/video|Pendiente|
 |20|Exportación|Base SVG/PNG/JPEG/DXF; nuevas familias pendientes|
