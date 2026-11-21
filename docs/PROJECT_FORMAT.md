@@ -271,3 +271,36 @@ Cambios de color/marcos no invalidan el contexto geométrico de Fill. El culling
 conserva IDs/clases y no altera el JSON. Son parches finitos de sistemas
 aperiódicos; no se ofrece celda de traslación ni se certifica aperiodicidad de
 un dibujo aislado por una mera comparación visual.
+
+
+## Girih · contrato de generador3
+
+El esquema global sigue6. `generator.kind:"girih"` usa `version:3` y
+`girih:{version:1,recipe,tileKind,tiles?,palette,showTiles,weave,weaveSource,
+bandWidth,gap,phase,allowBreaks}`. Lectores de generador1/2 rechazan3, también
+al volver al motivo y conservar una definición Girih inactiva. Hat/Spectre
+usan2 salvo que conserven esa capacidad3. No se pierden configuraciones ocultas.
+
+Recetas: rosette, rhombus-grid, star, single y custom. El lado usa spacing
+(5–100mm), la red rows/columns y el giro rotation. Las cinco formas se derivan
+de lados unitarios y ángulos; custom guarda sólo IDs/tipos/matrices de isometrías
+directas normalizadas, máximo128. Validación exige conexión por bordes completos,
+sin colisiones ni huecos interiores. Los nodos del motivo siguen en sourceGeometry.
+No se serializan miles de teselas, rayos, hebras o regiones de banda.
+
+El método de contacto54° empareja los rayos dentro de cada polígono y conecta
+puertos entre bordes compartidos. Los cruces se resuelven por restricciones XOR,
+incluidos autocruces y ciclos cerrados; tangencias no son cruces y contactos
+múltiples/solapamientos se informan como ambiguos. phase invierte componentes
+completos. Sus anclas usan identidades de hebras, no coordenadas ordenadas, para
+que giros/traslaciones conserven arriba/abajo. allowBreaks registra una elección
+explícita de excepciones; los cortes y máscaras son regiones vectoriales reales.
+
+weaveSource usa subtrazos canónicos como hebras adicionales, sin modificar sus
+curvas. Se muestrean a0,02mm antes de Colocación; límite4096 segmentos/cruces.
+El SVG registra tolerancia local y cota escalada al mundo. El editor fuente
+sigue disponible si el presupuesto del resultado se excede. El resultado indica
+EXACT, APPROXIMATED, ARTISTIC o INVALID según geometría, aproximación y conflictos.
+Estiramientos no uniformes/cizallas cambian la clasificación a ARTISTIC; las
+similitudes conservan longitudes relativas y ángulos. sourceGeometry y reportes
+de generación son conceptos separados; los reportes no se serializan.

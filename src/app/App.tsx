@@ -809,9 +809,11 @@ export default function App() {
                         ? 'Friso · periódico en una dirección'
                         : 'Periódico · seamless'
                       : status === 'FINITE_NONPERIODIC'
-                        ? finiteGenerator(s.effectivePattern.generator)
-                          ? 'Parche aperiódico finito'
-                          : 'Composición finita · no periódica'
+                        ? s.effectivePattern.generator.kind === 'girih'
+                          ? 'Girih · parche finito'
+                          : finiteGenerator(s.effectivePattern.generator)
+                            ? 'Parche aperiódico finito'
+                            : 'Composición finita · no periódica'
                         : 'Sin verificar'}
               <small>
                 {finiteGenerator(s.effectivePattern.generator)

@@ -73,3 +73,16 @@ export function linearScaleBound(m: Matrix): number {
     z = a * c + b * d;
   return factor * Math.sqrt((x + y + Math.hypot(x - y, 2 * z)) / 2);
 }
+
+/** Similarities preserve the equal lengths/angles of a geometric tile family. */
+export function isSimilarity(m: Matrix): boolean {
+  const a = Math.hypot(m[0], m[1]),
+    b = Math.hypot(m[2], m[3]);
+  return (
+    Number.isFinite(a) &&
+    Number.isFinite(b) &&
+    Math.min(a, b) > 1e-12 &&
+    Math.abs(a - b) <= 1e-7 * Math.max(a, b) &&
+    Math.abs(m[0] * m[2] + m[1] * m[3]) <= 1e-7 * a * b
+  );
+}

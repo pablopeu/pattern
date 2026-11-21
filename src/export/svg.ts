@@ -20,7 +20,15 @@ import {
   type Project,
   type Region,
 } from '../app/model';
-import { IDENTITY, matrixString, multiply, inverse, type Matrix } from '../geometry/matrix';
+import {
+  IDENTITY,
+  matrixString,
+  multiply,
+  inverse,
+  isSimilarity,
+  linearScaleBound,
+  type Matrix,
+} from '../geometry/matrix';
 import { pathData, hasFillBoundary } from '../geometry/paths';
 import { buildScene, expandedTransforms, sceneScaleBound } from '../patterns/engine';
 import { geometryBounds, clipGeometry, regionData } from '../application/clipping';
@@ -392,6 +400,29 @@ function preparePatternExport(
     status: tiling ? 'PERIODIC_SEAMLESS' : scene.status,
     ...(tiling ? { tiling, motifSymmetry: 'local-to-tile' } : {}),
     algorithmVersion: pattern.generator.version,
+    ...(finiteGenerator(pattern.generator)
+      ? {
+          construction: {
+            family: pattern.generator.kind,
+            definition: pattern.generator,
+            validity:
+              scene.generated.girih?.validity === 'INVALID'
+                ? 'INVALID'
+                : !isSimilarity(multiply(placement, pattern.placementTransform))
+                  ? 'ARTISTIC'
+                  : (scene.generated.girih?.validity ?? 'EXACT'),
+            ...(scene.generated.girih?.sourceAxes
+              ? {
+                  sourceToleranceLocal: 0.02,
+                  sourceToleranceWorld:
+                    0.02 * linearScaleBound(multiply(placement, pattern.placementTransform)),
+                }
+              : {}),
+            finite: true,
+          },
+          example: project.metadata.example,
+        }
+      : {}),
     ...(pattern.composition?.enabled
       ? {
           composition: pattern.composition,

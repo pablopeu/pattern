@@ -20,6 +20,7 @@ export default defineConfig({
         '**/figurative.spec.ts',
         '**/tile-colors.spec.ts',
         '**/aperiodic.spec.ts',
+        '**/girih.spec.ts',
       ],
   timeout: 45000,
   expect: { timeout: 8000 },

@@ -1,8 +1,9 @@
+import { isSimilarity } from '../geometry/matrix';
 import { useMemo, useState } from 'react';
 import type { Studio } from '../app/useStudio';
 import type { Generator } from '../app/model';
 import { seeds, compileAperiodic, type AperiodicKind } from '../aperiodic/compile';
-import { defaultAperiodic, finiteGenerator, isAperiodic } from '../aperiodic/model';
+import { defaultAperiodic, isAperiodic } from '../aperiodic/model';
 import { Field, Select, Toggle } from './Controls';
 export function activateAperiodic(g: Generator, kind: 'penrose' | AperiodicKind): Generator {
   return {
@@ -12,7 +13,7 @@ export function activateAperiodic(g: Generator, kind: 'penrose' | AperiodicKind)
     ...(kind === 'penrose'
       ? {}
       : {
-          version: 2,
+          version: g.girih ? 3 : 2,
           aperiodic: g.kind === kind && g.aperiodic ? g.aperiodic : defaultAperiodic(kind),
         }),
   };
@@ -33,9 +34,14 @@ export function AperiodicPanel({ studio: s }: { studio: Studio }) {
     );
   return (
     <div className="compact-fields aperiodic-panel">
+      {!isSimilarity(s.pattern.placementTransform) && (
+        <p className="math-notice">
+          Transformación afín artística: cambia las proporciones de las teselas.
+        </p>
+      )}
       <Select
         label="Construcción aperiódica"
-        value={finiteGenerator(g) ? g.kind : ''}
+        value={g.kind === 'penrose' || a ? g.kind : ''}
         onChange={(kind) => {
           if (!['penrose', 'hat', 'spectre'].includes(kind)) return;
           s.change((p) => {
@@ -63,7 +69,7 @@ export function AperiodicPanel({ studio: s }: { studio: Studio }) {
           })),
         ]}
       />
-      {finiteGenerator(g) && (
+      {(g.kind === 'penrose' || a) && (
         <>
           <div className="context-tabs" role="tablist" aria-label="Opciones aperiódicas">
             {['patch', ...(a ? ['color', 'hierarchy'] : [])].map((id) => (

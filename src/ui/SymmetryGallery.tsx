@@ -533,8 +533,8 @@ export function SymmetryGallery({
         </p>
         {finiteGenerator(s.pattern.generator) ? (
           <p className="math-notice">
-            Esta es una región aperiódica finita. La repetición del grupo permanece desactivada; el
-            dibujo fuente se conserva.
+            Esta es una región finita. La repetición del grupo permanece desactivada; el dibujo
+            fuente se conserva.
           </p>
         ) : (
           <>

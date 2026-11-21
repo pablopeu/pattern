@@ -1,3 +1,4 @@
+import type { GirihOptions } from '../girih/model';
 import type { Composition } from '../composition/model';
 import type { AperiodicOptions } from '../aperiodic/model';
 import type { ExampleProvenance } from '../examples/model';
@@ -52,11 +53,13 @@ export type GeneratorKind =
   | 'freeform'
   | 'penrose'
   | 'hat'
-  | 'spectre';
+  | 'spectre'
+  | 'girih';
 export interface Generator {
   kind: GeneratorKind;
-  version: 1 | 2;
+  version: 1 | 2 | 3;
   aperiodic?: AperiodicOptions;
+  girih?: GirihOptions;
   seed: number;
   count: number;
   rows: number;

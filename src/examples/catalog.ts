@@ -4,6 +4,7 @@ import { defaultComposition, type Composition } from '../composition/model';
 import { generatedBounds } from '../composition/generated';
 import { generate } from '../generators';
 import type { ExampleProvenance } from './model';
+import { girihExamples } from './girih';
 import { aperiodicExamples } from './aperiodic';
 import { figurativeExamples } from './figurative';
 
@@ -315,6 +316,7 @@ export const exampleCatalog: CatalogExample[] = [
   })),
   ...figurativeExamples,
   ...aperiodicExamples,
+  ...girihExamples,
   ...exampleNames.map((name, index) => ({
     id: `legacy-${index}`,
     category: 'Clásicos',

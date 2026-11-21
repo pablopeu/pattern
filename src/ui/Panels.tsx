@@ -1,3 +1,4 @@
+import { GirihPanel, activateGirih } from './GirihPanel';
 import { sceneLayers } from '../patterns/layers';
 import { AperiodicPanel, activateAperiodic } from './AperiodicPanel';
 import { isAperiodic } from '../aperiodic/model';
@@ -810,7 +811,10 @@ export function Panels({
                     onChange={(kind) => {
                       setGeneratorPage(0);
                       updatePattern((p) => {
-                        if (kind === 'hat' || kind === 'spectre') {
+                        if (kind === 'girih') {
+                          p.generator = activateGirih(p.generator);
+                          if (p.composition) p.composition.enabled = false;
+                        } else if (kind === 'hat' || kind === 'spectre') {
                           p.generator = activateAperiodic(p.generator, kind);
                           if (p.composition) p.composition.enabled = false;
                         } else p.generator.kind = kind as Generator['kind'];
@@ -821,7 +825,9 @@ export function Panels({
                       label,
                     }))}
                   />
-                  {isAperiodic(s.pattern.generator) ? (
+                  {s.pattern.generator.kind === 'girih' ? (
+                    <GirihPanel studio={s} />
+                  ) : isAperiodic(s.pattern.generator) ? (
                     <AperiodicPanel studio={s} />
                   ) : s.pattern.generator.kind === 'motif' ? (
                     <div className="motif-preview">

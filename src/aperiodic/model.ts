@@ -13,7 +13,7 @@ export const isAperiodic = (
 ): g is Pick<Generator, 'kind'> & { kind: AperiodicKind } =>
   g.kind === 'hat' || g.kind === 'spectre';
 export const finiteGenerator = (g: Pick<Generator, 'kind'>) =>
-  g.kind === 'penrose' || isAperiodic(g);
+  g.kind === 'penrose' || g.kind === 'girih' || isAperiodic(g);
 export function defaultAperiodic(kind: AperiodicKind): AperiodicOptions {
   return {
     version: 1,
@@ -27,6 +27,11 @@ export function defaultAperiodic(kind: AperiodicKind): AperiodicOptions {
 
 /** Appearance and hierarchy frames do not change the face arrangement. */
 export function geometricGenerator(g: Generator) {
-  if (!g.aperiodic) return g;
-  return { ...g, aperiodic: { version: g.aperiodic.version, seedTile: g.aperiodic.seedTile } };
+  return {
+    ...g,
+    ...(g.aperiodic
+      ? { aperiodic: { version: g.aperiodic.version, seedTile: g.aperiodic.seedTile } }
+      : {}),
+    ...(g.girih ? { girih: { ...g.girih, palette: undefined } } : {}),
+  };
 }

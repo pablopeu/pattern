@@ -1,3 +1,4 @@
+import { placedGirihReport } from '../girih/generated';
 import { finiteGenerator } from '../aperiodic/model';
 import { composeGenerated } from '../composition/generated';
 import { tileColorIndex } from '../tiling/colors';
@@ -222,8 +223,8 @@ export function buildScene(
   const order = new Map(pattern.sourceGeometry.map((g, i) => [g.id, i]));
   generated.geometry.sort(
     (a, b) =>
-      (order.get(a.id) ?? pattern.sourceGeometry.length) -
-      (order.get(b.id) ?? pattern.sourceGeometry.length),
+      (order.get(a.id) ?? (generated.girih ? -1 : pattern.sourceGeometry.length)) -
+      (order.get(b.id) ?? (generated.girih ? -1 : pattern.sourceGeometry.length)),
   );
   if (pattern.composition?.enabled) {
     const placement = pattern.placementTransform ?? IDENTITY,
@@ -295,6 +296,8 @@ export function buildScene(
       },
     };
   }
+  if (generated.girih)
+    generated.girih = placedGirihReport(generated.girih, pattern.placementTransform ?? IDENTITY);
   const free = pattern.symmetry.family === 'none' && !generated.finite;
   const finite = generated.finite || pattern.symmetry.family === 'radial';
   const base = geometryBounds(generated.geometry),
@@ -342,7 +345,9 @@ export function buildScene(
       : generated.composition
         ? `${generated.composition.definition.kind === 'recursive' ? 'Composición recursiva' : 'Semejanza en espiral'} · finita, sin periodicidad de traslación${generated.composition.report.limited ? ' · detalle limitado por presupuesto' : ''}`
         : generated.finite
-          ? `${generated.aperiodic?.kind === 'hat' ? 'Hat' : generated.aperiodic?.kind === 'spectre' ? 'Spectre curvo · sin reflexiones' : 'Penrose'} · parche aperiódico finito`
+          ? generated.girih
+            ? `Girih · ${generated.girih.validity}${generated.girih.sourceAxes ? ' · ejes fuente aproximados0,02mm' : ''} · parche finito · ${generated.girih.tiles} teselas · ${generated.girih.woven ? (generated.girih.breaks ? 'alternancia con cortes explícitos' : 'alternancia verificada') : 'sin alternancia aplicada'}`
+            : `${generated.aperiodic?.kind === 'hat' ? 'Hat' : generated.aperiodic?.kind === 'spectre' ? 'Spectre curvo · sin reflexiones' : 'Penrose'} · parche aperiódico finito`
           : pattern.symmetry.family === 'radial'
             ? 'Simetría radial · sin periodicidad de traslación'
             : pattern.symmetry.family === 'frieze'

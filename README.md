@@ -217,6 +217,33 @@ SVG expandido, PNG/JPEG y DXF conservan el resultado y sus medidas físicas.
 [Hat con jerarquía](docs/examples/v30-aperiodic-hat.json) ·
 [Spectre por generación](docs/examples/v30-aperiodic-spectre.json).
 
+### Girih: estrellas y bandas entrelazadas
+
+En **Teselas → Girih**, activá la construcción y elegí una roseta, una red de
+rombos o una tesela del catálogo. El catálogo contiene decágono, pentágono,
+hexágono alargado, corbatín y rombo72°. **Unir** permite agregar una forma por
+un borde completo; rechaza colisiones y conserva el último parche válido.
+
+![Galería de dos construcciones Girih con bandas vectoriales](docs/images/v30-girih-gallery.png)
+
+En **Bandas**, ajustá el ancho, la separación de los cruces y **Invertir
+arriba/abajo**. El paso inferior se recorta de verdad: sus huecos viajan en SVG,
+raster y DXF. La alternancia conecta las hebras a través de bordes compartidos;
+girar o trasladar la construcción conserva sus relaciones de cruce.
+
+![Roseta Girih con alternancia verificada y estrella central editable](docs/images/v30-girih-rosette.png)
+
+**Entrelazar trazos del motivo** también usa los ejes que dibujaste. **Editar
+fuente** conserva los vectores originales; los ejes curvos se aproximan a0,02mm
+antes de Colocación. Si un ciclo impide alternar, se informa el conflicto.
+**Permitir cortes explícitos de alternancia** acepta las excepciones y las
+identifica como resultado artístico. Un estiramiento desigual o una cizalla
+se identifica también como artístico. Las construcciones son parches finitos,
+con bordes y contactos verificados, sin afirmar cobertura infinita.
+
+[Roseta Girih editable](docs/examples/v30-girih-rosette.json) ·
+[Red entrelazada editable](docs/examples/v30-girih-rhombus-grid.json).
+
 ### Explorar un motivo sin perder el dibujo original
 
 En **Archivo → Ejemplos editables**, abrí **Hexagonal · p6m** para obtener la escena de la primera imagen. Entrá en **Simetrías → Explorar todas las simetrías**. Pasá por p1, p4m y p6m y confirmá una opción. Las miniaturas se actualizan con tu motivo; la selección, la herramienta y las fuentes siguen disponibles. [Descargar este proyecto de ejemplo](docs/examples/studio-symmetry.json).

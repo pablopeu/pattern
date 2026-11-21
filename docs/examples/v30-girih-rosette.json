@@ -1,0 +1,356 @@
+{
+  "schemaVersion": 6,
+  "drawingStyle": {
+    "stroke": "#233b2d",
+    "fill": "#3b82f6",
+    "strokeWidth": 0.65,
+    "strokeCap": "round",
+    "strokeJoin": "round",
+    "miterLimit": 10,
+    "opacity": 1,
+    "fillOpacity": 1,
+    "strokeOpacity": 1,
+    "fillRule": "evenodd",
+    "strokeDash": [],
+    "strokeDashOffset": 0,
+    "strokeProfile": {
+      "version": 1,
+      "kind": "uniform",
+      "points": [
+        {
+          "at": 0,
+          "width": 1
+        },
+        {
+          "at": 1,
+          "width": 1
+        }
+      ]
+    }
+  },
+  "stylePresets": [],
+  "palette": {
+    "colors": [],
+    "recent": [],
+    "favorites": []
+  },
+  "mainSymmetry": {
+    "family": "none",
+    "group": "none",
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "orientation": 0,
+    "width": 60,
+    "height": 60,
+    "angle": 90,
+    "sectors": 8,
+    "center": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "mainSymmetryProfiles": {},
+  "metadata": {
+    "id": "c1b90210-0ccd-460b-a155-09d1f1f57746",
+    "name": "Girih · roseta decagonal",
+    "createdAt": "2026-11-21T12:03:33.439Z",
+    "updatedAt": "2026-11-21T12:03:33.439Z",
+    "example": {
+      "id": "girih-rosette",
+      "category": "Girih",
+      "description": "Decágono y diez pentágonos unidos; bandas de54° y estrella central editable.",
+      "construction": "Girih · parche finito de polígonos compatibles · alternancia global de hebras",
+      "validity": "EXACT",
+      "artwork": "mathematical",
+      "author": "Pattern Studio · geometría propia, método de Hankin/Kaplan",
+      "references": [
+        {
+          "title": "Kaplan2005 · Polygons in Contact",
+          "url": "https://cs.uwaterloo.ca/~csk/publications/Papers/kaplan_2005.pdf"
+        },
+        {
+          "title": "Tilings Encyclopedia · Girih",
+          "url": "https://tilings.math.uni-bielefeld.de/glossary/girih/"
+        }
+      ]
+    }
+  },
+  "documentUnits": "mm",
+  "patterns": [
+    {
+      "id": "c4ff9c60-54a1-4305-b85e-6f787956b3b5",
+      "name": "Girih · roseta decagonal",
+      "sourceGeometry": [
+        {
+          "id": "220313ae-b035-4559-b343-4afb9236d3cd",
+          "name": "Estrella central editable",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": 4.898587196589413e-16,
+              "y": -8,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 2.057248383023656,
+              "y": -2.831559480312316,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 7.608452130361228,
+              "y": -2.472135954999579,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 3.3286978070330373,
+              "y": 1.0815594803123159,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 4.702282018339785,
+              "y": 6.47213595499958,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 2.143131898507868e-16,
+              "y": 3.5,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": -4.702282018339784,
+              "y": 6.47213595499958,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": -3.3286978070330373,
+              "y": 1.0815594803123163,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": -7.608452130361228,
+              "y": -2.472135954999582,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": -2.0572483830236563,
+              "y": -2.8315594803123156,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#28535c",
+          "fill": "#c78f4d",
+          "strokeWidth": 0.4,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false
+        }
+      ],
+      "generator": {
+        "kind": "girih",
+        "version": 3,
+        "seed": 42,
+        "count": 12,
+        "rows": 5,
+        "columns": 5,
+        "spacing": 24,
+        "offset": 0.5,
+        "aspectRatio": 1,
+        "staggerAxis": "rows",
+        "rotation": 18,
+        "scale": 1,
+        "scaleRatio": 0.9,
+        "amplitude": 6,
+        "frequency": 3,
+        "phase": 0,
+        "radius": 28,
+        "ratio": 0.35,
+        "distribution": "rectangular",
+        "periodicWarp": true,
+        "placements": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        ],
+        "girih": {
+          "version": 1,
+          "recipe": "rosette",
+          "tileKind": "decagon",
+          "palette": [
+            "#28535c",
+            "#c78f4d",
+            "#4f7c6b",
+            "#87613e",
+            "#d0b684"
+          ],
+          "showTiles": false,
+          "weave": true,
+          "weaveSource": false,
+          "bandWidth": 1.2,
+          "gap": 0.2,
+          "phase": 0,
+          "allowBreaks": false
+        }
+      },
+      "visible": true,
+      "symmetryMode": "free",
+      "symmetryProfiles": {},
+      "placementTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "symmetry": {
+        "family": "none",
+        "group": "none",
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "orientation": 0,
+        "width": 60,
+        "height": 60,
+        "angle": 90,
+        "sectors": 8,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    }
+  ],
+  "regions": [],
+  "applications": [],
+  "preferences": {
+    "styleDefaultsFollowSelection": true,
+    "stylePanelPinned": false,
+    "fillCloseTolerance": 0,
+    "fillLinkedDefault": true,
+    "structureVisible": false,
+    "structureOpacity": 0.22,
+    "grid": false,
+    "snap": true,
+    "snapRadiusPx": 8,
+    "snapNodes": true,
+    "guides": true,
+    "split": false,
+    "background": "#f8faf5",
+    "fundamental": false,
+    "axes": false,
+    "centers": false,
+    "continuity": false,
+    "outside": false,
+    "sourceView": false,
+    "repetitionView": "extended"
+  }
+}

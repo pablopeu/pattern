@@ -1042,3 +1042,22 @@
 - Hat4:7921 solicitadas/77 visibles con1 fuente, motor mediana2,8ms y
   p95observado3,6ms (20 muestras después5 calentamientos), sin medir render/FPS.
 - Falta Girih/entrelazado para Fase3; fases4–7 pendientes.
+
+
+## Fase3 · Girih, entrelazado y clasificación verificados
+
+- Cinco polígonos medidos, rayos54°, ensamblados finitos, catálogo y unión manual
+  con rechazo de colisiones/huecos. Fuente única; contrato generador3/JSON6.
+- Solver de cruces/hebras con XOR, fases estables al girar/trasladar, autocruces,
+  tangencias y ciclos impares. Bandas vectoriales con huecos reales; cortes
+  aceptados explícitamente se declaran artísticos. Ejes fuente aproximados0,02mm
+  sin modificar el original; presupuesto4096 recuperable con fuente editable.
+- Regresión164/164(248,2s). Guardia afín posterior:677 unidades/TypeScript,14
+  dirigidas(37,3s),10 estáticas y build finales correctos. Ocho E2E nuevas cubren
+  cuatro resoluciones, catálogo, unión/rechazo/recarga, fuente impar/corrección,
+  píxeles de fase y recuperación de4100 nodos sin pérdida.
+- Dos ejemplos/JSON y dos capturas reales. CairoSVG validó5 cruces por archivo,
+  ambos SVGs: color superior y hueco transparente; error máximo0,025/255.
+  PNG/JPEG96DPI/240mm y DXF2D/mm; fuente1/0 objetos respectivamente.
+- Fase3 cerrada; Fases4–7 pendientes. Próximo: núcleo Poincaré, sin declarar
+  representación lista hasta completar UI/JSON/exportación y fuente intacta.

@@ -1,3 +1,48 @@
+# Fase3 verificada · Continuar Fase4 (Poincaré y representación artística)
+
+Girih integrado en Teselas junto a Encastre/Aperiódicas: catálogo de5 polígonos,
+rayos54°, roseta/red/estrella/tesela aislada y unión por bordes completos. Conexión,
+ángulos/lados, área, colisiones y huecos validados; adición inválida no cambia
+el proyecto. Bandas rellenas con sustracción vectorial del paso inferior, fases
+estables bajo movimientos rígidos y solver global XOR, incluidos ciclos/autocruces.
+Fuente opcional como hebras adicionales, aproximada0,02mm sin modificar sus curvas.
+Conflicto impar requiere cortes explícitos y se declara ARTISTIC. Exceso4096
+segmentos muestra error recuperable; editor fuente funciona con4100 nodos intactos.
+Estiramiento desigual/cizalla se declara ARTISTIC; similitudes conservan EXACT.
+
+JSON global6/generador3 protege Girih incluso inactivo. Hat/Spectre pueden usar3
+si conservan esa configuración, si no siguen2; lectores previos rechazan la
+capacidad nueva. Paletas no invalidan caras. Reportes/matrices de escena derivados,
+sólo custom guarda hasta128 tipos/matrices unitarias; no se duplican motivos.
+Galería21:8 legados+8 originales+3 aperiódicos+2 Girih;2 JSON y2 capturas nuevas.
+CairoSVG/Pillow/ezdxf: dos ejemplos,5 cruces por SVG editable/expandido con color
+superior y hueco transparente reales, error medio máximo0,025/255, PNG/JPEG96DPI
+sobre240mm y DXF2D/mm. Scripts validate-v30-girih.* y capture-v30-girih.mjs.
+
+Regresión164/164(248,2s/exit0) correcta. Ajuste posterior sólo de clasificación
+afín/metadatos y presentación:677 unidades/TypeScript,14 E2E dirigidas(37,3s),
+build y10 estáticas raíz/subcarpeta finales correctos. Logs girih-*.
+Source/ribbons/filled shapes/metadata reales, no simples cruces de paint order.
+Referencias actualizadas; código Girih independiente (repo GPL consultado sin
+copiar código/texturas). Hat/Spectre en commit a93651b; Girih incremento actual.
+
+Fase3/AC10–11 verificados. Fases4–7 pendientes; PROJECT_COMPLETE ausente.
+Siguiente incremento: núcleo Poincaré puro y pruebas de modelos {p,q}/isometrías/
+geodésicas/ciclos, antes de integrar representación derivada no editable y modo
+artístico. Fuente primaria clonada en.runtime/poincare-reference, commit
+38abc004bb57133c894b7abeb1e8b07a255d1b77, MIT Yusuf Pisan2026, aún NO incorporada.
+Reutilizar iso/geometry/tiling si sirven, conservar licencia/hash y actualizar
+avisos al hacerlo; repo ya figura en modal Referencias (18 linksGitHub).
+No implementar un editor sobre el disco. Debe conservar fuente plana, permitir
+regresar y actualizar, separar modelo exacto de adaptación numérica/artística y
+exportar medidas físicas. Núcleo aislado NO completa Fase4 sin UI/JSON/exportación.
+
+Primaria disponible comprobada; sólo primaria5h pausa al90% usado. Secundaria
+sólo avisa. Sin feedback nuevo. Servicios4173/4174 conservados sin duplicar.
+Push main autorizado sin inspeccionar Actions/FTP; todavía hay commits locales.
+
+---
+
 # Fase3 · Hat/Spectre integrados; seguir Girih y entrelazado
 
 Hat y Spectre curvo en Teselas→Aperiódicas junto a Penrose. Núcleos de sustitución

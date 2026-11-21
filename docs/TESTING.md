@@ -305,3 +305,30 @@ node scripts/capture-v30-aperiodic.mjs
 CairoSVG/Pillow/ezdxf verificó los3 ejemplos: error medio máximo0,077/255 entre
 SVG editable/expandido, tinta de paletas, PNG/JPEG907×907 a96DPI sobre240mm y
 DXF plano/mm. La captura usa un contexto aislado, sin tocar proyectos del autor.
+
+
+## Girih · Adyacencias, alternancia y bandas
+
+`girih.test.ts` mide lados/ángulos de las cinco formas y comprueba los rayos,
+conexión, colisiones y bordes completos. `weave.test.ts` verifica cruces opuestos,
+alternancia en hebras/ciclos, tangencias, autocruces, contactos triples y
+solapamientos; un ciclo impar exige corte explícito. Giros/traslaciones conservan
+las fases. `girih-scene.test.ts` comprueba JSON6/generador3, fuente intacta,
+colores independientes de las caras, rechazo de imports inválidos y clasificación
+de similitudes/afinidades, con tolerancia física declarada en SVG.
+
+Ocho E2E dirigidas: cuatro resoluciones sin scroll, catálogo5, unión real y
+rechazo de colisión, fuente impar/corrección, fase verificada con píxeles y
+recuperación de presupuesto4096 sin perder los4100 nodos originales.
+
+```bash
+node scripts/validate-v30-girih.mjs
+.runtime/validation-env/bin/python scripts/validate_v30_girih.py
+node scripts/capture-v30-girih.mjs
+```
+
+CairoSVG analiza ambos SVG por ejemplo y cinco recortes de cruce por archivo:
+comprueba el color del paso superior y transparencia real en el hueco inferior.
+Dos ejemplos: error medio máximo0,025/255 entre editable/expandido, PNG/JPEG
+907²96DPI sobre240mm y DXF2D/mm. JSON conserva una/ninguna fuente canónica
+respectivamente. Capturas públicas desde contexto aislado, sin proyectos del autor.

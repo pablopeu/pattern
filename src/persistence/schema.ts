@@ -1,3 +1,5 @@
+import { girihDefinition } from '../girih/model';
+import type { Generator } from '../app/model';
 import { compositionSchema } from '../composition/schema';
 import { junctionIssue } from '../editor/junctions';
 import { defaultDrawingStyle, styleIssue } from '../app/styles';
@@ -119,8 +121,37 @@ const generator = z
       'penrose',
       'hat',
       'spectre',
+      'girih',
     ]),
-    version: z.union([z.literal(1), z.literal(2)]),
+    version: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+    girih: z
+      .object({
+        version: z.literal(1),
+        recipe: z.enum(['rosette', 'rhombus-grid', 'star', 'single', 'custom']),
+        tileKind: z.enum(['decagon', 'pentagon', 'hexagon', 'bowtie', 'rhombus']),
+        tiles: z
+          .array(
+            z.object({
+              id: z.string().min(1).max(100),
+              kind: z.enum(['decagon', 'pentagon', 'hexagon', 'bowtie', 'rhombus']),
+              matrix,
+            }),
+          )
+          .max(128)
+          .optional(),
+        palette: z
+          .array(z.string().regex(/^#[\da-fA-F]{6}$/))
+          .min(2)
+          .max(6),
+        showTiles: z.boolean(),
+        weave: z.boolean(),
+        weaveSource: z.boolean().default(false),
+        bandWidth: positive.max(20),
+        gap: n.min(0).max(20),
+        phase: z.union([z.literal(0), z.literal(1)]),
+        allowBreaks: z.boolean(),
+      })
+      .optional(),
     aperiodic: z
       .object({
         version: z.literal(1),
@@ -155,10 +186,35 @@ const generator = z
     placements: z.array(matrix).max(2000),
   })
   .superRefine((g, ctx) => {
-    if (g.aperiodic && g.version !== 2)
+    if (g.girih && g.version !== 3)
+      ctx.addIssue({ code: 'custom', message: 'Girih requiere generador3.' });
+    if (g.kind === 'girih') {
+      if (g.version !== 3 || !g.girih) {
+        ctx.addIssue({ code: 'custom', message: 'Falta la definición Girih3.' });
+        return;
+      }
+      if (
+        g.spacing < 5 ||
+        g.spacing > 100 ||
+        g.girih.bandWidth > g.spacing * 0.25 ||
+        g.girih.gap > g.girih.bandWidth
+      )
+        ctx.addIssue({ code: 'custom', message: 'Escala o banda Girih inválidas.' });
+      try {
+        const report = girihDefinition(g as Generator).report;
+        for (const message of report.issues) ctx.addIssue({ code: 'custom', message });
+      } catch (e) {
+        ctx.addIssue({
+          code: 'custom',
+          message: e instanceof Error ? e.message : 'Parche Girih inválido.',
+        });
+      }
+    }
+
+    if (g.aperiodic && g.version < 2)
       ctx.addIssue({ code: 'custom', message: 'Opciones aperiódicas requieren generador2.' });
     if (g.kind === 'hat' || g.kind === 'spectre') {
-      if (g.version !== 2 || !g.aperiodic)
+      if (g.version < 2 || !g.aperiodic)
         ctx.addIssue({
           code: 'custom',
           message: 'Hat/Spectre requiere definición de sustitución.',

@@ -1,3 +1,4 @@
+import { generateGirih, type GirihReport } from '../girih/generated';
 import { generateAperiodic } from '../aperiodic/generated';
 import { finiteGenerator, isAperiodic } from '../aperiodic/model';
 import type { Composition, CompositionReport } from '../composition/model';
@@ -26,6 +27,7 @@ export const generatorLabels: Record<Generator['kind'], string> = {
   penrose: 'Penrose',
   hat: 'Hat',
   spectre: 'Spectre',
+  girih: 'Girih',
 };
 export function random(seed: number): () => number {
   let a = seed | 0;
@@ -38,6 +40,8 @@ export function random(seed: number): () => number {
   };
 }
 export interface Generated {
+  girih?: GirihReport;
+  sourceGeometry?: Geometry[];
   aperiodic?: {
     kind: 'hat' | 'spectre';
     bodyId: string;
@@ -112,6 +116,7 @@ export function penrose(depth: number, radius: number): Geometry[] {
   });
 }
 export function generate(g: Generator, source: Geometry[]): Generated {
+  if (g.kind === 'girih') return generateGirih(g, source);
   if (isAperiodic(g)) return generateAperiodic(g, source);
   const rand = random(g.seed),
     result: Generated = {
@@ -260,5 +265,6 @@ export const generatorParameters: Record<Generator['kind'], (keyof Generator)[]>
   penrose: ['radius', 'frequency'],
   hat: [],
   spectre: [],
+  girih: [],
 };
 export { defaultGenerator };

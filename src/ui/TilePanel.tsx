@@ -1,3 +1,4 @@
+import { GirihPanel } from './GirihPanel';
 import { useEffect, useState } from 'react';
 import { AperiodicPanel } from './AperiodicPanel';
 import { finiteGenerator } from '../aperiodic/model';
@@ -22,7 +23,8 @@ export function TilePanel({
     finiteGenerator(s.pattern.generator) ? 'aperiodic' : 'periodic',
   );
   useEffect(() => {
-    if (finiteGenerator(s.pattern.generator)) setFamily('aperiodic');
+    if (s.pattern.generator.kind === 'girih') setFamily('girih');
+    else if (finiteGenerator(s.pattern.generator)) setFamily('aperiodic');
   }, [s.pattern.id, s.pattern.generator.kind]);
   const tab = s.tileTab;
   const tile = s.pattern.tiling,
@@ -50,18 +52,23 @@ export function TilePanel({
         >
           <option value="periodic">Encastre</option>
           <option value="aperiodic">Aperiódicas</option>
+          <option value="girih">Girih</option>
         </select>
         <strong>
-          {family === 'aperiodic'
-            ? 'Parche finito'
-            : tile?.isohedral
-              ? `IH${tile.isohedral.type}`
-              : tile
-                ? tileNames[tile.kind]
-                : 'Desactivadas'}
+          {family === 'girih'
+            ? 'Girih'
+            : family === 'aperiodic'
+              ? 'Parche finito'
+              : tile?.isohedral
+                ? `IH${tile.isohedral.type}`
+                : tile
+                  ? tileNames[tile.kind]
+                  : 'Desactivadas'}
         </strong>
       </summary>
-      {family === 'aperiodic' ? (
+      {family === 'girih' ? (
+        <GirihPanel studio={s} />
+      ) : family === 'aperiodic' ? (
         <AperiodicPanel studio={s} />
       ) : (
         <>
@@ -97,8 +104,8 @@ export function TilePanel({
               </p>
               {finiteGenerator(s.pattern.generator) ? (
                 <p className="math-notice">
-                  La familia seleccionada conserva su construcción aperiódica finita. Convertí el
-                  generador a paths para usar una familia periódica de teselas.
+                  La familia seleccionada conserva su construcción finita. Convertí el generador a
+                  paths para usar una familia periódica de teselas.
                 </p>
               ) : (
                 <Toggle

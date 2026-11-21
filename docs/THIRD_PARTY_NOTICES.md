@@ -79,3 +79,12 @@ Adapted headless subsets of Craig S. Kaplan's2023 BSD-3-Clause implementations:
 Full license in src/vendor/aperiodic/LICENSE and distributed software notices.
 Original source/archive SHA256 recorded in upstream.json; changes documented
 beside the modules. No P5 runtime, reference artwork, images or animations used.
+
+
+## Girih · references only
+
+[IkarosKappler/girih](https://github.com/IkarosKappler/girih) (GPL2) was consulted;
+no code, approximate decoration coordinates, textures or artwork were copied.
+The new implementation derives its polygons and contact rays mathematically,
+with references to Kaplan2005 and the Bielefeld Tilings Encyclopedia. Existing
+Paper.js/Clipper provide boolean regions; no additional dependency is bundled.

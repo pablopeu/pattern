@@ -56,7 +56,9 @@ pruebas de monitor, build y6 estáticas raíz/subcarpeta correctos. Logs locales
 
 - Fase2 verificada: IH93, siluetas originales y colores periódicos;637 unidades,
   150 E2E,10 estáticas, exportaciones independientes y build correctos.
-- Fase3: Hat/Spectre por sustitución; Girih y cruces alternados topológicos.
+- Fase3 verificada: Hat/Spectre por sustitución, Girih/catálogo/ensamblado y
+  bandas con alternancia global/conflictos. Fuente/JSON/exportaciones y ejemplos
+  verificados;677 unidades,164 E2E,14 dirigidas posteriores y10 estáticas/build.
 - Fase4: Poincaré {p,q}, isometrías/geodésicas y adaptación numérica, artística aparte.
 - Fase5: construcciones poliédricas/proyección esférica derivada, giro/exportación.
 - Fase6: timeline normalizado, loops verificables, encoder local GIF/video cancelable.

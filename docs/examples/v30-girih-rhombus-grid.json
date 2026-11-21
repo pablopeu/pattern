@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 6,
+  "drawingStyle": {
+    "stroke": "#233b2d",
+    "fill": "#3b82f6",
+    "strokeWidth": 0.65,
+    "strokeCap": "round",
+    "strokeJoin": "round",
+    "miterLimit": 10,
+    "opacity": 1,
+    "fillOpacity": 1,
+    "strokeOpacity": 1,
+    "fillRule": "evenodd",
+    "strokeDash": [],
+    "strokeDashOffset": 0,
+    "strokeProfile": {
+      "version": 1,
+      "kind": "uniform",
+      "points": [
+        {
+          "at": 0,
+          "width": 1
+        },
+        {
+          "at": 1,
+          "width": 1
+        }
+      ]
+    }
+  },
+  "stylePresets": [],
+  "palette": {
+    "colors": [],
+    "recent": [],
+    "favorites": []
+  },
+  "mainSymmetry": {
+    "family": "none",
+    "group": "none",
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "orientation": 0,
+    "width": 60,
+    "height": 60,
+    "angle": 90,
+    "sectors": 8,
+    "center": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "mainSymmetryProfiles": {},
+  "metadata": {
+    "id": "685836f9-e4e7-4272-9697-b7d08257f5fb",
+    "name": "Girih · red entrelazada",
+    "createdAt": "2026-11-21T12:03:33.440Z",
+    "updatedAt": "2026-11-21T12:03:33.440Z",
+    "example": {
+      "id": "girih-rhombus-grid",
+      "category": "Girih",
+      "description": "Rombos72° en una red finita; las bandas continúan por cada borde compartido.",
+      "construction": "Girih · parche finito de polígonos compatibles · alternancia global de hebras",
+      "validity": "EXACT",
+      "artwork": "mathematical",
+      "author": "Pattern Studio · geometría propia, método de Hankin/Kaplan",
+      "references": [
+        {
+          "title": "Kaplan2005 · Polygons in Contact",
+          "url": "https://cs.uwaterloo.ca/~csk/publications/Papers/kaplan_2005.pdf"
+        },
+        {
+          "title": "Tilings Encyclopedia · Girih",
+          "url": "https://tilings.math.uni-bielefeld.de/glossary/girih/"
+        }
+      ]
+    }
+  },
+  "documentUnits": "mm",
+  "patterns": [
+    {
+      "id": "ccb0c474-56ab-4bf9-aabf-dcc4bf03f622",
+      "name": "Girih · red entrelazada",
+      "sourceGeometry": [],
+      "generator": {
+        "kind": "girih",
+        "version": 3,
+        "seed": 42,
+        "count": 12,
+        "rows": 5,
+        "columns": 5,
+        "spacing": 24,
+        "offset": 0.5,
+        "aspectRatio": 1,
+        "staggerAxis": "rows",
+        "rotation": 0,
+        "scale": 1,
+        "scaleRatio": 0.9,
+        "amplitude": 6,
+        "frequency": 3,
+        "phase": 0,
+        "radius": 28,
+        "ratio": 0.35,
+        "distribution": "rectangular",
+        "periodicWarp": true,
+        "placements": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        ],
+        "girih": {
+          "version": 1,
+          "recipe": "rhombus-grid",
+          "tileKind": "decagon",
+          "palette": [
+            "#28535c",
+            "#c78f4d",
+            "#4f7c6b",
+            "#87613e",
+            "#d0b684"
+          ],
+          "showTiles": false,
+          "weave": true,
+          "weaveSource": false,
+          "bandWidth": 1.2,
+          "gap": 0.2,
+          "phase": 0,
+          "allowBreaks": false
+        }
+      },
+      "visible": true,
+      "symmetryMode": "free",
+      "symmetryProfiles": {},
+      "placementTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "symmetry": {
+        "family": "none",
+        "group": "none",
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "orientation": 0,
+        "width": 60,
+        "height": 60,
+        "angle": 90,
+        "sectors": 8,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    }
+  ],
+  "regions": [],
+  "applications": [],
+  "preferences": {
+    "styleDefaultsFollowSelection": true,
+    "stylePanelPinned": false,
+    "fillCloseTolerance": 0,
+    "fillLinkedDefault": true,
+    "structureVisible": false,
+    "structureOpacity": 0.22,
+    "grid": false,
+    "snap": true,
+    "snapRadiusPx": 8,
+    "snapNodes": true,
+    "guides": true,
+    "split": false,
+    "background": "#f8faf5",
+    "fundamental": false,
+    "axes": false,
+    "centers": false,
+    "continuity": false,
+    "outside": false,
+    "sourceView": false,
+    "repetitionView": "extended"
+  }
+}

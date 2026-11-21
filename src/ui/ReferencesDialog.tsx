@@ -3,6 +3,7 @@ import { Modal } from './Modal';
 
 export const consultedRepositories = [
   ['isohedral/tactile-js', 'Motor de teselaciones isoédricas'],
+  ['IkarosKappler/girih', 'Catálogo Girih consultado; construcción matemática independiente'],
   ['isohedral/hatviz', 'Reglas de sustitución Hat y jerarquía de metateselas'],
   ['isohedral/tactile', 'Representación y parámetros isoédricos'],
   ['DBraun/tactile-python', 'Referencia de implementación isoédrica'],
@@ -23,6 +24,16 @@ const libraries = [
   ['lucide-icons/lucide', 'Iconos de la interfaz'],
 ] as const;
 const otherReferences = [
+  [
+    'Kaplan · Polygons in Contact',
+    'https://cs.uwaterloo.ca/~csk/publications/Papers/kaplan_2005.pdf',
+    'Rayos ornamentales e inferencia de Hankin',
+  ],
+  [
+    'Tilings Encyclopedia · Girih',
+    'https://tilings.math.uni-bielefeld.de/glossary/girih/',
+    'Ángulos, prototipos y clasificación',
+  ],
   ['Patturn Studio', 'https://patturn.studio/', 'Referencia visual y organización de herramientas'],
   [
     'Isohedral Tiles, Tilings, and Notations',

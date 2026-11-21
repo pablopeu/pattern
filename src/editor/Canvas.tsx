@@ -231,15 +231,28 @@ export function Canvas({
     ],
   );
   const { scene, error } = useMemo(
-    () => safeScene(activePattern, actualView, scalePx),
-    [activePattern, actualView, scalePx],
+    () =>
+      safeScene(
+        editorOnly && activePattern.generator.kind === 'girih'
+          ? {
+              ...activePattern,
+              generator: { ...activePattern.generator, kind: 'motif' },
+              composition: undefined,
+              tiling: undefined,
+              symmetry: { ...activePattern.symmetry, family: 'none' },
+            }
+          : activePattern,
+        actualView,
+        scalePx,
+      ),
+    [activePattern, actualView, scalePx, editorOnly],
   );
   const patternLayers = useMemo(
     () =>
-      s.visiblePatterns
+      (editorOnly ? [] : s.visiblePatterns)
         .filter((p) => !cellOnly || p.id === activePattern.id)
         .map((pattern) => ({ pattern, ...safeScene(pattern, actualView, scalePx) })),
-    [s.visiblePatterns, actualView, cellOnly, activePattern.id, scalePx],
+    [s.visiblePatterns, actualView, cellOnly, activePattern.id, scalePx, editorOnly],
   );
   const split = s.project.preferences.split && s.mode === 'edit';
   const periodic =
@@ -247,6 +260,8 @@ export function Canvas({
     !activePattern.composition?.enabled &&
     (!!activePattern.tiling || ['wallpaper', 'frieze'].includes(activePattern.symmetry.family));
   const cellBounds = useMemo(() => {
+    if (editorOnly && activePattern.generator.kind === 'girih')
+      return geometryBounds(activePattern.sourceGeometry);
     if (activePattern.composition?.enabled) {
       const evaluated = safeScene(activePattern, {
         x: -500,
@@ -256,7 +271,7 @@ export function Canvas({
       }).scene;
       if (evaluated) return generatedBounds(evaluated.generated);
     }
-    if (isAperiodic(activePattern.generator)) {
+    if (isAperiodic(activePattern.generator) || activePattern.generator.kind === 'girih') {
       const scene = safeScene(activePattern, {
         x: -1000,
         y: -1000,
@@ -280,7 +295,7 @@ export function Canvas({
       safeScene(activePattern, { x: -500, y: -500, width: 1000, height: 1000 }).scene?.generated
         .geometry ?? activePattern.sourceGeometry,
     );
-  }, [activePattern]);
+  }, [activePattern, editorOnly]);
   const focusCell =
     cellOnly ||
     (!previewOnly &&
@@ -1139,7 +1154,12 @@ export function Canvas({
     return () => svg.removeEventListener('wheel', wheel);
   });
   const fit = (patternView = false) => {
-    if (focusCell || (isAperiodic(activePattern.generator) && !editorOnly && s.mode !== 'apply')) {
+    if (
+      focusCell ||
+      ((isAperiodic(activePattern.generator) || activePattern.generator.kind === 'girih') &&
+        !editorOnly &&
+        s.mode !== 'apply')
+    ) {
       fitReferenceCell();
       return;
     }
@@ -1147,8 +1167,12 @@ export function Canvas({
     let b: Bounds;
     if (activePattern.composition?.enabled && !editorOnly) b = cellBounds;
     else if (s.mode === 'apply' && s.region) b = geometryBounds(s.region.geometry);
-    else if (isAperiodic(activePattern.generator))
-      b = editorOnly ? geometryBounds(scene?.generated.aperiodic?.source ?? s.objects) : cellBounds;
+    else if (isAperiodic(activePattern.generator) || activePattern.generator.kind === 'girih')
+      b = editorOnly
+        ? geometryBounds(
+            scene?.generated.sourceGeometry ?? scene?.generated.aperiodic?.source ?? s.objects,
+          )
+        : cellBounds;
     else if (activePattern.tiling?.isohedral && !editorOnly)
       b = tileWorldBounds(activePattern.tiling);
     else if (patternView && activePattern.tiling && !finiteGenerator(activePattern.generator))
@@ -1678,7 +1702,10 @@ export function Canvas({
                     ...scene.generated,
                     composition: undefined,
                     aperiodic: undefined,
-                    geometry: scene.generated.aperiodic?.source ?? scene.generated.geometry,
+                    geometry:
+                      scene.generated.sourceGeometry ??
+                      scene.generated.aperiodic?.source ??
+                      scene.generated.geometry,
                   },
                 },
                 activePattern,

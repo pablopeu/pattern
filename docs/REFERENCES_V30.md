@@ -58,3 +58,17 @@ src/vendor/aperiodic/upstream.json). Licencia completa conservada. La interfaz
 propia no depende de P5. Spectre conserva curvas alternadas; Tile(1,1) recto
 no se presenta como el Spectre estrictamente quiral. Una inversión global del
 marco en generaciones impares conserva la mano canónica de todas sus teselas.
+
+
+## Fase3 · Girih y bandas
+
+Se consultaron [IkarosKappler/girih](https://github.com/IkarosKappler/girih),
+commite2e55ca6d7609ab8b43544143cccfcb4529ddcc3 (GPL2), el catálogo de
+[Tilings Encyclopedia](https://tilings.math.uni-bielefeld.de/glossary/girih/) y
+[Kaplan2005](https://cs.uwaterloo.ca/~csk/publications/Papers/kaplan_2005.pdf).
+El código nuevo es independiente: polígonos desde ángulos/lados, intersecciones
+analíticas, emparejamiento de rayos54°, ensamblado validado y paridad global.
+No se copian las aproximaciones de decoración, texturas ni código GPL del repo.
+Girih aparece en el modal Referencias; no se incorpora una biblioteca nueva.
+Los dos ejemplos son construcciones matemáticas propias con vectores editables,
+no reproducciones de mosaicos históricos ni imágenes del artículo.
