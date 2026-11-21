@@ -116,7 +116,7 @@ export default function App() {
     if (s.tool === 'nodes') {
       s.setStylePage('object');
       s.setObjectTab('nodes');
-      s.setStyleOpen(true);
+      s.setStyleOpen(!s.inlineNodes.current);
     }
   }, [s.tool]);
   useEffect(() => {
@@ -125,7 +125,10 @@ export default function App() {
   useEffect(() => {
     const requested = s.styleRequest.current;
     s.styleRequest.current = null;
-    if (s.selected.length && (s.tool === 'select' || s.tool === 'nodes')) {
+    if (
+      s.selected.length &&
+      (s.tool === 'select' || (s.tool === 'nodes' && !s.inlineNodes.current))
+    ) {
       s.setStylePage(requested ?? 'object');
       s.setStyleTarget('selection');
       s.setStyleOpen(true);
@@ -557,7 +560,7 @@ export default function App() {
                   download(
                     JSON.stringify(
                       {
-                        presetVersion: 5,
+                        presetVersion: 6,
                         pattern: freezePattern(s.pattern, s.project.mainSymmetry),
                       },
                       null,

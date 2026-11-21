@@ -1,3 +1,28 @@
+# Snaps persistentes y menú contextual · Incremento verificado
+
+Uniones explícitas por nodo con ID/marco de instancia; edición de coordenadas y
+transformaciones propaga al grupo, unir el otro extremo no suelta el primero.
+Separar snap/Alt marca detached para evitar reunión por coincidencia. Inserción
+por de Casteljau conserva curva y vínculos de extremos; menú contextual añade,
+borra/separa según destino. Clic derecho termina Bézier activa. En móvil la
+edición contextual no abre el inspector que tapaba el lienzo.
+
+JSON/preset6 con migración pura5→6 y lectura1–5, marcos invertibles y posiciones
+coherentes validados, grupos de duplicados/presets independientes. Serializar
+siempre escribe versión6 para proteger vínculos incluso con estado de HMR viejo.
+533 unidades/TypeScript y build correctos,4 E2E dirigidas desktop y1 móvil
+correctas; anteriores2 de snap también pasaron. Logs persistent-snap-*; captura
+context-menu-390.png inspeccionada. Regresión integrada/estáticas pendientes
+tras el resto de feedback, no declarar PRD completo.
+
+Siguiente: preferencias de trabajo persistentes en navegador; Fill azul inicial,
+selector visible/foco, elegir color activa herramienta y rellenos bajo límites.
+Después Fase2 figurativas/composición/colores y fases3–7. Cola de monitor ya
+corregida en431ad45,14 Python correctas, recargada sin duplicar app.
+Servicios4173/4174 vivos. PROJECT_COMPLETE ausente; vigilar primaria real.
+
+---
+
 # Reanudación real · Feedback antes del PRD
 
 Primaria nueva confirmada0% usada a05:30UTC; servicios existentes conservados.

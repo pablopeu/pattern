@@ -97,7 +97,7 @@ test('v3 estático: ejemplos originales, receta portable y raster sin Internet',
   await page.getByRole('button', { name: 'Guardar proyecto', exact: true }).click();
   await page.getByRole('button', { name: 'Guardar archivo', exact: true }).click();
   const project = JSON.parse(await readFile((await (await download).path())!, 'utf8'));
-  expect(project.schemaVersion).toBe(5);
+  expect(project.schemaVersion).toBe(6);
   expect(project.patterns[0].sourceGeometry).toHaveLength(10);
   expect(project.patterns[0].composition.recipe).toBe('square-limit');
   expect(project.metadata.example.artwork).toBe('original');
@@ -329,7 +329,7 @@ test('v2.2 estático: panel derecho, Fill vectorial, perfiles/preset y workers s
   await page.getByRole('button', { name: 'Guardar archivo', exact: true }).click();
   let file = await downloaded;
   const project = JSON.parse(await readFile((await file.path())!, 'utf8'));
-  expect(project.schemaVersion).toBe(5);
+  expect(project.schemaVersion).toBe(6);
   expect(project.patterns[0].sourceGeometry).toHaveLength(6);
   expect(project.patterns[0].sourceGeometry.filter((g: any) => g.fillRegion)).toHaveLength(1);
   expect(project.patterns[0].sourceGeometry.at(-1).strokeProfile.kind).toBe('taper-both');

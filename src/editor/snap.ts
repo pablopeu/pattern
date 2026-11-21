@@ -6,6 +6,12 @@ export interface JunctionNode {
   index: number;
   matrix: Matrix;
 }
+export interface NodeHit {
+  point: Point;
+  id: string;
+  index: number;
+  instance: Matrix;
+}
 /** Exact coincident nodes are one geometric vertex; proximity alone never welds them. */
 export function junctionNodes(
   point: Point,
@@ -26,15 +32,15 @@ export function junctionNodes(
 }
 
 /** Search in display coordinates, then let the caller map back to its captured source. */
-export function nearestNode(
+export function nearestNodeHit(
   point: Point,
   shapes: Geometry[],
   instances: Matrix[],
   radius: number,
   exclude?: { id: string; index?: number },
   junction: JunctionNode[] = [],
-): Point | null {
-  let best: Point | null = null,
+): NodeHit | null {
+  let best: NodeHit | null = null,
     limit = radius;
   for (const instance of instances)
     for (const g of shapes) {
@@ -47,10 +53,13 @@ export function nearestNode(
         const q = apply(matrix, n),
           d = distance(point, q);
         if (d <= limit) {
-          best = q;
+          best = { point: q, id: g.id, index, instance };
           limit = d;
         }
       }
     }
   return best;
+}
+export function nearestNode(...args: Parameters<typeof nearestNodeHit>): Point | null {
+  return nearestNodeHit(...args)?.point ?? null;
 }

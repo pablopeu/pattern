@@ -99,7 +99,7 @@ describe('v2.2 · estilos y persistencia', () => {
       },
     ];
     const restored = parseProject(JSON.stringify(old));
-    expect(restored.schemaVersion).toBe(5);
+    expect(restored.schemaVersion).toBe(6);
     expect(restored.patterns[0].sourceGeometry[0]).toMatchObject({
       id: g.id,
       nodes: g.nodes,

@@ -952,3 +952,18 @@
   conserva PID, ambos servicios activos y HTTP200.
 - Feedback de snaps, menú contextual, preferencias y Fill aún pendiente;
   se atiende antes del PRD, tal como pidió Pablo para el trabajo nocturno.
+
+
+## Snaps permanentes, edición contextual y finalización de Bézier
+
+- Unión explícita por ID/marco de copia: ambos extremos independientes,
+  arrastre/números/transformaciones propagados, JSON y undo/redo. Separación
+  explícita no se revierte por coincidencia. Duplicados/presets remapean grupos.
+- Menú de clic derecho añade nodo sin cambiar la curva, borra nodo o separa
+  snap; con Bézier activa termina sin Enter. Edición contextual no tapa móvil.
+- Esquema/preset6, migración pura5→6, lectura1–5. Matrices y grupos validados.
+  README/formato actualizados.533 unidades/TypeScript y build correctos;
+  4 E2E dirigidas desktop y1 móvil, más2 anteriores de snap correctas.
+- Contexto móvil inspeccionado; inserción comprobada contra curva original
+  en101 muestras, clic de navegador dentro1,5px. Regresión integrada final
+  pendiente tras feedback de preferencias/Fill; PRD sigue pendiente.

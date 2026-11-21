@@ -1,6 +1,8 @@
 import { generatedBounds } from '../composition/generated';
 import { geometryHit } from './hitGeometry';
-import { nearestNode, junctionNodes, type JunctionNode } from './snap';
+import { nearestNodeHit, junctionNodes, type JunctionNode, type NodeHit } from './snap';
+import { joinNodes, detachNode } from './junctions';
+import { insertCurveNode } from './curve-edit';
 import { sceneLayers } from '../patterns/layers';
 import { useFill } from '../fill/useFill';
 import { TileEditor } from '../tiling/TileEditor';
@@ -51,7 +53,7 @@ import {
   type Point,
 } from '../geometry/matrix';
 import { pathData, simplifyPoints } from '../geometry/paths';
-import { paperPath, smoothNodes } from '../geometry/paper';
+import { paperPath, smoothNodes, scope } from '../geometry/paper';
 import { buildScene, expandedTransforms, sceneScaleBound, type Scene } from '../patterns/engine';
 import { lattice, latticeVectors, fundamentalDomain, type Bounds } from '../symmetry/groups';
 import { symmetryGuides, verifyPeriodicity } from '../symmetry/guides';
@@ -79,6 +81,7 @@ interface Drag {
   handle?: 'node' | 'in' | 'out';
   baseNode?: Node;
   junction?: JunctionNode[];
+  snapHit?: NodeHit | null;
   shape?: Geometry;
 }
 function safeScene(
@@ -135,6 +138,28 @@ export function Canvas({
     } | null>(null),
     space = useRef(false),
     lastPointer = useRef<Point>({ x: 0, y: 0 });
+  const lastSnap = useRef<NodeHit | null>(null);
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+    id: string;
+    index?: number;
+    curve: number;
+    time: number;
+    instance: Matrix;
+  } | null>(null);
+  useEffect(() => {
+    if (!contextMenu) return;
+    const close = (event: Event) => {
+      if (!(event.target instanceof Element) || !event.target.closest('.canvas-context-menu'))
+        setContextMenu(null);
+    };
+    container.current
+      ?.querySelector<HTMLButtonElement>('.canvas-context-menu button:not(:disabled)')
+      ?.focus();
+    document.addEventListener('pointerdown', close, true);
+    return () => document.removeEventListener('pointerdown', close, true);
+  }, [contextMenu]);
   const [captureLabel, setCaptureLabel] = useState(''),
     [captureCount, setCaptureCount] = useState(0);
   const alternatives = useRef<CaptureInstance[]>([]),
@@ -378,7 +403,7 @@ export function Canvas({
   const nodeSnap = (p: Point, exclude?: { id: string; index?: number }): Point | null => {
     const target =
       (s.project.preferences.snapNodes ?? true)
-        ? nearestNode(
+        ? nearestNodeHit(
             p,
             s.mode !== 'apply' && !editorOnly && scene ? scene.generated.geometry : s.objects,
             snapMatrices,
@@ -387,8 +412,24 @@ export function Canvas({
             drag.current?.junction,
           )
         : null;
-    setSnapTarget(target);
-    return target;
+    lastSnap.current = target;
+    setSnapTarget(target?.point ?? null);
+    return target?.point ?? null;
+  };
+  const linkNode = (id: string, index: number, instance: Matrix, target: NodeHit | null) => {
+    if (!target) return;
+    s.change(
+      (project) =>
+        joinNodes(
+          [
+            ...project.patterns.flatMap((p) => p.sourceGeometry),
+            ...project.regions.flatMap((r) => r.geometry),
+          ],
+          { id, index, instance },
+          target,
+        ),
+      true,
+    );
   };
   const snap = (p: Point): Point => {
     const target = nodeSnap(p, { id: drag.current?.id ?? pathDraft.current?.id ?? '' });
@@ -659,6 +700,38 @@ export function Canvas({
     event.currentTarget.setPointerCapture(event.pointerId);
     const shape = s.objects.find((g) => g.id === id)!;
     const matrix = multiply(s.instance, shape.transform);
+    if (handle === 'node') {
+      s.change((project) => {
+        const objects = [
+          ...project.patterns.flatMap((p) => p.sourceGeometry),
+          ...project.regions.flatMap((r) => r.geometry),
+        ];
+        if (event.altKey) detachNode(objects, id, index);
+        else if (!shape.nodes[index].detached)
+          for (const member of junctionNodes(
+            apply(matrix, shape.nodes[index]),
+            s.objects,
+            snapMatrices,
+          )) {
+            if (member.id === id && member.index === index) continue;
+            const targetShape = objects.find((g) => g.id === member.id)!;
+            if (targetShape.nodes[member.index].detached) continue;
+            joinNodes(
+              objects,
+              { id, index, instance: s.instance },
+              {
+                id: member.id,
+                index: member.index,
+                instance: multiply(member.matrix, inverse(targetShape.transform)),
+              },
+            );
+          }
+      }, true);
+    }
+    const current = s.projectRef.current.patterns
+        .flatMap((p) => p.sourceGeometry)
+        .concat(s.projectRef.current.regions.flatMap((r) => r.geometry)),
+      joinedId = current.find((g) => g.id === id)?.nodes[index]?.junction?.id;
     drag.current = {
       type: 'node',
       start: point(event),
@@ -668,10 +741,19 @@ export function Canvas({
       handle,
       baseNode: structuredClone(shape.nodes[index]),
       junction:
-        handle === 'node' && !event.altKey
-          ? junctionNodes(apply(matrix, shape.nodes[index]), s.objects, snapMatrices).filter(
-              (n) => n.id !== id || n.index !== index,
-            )
+        handle === 'node'
+          ? [
+              ...junctionNodes(apply(matrix, shape.nodes[index]), s.objects, snapMatrices).filter(
+                (n) => !(n.id === id && n.index === index),
+              ),
+              ...current.flatMap((g) =>
+                g.nodes.flatMap((n, i) =>
+                  joinedId && n.junction?.id === joinedId && !(g.id === id && i === index)
+                    ? [{ id: g.id, index: i, matrix: multiply(n.junction.instance, g.transform) }]
+                    : [],
+                ),
+              ),
+            ]
           : [],
     };
   };
@@ -718,6 +800,7 @@ export function Canvas({
       return;
     }
     let q = snap(p);
+    const snapHit = lastSnap.current;
     event.currentTarget.setPointerCapture(event.pointerId);
     if (s.tool === 'select' || s.tool === 'nodes') {
       if (s.mode !== 'apply' && !editorOnly && selectAcrossLayers(event)) return;
@@ -788,6 +871,12 @@ export function Canvas({
         });
       }
       const draft = pathDraft.current!;
+      linkNode(draft.id, draft.anchors.length - 1, draft.capture.instance.matrix, snapHit);
+      const live = s.projectRef.current.patterns
+        .flatMap((p) => p.sourceGeometry)
+        .concat(s.projectRef.current.regions.flatMap((r) => r.geometry))
+        .find((g) => g.id === draft.id);
+      if (live) draft.anchors = structuredClone(live.nodes);
       drag.current = {
         type: 'penhandle',
         id: draft.id,
@@ -810,6 +899,7 @@ export function Canvas({
       g.parameters = { x: q.x, y: q.y, width: 0.1, height: 0.1, radius: 0, sides: 5 };
     if (s.mode === 'apply') g.fill = '#dce6d4';
     addShape(g);
+    if (kind === 'path') linkNode(g.id, 0, capture.instance.matrix, snapHit);
     s.setSelected([g.id]);
     drag.current = { type: 'draw', start: q, id: g.id, shape: g, capture };
   };
@@ -880,6 +970,7 @@ export function Canvas({
     if (d.type === 'node') {
       const target = d.handle === 'node' ? nodeSnap(p, { id: d.id!, index: d.index }) : null,
         q = apply(inverse(d.matrix!), target ?? p);
+      d.snapHit = lastSnap.current;
       updateShape(d.id!, (g) => {
         const n = g.nodes[d.index!];
         if (d.handle === 'node') {
@@ -895,23 +986,6 @@ export function Canvas({
           }
         }
       });
-      if (d.handle === 'node' && d.junction?.length) {
-        const moved = s.projectRef.current.patterns
-            .flatMap((pat) => pat.sourceGeometry)
-            .concat(s.projectRef.current.regions.flatMap((region) => region.geometry))
-            .find((g) => g.id === d.id)!,
-          world = apply(d.matrix!, moved.nodes[d.index!]);
-        s.change((project) => {
-          const objects = project.patterns
-            .flatMap((pat) => pat.sourceGeometry)
-            .concat(project.regions.flatMap((region) => region.geometry));
-          for (const member of d.junction!) {
-            const g = objects.find((g) => g.id === member.id),
-              n = g?.nodes[member.index];
-            if (n) Object.assign(n, apply(inverse(member.matrix), world));
-          }
-        }, true);
-      }
     }
     if (d.type === 'draw') {
       const q = d.capture
@@ -929,7 +1003,7 @@ export function Canvas({
           if (event.shiftKey) g.parameters.height = g.parameters.width;
         } else if ((d.capture?.tool ?? s.tool) === 'pencil') {
           if (distance(g.nodes.at(-1)!, q) > 0.6 / scalePx) g.nodes.push(node(q.x, q.y));
-        } else g.nodes = [node(d.start.x, d.start.y), node(q.x, q.y)];
+        } else g.nodes = [{ ...g.nodes[0], x: d.start.x, y: d.start.y }, node(q.x, q.y)];
       });
     }
     if (d.type === 'penhandle' && s.tool === 'pen') {
@@ -948,13 +1022,35 @@ export function Canvas({
     setSnapTarget(null);
     const d = drag.current;
     if (!d) return;
+    if (d.type === 'node' && d.handle === 'node' && d.snapHit) {
+      const g = s.objects.find((g) => g.id === d.id)!;
+      linkNode(d.id!, d.index!, multiply(d.matrix!, inverse(g.transform)), d.snapHit);
+    }
     if (d.type === 'draw' && (d.capture?.tool ?? s.tool) === 'pencil')
       updateShape(d.id!, (g) => {
+        const first = g.nodes[0].junction;
         g.nodes = smoothNodes(
           simplifyPoints(g.nodes, 0.25).map((p) => node(p.x, p.y)),
           g.closed,
         );
+        if (first) g.nodes[0].junction = first;
       });
+    if (d.type === 'draw' && d.capture) {
+      const objects = s.projectRef.current.patterns
+          .flatMap((p) => p.sourceGeometry)
+          .concat(s.projectRef.current.regions.flatMap((r) => r.geometry)),
+        g = objects.find((g) => g.id === d.id);
+      if (g?.kind === 'path' && g.nodes.length > 1) {
+        const target = nodeSnap(point(event), { id: g.id });
+        if (target && lastSnap.current) {
+          updateShape(g.id, (g) =>
+            Object.assign(g.nodes.at(-1)!, capturedPoint(d.capture!, target)),
+          );
+          linkNode(g.id, g.nodes.length - 1, d.capture.instance.matrix, lastSnap.current);
+        }
+      }
+      setSnapTarget(null);
+    }
     if (d.type === 'marquee' && marquee) {
       const lo = {
           x: Math.min(marquee.start.x, marquee.end.x),
@@ -1466,7 +1562,50 @@ export function Canvas({
             finishPath(s.mode === 'apply');
           }
         }}
-        onContextMenu={(e) => e.preventDefault()}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          if (previewOnly) return;
+          if (pathDraft.current) {
+            finishPath(s.mode === 'apply');
+            return;
+          }
+          const p = point(e),
+            rect = container.current!.getBoundingClientRect();
+          let hit: typeof contextMenu = null,
+            best = 9 / scalePx;
+          for (const instance of [s.instance, ...snapMatrices])
+            for (const g of s.objects) {
+              if (g.kind !== 'path' || !g.visible || g.locked || g.fillRegion) continue;
+              const path = paperPath(g, instance);
+              try {
+                const location = path.getNearestLocation(new scope.Point(p.x, p.y));
+                if (!location) continue;
+                const dist = distance(p, location.point);
+                if (dist > best) continue;
+                best = dist;
+                const matrix = multiply(instance, g.transform),
+                  index = g.nodes.findIndex((n) => distance(p, apply(matrix, n)) <= 8 / scalePx);
+                hit = {
+                  id: g.id,
+                  index: index < 0 ? undefined : index,
+                  curve: location.index,
+                  time: location.time,
+                  instance,
+                  x: Math.max(4, Math.min(e.clientX - rect.left, rect.width - 224)),
+                  y: Math.max(4, Math.min(e.clientY - rect.top, rect.height - 170)),
+                };
+              } finally {
+                path.remove();
+              }
+            }
+          if (hit) {
+            s.inlineNodes.current = true;
+            s.setStyleOpen(false);
+            s.setSelected([hit.id]);
+            s.setInstance(hit.instance);
+            setContextMenu(hit);
+          } else setContextMenu(null);
+        }}
         aria-label={editorOnly ? 'Editor de geometría' : 'Lienzo de patrones'}
       >
         <defs>
@@ -2110,6 +2249,92 @@ export function Canvas({
           {s.project.preferences.guides ? <Eye size={17} /> : <EyeOff size={17} />}
         </button>
       </div>
+      {contextMenu && (
+        <div
+          className="canvas-context-menu"
+          role="menu"
+          aria-label="Edición rápida"
+          style={{ left: contextMenu.x, top: contextMenu.y }}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') {
+              event.stopPropagation();
+              setContextMenu(null);
+              svgRef.current?.focus();
+            }
+            if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+              event.preventDefault();
+              const buttons = Array.from(
+                  event.currentTarget.querySelectorAll<HTMLButtonElement>('button:not(:disabled)'),
+                ),
+                index = buttons.indexOf(document.activeElement as HTMLButtonElement);
+              buttons[
+                (index + (event.key === 'ArrowDown' ? 1 : buttons.length - 1)) % buttons.length
+              ]?.focus();
+            }
+          }}
+        >
+          {contextMenu.index === undefined ? (
+            <button
+              role="menuitem"
+              onClick={() => {
+                let inserted = 0;
+                s.editObjects((objects) => {
+                  const g = objects.find((g) => g.id === contextMenu.id);
+                  if (g) inserted = insertCurveNode(g, contextMenu.curve, contextMenu.time);
+                });
+                s.setTool('nodes', { inline: true });
+                s.setNodeIndex(inserted);
+                setContextMenu(null);
+                svgRef.current?.focus();
+              }}
+            >
+              Añadir nodo aquí
+            </button>
+          ) : (
+            <>
+              <button
+                role="menuitem"
+                disabled={
+                  !s.objects.find((g) => g.id === contextMenu.id)?.nodes[contextMenu.index]
+                    ?.junction
+                }
+                onClick={() => {
+                  s.editObjects((objects) =>
+                    detachNode(objects, contextMenu.id, contextMenu.index!),
+                  );
+                  setContextMenu(null);
+                  svgRef.current?.focus();
+                }}
+              >
+                Separar snap
+              </button>
+              <button
+                role="menuitem"
+                disabled={(s.objects.find((g) => g.id === contextMenu.id)?.nodes.length ?? 0) <= 2}
+                onClick={() => {
+                  s.editObjects((objects) => {
+                    const g = objects.find((g) => g.id === contextMenu.id);
+                    if (g && g.nodes.length > 2) g.nodes.splice(contextMenu.index!, 1);
+                  });
+                  setContextMenu(null);
+                  svgRef.current?.focus();
+                }}
+              >
+                Eliminar nodo
+              </button>
+            </>
+          )}
+          <button
+            role="menuitem"
+            onClick={() => {
+              setContextMenu(null);
+              svgRef.current?.focus();
+            }}
+          >
+            Cerrar menú
+          </button>
+        </div>
+      )}
       <div className="coordinate">
         {fixedCell ? <Scan size={12} /> : <Hand size={12} />}{' '}
         {fixedCell

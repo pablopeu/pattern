@@ -1,4 +1,5 @@
 import { axesFingerprint } from '../fill/service';
+import { enforceJunctions, remapJunctions } from '../editor/junctions';
 import {
   styleFields,
   drawingStyle,
@@ -48,6 +49,7 @@ export type StylePage =
   | 'object'
   | 'options';
 export function useStudio() {
+  const inlineNodes = useRef(false);
   const styleRequest = useRef<StylePage | null>(null);
   const [tileTab, setTileTab] = useState<'shape' | 'placement' | 'edge' | 'tangents'>('shape');
   const [catalogOpen, setCatalogOpen] = useState(false);
@@ -73,7 +75,8 @@ export function useStudio() {
     [styleTarget, setStyleTarget] = useState<'selection' | 'current'>('selection');
   // Tool activation is also an explicit request to reopen its controls.
   // Keeping this in the action handles repeated clicks, shortcuts and commands.
-  const setTool = useCallback((next: Tool) => {
+  const setTool = useCallback((next: Tool, options: { inline?: boolean } = {}) => {
+    inlineNodes.current = next === 'nodes' && !!options.inline;
     setActiveTool(next);
     if (next === 'fill') {
       setStyleTarget('current');
@@ -81,6 +84,10 @@ export function useStudio() {
       setStyleOpen(true);
     } else if (next === 'pencil') {
       setStylePage('stroke');
+      setStyleOpen(true);
+    } else if (next === 'nodes' && !options.inline) {
+      setStylePage('object');
+      setStyleTarget('selection');
       setStyleOpen(true);
     }
   }, []);
@@ -111,7 +118,18 @@ export function useStudio() {
   const change = useCallback(
     (recipe: (p: Project) => void, transient = false, options: { derived?: boolean } = {}) => {
       const next = structuredClone(ref.current);
+      next.schemaVersion = 6;
       recipe(next);
+      for (const pat of next.patterns)
+        enforceJunctions(
+          pat.sourceGeometry,
+          ref.current.patterns.find((p) => p.id === pat.id)?.sourceGeometry ?? [],
+        );
+      for (const region of next.regions)
+        enforceJunctions(
+          region.geometry,
+          ref.current.regions.find((r) => r.id === region.id)?.geometry ?? [],
+        );
       for (const pat of next.patterns)
         for (const g of pat.sourceGeometry) {
           const old = ref.current.patterns
@@ -648,6 +666,8 @@ export function useStudio() {
     const ids: string[] = [],
       groups = new Map<string, string>();
     editObjects((shapes) => {
+      const copies: Geometry[] = [],
+        before: Geometry[] = [];
       for (const shape of shapes.filter((s) => selected.includes(s.id))) {
         const g = structuredClone(shape);
         g.id = uid();
@@ -656,14 +676,18 @@ export function useStudio() {
           g.groupId = groups.get(g.groupId);
         }
         g.name += ' copia';
+        before.push(structuredClone(g));
         g.transform = [
           ...g.transform.slice(0, 4),
           g.transform[4] + 5,
           g.transform[5] + 5,
         ] as unknown as Matrix;
-        shapes.push(g);
+        copies.push(g);
         ids.push(g.id);
       }
+      remapJunctions(copies);
+      enforceJunctions(copies, before);
+      shapes.push(...copies);
     });
     setSelected(ids);
   }, [selected, editObjects]);
@@ -781,6 +805,7 @@ export function useStudio() {
     mode,
     setMode,
     tool,
+    inlineNodes,
     setTool,
     selected,
     setSelected,

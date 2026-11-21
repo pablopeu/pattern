@@ -45,9 +45,14 @@ nodos** entre **1 y 40 px** (inicialmente **8 px**); la distancia visual se mant
 al cambiar el zoom. El ajuste de nodos tiene prioridad sobre la grilla.
 **Snap** en la barra controla la atracción entre nodos. **Preferencias → Ajustar
 a grilla** es independiente: podés desactivarlo y mantener la atracción activa.
-Los nodos que coinciden forman un vértice compartido: al arrastrar uno acompañan
-los demás trazos unidos, incluso después de guardar y abrir el archivo. Alt al
-iniciar el arrastre permite separar un extremo; los objetos bloqueados no se mueven.
+Los extremos snapeados guardan una unión permanente: al arrastrar uno acompañan
+los demás trazos unidos, incluso después de guardar y abrir el archivo. Unir el
+otro extremo conserva el primero. Alt al iniciar el arrastre permite separar
+un extremo; los objetos bloqueados no se mueven.
+
+**Clic derecho** termina la Bézier que estás dibujando. Fuera de un trazado activo,
+abre un menú sobre la curva para **Añadir nodo aquí** sin cambiar su forma; sobre
+un nodo permite **Eliminar nodo** o **Separar snap**. Estas acciones tienen deshacer.
 
 Para rellenar áreas contiguas, dibujá su borde compartido una sola vez y completá
 los otros lados. **Rellenar región** detecta cada área por separado aunque sus

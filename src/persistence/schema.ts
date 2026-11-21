@@ -1,4 +1,5 @@
 import { compositionSchema } from '../composition/schema';
+import { junctionIssue } from '../editor/junctions';
 import { defaultDrawingStyle, styleIssue } from '../app/styles';
 import { tilingIssue } from '../tiling/validate';
 import { z } from 'zod';
@@ -64,7 +65,16 @@ export const geometrySchema = z.object({
   id: z.string().min(1),
   name: z.string(),
   kind: z.enum(['path', 'rectangle', 'ellipse', 'polygon', 'compound']),
-  nodes: z.array(point.extend({ in: point, out: point })).max(100000),
+  nodes: z
+    .array(
+      point.extend({
+        in: point,
+        out: point,
+        junction: z.object({ id: z.string().min(1).max(200), instance: matrix }).optional(),
+        detached: z.literal(true).optional(),
+      }),
+    )
+    .max(100000),
   closed: z.boolean(),
   transform: matrix,
   stroke: z.string().regex(/^(none|#[0-9a-fA-F]{3,8})$/),
@@ -234,7 +244,7 @@ export const drawingStyleSchema = geometrySchema
     if (issue) ctx.addIssue({ code: 'custom', message: issue });
   });
 export const projectSchema = z.object({
-  schemaVersion: z.literal(5),
+  schemaVersion: z.literal(6),
   drawingStyle: drawingStyleSchema,
   stylePresets: z
     .array(
@@ -348,11 +358,18 @@ export function parseProject(text: string): Project {
     checkMatrix(pat.placementTransform);
     for (const m of pat.generator.placements) checkMatrix(m);
     for (const g of pat.sourceGeometry) checkGeometry(g);
+    const issue = junctionIssue(pat.sourceGeometry);
+    if (issue) throw Error(issue);
   };
   const checkGeometry = (g: (typeof p.patterns)[number]['sourceGeometry'][number]) => {
     const issue = styleIssue(g);
     if (issue) throw Error(issue);
     checkMatrix(g.transform);
+    for (const node of g.nodes) {
+      if (node.junction) checkMatrix(node.junction.instance);
+      if (node.detached && node.junction)
+        throw Error('Un nodo separado no puede conservar una unión.');
+    }
     if (g.fillRegion) {
       checkMatrix(g.fillRegion.captureMatrix);
       for (const m of g.fillRegion.orbitMatrices) checkMatrix(m);
@@ -427,4 +444,5 @@ export function parseProject(text: string): Project {
   }
   return p as Project;
 }
-export const serialize = (project: Project) => JSON.stringify(project, null, 2);
+export const serialize = (project: Project) =>
+  JSON.stringify({ ...project, schemaVersion: 6 }, null, 2);

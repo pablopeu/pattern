@@ -2463,6 +2463,9 @@ input[type='color']::-webkit-color-swatch {
 .context-preferences .toggle { min-height:26px; }
 .context-preferences .field { flex-wrap:nowrap; }
 .context-preferences .field .number-wrap { flex:0 0 72px; }
+.canvas-context-menu { position:absolute; z-index:70; width:220px; max-width:calc(100% - 8px); padding:5px; display:flex; flex-direction:column; background:var(--panel); border:1px solid var(--line); border-radius:8px; box-shadow:0 6px 24px #233b2d33; }
+.canvas-context-menu button { padding:9px 10px; text-align:left; border-radius:4px; }
+.canvas-context-menu button:hover, .canvas-context-menu button:focus-visible { background:#dfe9d7; outline:2px solid #8aa76b; }
 .command-modal { width:520px; }
 .command-modal input { width:100%; padding:12px; border:1px solid var(--line); border-radius:7px; margin-bottom:10px; }
 .command-modal [role=listbox] { display:grid; gap:4px; }

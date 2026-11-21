@@ -9,7 +9,12 @@ import {
 } from './styles';
 import type { TilingDefinition } from '../tiling/tiles';
 import type { Matrix, Point, Unit } from '../geometry/matrix';
-export type Node = Point & { in: Point; out: Point };
+export type Node = Point & {
+  in: Point;
+  out: Point;
+  junction?: { id: string; instance: Matrix };
+  detached?: true;
+};
 export type ShapeKind = 'path' | 'rectangle' | 'ellipse' | 'polygon' | 'compound';
 export interface Geometry extends DrawingStyle {
   fillRegion?: FillRegion;
@@ -111,7 +116,7 @@ export interface Project {
   drawingStyle: DrawingStyle;
   stylePresets: StylePreset[];
   palette: ProjectPalette;
-  schemaVersion: 5;
+  schemaVersion: 6;
   mainSymmetry: Symmetry;
   mainSymmetryProfiles: Record<string, Symmetry>;
   metadata: {
@@ -224,7 +229,7 @@ export function newPattern(): Pattern {
 export function newProject(): Project {
   const now = new Date().toISOString();
   return {
-    schemaVersion: 5,
+    schemaVersion: 6,
     drawingStyle: defaultDrawingStyle(),
     stylePresets: [],
     palette: { colors: [], recent: [], favorites: [] },

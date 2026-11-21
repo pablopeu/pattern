@@ -1,12 +1,12 @@
 # Formato de proyecto
 
-El archivo nativo es JSON UTF-8, extensión sugerida `.pattern.json`. Versión actual: **5**. El proyecto no almacena objetos Paper.js, píxeles del canvas ni cientos de clones del motivo.
+El archivo nativo es JSON UTF-8, extensión sugerida `.pattern.json`. Versión actual: **6**. El proyecto no almacena objetos Paper.js, píxeles del canvas ni cientos de clones del motivo.
 
 ## Estructura
 
 ```json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "metadata": { "id": "uuid", "name": "Mi estudio", "createdAt": "ISO-8601", "updatedAt": "ISO-8601" },
   "documentUnits": "mm",
   "mainSymmetry": { "family": "none", "group": "none", "width": 60, "height": 60, "angle": 90, "sectors": 8, "center": {"x": 0, "y": 0}, "origin": {"x": 0, "y": 0}, "orientation": 0 },
@@ -190,3 +190,24 @@ El formato global sigue5: el kind nuevo hace que lectores5 anteriores rechacen
 la construcción desconocida en vez de omitir un campo opcional. Las cinco
 familias clásicas siguen aceptando exactamente sus contratos anteriores.
 Al abrir archivos no se sobreescribe el original ni se convierte a otra familia.
+
+## Esquema6 · Uniones persistentes de nodos
+
+Migración pura5→6: sólo cambia la versión; los archivos1–5 continúan abriendo
+sin cambiar sus fuentes. Presets actuales6, lectura1–5 conservada. Los lectores
+anteriores rechazan6 para evitar perder silenciosamente las uniones.
+
+Cada nodo puede llevar `junction:{id,instance:[a,b,c,d,e,f]}`. El ID agrupa los
+extremos; instance conserva el marco de la copia desde la que se unieron. La
+posición común se calcula con instance×geometry.transform×node. Al editar un
+extremo o transformar su objeto se propaga la posición común con las inversas
+de los otros miembros, sin alterar tangentes ni duplicar fuentes. Los grupos
+se resuelven dentro de cada patrón/perímetro, separados de los snapshots.
+Se rechazan marcos singulares y grupos con posiciones incoherentes.
+
+`detached:true` marca una separación explícita: aunque los extremos todavía
+coincidan, no se reúnen automáticamente al iniciar otro arrastre. Un snap
+explícito nuevo permite volver a unirlos. Duplicados y presets remapean IDs de
+uniones para no modificar los originales. Insertar un nodo usa de Casteljau y
+conserva las uniones existentes en los extremos; no crea una unión en el nodo
+intermedio. El menú contextual y sus coordenadas no se serializan.

@@ -1,6 +1,7 @@
 import { newProject, uid, type Pattern } from '../app/model';
 import { migratePatternV1 } from './migrations';
 import { parseProject } from './schema';
+import { remapJunctions } from '../editor/junctions';
 export function parsePreset(text: string): Pattern {
   let data: unknown;
   try {
@@ -16,7 +17,8 @@ export function parsePreset(text: string): Pattern {
       data.presetVersion !== 2 &&
       data.presetVersion !== 3 &&
       data.presetVersion !== 4 &&
-      data.presetVersion !== 5) ||
+      data.presetVersion !== 5 &&
+      data.presetVersion !== 6) ||
     !('pattern' in data)
   )
     throw Error('Versión o estructura de preset no compatible.');
@@ -50,5 +52,6 @@ export function parsePreset(text: string): Pattern {
       shape.groupId = groups.get(shape.groupId);
     }
   }
+  remapJunctions(pattern.sourceGeometry);
   return pattern;
 }
