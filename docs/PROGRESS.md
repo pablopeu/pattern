@@ -1077,3 +1077,16 @@
 - Detalles, límites y pasos pendientes en HYPERBOLIC_CORE.md. Fase4 parcial;
   faltan representación derivada, fuente/regreso, cámara/LOD, trazos, nativo,
   artística, ejemplos y exportación antes de auditar AC12–13.
+
+
+## Fase4 · Fuente plana a contornos derivados
+
+- Adaptador puro de fuente preparada con límites256 objetos/4096 curvas,
+  rellenos debajo de contornos, agujeros, transformaciones y estilos de trazo.
+  Bézier abierta sin relleno implícito; fuente original intacta.
+- Proyección con presupuesto global de segmentos por fuente, radio físico y
+  cota cúbica certificada separada de estimación del contorneador de trazos.
+-711 pruebas/TypeScript. CairoSVG comprueba píxeles de hueco/cuerpo/trazo
+  variable bajo identidad, traslación periférica y reflexión; proyección≤0,005mm.
+- Aún sin UI ni cambio de JSON; Fase4 parcial. Falta adaptación desde escena
+  y presupuesto entre celdas, cámara/LOD, flujo fuente/regreso/artística/export.

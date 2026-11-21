@@ -48,8 +48,10 @@ También sirve con conjugación/reflexiones. Subdivisión de Casteljau hasta cum
 la tolerancia; falla explícitamente si no alcanza la profundidad/presupuesto.
 No usa solamente el punto medio, que puede ocultar lazos o curvas en S.
 La tolerancia física se divide por el radio físico del disco. No se aproximan
-los trazos con ancho constante después del mapeo: falta convertirlos a contornos
-antes de la transformación no lineal y sumar sus errores al presupuesto total.
+los trazos con ancho constante después del mapeo: src/hyperbolic/source.ts ya los convierte a contornos
+antes de la transformación no lineal. El reporte separa la cota certificada de
+proyección de la tolerancia solicitada al contorneador existente (estimación,
+no garantía certificada de todo el flujo).
 La fuente plana, sus estilos y metadatos deben conservarse intactos.
 
 ## Evidencia reproducible
@@ -83,3 +85,28 @@ fuente plana editable/regreso/actualización; sin edición directa sobre el disc
 Añadir cámara/isometría/LOD, adaptación de contornos y trazos completos, interfaces
 sin scroll en cuatro resoluciones, ejemplos editables, SVG/raster/DXF y mediciones
 físicas independientes. Sólo entonces auditar AC12–13/Fase4.
+
+## Adaptador de fuente plana
+
+prepareDiskSource consume un recorte finito preparado de hasta256 geometrías,
+no una red infinita/proyecto completo. Respeta transformaciones, visibilidad,
+reglas de relleno/huecos, opacidades, dash, perfiles de ancho, caps y joins.
+Rellenos primero y todos los contornos de líneas encima; una Bézier abierta
+no recibe cierre de relleno implícito. Geometrías fuente no se modifican.
+Hasta4096 curvas por defecto/24000 máximo; proyección con presupuesto de
+segmentos global compartido por todas las curvas, error explícito al excederlo.
+
+711 pruebas/TypeScript;7 pruebas adicionales de fuente, conservación, estilos,
+medidas físicas y límites. Diagnóstico independiente:
+
+```bash
+node scripts/validate-v30-hyperbolic-source.mjs
+.runtime/validation-env/bin/python scripts/validate_v30_hyperbolic_source.py
+```
+
+CairoSVG comprueba transparencia del hueco, cuerpo azul y contorno variable
+magenta bajo identidad, traslación periférica y reflexión; fuente intacta, sin
+relleno rojo de la línea abierta. Proyección≤0,005mm en disco200mm. Certificación
+sólo del paso cúbica→polilínea; no afirmar precisión certificada de primitivas
+convertidas por Paper ni del contorneado. Faltan preparación desde escena,
+recortes/Fill vinculados, presupuesto compartido entre celdas, UI/nativo/export.

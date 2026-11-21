@@ -1,3 +1,21 @@
+# Fase4 · Fuente derivada preparada; seguir cámara/LOD e integración
+
+Nuevo src/hyperbolic/source.ts: geometrías finitas preparadas a contornos de
+relleno/trazo, agujeros, estilos y transforms preservados; original intacto,
+Bézier abierta no recibe relleno.711 pruebas/TypeScript. CairoSVG valida
+hueco/cuerpo/trazo variable en3 isometrías; proyección≤0,005mm separada de la
+estimación no certificada del contorneador. Scripts validate-v30-hyperbolic-source.*.
+No hay todavía UI/nativo/export hiperbólico. Leer HYPERBOLIC_CORE.md.
+
+Próximo: cámara/LOD en núcleo y luego representación derivada separada de
+generador, versión/migración nativa, fuente/regreso, modo artístico y ejemplos.
+También fuente desde escena/recortes y presupuesto de segmentos entre celdas.
+Fases0–3 verificadas; Fase4 parcial,5–7 pendientes. PROJECT_COMPLETE ausente.
+Sólo primaria5h pausa al90%; secundaria avisa. Conservar4173/4174 y feedback.
+Push main autorizado sin revisar Actions/FTP.
+
+---
+
 # Fase4 · Núcleo Poincaré verificado, representación pendiente
 
 Núcleo puro src/hyperbolic: polígonos regulares {p,q}, isometrías, arcos,
