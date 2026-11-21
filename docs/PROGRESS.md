@@ -1154,3 +1154,21 @@ continuidad se publica en commit separado. No se inició otro incremento.
 - Después del commit, revisar el nuevo feedback que Pablo avisó por conversación.
 - Primaria renovada comprobada; secundaria sólo avisa. Después del feedback,
   continuar integración nativa/UI de Fase4; núcleo no completa el PRD.
+
+
+## Feedback de navegación · Uniones al mover el marco de simetría
+
+- Origen/orientación de una red sin tesela física transporta la colocación del
+  motivo junto con su marco: S'=D S D⁻¹, P'=D P. Mantiene cierres entre copias
+  sin tocar puntos, handles ni referencias de unión. Rellenos vinculados con
+  dependencias de igual movimiento transportan sus referencias y contexto.
+-935 unidades/TypeScript.28 nuevas:17 wallpapers,7 frisos,2 radiales, fuente
+  intacta, JSON/undo, conjuntos independientes y Fill vinculado real.
+- Dos E2E desktop/móvil verifican la lente de dos Bézier en copias P3 distintas:
+  ambos extremos unidos, píxel azul real de exportación, origen/rotación, undo,
+  redo y recarga. Tres dirigidas finales correctas con regresión del origen v2.
+  La primera prueba móvil exigía cerrar el panel antes de pulsar Deshacer; fixture
+  corregido sin forzar clics ni reducir aserciones. Cinco pruebas de snaps existentes
+  también correctas en la primera corrida. Regresión completa se hará con la UX.
+- Continúa feedback193816e: simplificar entradas izquierdas, aclarar conjuntos/
+  candados/modos, favoritos accesibles, sliders y entrada visual a Teselas.

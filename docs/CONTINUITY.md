@@ -1,3 +1,30 @@
+# Feedback193816e · Continuar simplificación de UX y explicaciones
+
+Protección del trabajo/orden monitor completa y publicada3488de2:907 unidades,
+170 E2E(271,7s),14 monitor,10 estáticas/build y README/captura correctos.
+Dos feedback anteriores marcados revisados en ledger.
+
+Fallo de cierre al variar origen/orientación corregido para redes sin tesela
+física: patchSymmetryFrame mueve P con marco rígido D, fuente/nodos/junctions
+intactos; refs/contexto de Fill se transportan si comparten movimiento.
+935 unidades,3 E2E finales (lente P3 dos Bézier desktop/móvil y origen v2),
+5 snaps existentes correctos. No confundir con reparametrizar red no rígida
+ni marco independiente de una tesela física. Full regression pendiente con UX.
+
+Continuar feedback193816e05a5e46a1af7035fc94346f85 de .runtime/feedback.jsonl:
+retirar Dibujo/Formas/Aplicación del rail izquierdo sin perder funciones;
+explicar/relabelar alcance e herencia de simetría, favoritos accesibles, sliders
+orientación/origen; reorganizar Teselas con entradas visuales; aclarar objetos vs
+conjuntos y hacer efectivo/visible bloqueo; explicar Diseño/Patrón/Aplicar.
+Pablo pide al cerrar la tanda una explicación de TODAS sus dudas. Pregunta
+async pendiente: en P3 orientación máxima6° o60° (fórmula ambigua).
+
+Después, seguir Fase4 nativa/UI; núcleo hiperbólico no completa el PRD.
+Primaria renovada disponible; secundaria sólo avisa. Servicios4173/4174 vivos.
+Push autorizado al cerrar tanda, sin revisar Actions/FTP. Sin PROJECT_COMPLETE.
+
+---
+
 # Feedback · Protección del trabajo verificada; revisar feedback nuevo antes de PRD
 
 Modal Cancelar / Guardar trabajo y continuar / Descartar y continuar antes de

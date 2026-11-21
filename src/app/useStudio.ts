@@ -1,3 +1,4 @@
+import { patchSymmetryFrame } from '../symmetry/frame';
 import { useDestructiveAction } from './destructive-action';
 import { axesFingerprint } from '../fill/service';
 import {
@@ -33,7 +34,7 @@ import {
   type SymmetryPreview,
 } from '../symmetry/config';
 import { uid, type Project, type Geometry } from './model';
-import { IDENTITY, type Matrix } from '../geometry/matrix';
+import { IDENTITY, multiply, type Matrix } from '../geometry/matrix';
 export type Mode = 'edit' | 'pattern' | 'apply';
 export type Tool =
   | 'select'
@@ -503,19 +504,18 @@ export function useStudio() {
     [change, galleryTarget, pattern.id, symmetryTarget],
   );
   const patchSymmetry = useCallback(
-    (patch: Partial<Symmetry>, transient = false, activeOnly = false) =>
+    (patch: Partial<Symmetry>, transient = false, activeOnly = false) => {
+      let delta: Matrix | undefined;
       change((p) => {
         const target = activeOnly
           ? pattern.symmetryMode === 'inherit'
             ? null
             : pattern.id
           : symmetryTarget;
-        if (target === null) p.mainSymmetry = { ...p.mainSymmetry, ...patch };
-        else {
-          const pat = p.patterns.find((x) => x.id === target)!;
-          pat.symmetry = { ...pat.symmetry, ...patch };
-        }
-      }, transient),
+        delta = patchSymmetryFrame(p, target, patch).get(pattern.id);
+      }, transient);
+      if (delta) setInstance((previous) => multiply(delta!, previous));
+    },
     [change, symmetryTarget, pattern.id, pattern.symmetryMode],
   );
   const setSymmetryMode = useCallback(
