@@ -926,3 +926,17 @@
 - Cierre por primaria95% usada; monitor programa reset primario real+60s,
   secundaria sólo avisa. Servicios LAN conservados. PRD v3.0 aún pendiente
   de ejemplos figurativos/flujo de composición/colores y fases3–7.
+
+
+## Feedback recibido durante pausa de cupo · Pendiente del reset
+
+- Reporte nuevo: snaps de ambos extremos de una curva/línea se desenganchan
+  al unir el segundo. El vínculo por coincidencia no garantiza permanencia.
+  Pendiente corrección y regresión específica; no implementado en esta pausa.
+- Solicitado menú de clic derecho para separar snap, insertar nodo sobre curva
+  y borrar nodo. Pendiente, prioritario al reanudar.
+- Regla nueva: con primaria<=10%, incremento cerrado y monitor vivo, guardar
+  feedback para ejecutar tras reset real de5 horas. Entrega activa con cupo
+  disponible se conserva. Cambio del monitor pendiente, sin modificar timer.
+- Sólo registro documental ahora; no nuevo incremento ni suite. Código anterior
+  cerrado/publicado en7ded3ed; servicios conservados.

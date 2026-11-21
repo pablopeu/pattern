@@ -38,3 +38,8 @@ Implementar `docs/prd/prd_v3.0.txt` como evolución no destructiva del estado ac
   en docs/prd/ y logo en src/assets/icono.png. AGENTS.md sigue en raíz por ser
   instrucciones de trabajo. Originales locales subidos se conservan en
   .runtime/original-assets/ y no se publican. Mantener este orden en próximos cambios.
+
+- Feedback durante pausa: con10% o menos de primaria y el incremento cerrado,
+  guardar/encolar las solicitudes y ejecutarlas al regresar la ventana de5horas.
+  Recibir feedback no autoriza iniciar otro incremento durante esa pausa.
+  Con cupo disponible, mantener feedback activo aunque no se esté esperando.

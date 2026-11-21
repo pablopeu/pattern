@@ -1,3 +1,35 @@
+# En espera del reset primario · Feedback nuevo pendiente
+
+Pablo aclaró: cuando resta10% o menos de la ventana primaria, el incremento ya
+está cerrado y el monitor sigue funcionando, el feedback se GUARDA EN COLA y
+se ejecuta después del reset real de5 horas. No iniciar implementación por la
+llegada de feedback durante esa pausa. Durante trabajo con cupo disponible,
+conservar entrega de feedback activa; secundaria/semanal sólo avisa.
+
+Próxima reanudación, ANTES de continuar Fase2:
+1. Corregir uniones de nodos: al unir un extremo de Bézier/línea y después el
+   otro, Pablo observa que se desenganchan ambos. La coincidencia geométrica
+   actual NO garantiza snaps permanentes; no declarar ese criterio resuelto.
+   Implementar vínculo estable y probar unión sucesiva de ambos extremos,
+   arrastre desde cualquiera, transformaciones, guardar/abrir y undo/redo.
+2. Menú contextual de clic derecho en lienzo: separar snap, añadir nodo en la
+   curva preservando su forma y eliminar nodo existente. Acciones según destino.
+3. Ajustar monitor para encolar feedback mientras primaria<=10% y trabajo
+   cerrado; entregarlo tras reset primario sin perder ni duplicar mensajes.
+   No impedir feedback durante trabajo activo con cupo disponible. Esta regla
+   quedó registrada, todavía NO implementada en scripts/work_monitor.py.
+
+Feedback original guardado en.runtime/feedback.jsonl, id
+933b3fed2daa40a9ba35bbaf85ed6819,2026-11-21T02:40:58Z. No se inició código nuevo
+tras ese mensaje. Cambios anteriores en7ded3ed, publicados, Git limpio al
+recibirlo. Checks anteriores529 unidades/131 E2E/10 estáticas siguen siendo
+históricos válidos, pero NO cubren el fallo nuevo de snaps sucesivos.
+
+Monitor vivo y timer primario+60s existente; no tocar ni posponer al semanal.
+PROJECT_COMPLETE ausente, PRD v3.0 pendiente. Mantener servicios4173/4174.
+
+---
+
 # Cierre por cupo · Snap independiente, vértices compartidos y Bézier abiertas
 
 Incremento de feedback en cierre; no iniciar otro mientras primaria<=10%.
