@@ -149,7 +149,33 @@ describe('composición integrada con fuente/archivos/Scene', () => {
     expect(bounds.width).toBeGreaterThan(80);
     expect(bounds.width).toBeLessThanOrEqual(150);
   });
-  it('JSON5/preset5/snapshot conservan recetas sin cachés y migración4 no cambia geometría', () => {
+  it('una silueta Fill bajo detalles conserva ojos blancos con paleta por nivel', () => {
+    const project = fixture(),
+      p = project.patterns[0];
+    p.tiling = newTiling('square');
+    const body = createTileFill(
+      project,
+      p,
+      {
+        kind: 'tile',
+        key: 'tile',
+        patternId: p.id,
+        pathData: '',
+        matrix: [1, 0, 0, 1, 0, 0],
+        z: 0,
+      },
+      drawingStyle({ fill: '#c78039' }),
+    );
+    body.fillRegion!.scope = 'source';
+    p.sourceGeometry[0] = body;
+    const layers = sceneLayers(buildScene(p, viewport), p);
+    for (const layer of layers)
+      if (layer.kind === 'motif') {
+        const eye = layer.geometry.find((g) => g.id === p.sourceGeometry[1].id);
+        if (eye) expect(eye.fill).toBe('#ffffff');
+      }
+  });
+  it('JSON6/preset5/snapshot conservan recetas y migración4 no cambia geometría', () => {
     const project = fixture(),
       p = project.patterns[0];
     project.metadata.example = {

@@ -553,6 +553,13 @@ test('Fill de tesela fijo conserva fuente al editar borde y el vinculado cubre e
   expect(await redAt(page, 30, 1)).toBe(false);
   expect(await redAt(page, 30, 5)).toBe(true);
   await setup(page, 'tile');
+  // The browser preference deliberately survives projects; enable the second case explicitly.
+  await styles(page, 'Fill');
+  await page
+    .getByRole('complementary', { name: 'Panel de estilos' })
+    .getByLabel('Nuevos rellenos vinculados a sus límites')
+    .check();
+  await page.getByRole('button', { name: 'Cerrar panel de estilos' }).click();
   await paint(page, 10, 10);
   await context(page, 'Teselas');
   await (await field(page, 'Contornos de teselas')).uncheck();

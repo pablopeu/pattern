@@ -5,7 +5,7 @@ import type { Matrix } from '../geometry/matrix';
 export type SceneLayer =
   | { kind: 'motif'; geometry: Geometry[]; placements?: Matrix[]; level?: number }
   | { kind: 'fill'; geometry: Geometry; matrices: Matrix[] };
-/** Preserve canonical layer order even when some regions have restricted instance orbits. */
+/** Derived region paint stays below its boundary strokes, regardless of creation order. */
 export function sceneLayers(scene: Scene, pattern: Pattern): SceneLayer[] {
   const order = new Map(pattern.sourceGeometry.map((g, i) => [g.id, i])),
     rank = (g: Geometry) => order.get(g.id) ?? pattern.sourceGeometry.length,
@@ -29,20 +29,38 @@ export function sceneLayers(scene: Scene, pattern: Pattern): SceneLayer[] {
   const split = new Set(backgrounds.map((g) => g.id));
   if (backgrounds.length)
     result.push({ kind: 'motif', geometry: backgrounds.map((g) => ({ ...g, stroke: 'none' })) });
-  let remaining = scene.generated.geometry.map((g) =>
-    split.has(g.id) ? { ...g, fill: 'none' } : g,
+  const remaining = scene.generated.geometry.map((g) =>
+      split.has(g.id) ? { ...g, fill: 'none' } : g,
+    ),
+    sourceFills = remaining.filter((g) => g.fillRegion),
+    motif = remaining.filter((g) => !g.fillRegion),
+    paint: SceneLayer[] = [
+      ...sourceFills.map((g) => ({ kind: 'motif' as const, geometry: [g] })),
+      ...fills.map((fill) => ({ kind: 'fill' as const, ...fill })),
+    ];
+  paint.sort(
+    (a, b) =>
+      rank(a.kind === 'fill' ? a.geometry : a.geometry[0]) -
+      rank(b.kind === 'fill' ? b.geometry : b.geometry[0]),
   );
-  for (const fill of fills) {
-    const before = remaining.filter((g) => rank(g) < rank(fill.geometry));
-    remaining = remaining.filter((g) => rank(g) >= rank(fill.geometry));
-    if (before.length) result.push({ kind: 'motif', geometry: before });
-    result.push({ kind: 'fill', ...fill });
+  for (const layer of paint) {
+    const previous = result.at(-1);
+    if (
+      layer.kind === 'motif' &&
+      previous?.kind === 'motif' &&
+      previous.geometry.every((g) => g.fillRegion)
+    )
+      previous.geometry.push(...layer.geometry);
+    else result.push(layer);
   }
-  if (remaining.length || !result.some((l) => l.kind === 'motif'))
-    result.push({ kind: 'motif', geometry: remaining });
+  if (motif.length || !result.some((l) => l.kind === 'motif'))
+    result.push({ kind: 'motif', geometry: motif });
   const composition = scene.generated.composition;
   if (!composition?.definition.colorByLevel) return result;
   const groups = new Map<number, Matrix[]>();
+  const primary =
+    sourceFills.find((g) => g.fill !== 'none')?.fill ??
+    scene.generated.geometry.find((g) => g.fill !== 'none')?.fill;
   scene.generated.placements.forEach((matrix, index) => {
     const level = composition.levels[index] ?? 0;
     const placements = groups.get(level) ?? [];
@@ -56,7 +74,7 @@ export function sceneLayers(scene: Scene, pattern: Pattern): SceneLayer[] {
           kind: 'motif',
           level,
           placements,
-          geometry: levelGeometry(layer.geometry, composition.definition.palette, level),
+          geometry: levelGeometry(layer.geometry, composition.definition.palette, level, primary),
         })),
   );
 }

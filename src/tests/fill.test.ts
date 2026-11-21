@@ -165,7 +165,7 @@ describe('v2.2 Fill · entidades e integración vectorial', () => {
   });
 });
 
-it('Fill entre conjuntos conserva una órbita concreta y respeta el orden de capas al exportar', () => {
+it('Fill entre conjuntos conserva su órbita y siempre queda bajo los límites al exportar', () => {
   const p = newProject(),
     a = p.patterns[0],
     b = newPattern();
@@ -190,9 +190,9 @@ it('Fill entre conjuntos conserva una órbita concreta y respeta el orden de cap
   expect(result.geometries[0].fill).toBe('#ef3344');
   a.sourceGeometry.push(a.sourceGeometry.shift()!);
   scene = buildScene(resolvePattern(a, p), bounds);
-  expect(sceneLayers(scene, a).map((l) => l.kind)).toEqual(['motif', 'fill']);
+  expect(sceneLayers(scene, a).map((l) => l.kind)).toEqual(['fill', 'motif']);
   result = prepareExport(p, options(a.id));
-  expect(result.geometries.at(-1)?.fill).toBe('#ef3344');
+  expect(result.geometries[0].fill).toBe('#ef3344');
   expect(parseProject(serialize(p))).toEqual(p);
 });
 

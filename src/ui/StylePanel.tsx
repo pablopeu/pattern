@@ -1,4 +1,5 @@
 import { ObjectProperties } from './ObjectProperties';
+import { ColorPicker } from './ColorPicker';
 import { useEffect, useState } from 'react';
 import { Pin, X, SlidersHorizontal } from 'lucide-react';
 import type { Studio } from '../app/useStudio';
@@ -25,12 +26,18 @@ function Paint({
   opacity,
   mixed,
   onChange,
+  expanded = false,
+  onStart = () => {},
+  onEnd = () => {},
 }: {
   label: string;
   value: string;
   opacity: number;
   mixed: boolean;
   onChange: (color: string, alpha?: number) => void;
+  expanded?: boolean;
+  onStart?: () => void;
+  onEnd?: () => void;
 }) {
   const [text, setText] = useState(value),
     [error, setError] = useState('');
@@ -63,13 +70,18 @@ function Paint({
         {label}
         {mixed && <small> Mixto</small>}
       </label>
+      {expanded && (
+        <ColorPicker value={value} onChange={onChange} onStart={onStart} onEnd={onEnd} />
+      )}
       <div className="paint-inputs">
-        <input
-          type="color"
-          aria-label={`Color de ${label.toLowerCase()}`}
-          value={hexColor(value)?.color ?? '#233b2d'}
-          onChange={(e) => onChange(e.target.value)}
-        />
+        {!expanded && (
+          <input
+            type="color"
+            aria-label={`Color de ${label.toLowerCase()}`}
+            value={hexColor(value)?.color ?? '#233b2d'}
+            onChange={(e) => onChange(e.target.value)}
+          />
+        )}
         <input
           aria-label={`HEX de ${label.toLowerCase()}`}
           placeholder={mixed ? 'Mixto' : '#RRGGBB'}
@@ -160,6 +172,14 @@ export function StyleControls({
     Object.assign(p.points[index], changes);
     patch({ strokeProfile: p });
   };
+  const fillPaint = (fill: string, alpha?: number) => {
+    const changes = { fill, ...(alpha !== undefined ? { fillOpacity: alpha } : {}) };
+    patch(changes);
+    if (fill !== 'none') {
+      if (target === 'selection' && selected.length) s.applyStyle(changes, 'current');
+      s.setTool('fill');
+    }
+  };
   return (
     <div className="style-controls">
       {s.stylePage === 'colors' && (
@@ -178,9 +198,7 @@ export function StyleControls({
             value={v.fill}
             opacity={v.fillOpacity}
             mixed={mixed.has('fill')}
-            onChange={(fill, alpha) =>
-              patch({ fill, ...(alpha !== undefined ? { fillOpacity: alpha } : {}) })
-            }
+            onChange={fillPaint}
           />
           {numeric('fillOpacity', 'Opacidad de relleno', 0, 1, 0.01, true)}
         </div>
@@ -455,12 +473,13 @@ export function StyleControls({
           <>
             <Paint
               label="Relleno"
+              expanded
+              onStart={s.beginGesture}
+              onEnd={s.endGesture}
               value={v.fill}
               opacity={v.fillOpacity}
               mixed={mixed.has('fill')}
-              onChange={(fill, alpha) =>
-                patch({ fill, ...(alpha !== undefined ? { fillOpacity: alpha } : {}) })
-              }
+              onChange={fillPaint}
             />
             {numeric('fillOpacity', 'Opacidad de relleno', 0, 1, 0.01, true)}
           </>

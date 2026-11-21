@@ -967,3 +967,24 @@
 - Contexto móvil inspeccionado; inserción comprobada contra curva original
   en101 muestras, clic de navegador dentro1,5px. Regresión integrada final
   pendiente tras feedback de preferencias/Fill; PRD sigue pendiente.
+
+
+## Preferencias continuas y Fill fluido · Regresión nocturna verificada
+
+- Perfil de trabajo validado en localStorage, independiente de nuevo estudio
+  y undo geométrico. Snap/grilla/radio/unidades/vínculos/paneles continúan entre
+  proyectos; P3/100%/centro/estructura50%/lápiz conservados. Fondos artísticos
+  respetados y fondo preferido para nuevos estudios.
+- Fill azul inicial, selector HSV visible con foco/teclado/puntero/táctil, HEX
+  opcional debajo. Elegir color activa Fill y actualiza color vigente.
+- Regiones derivadas bajo límites del conjunto, sin cambiar el orden de objetos
+  normales. Paletas de composición conservan ojos/detalles al separar siluetas.
+- 537 unidades/TypeScript,140/140 E2E(219,7s/exit0),10 estáticas y build correctos.
+  Cuatro flujos dirigidos de preferencias/selector/píxeles en1440/390, más5 de
+  fixtures históricos correctos. Primera corrida detectó5 supuestos viejos de
+  reset de preferencias; preparados explícitamente sin relajar geometría.
+- CairoSVG independiente confirmó los4 bordes completos en SVG editable y
+  expandido. Evidencia preferences-fill-*, feedback-verified-full-* y
+  fill-boundary-* en.runtime. Monitor14 Python. README/formato/arquitectura actualizados.
+- Feedback cerrado como incremento; continuar ejemplos figurativos del PRD.
+  Fase2 todavía pendiente de figuras/flujo/colores; fases3–7 pendientes.

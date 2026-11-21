@@ -67,8 +67,12 @@ export function composeGenerated(
   return { ...base, placements, finite: true, composition: { definition: c, report, levels, ids } };
 }
 /** Recolor the first source fill class; eyes, strokes and contrasting detail stay intact. */
-export function levelGeometry(geometry: Geometry[], palette: string[], level: number): Geometry[] {
-  const primary = geometry.find((g) => g.fill !== 'none')?.fill;
+export function levelGeometry(
+  geometry: Geometry[],
+  palette: string[],
+  level: number,
+  primary = geometry.find((g) => g.fill !== 'none')?.fill,
+): Geometry[] {
   if (!primary) return geometry;
   const color = palette[level % palette.length];
   return geometry.map((g) => (g.fill === primary ? { ...g, fill: color } : g));

@@ -230,7 +230,7 @@ export function newProject(): Project {
   const now = new Date().toISOString();
   return {
     schemaVersion: 6,
-    drawingStyle: defaultDrawingStyle(),
+    drawingStyle: { ...defaultDrawingStyle(), fill: '#3b82f6' },
     stylePresets: [],
     palette: { colors: [], recent: [], favorites: [] },
     mainSymmetry: newPattern().symmetry,

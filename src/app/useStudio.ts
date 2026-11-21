@@ -1,4 +1,11 @@
 import { axesFingerprint } from '../fill/service';
+import {
+  withWorkPreferences,
+  rememberWorkPreferenceChanges,
+  readWorkPreferences,
+  saveWorkPreferences,
+  captureWorkPreferences,
+} from './work-preferences';
 import { enforceJunctions, remapJunctions } from '../editor/junctions';
 import {
   styleFields,
@@ -58,7 +65,7 @@ export function useStudio() {
   const [tileEditing, setTileEditing] = useState(false),
     [tileEdge, setTileEdge] = useState(0),
     [tileNode, setTileNode] = useState(1);
-  const [project, setProject] = useState<Project>(() => newStudy()),
+  const [project, setProject] = useState<Project>(() => withWorkPreferences(newStudy(), true)),
     ref = useRef(project),
     history = useRef(new History(project)),
     hydrated = useRef(false),
@@ -120,6 +127,7 @@ export function useStudio() {
       const next = structuredClone(ref.current);
       next.schemaVersion = 6;
       recipe(next);
+      rememberWorkPreferenceChanges(ref.current, next);
       for (const pat of next.patterns)
         enforceJunctions(
           pat.sourceGeometry,
@@ -188,6 +196,7 @@ export function useStudio() {
   }, []);
   const load = useCallback(
     (p: Project, options: { fresh?: boolean } = {}) => {
+      p = withWorkPreferences(p, !!options.fresh);
       if (options.fresh) {
         setActiveTool('pencil');
         setStyleTarget('current');
@@ -228,8 +237,10 @@ export function useStudio() {
     let live = true;
     recover()
       .then((p) => {
-        if (live && p) load(p);
-        else if (live) {
+        if (live && p) {
+          if (!readWorkPreferences()) saveWorkPreferences(captureWorkPreferences(p));
+          load(p);
+        } else if (live) {
           setViewReset((value) => value + 1);
         }
       })
@@ -428,7 +439,7 @@ export function useStudio() {
     return () => worker.terminate();
   }, [revision, loaded, replace]);
   const undo = useCallback(() => {
-    replace(history.current.undo());
+    replace(withWorkPreferences(history.current.undo()));
     setSelected((ids) =>
       ids.filter(
         (id) =>
@@ -443,7 +454,7 @@ export function useStudio() {
     setFileSaved(false);
   }, [replace]);
   const redo = useCallback(() => {
-    replace(history.current.redo());
+    replace(withWorkPreferences(history.current.redo()));
     setSelected((ids) =>
       ids.filter(
         (id) =>
@@ -630,6 +641,10 @@ export function useStudio() {
   );
   const updateViewPreferences = useCallback(
     (patch: Partial<Project['preferences']>) => {
+      rememberWorkPreferenceChanges(ref.current, {
+        ...ref.current,
+        preferences: { ...ref.current.preferences, ...patch },
+      });
       history.current.mapStates((p) => ({ ...p, preferences: { ...p.preferences, ...patch } }));
       replace({ ...ref.current, preferences: { ...ref.current.preferences, ...patch } });
     },

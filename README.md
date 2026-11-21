@@ -70,6 +70,12 @@ En **Una celda**, la referencia permanece centrada y se puede acercar o alejar;
 En móvil, el footer apila texto y enlaces sociales para mantenerlos visibles
 sin desplazamiento horizontal.
 
+Las preferencias de trabajo —Snap, grilla, radio de atracción, unidades,
+vínculos/tolerancia de Fill y comportamiento de los paneles— se guardan en el
+navegador y continúan entre proyectos. **Nuevo proyecto** restablece la geometría,
+el encuadre y la herramienta acordados, conservando esos ajustes. Los fondos de
+archivos y ejemplos se respetan; los estudios nuevos usan tu último fondo elegido.
+
 ## Encontrar herramientas y opciones
 
 La barra izquierda abre un contexto a la vez. Las herramientas de dibujo
@@ -88,6 +94,9 @@ durante la sesión y cambiar de contexto conserva el documento y la selección.
 | Preferencias | Nombre del documento, guías, snap, unidades y fondo |
 
 A la derecha están **Trazo, Perfil, Fill, Paleta, Presets, Objeto y Opciones**.
+Fill comienza con azul y muestra el selector de color abierto; el campo HEX queda
+debajo como alternativa. Elegir un color de relleno activa **Rellenar región**.
+Los rellenos derivados se pintan debajo de los trazos que delimitan cada área.
 **Fill** muestra directamente su color y opacidad; **Trazo** reúne color y
 propiedades de línea. Los dos cuadrados de color al pie de la barra abren un
 acceso conjunto a trazo y relleno, sin una pestaña Colores separada. Al seleccionar un objeto aparecen sus propiedades; sin selección,

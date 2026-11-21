@@ -1,3 +1,38 @@
+# Feedback nocturno verificado · Seguir Fase2 del PRD
+
+Feedback acumulado atendido: snaps persistentes/menú contextual y clic derecho
+para terminar Bézier (0833bf8), preferencias de trabajo en navegador, Fill azul
+inicial/selector HSV con foco y HEX debajo, elegir color activa Fill y pintura
+de regiones bajo sus trazos. Conservados P3/100%/centro/estructura50%/lápiz al
+crear estudio. Fondos de archivos/ejemplos preservados; nuevo estudio usa fondo
+preferido. JSON/preset6 protege uniones; lectura1–5 conservada.
+
+537 unidades/TypeScript, build y140/140 E2E(219,7s/exit0) correctos.10 estáticas
+raíz/subcarpeta sobre el mismo build correctas; monitor14 Python. CairoSVG
+confirmó interior rojo y los cuatro bordes completos en SVG editable/expandido
+(.runtime/check-fill-boundary.mjs y fill-boundary-*.svg). Logs
+preferences-fill-*, feedback-verified-full-* y feedback-final-static-summary.log.
+Capturas fill-picker-{1440,390}.png inspeccionadas; HEX debajo, selector visible.
+Primera regresión135/140: cinco fixtures asumían reset de preferencias;
+preparadas explícitamente para los casos sin snap/con vínculo.5 dirigidas y
+corrida completa140 posteriores correctas, sin cambiar aserciones geométricas.
+
+No hay suites activas. Siguiente: incorporar las figuras originales prototipadas
+(pececillos IH43, aves IH44, reptiles IH1 y ornamento marcado IH63) a la galería,
+con miniaturas reales, silueta enlazada como fuente de composición y ejemplos
+exportables. Borrador no conectado en.runtime/figurative-factory.ts, basado en
+el prototipo anterior validado. Falta regenerar silueta Source durante edición
+transitoria de bordes: Scene debe derivarla de la tesela actual sin mutar fuente.
+Colores alternados requieren período de exportación propio; siguen pendientes.
+Luego fases3–7. PRD completo NO declarado, PROJECT_COMPLETE ausente.
+
+Monitor con cola hasta reset ya activo (431ad45), primaria real en vigilancia;
+secundaria sólo avisa. Servicios4173/4174 conservados. Pablo pidió seguir PRD
+toda la noche tras feedback, sin esperar nuevas confirmaciones. Push main
+autorizado; no revisar Actions/FTP.
+
+---
+
 # Snaps persistentes y menú contextual · Incremento verificado
 
 Uniones explícitas por nodo con ID/marco de instancia; edición de coordenadas y

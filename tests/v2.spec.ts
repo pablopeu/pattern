@@ -57,6 +57,11 @@ async function fixture(page: Page, group: string) {
     g.fill = '#55765b';
     pat.sourceGeometry = [g];
     p.preferences.snap = false;
+    p.preferences.snapNodes = false;
+    const { saveWorkPreferences, captureWorkPreferences } = await import(
+      '/src/app/work-preferences.ts'
+    );
+    saveWorkPreferences(captureWorkPreferences(p));
     await autosave(p);
   }, group);
   await page.reload();

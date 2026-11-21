@@ -135,3 +135,24 @@ fuera del historial geométrico. JSON5 y presets5 conservan recetas/procedencia.
 CompositionPanel se aloja en Simetrías → Composición. ExampleGallery es modal,
 busca/filtra/pagina proyectos originales y los8 ejemplos clásicos. No introduce
 un editor alternativo, un rail nuevo ni un servicio de producción.
+
+## Uniones persistentes y preferencias de trabajo
+
+Los nodos pueden compartir junction ID y marco de instancia. El motor de
+restricciones en editor/junctions.ts propaga coordenadas/transformaciones sin
+copiar fuentes; useStudio lo aplica a cambios del modelo, incluidos los números
+del inspector. Separar un extremo persiste una marca explícita. El contexto de
+clic derecho es transitorio, y la subdivisión de Casteljau conserva la curva.
+Archivo/preset6 protege estos vínculos frente a lectores anteriores.
+
+app/work-preferences.ts mantiene un perfil validado en localStorage separado
+del documento y de undo. Se escribe por cambios explícitos, se aplica al cargar
+y al crear estudios; los valores geométricos de arranque quedan fuera del perfil.
+Los fondos artísticos de archivos/ejemplos no se reemplazan. La recuperación y
+el JSON siguen funcionando cuando localStorage está bloqueado.
+
+Fill muestra un selector HSV propio con teclado/puntero/táctil, HEX opcional
+inferior y color inicial azul. Elegir color en los controles de relleno activa
+la herramienta y actualiza el color vigente. sceneLayers ordena rellenos
+regionales bajo los ejes de su conjunto; la paleta de composiciones conserva
+la misma clase de color primaria al separar siluetas y detalles.

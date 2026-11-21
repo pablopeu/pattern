@@ -25,7 +25,7 @@ El proyecto real requiere al menos un patrón. Los valores completos pueden insp
 
 | Campo | Contenido |
 |---|---|
-| `patterns[].sourceGeometry` | Fuente canónica; orden del array = orden de capas |
+| `patterns[].sourceGeometry` | Fuente canónica; orden de objetos, con rellenos derivados bajo sus límites |
 | `patterns[].generator` | `kind`, `version:1`, semilla, parámetros y matrices de colocación libre |
 | `mainSymmetry` | Configuración principal compartida por conjuntos heredados |
 | `mainSymmetryProfiles` | Configuraciones guardadas por clave `familia:grupo` |
@@ -211,3 +211,21 @@ explícito nuevo permite volver a unirlos. Duplicados y presets remapean IDs de
 uniones para no modificar los originales. Insertar un nodo usa de Casteljau y
 conserva las uniones existentes en los extremos; no crea una unión en el nodo
 intermedio. El menú contextual y sus coordenadas no se serializan.
+
+## Preferencias de trabajo locales
+
+`patterns.work-preferences.v1` en localStorage conserva grilla/Snap/radio,
+unidades de trabajo, opciones de vínculos/tolerancia de Fill, comportamiento de
+paneles y controles de inspección. Se valida y limita a una lista explícita;
+un valor corrupto o almacenamiento no disponible no impide abrir el documento.
+Sólo cambios explícitos del usuario actualizan el perfil. La primera recuperación
+puede tomar las preferencias anteriores como base; cargar contenido no reescribe
+el perfil. El fondo de un archivo o ejemplo se respeta, mientras un estudio nuevo
+usa el último fondo elegido. P3, estructura visible50%, encuadre/herramienta y
+vistas de referencia siguen siendo estado del estudio, con sus predeterminados.
+
+El JSON conserva sus preferencias para portabilidad/recuperación en otro
+navegador; el perfil local prevalece en los ajustes de trabajo al abrirlo.
+Los rellenos derivados se renderizan antes de los trazos de su conjunto,
+independientemente de su posición de creación en sourceGeometry. El orden de
+objetos normales y el orden entre conjuntos siguen siendo los del documento.
