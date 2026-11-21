@@ -1299,3 +1299,27 @@ inicia otro incremento. Monitor conserva timer real, secundaria sólo avisa.
   en HYPERBOLIC_CHAMBERS.md, contrastado con fuentes primarias; no declara
   exactitud ni criterios completos sin pruebas. Color por clase también pendiente,
   luego fases5–7. Servicios LAN originales conservados, sin feedback nuevo.
+
+
+## Fase4 · Cámaras reflejadas y bordes compartidos del núcleo
+
+- Mapas por dos afines cuadrado→triángulo en Klein y proyección Poincaré;
+  continuidad en quiebre y cota Lipschitz allí, Hessiana en regiones suaves.
+  Partición correcta para92 pares, cámaras directas/reflejadas y S/lazos.
+- Topología DSU por adyacencias; puntos O/E/V compartidos y caché de geometría de
+  bordes y curvas coincidentes/reversas, con rectas normalizadas después del
+  estilo. Todos los segmentos emitidos cuentan contra el presupuesto global.
+  C0 de cámaras, adaptación APPROXIMATED; no declara C1/simetría plana preservada.
+- SVG agrupa copias disjuntas del mismo contorno, sin sobrepintar alpha ni mutar
+  el resultado.1077 unidades/TypeScript(109 nuevas),10 E2E públicas(27,8s),build
+  y14 estáticas finales raíz/subcarpeta correctos. Regresión189 anterior conservada.
+- Tres workers8 celdas/112 cámaras/43008–57456 segmentos;196 curvas de borde
+  reutilizadas,cota≤0,005mm,ajuste canónico7,35e−14mm separado/no certificado.
+  Cancelación activa y recuperación, fuente intacta. CairoSVG independiente
+  máximoerror0,1156/255,14 bordes3×3 con alfa128 uniforme, huecos y presión.
+  Sonda de presión corregida para muestrear píxel contenedor y margen anti-alias;
+  no se relajaron aserciones de color/alfa. Artefactos/logs chambers-* privados.
+- Referencias incorpora dos fuentes primarias matemáticas (18 repos conservados).
+  HYPERBOLIC_CHAMBERS.md detalla construcción y pruebas. Todavía sin UI/nativo/
+  ejemplo público de esta adaptación; siguiente incremento los conecta. Color
+  por clase y fases5–7 pendientes. No PROJECT_COMPLETE. Servicios LAN conservados.

@@ -1,3 +1,43 @@
+# Fase4 · Núcleo de cámaras/bordes compartidos verificado; conectar UI
+
+5a5e6ad publicado: Poincaré y disco artístico públicos, JSON7, galería25,
+968 unidades/189 E2E/14 estáticas. Nuevo núcleo de cámaras todavía sin selector
+ni registro nativo de adaptación; documentación HYPERBOLIC_CHAMBERS.md.
+
+RootChambers divide cuadrado en dos afines continuas hacia O/E/V/M en Klein,
+luego Poincaré/isometría. Cota Hessiana en un lado del quiebre; Lipschitz si lo
+cruza. Topología DSU desde vecinos, O/E/V canónicos. Caché de curvas geométricas
+compartidas, incluidas rectas con distintas velocidades/reversas; cuenta copias
+emitidas en presupuesto global. Pintura agrupada elimina costuras alpha. C0 de
+cámaras, motivo adaptado; no C1 ni conservación de simetría plana. Paso numérico
+canónico separado/no certificado; rechazo si ajuste>10% tolerancia.
+
+1077 unidades/TypeScript,109 nuevas;10 E2E públicas(27,8s),build y14 estáticas
+finales raíz/subcarpeta correctos. Tres workers/raster8 celdas/112 cámaras:
+43008/50568/57456 segmentos,196 reutilizaciones de borde,cota≤0,005mm,ajuste
+7,35e−14mm. CairoSVG independiente maxerror0,1156/255;14 bordes con vecindario3×3
+alpha128 uniforme, hueco y presión reales. Logs chambers-*; no repetir checks
+amplios sin cambios/fallo/preocupación nueva. Servicios4173/4174 originales vivos.
+
+Siguiente incremento: integración nativa/UI de adaptación. Recomendado componente
+Poincaré versión2 (global JSON7 se conserva), migración pura de componente1 a2
+con adaptación inscrita/maxCurves4096; lector anterior debe rechazar2 explícito.
+Artistic-disk sigue1. Poincaré settings añaden adaptación inscrita/cámaras y
+presupuesto de fuente. Usar dispatcher nativo→workers: conserva APIs bajas
+inscritas y cliente Chambers separado. DiskDialog puede ampliar su output union;
+chambers devuelve cells/radius/report, añadir flatSource para warnings comunes.
+Selector Adaptación sólo geométrico; al elegir cámaras iniciar detalle prudente
+(depth1/máximo8 celdas), mantener controles de usuario y rechazo atómico por
+exceso. Campo C0 explícito/bordes de cámaras, sin prometer C1. Añadir ejemplo con
+fuente original y pruebas UI/nativo/lector viejo/raster/estático. Después color
+por celda/orientación, auditando Fase4 antes de5–7, aún pendientes.
+
+Cupo primario79% usado en última lectura (21% restante); sólo primaria pausa al90.
+Secundaria sólo avisa, Pablo decide banked resets. No PROJECT_COMPLETE. Incremento
+actual listo para commit/push autorizado; no inspeccionar Actions/FTP.
+
+---
+
 # Fase4 · Disco artístico integrado/verificado; siguiente bordes compartidos
 
 Selector de modalidad en diálogo común: Poincaré geométrico/disco artístico.

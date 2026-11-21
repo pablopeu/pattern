@@ -1,7 +1,7 @@
-# Adaptación por cámaras reflejadas · diseño pendiente
+# Adaptación por cámaras reflejadas · núcleo verificado
 
-Este documento describe el siguiente criterio pendiente de Fase4. No es todavía
-una función implementada. La adaptación pública actual inscribe el motivo dentro
+El núcleo está implementado y verificado; integración nativa/UI y ejemplos
+públicos pendientes. La adaptación pública actual aún inscribe el motivo dentro
 de cada celda y declara correspondencia de bordes NO garantizada.
 
 ## Objetivo y alcance
@@ -93,7 +93,7 @@ in the Hyperbolic Plane (2023)](https://link.springer.com/article/10.1007/s12220
 También se consultó el resumen de autores de [Ouyang et al., Visualization of
 Escher-like hyperbolic tessellations (2026)](https://scholars.cityu.edu.hk/en/publications/visualization-of-escher-like-hyperbolic-tessellations/)
 como referencia conceptual de adaptación de plantillas. Las particiones, cotas
-y estrategia de caché propuestas arriba son diseño local pendiente de pruebas;
+y estrategia de caché se implementaron de forma independiente y se verificaron;
 no se incorporaron plantillas, figuras ni código de ese artículo.
 
 
@@ -103,3 +103,41 @@ DSU al recorrer esas adyacencias y elegir representantes canónicos. Las O usan
 IDs de celda. Transformar una sola vez esos puntos a la cámara y compartirlos;
 registrar la discrepancia numérica observada. Evitar fusionar vértices distintos
 cerca del borde por cuantizar coordenadas globales con una tolerancia fija.
+
+
+## Evidencia del núcleo implementado
+
+1077 unidades/TypeScript;109 nuevas entre partición de los92 pares admitidos,
+continua unión de piezas, muestras densas con S/lazos/reflexiones, topología por
+DSU, cámaras desplazadas, fuente no cuadrada y valores extremos{12,12}.
+Las posiciones compartidas se comparan con igualdad exacta de coordenadas IEEE,
+incluidos puntos emitidos realmente por cada cámara; no sólo IDs de caché.
+Curvas rectas con distintas velocidades Bézier se normalizan como intervalo
+geométrico DESPUÉS de contornear estilo/guiones/presión. Curvas coincidentes y
+reversas comparten polilíneas. La numerización canónica sigue separada de la
+cota analítica; se rechaza discrepancia>10% de la tolerancia pedida.
+
+SVG agrupa copias disjuntas del mismo contorno en una sola pintura, sin mutar
+el resultado, manteniendo rellenos debajo de trazos. Estructura usa aristas
+únicas. Renderer y worker son independientes de React; sin edición directa.
+
+```bash
+node scripts/validate-v30-chambers.mjs
+.runtime/validation-env/bin/python scripts/validate_v30_chambers.py
+```
+
+Tres casos reales:8 celdas/112 cámaras,43008/50568/57456 segmentos bajo250000;
+196 reutilizaciones de curva de borde. Cota≤0,005mm para tolerancia0,01mm;
+ajuste canónico observado7,35e−14mm, no certificado como paso completo.
+Workers con36–48 ticks observados, cancelación activa/recuperación/fuente intacta.
+CairoSVG independiente: error medio0,1052/0,1064/0,1156 sobre255 frente a Chromium.
+14 bordes internos con vecindario3×3 mantienen alfa128 uniforme: no se oscurecen
+ni quedan costuras de transparencia. Hueco sobre diagonal y presión fina/gruesa
+comprobados con fórmulas de conversión independientes. Primer probe de presión
+caía en antialias: se amplió la banda diagnóstica y se seleccionó con floor el
+píxel que contiene el punto analítico, manteniendo aserciones de color/alfa.
+
+10 E2E de modalidades públicas, build y14 estáticas raíz/subcarpeta correctos
+tras el núcleo. Referencias añade los dos trabajos primarios consultados;
+conserva18 repositorios. Núcleo todavía sin selector/registro nativo propio de
+adaptación ni ejemplo de galería. No declarar Fase4/PRD completos.

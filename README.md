@@ -551,7 +551,7 @@ npm run test:e2e
 npm run benchmark
 ```
 
-Avance v3.0: **968 pruebas unitarias/TypeScript**, **189 flujos E2E** de las funciones públicas y **14 pruebas estáticas** verificadas. Las fases0–3 incluyen93 IH, composición, Hat/Spectre y Girih. La fase4 ya tiene vista geométrica de Poincaré y disco artístico, fuente finita, JSON7 y exportación SVG/PNG/JPEG; adaptación canónica de bordes, color por clase y otros criterios siguen pendientes. Estado detallado: [aceptación v3.0](docs/ACCEPTANCE_V30.md).
+Avance v3.0: **1077 pruebas unitarias/TypeScript**, **189 flujos E2E** de las funciones públicas y **14 pruebas estáticas** verificadas. Las fases0–3 incluyen93 IH, composición, Hat/Spectre y Girih. La fase4 ya tiene vista geométrica de Poincaré y disco artístico, fuente finita, JSON7 y exportación SVG/PNG/JPEG; adaptación canónica de bordes, color por clase y otros criterios siguen pendientes. Estado detallado: [aceptación v3.0](docs/ACCEPTANCE_V30.md).
 
 Baseline histórico v2.3: **203 pruebas unitarias, 94 flujos E2E, 9 pruebas del monitor y 6 pruebas estáticas**. Se conservan los 75 recorridos anteriores. Builds raíz/subdirectorio y validación independiente de exportaciones correctos.
 

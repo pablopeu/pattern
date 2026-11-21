@@ -16,7 +16,7 @@ export interface DiskSettings extends Partial<HyperbolicOptions> {
   maxSegments?: number;
   strokeTolerance?: number;
 }
-function validateDiskSettings(settings: DiskSettings) {
+export function validateDiskSettings(settings: DiskSettings) {
   if (!validPQ(settings.p, settings.q)) throw Error('Poincaré: p/q enteros3–12 y (p−2)(q−2)>4.');
   const maximum = settings.maxSegments ?? 250000;
   if (

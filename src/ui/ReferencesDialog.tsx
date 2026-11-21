@@ -25,6 +25,16 @@ const libraries = [
 ] as const;
 const otherReferences = [
   [
+    'Tschanz · Grupos triangulares por reflexión',
+    'https://link.springer.com/article/10.1007/s12220-023-01208-x',
+    'Fundamentos de cámaras hiperbólicas reflejadas',
+  ],
+  [
+    'Ouyang et al. · Plantillas hiperbólicas',
+    'https://scholars.cityu.edu.hk/en/publications/visualization-of-escher-like-hyperbolic-tessellations/',
+    'Referencia conceptual de adaptación de motivos; dibujos originales propios',
+  ],
+  [
     'Kaplan · Polygons in Contact',
     'https://cs.uwaterloo.ca/~csk/publications/Papers/kaplan_2005.pdf',
     'Rayos ornamentales e inferencia de Hankin',
