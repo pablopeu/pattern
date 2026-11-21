@@ -4,7 +4,14 @@ import { sceneLayers } from '../patterns/layers';
 import { useFill } from '../fill/useFill';
 import { TileEditor } from '../tiling/TileEditor';
 import { tiledMarkup } from '../tiling/render';
-import { tileBounds, tileBasis, tileFrame, tileWorldBounds } from '../tiling/tiles';
+import {
+  tileBounds,
+  tileBasis,
+  tileFrame,
+  tileWorldBounds,
+  tileCellBounds,
+  tileCellCorners,
+} from '../tiling/tiles';
 import { previewSVGPathAtTolerance } from '../export/svg';
 import { cachedStructure, structureMarkup } from '../symmetry/structure';
 import { resolvePattern, symmetryOrigin, frameBounds } from '../symmetry/config';
@@ -23,6 +30,7 @@ import {
   useMemo,
   useEffect,
   useId,
+  useCallback,
   type PointerEvent as RPointerEvent,
 } from 'react';
 import { ZoomIn, ZoomOut, Maximize, Scan, Grid2X2, Hand, Eye, EyeOff } from 'lucide-react';
@@ -223,7 +231,7 @@ export function Canvas({
       const r = activePattern.generator.radius;
       return { x: -r, y: -r, width: r * 2, height: r * 2 };
     }
-    if (activePattern.tiling) return tileWorldBounds(activePattern.tiling);
+    if (activePattern.tiling) return tileCellBounds(activePattern.tiling);
     if (activePattern.symmetry.family === 'wallpaper') return frameBounds(activePattern.symmetry);
     if (activePattern.symmetry.family === 'frieze') {
       const b = frameBounds(activePattern.symmetry),
@@ -243,9 +251,14 @@ export function Canvas({
       s.project.preferences.repetitionView === 'single');
   const fixedCell = focusCell && periodic;
   const cellPolygon = useMemo(() => {
-    if (!periodic || activePattern.symmetry.family === 'frieze') return '';
-    const tile = activePattern.tiling,
-      basis = tile ? tileBasis(tile) : lattice(activePattern.symmetry);
+    if (!periodic) return '';
+    const tile = activePattern.tiling;
+    if (tile)
+      return tileCellCorners(tile)
+        .map((p) => `${p.x},${p.y}`)
+        .join(' ');
+    if (activePattern.symmetry.family === 'frieze') return '';
+    const basis = lattice(activePattern.symmetry);
     const points = [
       { x: 0, y: 0 },
       { x: basis[0], y: basis[1] },
@@ -254,7 +267,7 @@ export function Canvas({
     ];
     const origin = activePattern.symmetry.origin;
     return points
-      .map((p) => (tile ? apply(tileFrame(tile), p) : { x: p.x + origin.x, y: p.y + origin.y }))
+      .map((p) => ({ x: p.x + origin.x, y: p.y + origin.y }))
       .map((p) => `${p.x},${p.y}`)
       .join(' ');
   }, [periodic, activePattern.symmetry, activePattern.tiling]);
@@ -264,13 +277,35 @@ export function Canvas({
   const focusKey = focusCell
     ? JSON.stringify([
         activePattern.id,
-        activePattern.symmetry,
-        activePattern.tiling,
+        activePattern.tiling ? tileCellCorners(activePattern.tiling) : activePattern.symmetry,
         activePattern.generator.kind,
       ])
     : '';
   const fittedCell = useRef(''),
     pendingFit = useRef(false);
+  const fitReferenceCell = useCallback(() => {
+    if (!container.current || !svgRef.current) return;
+    const rect = svgRef.current.getBoundingClientRect(),
+      toolbar = container.current.querySelector('.canvas-floats')?.getBoundingClientRect(),
+      inset = toolbar ? Math.max(0, rect.bottom - toolbar.top) + 8 : 0,
+      availableHeight = Math.max(24, rect.height - 2 * inset),
+      width = Math.max(
+        20,
+        cellBounds.width + 16,
+        ((cellBounds.height + 16) * rect.width) / availableHeight,
+      ),
+      height = (width * rect.height) / Math.max(1, rect.width);
+    freshView.current = false;
+    measuredWidth.current = rect.width;
+    setSize({ width: rect.width, height: rect.height });
+    setView({
+      x: cellBounds.x + cellBounds.width / 2 - width / 2,
+      y: cellBounds.y + cellBounds.height / 2 - height / 2,
+      width,
+      height,
+    });
+    s.setViewScale({ scale: rect.width / width, sender: prefix });
+  }, [cellBounds, prefix, s.setViewScale]);
   // Entry/configuration fits the real cell once; drawing and wheel zoom never refit it.
   useEffect(() => {
     if (!focusKey) {
@@ -280,24 +315,8 @@ export function Canvas({
     if (fittedCell.current === focusKey || !container.current) return;
     fittedCell.current = focusKey;
     pendingFit.current = true;
-    freshView.current = false;
-    const rect = svgRef.current!.getBoundingClientRect();
-    measuredWidth.current = rect.width;
-    setSize({ width: rect.width, height: rect.height });
-    const width = Math.max(
-      20,
-      cellBounds.width + 16,
-      ((cellBounds.height + 16) * rect.width) / Math.max(1, rect.height),
-    );
-    const height = (width * rect.height) / Math.max(1, rect.width);
-    setView({
-      x: cellBounds.x + cellBounds.width / 2 - width / 2,
-      y: cellBounds.y + cellBounds.height / 2 - height / 2,
-      width,
-      height,
-    });
-    s.setViewScale({ scale: rect.width / width, sender: prefix });
-  }, [focusKey, cellBounds, prefix, s.setViewScale]);
+    fitReferenceCell();
+  }, [focusKey, fitReferenceCell]);
   useEffect(() => {
     if (pendingFit.current) {
       pendingFit.current = false;
@@ -973,10 +992,13 @@ export function Canvas({
     return () => svg.removeEventListener('wheel', wheel);
   });
   const fit = (patternView = false) => {
+    if (focusCell) {
+      fitReferenceCell();
+      return;
+    }
     freshView.current = false;
     let b: Bounds;
-    if (focusCell) b = cellBounds;
-    else if (activePattern.composition?.enabled && !editorOnly) b = cellBounds;
+    if (activePattern.composition?.enabled && !editorOnly) b = cellBounds;
     else if (s.mode === 'apply' && s.region) b = geometryBounds(s.region.geometry);
     else if (activePattern.tiling?.isohedral && !editorOnly)
       b = tileWorldBounds(activePattern.tiling);
@@ -1485,12 +1507,7 @@ export function Canvas({
                   length = Math.hypot(basis[0], basis[1]),
                   normal = { x: (-basis[1] / length) * reach, y: (basis[0] / length) * reach };
                 const points = tile
-                  ? [
-                      { x: 0, y: 0 },
-                      { x: basis[0], y: basis[1] },
-                      { x: basis[0] + basis[2], y: basis[1] + basis[3] },
-                      { x: basis[2], y: basis[3] },
-                    ].map((p) => apply(tileFrame(tile), p))
+                  ? tileCellCorners(tile)
                   : sym.family === 'frieze'
                     ? [
                         { x: o.x - normal.x, y: o.y - normal.y },
@@ -1935,6 +1952,18 @@ export function Canvas({
         </div>
       )}
       <div className="canvas-floats">
+        {!cellOnly && (
+          <button
+            aria-label="Desplazar vista"
+            title={fixedCell ? 'Celda centrada: usá el zoom' : 'Desplazar vista · H'}
+            className={s.tool === 'pan' ? 'active' : ''}
+            aria-pressed={s.tool === 'pan'}
+            disabled={fixedCell}
+            onClick={() => s.setTool('pan')}
+          >
+            <Hand size={17} />
+          </button>
+        )}
         <button title="Alejar" aria-label="Alejar" onClick={() => zoom(1.25)}>
           <ZoomOut size={17} />
         </button>
@@ -1950,14 +1979,13 @@ export function Canvas({
           title="Restablecer vista"
           aria-label="Restablecer vista"
           onClick={() => {
+            if (fixedCell) {
+              fitReferenceCell();
+              return;
+            }
             freshView.current = true;
             const rect = svgRef.current!.getBoundingClientRect();
             const centered = centeredView(rect.width, rect.height);
-            if (fixedCell) {
-              centered.x += cellBounds.x + cellBounds.width / 2;
-              centered.y += cellBounds.y + cellBounds.height / 2;
-              freshView.current = false;
-            }
             setView(centered);
             s.setViewScale({ scale: PIXELS_PER_MM, sender: prefix });
           }}

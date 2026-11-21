@@ -816,7 +816,12 @@ for (const mode of ['split', 'single'] as const) {
     await page.mouse.wheel(80, 100);
     await page.waitForTimeout(100);
     expect(await camera()).toBe(before);
-    await page.getByRole('button', { name: 'Desplazar vista', exact: true }).click();
+    const pan = page.getByRole('button', { name: 'Desplazar vista', exact: true });
+    if (mode === 'single') {
+      await expect(pan).toBeDisabled();
+      await reference.focus();
+      await page.keyboard.press('h');
+    } else await pan.click();
     await drag();
     expect(await camera()).toBe(before);
     await page.mouse.move(r.x + 20, r.y + 50);

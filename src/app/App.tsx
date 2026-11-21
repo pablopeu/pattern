@@ -602,20 +602,22 @@ export default function App() {
             ))}
           </div>
           <div className="rail-tools" role="group" aria-label="Herramientas de dibujo">
-            {tools.map(({ id, label, shortcut, icon: Icon }, i) => (
-              <button
-                key={id}
-                className={`${s.tool === id ? 'active' : ''} ${i === 2 || i === 8 ? 'tool-gap' : ''}`}
-                title={`${label}${shortcut ? ' (' + shortcut + ')' : ''}`}
-                aria-label={label}
-                aria-pressed={s.tool === id}
-                onClick={() => {
-                  activateTool(id);
-                }}
-              >
-                <Icon size={20} strokeWidth={1.6} />
-              </button>
-            ))}
+            {tools
+              .filter((t) => t.id !== 'pan')
+              .map(({ id, label, shortcut, icon: Icon }, i) => (
+                <button
+                  key={id}
+                  className={`${s.tool === id ? 'active' : ''} ${i === 2 || i === 8 ? 'tool-gap' : ''}`}
+                  title={`${label}${shortcut ? ' (' + shortcut + ')' : ''}`}
+                  aria-label={label}
+                  aria-pressed={s.tool === id}
+                  onClick={() => {
+                    activateTool(id);
+                  }}
+                >
+                  <Icon size={20} strokeWidth={1.6} />
+                </button>
+              ))}
             <div className="rail-divider" />
             <button
               title="Polígono regular paramétrico"

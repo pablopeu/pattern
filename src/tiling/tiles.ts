@@ -407,6 +407,28 @@ export function tileWorldBounds(t: TilingDefinition): Bounds {
     height: Math.max(...ys) - Math.min(...ys),
   };
 }
+/** The same translation cell is used for clipping, the visible frame and its camera. */
+export function tileCellCorners(t: TilingDefinition): Point[] {
+  const b = tileBasis(t),
+    frame = tileFrame(t);
+  return [
+    { x: 0, y: 0 },
+    { x: b[0], y: b[1] },
+    { x: b[0] + b[2], y: b[1] + b[3] },
+    { x: b[2], y: b[3] },
+  ].map((p) => apply(frame, p));
+}
+export function tileCellBounds(t: TilingDefinition): Bounds {
+  const points = tileCellCorners(t),
+    x = Math.min(...points.map((p) => p.x)),
+    y = Math.min(...points.map((p) => p.y));
+  return {
+    x,
+    y,
+    width: Math.max(...points.map((p) => p.x)) - x,
+    height: Math.max(...points.map((p) => p.y)) - y,
+  };
+}
 
 /** Open boundary curves, deduplicated irrespective of traversal direction. */
 export function tileContours(def: TilingDefinition, tiles: TileInstance[]): Geometry[] {

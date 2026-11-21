@@ -884,3 +884,20 @@
   fuentes JSON conservadas. Sin nuevos paquetes ni assets externos.
 - AC06 verificado; Fase2 sigue pendiente de ejemplos figurativos y del flujo
   silueta enlazada→composición. Fases3–7 aún pendientes.
+
+
+## Vistas completas, Desplazar vista y footer móvil
+
+- Unificados bounds, recorte y marco de celda de traslación; IH89 ya no pierde
+  la parte superior. Cámara centrada con espacio para controles; Ajustar y
+  Restablecer muestran la referencia entera, sin reajustar al editar bordes.
+- Desplazar vista junto al zoom; celda fija bloquea pan y permite zoom.
+- Footer móvil apilado sin scroll de página, incluidos teléfonos horizontales;
+  enlaces/contraste conservados, escritorio mantiene38px y una línea. README actualizado.
+- 524 unidades/TypeScript, build,128/128 E2E(209,6s) correctos. Tras ajuste de
+  altura móvil:5/5 dirigidas,372 encuadres IH y7 tamaños/orientaciones de footer;
+  10 estáticas raíz/subcarpeta correctas. Evidencia cell-frame-final-* en.runtime.
+- Primera corrida127/128 detectó overflow2px en ayuda IH19 móvil; texto acortado,
+  caso dirigido y corrida completa128 posteriores correctos. Sin relajar aserciones.
+- PRD Fase2 aún pendiente de figuras/flujo hacia composición/colores alternados;
+  fases3–7 pendientes. Servicios LAN y monitor conservados; sin cierre del PRD.

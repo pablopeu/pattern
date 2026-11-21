@@ -12,6 +12,8 @@ import {
   edgePairs,
   tileArea,
   tileRectangularCell,
+  tileCellBounds,
+  tileCellCorners,
 } from '../tiling/tiles';
 import { buildScene } from '../patterns/engine';
 import { parseProject, serialize } from '../persistence/schema';
@@ -46,6 +48,13 @@ describe('adaptación IH a teselas y archivos existentes', () => {
       expect(scene.generated.geometry.map((g) => g.id)).toEqual(original.map((g) => g.id));
       expect(p.sourceGeometry).toEqual(original);
       expect(tileArea(p.tiling!)).toBeGreaterThan(0);
+      const frame = tileCellBounds(p.tiling!);
+      for (const point of tileCellCorners(p.tiling!)) {
+        expect(point.x).toBeGreaterThanOrEqual(frame.x - 1e-7);
+        expect(point.y).toBeGreaterThanOrEqual(frame.y - 1e-7);
+        expect(point.x).toBeLessThanOrEqual(frame.x + frame.width + 1e-7);
+        expect(point.y).toBeLessThanOrEqual(frame.y + frame.height + 1e-7);
+      }
       expect(tileRectangularCell(p.tiling!)).toBeNull();
       for (const pair of edgePairs(p.tiling!)) {
         const from = edges[pair.master],

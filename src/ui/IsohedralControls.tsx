@@ -23,8 +23,7 @@ export function IsohedralControls({ studio: s }: { studio: Studio }) {
       </p>
       {metadata.marked && (
         <p className="help-text">
-          El motivo se repite también dentro de la tesela para respetar este tipo. Dibujá detalles
-          para distinguir sus marcas interiores.
+          Los detalles se repiten dentro de la tesela para respetar su simetría.
         </p>
       )}
       {params.length > 0 ? (

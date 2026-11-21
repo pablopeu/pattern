@@ -37,6 +37,12 @@ de simetría; **Snap** controla por separado el ajuste a grilla y nodos.
 
 La pluma termina con Enter, se cierra con Shift+Enter o un clic sobre el primer nodo y se cancela con Esc. Espacio permite arrastrar la vista; Ctrl + rueda controla el zoom.
 
+**Desplazar vista** está junto a los controles de zoom del área de trabajo.
+En **Una celda**, la referencia permanece centrada y se puede acercar o alejar;
+**Ajustar contenido** y **Restablecer vista** vuelven a mostrarla completa.
+En móvil, el footer apila texto y enlaces sociales para mantenerlos visibles
+sin desplazamiento horizontal.
+
 ## Encontrar herramientas y opciones
 
 La barra izquierda abre un contexto a la vez. Las herramientas de dibujo

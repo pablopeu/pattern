@@ -1,3 +1,35 @@
+# Vistas completas, Desplazar vista y footer móvil · Verificado
+
+Footer apilado hasta900px: texto, invitación y enlaces sociales completos, sin
+scroll horizontal ni vertical de página. Quitado mínimo550px en ese rango para
+que también permanezca visible al girar el móvil. Contraste/negritas y enlaces
+conservados; escritorio mantiene una línea de38px.
+
+Desplazar vista junto al zoom del lienzo; H/Espacio conservados. En Una celda
+permanece fija y centrada, con zoom permitido. Cámara/recorte/límite usan la
+misma celda de traslación: antes IH89 encuadraba la tesela triangular mientras
+recortaba la celda completa. Ajustar/Restablecer ahora dejan toda la referencia
+visible, también por encima de la barra del lienzo. Cambiar bordes no reajusta
+el zoom. Revisados93 tipos ×4 resoluciones, con origen y rotación no triviales.
+
+524 unitarias/TypeScript, build y128/128 E2E (209,6s/exit0) correctos.
+Después del ajuste exclusivo para alturas móviles menores550px:5/5 E2E de
+vistas, incluidos los372 encuadres repetidos y7 tamaños/orientaciones del
+footer, y10 estáticas (raíz/subcarpeta) correctas sobre build final.
+Logs.runtime/cell-frame-final-{check,build,full,targeted,static-summary}*,
+capturas cell-ih89-* y mobile-stacked-footer.png. En la primera regresión falló
+por2px un panel IH19 móvil; ayuda abreviada y caso dirigido/regresión128
+posteriores correctos, sin relajar el límite de overflow.
+
+README actualizado. Servicios4173/4174 conservados; primaria80% usada a02:10UTC,
+secundaria sólo avisa. PROJECT_COMPLETE ausente. Fase2 sigue pendiente de los
+ejemplos figurativos, silueta enlazada→composición y colores alternados con
+período exportable correcto; fases3–7 pendientes. Prototipos originales en
+.runtime/figurative-prototype.mjs todavía NO incorporados a la galería.
+Push main autorizado; no inspeccionar Actions/FTP después.
+
+---
+
 # V3.0 · IH93 verificado; seguir ejemplos figurativos para cerrar Fase2
 
 93 tipos integrados:81 de TactileJS y12 propios por reflexión/estabilizador
