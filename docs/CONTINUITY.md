@@ -1,3 +1,25 @@
+# Fase4 parcial · Cierre del incremento; seguir integración nativa/UI
+
+Worker cancelable src/hyperbolic/worker-client.ts/worker.ts verificado en
+Chromium:85 celdas,21 ticks observados sin bloquear, fuente intacta, aborto
+previo/activo y recuperación de error/nuevo trabajo.905 pruebas/TypeScript.
+El compositor valida {p,q} antes de preparar fuente. Build anterior final
+correcto; aplicación pública sin cambios tras él (worker aún no conectado).
+
+Fases0–3 verificadas. Fase4 tiene núcleo/compositor/cámara/LOD/contornos/worker,
+pero NO UI ni contrato nativo. Continuar representación separada de generador,
+migración pura, preparación desde escena/recortes/Fill vinculados, flujo fuente/
+regreso/actualización, modo artístico y ejemplos/exportaciones físicas finales.
+Leer HYPERBOLIC_CORE.md para cotas y límites; no editar directamente sobre disco.
+905 unidades,164 E2E públicos de Fase3 y10 estáticas vigentes. README actualizado.
+No marcar PROJECT_COMPLETE; Fases4–7 pendientes. Sin feedback nuevo.
+
+Cierre al umbral de la primaria5h; secundaria sólo avisa. Conservar servicios
+4173/4174 y su monitor/timer de reset real. Historial autorizado para push a main;
+no inspeccionar Actions/FTP. Comprobar Git/cupo al reanudar antes de continuar.
+
+---
+
 # Fase4 · Núcleo/compositor verificados; falta integrar representación al producto
 
 Compositor puro src/hyperbolic/representation.ts: fuente preparada una vez,

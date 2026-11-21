@@ -1117,3 +1117,14 @@
   generador y migración pura, selección/preparación desde escena/recortes,
   flujo fuente/regreso con worker/cancelación, modo artístico, ejemplos y
   exportaciones físicas finales. Fases5–7 pendientes; PRD no completo.
+
+
+## Fase4 · Worker cancelable del núcleo
+
+- Cliente AbortSignal y worker por trabajo, terminado en éxito/error/cancelación.
+  Sin controles UI ni persistencia nuevos. Validación {p,q} antes de fuente.
+-905 pruebas/TypeScript; Chromium real:85 celdas,21 ticks de respuesta observados,
+  fuente intacta, aborto previo/activo y recuperación de errores correctos.
+- Fase4 parcial: integración nativa/UI, preparación de escena/recortes, modo
+  artístico, ejemplos públicos/exportaciones aún pendientes. Cierre de ventana
+  al umbral primario, servicios y monitor conservados; push autorizado a main.

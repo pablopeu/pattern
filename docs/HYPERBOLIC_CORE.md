@@ -159,3 +159,14 @@ esta cota con precisión total del contorneador.
 Faltan selección/preparación desde escena, recortes/Fill vinculados, contrato
 nativo/migraciones, interfaz/worker/cancelación, modo artístico, ejemplos públicos
 y exportaciones finales SVG/raster/DXF. Este núcleo no completa Fase4.
+
+## Worker cancelable
+
+deriveDiskInWorker ejecuta cada trabajo en un worker propio, terminado al
+resolver, fallar o abortar. AbortSignal evita iniciar trabajos ya cancelados y
+detiene trabajos activos; permite reemplazar fuente/vista sin bloquear la UI.
+Todavía no está conectado a controles de la aplicación ni persistencia nativa.
+`node scripts/validate-v30-hyperbolic-worker.mjs` verifica en Chromium real85
+celdas,21 ticks de respuesta durante el cálculo observado, fuente intacta,
+cancelación previa/activa, error de modelo inválido y nuevo trabajo posterior.
+905 pruebas/TypeScript correctos. Error {p,q} se valida antes de preparar fuente.

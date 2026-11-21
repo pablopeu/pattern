@@ -3,6 +3,7 @@ import {
   regularHyperbolicPatch,
   visibleHyperbolicCells,
   hyperbolicCellPath,
+  validPQ,
   type HyperbolicOptions,
 } from './disk';
 import { prepareDiskSource, projectDiskSource } from './source';
@@ -19,6 +20,7 @@ export interface DiskSettings extends Partial<HyperbolicOptions> {
  * Throws atomically on excess: consumers must keep the flat source recoverable.
  */
 export function deriveDisk(shapes: Geometry[], settings: DiskSettings) {
+  if (!validPQ(settings.p, settings.q)) throw Error('Poincaré: p/q enteros3–12 y (p−2)(q−2)>4.');
   const maximum = settings.maxSegments ?? 250000;
   if (
     !Number.isInteger(maximum) ||
