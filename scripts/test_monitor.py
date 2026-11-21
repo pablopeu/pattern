@@ -43,6 +43,28 @@ class FeedbackTests(unittest.TestCase):
         with (self.runtime/'feedback.jsonl').open('a') as f: f.write(json.dumps(row)+'\n')
         return row
     @patch.object(monitor, 'queue', return_value=True)
+    def test_primary_pause_keeps_feedback_and_releases_once_after_real_reset(self, queue):
+        self.append('durante pausa', id='paused')
+        monitor.atomic_json(self.runtime/'usage.json', dict(status='winding_down', primary=dict(used_percent=97,resets_at=1000)))
+        for now in (100,101):
+            with patch.object(monitor.time,'time',return_value=now): monitor.deliver_feedback('thread')
+        self.assertEqual(queue.call_count,0)
+        self.assertEqual(monitor.feedback_rows()[0]['delivery'],'waiting_reset')
+        with patch.object(monitor.time,'time',return_value=1001): monitor.deliver_feedback('thread')
+        monitor.deliver_feedback('thread')
+        self.assertEqual(queue.call_count,1)
+        self.assertEqual(monitor.feedback_rows()[0]['delivery'],'queued')
+        self.assertIn('durante pausa',queue.call_args.args[1])
+    @patch.object(monitor, 'queue', return_value=True)
+    def test_banked_reset_releases_feedback_and_secondary_never_blocks_it(self, queue):
+        self.append()
+        monitor.atomic_json(self.runtime/'usage.json', dict(primary=dict(used_percent=95,resets_at=5000)))
+        with patch.object(monitor.time,'time',return_value=100): monitor.deliver_feedback('thread')
+        self.assertFalse(queue.called)
+        monitor.atomic_json(self.runtime/'usage.json', dict(primary=dict(used_percent=2,resets_at=5000),secondary=dict(used_percent=99,resets_at=9000)))
+        with patch.object(monitor.time,'time',return_value=101): monitor.deliver_feedback('thread')
+        self.assertEqual(queue.call_count,1)
+    @patch.object(monitor, 'queue', return_value=True)
     def test_secondary_warns_once_and_rearms_after_banked_reset(self, queue):
         low={'secondary':{'used_percent':90,'resets_at':5000}}
         monitor.warn_secondary('thread',low,100)

@@ -92,6 +92,14 @@ def deliver_feedback(thread_id):
             key = feedback_id(row)
             previous = ledger.get(key, {})
             if previous.get('status') in ('queued', 'reviewed') or previous.get('retry_at', 0) > time.time(): continue
+            # Always save feedback, but do not wake an exhausted primary cycle.
+            # Expired telemetry never holds the queue past its real reset.
+            if decision(read_json(RUNTIME / 'usage.json', {}), time.time()):
+                if previous.get('status') != 'waiting_reset':
+                    ledger[key] = dict(status='waiting_reset', updated_at=dt.datetime.now(dt.timezone.utc).isoformat(), retry_at=0)
+                    atomic_json(path, ledger)
+                    event('feedback_deferred', id=key)
+                continue
             message = ('Feedback enviado desde el monitor LAN de Pattern Studio (' + str(row.get('time', '')) +
                        '). Incorporalo al trabajo en curso aunque no estés esperando el reset.\n\n' + str(row.get('message', '')))
             try:
@@ -106,7 +114,7 @@ def deliver_feedback(thread_id):
             event('feedback_delivery', id=key, status=ledger[key]['status'])
 
 def feedback_watch(thread_id):
-    # Independent of quota, waiting/reset, and the PROJECT_COMPLETE marker.
+    # Active feedback remains immediate; only an exhausted primary window gates delivery.
     while not (RUNTIME / 'STOP').exists():
         FEEDBACK_WAKE.clear()
         try: deliver_feedback(thread_id)

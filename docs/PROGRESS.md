@@ -940,3 +940,15 @@
   disponible se conserva. Cambio del monitor pendiente, sin modificar timer.
 - Sólo registro documental ahora; no nuevo incremento ni suite. Código anterior
   cerrado/publicado en7ded3ed; servicios conservados.
+
+
+## Reanudación real · Cola de feedback durante pausa
+
+- Reset primario confirmado: nueva ventana0% usada. Monitor ahora guarda
+  feedback con waiting_reset y no despierta trabajo con primaria<=10%. Tras
+  reset/banked reset lo entrega una vez; semanal nunca bloquea. Panel refleja
+  la cola.14 pruebas Python correctas, sin mensajes de prueba al hilo real.
+- Recargado sólo monitor después de cerrar el anterior, sin duplicación; app
+  conserva PID, ambos servicios activos y HTTP200.
+- Feedback de snaps, menú contextual, preferencias y Fill aún pendiente;
+  se atiende antes del PRD, tal como pidió Pablo para el trabajo nocturno.

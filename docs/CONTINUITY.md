@@ -1,3 +1,21 @@
+# Reanudación real · Feedback antes del PRD
+
+Primaria nueva confirmada0% usada a05:30UTC; servicios existentes conservados.
+Monitor actualizado: guarda feedback con estado waiting_reset mientras resta
+10% o menos en primaria vigente, libera tras reset real o banked reset; secundaria
+no bloquea. Panel muestra En cola hasta reset.14 pruebas Python correctas,
+incluidos HTTP real aislado, reintento y no duplicación. Se recargó sólo el
+monitor tras terminar el proceso anterior; app sigue con el mismo PID. HTTP200.
+
+Ahora resolver feedback acumulado: snaps permanentes/menú contextual y clic
+derecho para terminar Bézier; preferencias de usuario persistentes separadas
+del arranque geométrico P3; Fill azul inicial, selector visible/foco primero,
+elegir color activa Fill y rellenos siempre bajo sus límites. Luego continuar
+Fase2 del PRD (figuras/composición/colores) y fases3–7, según criterios originales.
+El monitor sigue vigilando primaria; no hay suites E2E activas.
+
+---
+
 # En espera del reset primario · Feedback nuevo pendiente
 
 Pablo aclaró: cuando resta10% o menos de la ventana primaria, el incremento ya
