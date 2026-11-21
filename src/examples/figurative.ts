@@ -173,6 +173,14 @@ export function figurativeProject(id: Species): Project {
   pat.symmetryMode = 'free';
   pat.tiling = newIsohedralTiling(spec.type);
   pat.tiling.showOutline = false;
+  const palettes: Record<Species, string[]> = {
+    fish: ['#c78046', '#e3c792'],
+    bird: ['#487c78', '#b5c9b0'],
+    reptile: ['#7c8f57', '#cdbb79', '#9e6b55'],
+    abstract: ['#203b48', '#496c75'],
+  };
+  pat.tiling.version = 2;
+  pat.tiling.colors = { enabled: true, palette: palettes[id] };
   if (spec.edges)
     pat.tiling.edges = spec.edges.map((points) =>
       points.map(([x, y], i) => ({

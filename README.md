@@ -178,6 +178,13 @@ siguen siendo objetos independientes. Las deformaciones inválidas conservan la
 puede usar la figura con su silueta enlazada, sin duplicar sus fuentes. El
 ornamento IH63 muestra además sus marcas interiores de giro.
 
+En **Teselas → Forma → Colores**, activá **Alternar colores de tesela** y elegí
+una paleta de dos a seis colores. Fill sobre el fondo de una figura cambia su
+clase de color en todo el mosaico, sin duplicar el dibujo. Los ejemplos ya
+incluyen paletas. La celda repetible y su exportación incluyen el período de
+color completo; puede ser mayor que la celda geométrica. La alternancia conserva
+el encastre, aunque puede reducir las simetrías del resultado coloreado.
+
 ![Peces encastrados con bordes Bézier editables y detalles conservados](docs/images/v30-figurative-fish.png)
 
 [Descargar peces IH43](docs/examples/v30-figurative-fish.json) ·

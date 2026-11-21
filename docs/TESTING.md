@@ -258,3 +258,25 @@ PNG/JPEG96DPI, DXF2D y JSON de los12 tipos marcados. Se comprueba tinta interior
 real, no sólo fondos: CairoSVG frente a navegador y geometría expandida. Error
 medio máximo observado0,067/255 entre SVG editable y expandido. Fuente de dos
 objetos conservada, unidades180×140mm y contornos dentro de región verificadas.
+
+
+## Figuras y período de color · Fase2
+
+`tile-colors.test.ts` comprueba período positivo/negativo para IH1–IH93,
+independencia entre geometría y RGB, conservación de vínculos, fuente única,
+JSON6/tiling2 y supercelda SVG. Incluye el recorte de ejes con varios subpaths
+abiertos: Paper.js requiere intersectar cada eje antes de reunirlos en una sola
+geometría de trazo. `tile-colors.spec.ts` prueba2–6 colores sin scroll a cuatro
+resoluciones y Fill por clase tras cambiar N, conservado después de recargar.
+
+```bash
+node scripts/validate-v30-figurative.mjs
+.runtime/validation-env/bin/python scripts/validate_v30_figurative.py
+node scripts/capture-v30-figurative.mjs
+```
+
+El validador independiente compara SVG editable/expandido, raster/DPI, DXF plano
+y las cuatro fuentes. También repite la supercelda transparente por sus vectores
+reales y compara con una vista directa del mosaico usando CairoSVG. Comprueba
+tinta de cada color, además de detalles claros; no acepta sólo cadenas RGB en
+el XML. Capturas/JSON públicos se generan desde un contexto aislado del editor.

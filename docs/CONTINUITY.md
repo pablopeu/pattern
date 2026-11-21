@@ -1,3 +1,37 @@
+# Fase2 verificada · Reanudar con Fase3 tras reset primario
+
+Alternancia2–6 colores dentro de Teselas→Forma→Colores (IH), sin nuevos rails
+ni scroll en1366/1440/1920/390. Fuente única; grupos de pintura derivados por
+clase `(i+2*j+aspecto) mod N`. Fill recolorea la clase vigente sin duplicar
+fondos, incluso después de cambiar N. Los cuatro ejemplos figurativos llevan
+paletas, y al pasar a composición se conservan como colores por nivel.
+
+Contrato global6/tiling2; lectores tiling1 rechazan el dato nuevo. Geometría,
+caras y vínculos independientes del RGB/N. Celda de referencia/exportación
+incluye períodoN×N; período válido, no necesariamente primitivo. Puede reducir
+la simetría de color. Recorte de trazos compuestos abiertos corregido: procesar
+cada eje con Paper y reunirlo sin duplicar opacidad.
+
+637 unidades/TypeScript y build correctos. Cinco E2E nuevas pasaron dentro de
+la primera regresión149/150: fallo móvil histórico comparando inputs derivados
+de Fill durante actualización asíncrona, no color/contorno. Repetición dirigida
+2/2 correcta sin cambios; confirmación completa150/150 correcta (229,8s/exit0, tile-colors-confirmed-*).
+10 estáticas raíz/subcarpeta y14 monitor correctas. CairoSVG/Pillow/ezdxf verificó
+los4 ejemplos/paletas, SVG editable/expandido, raster96DPI y DXF2D/mm. Repetición
+de celda exportada frente a vista directa: error medio máximo0,176/255.
+Capturas/4 JSON README regenerados e inspeccionados. Logs tile-colors-*.
+
+Primaria llegó a90% usado: incremento cerrado, sin iniciar función nueva.
+Esperar timer del reset primario+60s (07:31 ART del21/11/2026).
+Secundaria sólo avisa. Fases3–7 pendientes; PROJECT_COMPLETE ausente.
+Próximo tras cierre: Hat/Spectre mediante sustitución documentada, dentro de
+Teselas→Aperiódicas junto a Penrose; después catálogo Girih/entrelazado.
+Validar quiralidad y parches finitos, fuente canónica/Scene/JSON/exportación,
+jerarquía/color por generación, ejemplos y UI sin scroll antes de cerrar Fase3.
+Mantener servicios4173/4174 (sin duplicar); push autorizado sin revisar FTP.
+
+---
+
 # Fase2 · Figuras originales verificadas; seguir colores alternados
 
 Galería16:8 legados,4 composiciones originales y4 figuras nuevas (peces IH43,

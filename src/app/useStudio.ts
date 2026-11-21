@@ -623,6 +623,13 @@ export function useStudio() {
             ...p.regions.flatMap((r) => r.geometry),
           ])
             if (ids.has(g.id)) Object.assign(g, structuredClone(patch));
+          if (patch.fill && patch.fill !== 'none')
+            for (const pattern of p.patterns)
+              if (
+                pattern.tiling?.colors?.enabled &&
+                pattern.sourceGeometry.some((g) => ids.has(g.id) && g.fillRegion?.kind === 'tile')
+              )
+                pattern.tiling.colors.palette[0] = patch.fill;
         } else Object.assign(p.drawingStyle, structuredClone(patch));
         for (const key of ['stroke', 'fill'] as const) {
           const color = patch[key];

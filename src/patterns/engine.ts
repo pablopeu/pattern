@@ -1,4 +1,5 @@
 import { composeGenerated } from '../composition/generated';
+import { tileColorIndex } from '../tiling/colors';
 import { isohedralLayout } from '../isohedral/engine';
 import { isohedralDefinition } from '../tiling/tiles';
 import { strokePadding } from '../geometry/stroke-bounds';
@@ -176,13 +177,25 @@ export function buildScene(
             g.fillRegion &&
             (g.fillRegion.scope !== 'source' || g.fillRegion.kind === 'tile'),
         )
-        .map((g) => ({
-          geometry: fillGeometry(g),
-          matrices:
-            g.fillRegion!.kind === 'tile'
-              ? tiles.map((t) => t.matrix)
-              : g.fillRegion!.orbitMatrices,
-        })),
+        .flatMap((g) => {
+          const geometry = fillGeometry(g);
+          if (g.fillRegion!.kind === 'tile' && definition.colors?.enabled && g.fill !== 'none')
+            return definition.colors.palette.map((color, index) => ({
+              geometry: { ...geometry, fill: color },
+              matrices: tiles
+                .filter((t) => tileColorIndex(definition, t) === index)
+                .map((t) => t.matrix),
+            }));
+          return [
+            {
+              geometry,
+              matrices:
+                g.fillRegion!.kind === 'tile'
+                  ? tiles.map((t) => t.matrix)
+                  : g.fillRegion!.orbitMatrices,
+            },
+          ];
+        }),
       generated: inner.generated,
       instances,
       tiling: { definition, boundary, tiles, inner },

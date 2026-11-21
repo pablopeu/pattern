@@ -185,7 +185,16 @@ const symmetry = z
       });
   });
 export const tilingSchema = z.object({
-  version: z.literal(1).default(1),
+  version: z.union([z.literal(1), z.literal(2)]).default(1),
+  colors: z
+    .object({
+      enabled: z.boolean(),
+      palette: z
+        .array(z.string().regex(/^#[\da-fA-F]{6}$/))
+        .min(2)
+        .max(6),
+    })
+    .optional(),
   kind: z.enum(['square', 'rectangle', 'parallelogram', 'triangle', 'hexagon', 'isohedral']),
   isohedral: z
     .object({

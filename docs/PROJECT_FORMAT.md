@@ -193,6 +193,22 @@ Al abrir archivos no se sobreescribe el original ni se convierte a otra familia.
 
 ## Esquema6 · Uniones persistentes de nodos
 
+### Color periódico de teselas
+
+Con esquema global6, `tiling.version:2` permite
+`colors:{enabled,palette:["#c78046","#e3c792"]}`. Paleta de2–6 valores RGB6;
+version1 con colors se rechaza. Los lectores anteriores que sólo aceptaban
+tiling.version1 rechazan el contrato nuevo, sin perder campos silenciosamente.
+Desactivar conserva la paleta. No se serializan copias de fuentes ni grupos
+transitorios de pintura. Clase = módulo positivo de `(i+2*j+aspecto)` por N.
+La supercelda exportable usa N veces ambos vectores de la red geométrica;
+es un período válido, sin prometer ser primitivo ni conservar el grupo de color.
+El marco/recorte de referencia usa el mismo período. Cambiar RGB o N conserva
+el contexto geométrico de Fill; el clic usa la clase vigente, incluso si el
+worker calculó candidatos antes del cambio de paleta.
+
+### Nodos
+
 Migración pura5→6: sólo cambia la versión; los archivos1–5 continúan abriendo
 sin cambiar sus fuentes. Presets actuales6, lectura1–5 conservada. Los lectores
 anteriores rechazan6 para evitar perder silenciosamente las uniones.

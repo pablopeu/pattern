@@ -54,7 +54,8 @@ pruebas de monitor, build y6 estáticas raíz/subcarpeta correctos. Logs locales
 
 ## Fases siguientes · Pendientes
 
-- Fase2: relaciones de bordes/IH por datos; catálogo honesto hasta verificar93/93.
+- Fase2 verificada: IH93, siluetas originales y colores periódicos;637 unidades,
+  150 E2E,10 estáticas, exportaciones independientes y build correctos.
 - Fase3: Hat/Spectre por sustitución; Girih y cruces alternados topológicos.
 - Fase4: Poincaré {p,q}, isometrías/geodésicas y adaptación numérica, artística aparte.
 - Fase5: construcciones poliédricas/proyección esférica derivada, giro/exportación.

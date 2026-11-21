@@ -18,6 +18,7 @@ export default defineConfig({
         '**/snap-permanent.spec.ts',
         '**/feedback-fill.spec.ts',
         '**/figurative.spec.ts',
+        '**/tile-colors.spec.ts',
       ],
   timeout: 45000,
   expect: { timeout: 8000 },

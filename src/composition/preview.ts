@@ -7,6 +7,7 @@ import { matrixString, multiply } from '../geometry/matrix';
 import { svgDocument, previewSVGPathAtTolerance } from '../export/svg';
 import { tileCellBounds } from '../tiling/tiles';
 import { tiledMarkup } from '../tiling/render';
+import { geometricTiling } from '../tiling/colors';
 
 /** Real scene, reduced detail for the thumbnail only; the stored recipe is untouched. */
 export function compositionThumbnail(
@@ -39,7 +40,7 @@ export function compositionThumbnail(
           height: p.symmetry.width * 1.6,
         };
   if (p.tiling && !composition?.enabled) {
-    const cell = tileCellBounds(p.tiling),
+    const cell = tileCellBounds(geometricTiling(p.tiling)!),
       view = {
         x: cell.x - cell.width * 0.6,
         y: cell.y - cell.height * 0.6,

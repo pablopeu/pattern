@@ -12,6 +12,15 @@ import { paperPath } from '../geometry/paper';
 import { IDENTITY } from '../geometry/matrix';
 /** Conservative editable corridors + exact edge construction + independent area/adjacency checks. */
 export function tilingIssue(def: TilingDefinition): string | null {
+  if ((def.version === 1 && def.colors) || (def.version === 2 && !def.colors))
+    return 'La paleta requiere versión2 de tesela.';
+  if (
+    def.colors &&
+    (def.colors.palette.length < 2 ||
+      def.colors.palette.length > 6 ||
+      def.colors.palette.some((c) => !/^#[\da-fA-F]{6}$/.test(c)))
+  )
+    return 'La paleta requiere entre2 y6 colores RGB.';
   if (def.kind === 'isohedral') {
     if (!def.isohedral) return 'Falta la definición isoédrica.';
     return isohedralIssue(isohedralDefinition(def), def.width);

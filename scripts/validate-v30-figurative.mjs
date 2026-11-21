@@ -12,6 +12,8 @@ try {
     const { prepareExport } = await import('/src/export/svg.ts');
     const { rasterize } = await import('/src/export/raster.ts');
     const { exportDXF } = await import('/src/export/dxf.ts');
+    const { tileFrame, tilePaintBasis } = await import('/src/tiling/tiles.ts');
+    const { multiply } = await import('/src/geometry/matrix.ts');
     const encode = async (blob) => {
       let binary = '';
       for (const b of new Uint8Array(await blob.arrayBuffer())) binary += String.fromCharCode(b);
@@ -42,6 +44,8 @@ try {
         type,
         editable: editable.svg,
         expanded: expanded.svg,
+        lattice: prepareExport(p, { ...options, target: 'lattice' }).svg,
+        paintBasis: multiply(tileFrame(pattern.tiling), tilePaintBasis(pattern.tiling)),
         dxf: exportDXF(expanded.geometries, 0.02),
         png: await encode(
           await rasterize(editable.svg, 180, 140, 96, 'png', 0.95, '#ffffff', true),
@@ -57,8 +61,9 @@ try {
     return result;
   });
   for (const row of rows) {
-    for (const mode of ['editable', 'expanded'])
+    for (const mode of ['editable', 'expanded', 'lattice'])
       await writeFile(`${directory}/${row.type}-${mode}.svg`, row[mode]);
+    await writeFile(`${directory}/${row.type}-basis.json`, JSON.stringify(row.paintBasis));
     await writeFile(`${directory}/${row.type}.dxf`, row.dxf);
     await writeFile(`${directory}/${row.type}.json`, row.source + '\n');
     for (const mode of ['png', 'jpeg'])

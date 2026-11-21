@@ -53,10 +53,10 @@
   },
   "mainSymmetryProfiles": {},
   "metadata": {
-    "id": "eb123a8a-97cd-49c2-87ac-dd332371226a",
+    "id": "6b45be35-8cde-432d-a74d-9c433e164f16",
     "name": "Reptiles del mosaico · IH1",
-    "createdAt": "2026-11-21T06:23:42.592Z",
-    "updatedAt": "2026-11-21T06:23:42.592Z",
+    "createdAt": "2026-11-21T06:43:37.299Z",
+    "updatedAt": "2026-11-21T06:43:37.299Z",
     "example": {
       "id": "figurative-reptile",
       "category": "Figurativas",
@@ -76,11 +76,11 @@
   "documentUnits": "mm",
   "patterns": [
     {
-      "id": "d45c3ea5-83f0-4731-9b86-9d65f3faae92",
+      "id": "4f129e7c-da89-4551-aa8d-438181d62d14",
       "name": "Reptiles del mosaico · IH1",
       "sourceGeometry": [
         {
-          "id": "b77d98b7-46f1-4839-9571-7c36842fd341",
+          "id": "9d9401c3-46e3-4224-8cc5-6fdde9ddf66f",
           "name": "Silueta enlazada · motivo",
           "kind": "path",
           "nodes": [
@@ -488,11 +488,11 @@
             "scope": "source",
             "linked": true,
             "status": "linked",
-            "faceKey": "tile/d45c3ea5-83f0-4731-9b86-9d65f3faae92",
+            "faceKey": "tile/4f129e7c-da89-4551-aa8d-438181d62d14",
             "topologyKey": "tile-interior",
             "refs": [],
             "inputs": [],
-            "context": "[{\"id\":\"d45c3ea5-83f0-4731-9b86-9d65f3faae92\",\"kind\":\"isohedral\",\"type\":1}]",
+            "context": "[{\"id\":\"4f129e7c-da89-4551-aa8d-438181d62d14\",\"kind\":\"isohedral\",\"type\":1}]",
             "captureMatrix": [
               1,
               0,
@@ -515,7 +515,7 @@
           }
         },
         {
-          "id": "b366b4d5-5b29-4a76-80b2-45bfc1a70854",
+          "id": "deee4cb9-a492-4f66-a3e5-b04777030ad5",
           "name": "Ojo superior",
           "kind": "ellipse",
           "nodes": [],
@@ -566,7 +566,7 @@
           }
         },
         {
-          "id": "eb28a0b4-4dee-4d65-8235-4a5bdb938417",
+          "id": "41223337-2bd7-42cb-bef2-e1e0860c9d37",
           "name": "Pupila superior",
           "kind": "ellipse",
           "nodes": [],
@@ -617,7 +617,7 @@
           }
         },
         {
-          "id": "debb1924-8a3d-4143-902b-fbd7172e7aa4",
+          "id": "247ecc75-e556-4c9a-a58a-c1191be1e5f2",
           "name": "Ojo inferior",
           "kind": "ellipse",
           "nodes": [],
@@ -668,7 +668,7 @@
           }
         },
         {
-          "id": "2bf7d398-e7f4-4353-b1ac-07b066d3fea8",
+          "id": "3d43df82-9897-4499-9999-2c93afd0dc5c",
           "name": "Pupila inferior",
           "kind": "ellipse",
           "nodes": [],
@@ -719,7 +719,7 @@
           }
         },
         {
-          "id": "34937422-e9fd-428c-84a5-63b6d5e688ad",
+          "id": "42b82840-13fd-4443-b3d8-05a07be63a6c",
           "name": "Lomo",
           "kind": "compound",
           "nodes": [],
@@ -763,7 +763,7 @@
           "pathData": "M-7 30C2 22 10 40 21 28S38 28 45 30"
         },
         {
-          "id": "101ffe1e-f22b-4460-8d91-6ac1e1ccd97c",
+          "id": "40b9bbbb-3842-47aa-9dda-96bcc8e77ec5",
           "name": "Dedos",
           "kind": "compound",
           "nodes": [],
@@ -807,7 +807,7 @@
           "pathData": "M4-5L7-2M7-7L9-2M10-6L11-1M30 63L33 61M33 65L35 61M36 64L37 60"
         },
         {
-          "id": "42bfa7b7-2fad-40ea-b899-55c55cd35645",
+          "id": "23a371ac-b89d-480a-822a-3430c5545f0d",
           "name": "Escamas",
           "kind": "compound",
           "nodes": [],
@@ -912,7 +912,7 @@
         }
       },
       "tiling": {
-        "version": 1,
+        "version": 2,
         "kind": "isohedral",
         "width": 60,
         "height": 60,
@@ -1155,6 +1155,14 @@
             0.5,
             0.143395479017,
             0.625
+          ]
+        },
+        "colors": {
+          "enabled": true,
+          "palette": [
+            "#7c8f57",
+            "#cdbb79",
+            "#9e6b55"
           ]
         }
       }

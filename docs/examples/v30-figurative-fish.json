@@ -53,10 +53,10 @@
   },
   "mainSymmetryProfiles": {},
   "metadata": {
-    "id": "f037b6ee-37c0-424e-9460-6a648d1d5ed6",
+    "id": "44899242-6887-402a-802e-53e68844ef6a",
     "name": "Peces encastrados · IH43",
-    "createdAt": "2026-11-21T06:23:42.591Z",
-    "updatedAt": "2026-11-21T06:23:42.591Z",
+    "createdAt": "2026-11-21T06:43:37.298Z",
+    "updatedAt": "2026-11-21T06:43:37.298Z",
     "example": {
       "id": "figurative-fish",
       "category": "Figurativas",
@@ -80,11 +80,11 @@
   "documentUnits": "mm",
   "patterns": [
     {
-      "id": "b21a744d-c437-432e-903c-37a0845ab767",
+      "id": "bf4f26be-e23a-409b-89d7-f553119674da",
       "name": "Peces encastrados · IH43",
       "sourceGeometry": [
         {
-          "id": "7b0d5f2e-014f-4cf6-a164-fb031e362bff",
+          "id": "fc237ddb-da07-4bd2-bc55-45dffe4a0a24",
           "name": "Silueta enlazada · motivo",
           "kind": "path",
           "nodes": [
@@ -396,11 +396,11 @@
             "scope": "source",
             "linked": true,
             "status": "linked",
-            "faceKey": "tile/b21a744d-c437-432e-903c-37a0845ab767",
+            "faceKey": "tile/bf4f26be-e23a-409b-89d7-f553119674da",
             "topologyKey": "tile-interior",
             "refs": [],
             "inputs": [],
-            "context": "[{\"id\":\"b21a744d-c437-432e-903c-37a0845ab767\",\"kind\":\"isohedral\",\"type\":43}]",
+            "context": "[{\"id\":\"bf4f26be-e23a-409b-89d7-f553119674da\",\"kind\":\"isohedral\",\"type\":43}]",
             "captureMatrix": [
               1,
               0,
@@ -423,7 +423,7 @@
           }
         },
         {
-          "id": "fcf6ac1b-e8ae-4994-942e-ba65bc1effe9",
+          "id": "2e5c4434-fb66-4603-a99c-b6d1d6131d4c",
           "name": "Aleta",
           "kind": "path",
           "nodes": [
@@ -515,7 +515,7 @@
           "locked": false
         },
         {
-          "id": "a513ccb4-3193-40ad-b657-409dfdd66a6b",
+          "id": "09ea0bad-d9bf-41bf-a15d-1432c0c39eaa",
           "name": "Ojo",
           "kind": "ellipse",
           "nodes": [],
@@ -566,7 +566,7 @@
           }
         },
         {
-          "id": "d5f974f0-e06d-4e9f-885c-7e54319b9100",
+          "id": "a76c2d48-4a0d-4405-b419-6bcce1a12436",
           "name": "Pupila",
           "kind": "ellipse",
           "nodes": [],
@@ -617,7 +617,7 @@
           }
         },
         {
-          "id": "bde24fd7-8588-493d-ac2f-b3ba6d174634",
+          "id": "f1628933-94dc-4446-8d9d-0e55aa691c97",
           "name": "Branquia",
           "kind": "compound",
           "nodes": [],
@@ -661,7 +661,7 @@
           "pathData": "M54 18C47 26 47 35 54 43"
         },
         {
-          "id": "3968014d-114f-4cea-9e40-8cf926b42a78",
+          "id": "c6a89c20-0c45-4474-a975-3e3c4dd8fd7b",
           "name": "Escamas",
           "kind": "compound",
           "nodes": [],
@@ -705,7 +705,7 @@
           "pathData": "M20 20Q26 25 20 30M30 26Q36 31 30 36M40 32Q46 37 40 42"
         },
         {
-          "id": "e0c67891-7c8a-4ce2-9dee-065f43a12e4c",
+          "id": "12b4c057-b433-4f86-964d-51209eb5529c",
           "name": "Cola",
           "kind": "compound",
           "nodes": [],
@@ -749,7 +749,7 @@
           "pathData": "M4 38L16 45M1 44L14 49"
         },
         {
-          "id": "b59dcc06-f99f-4525-a8a8-e51cfc6d6789",
+          "id": "bb2d85c9-4a40-4ea4-bd52-28c4d6dbb4dd",
           "name": "Boca",
           "kind": "compound",
           "nodes": [],
@@ -854,7 +854,7 @@
         }
       },
       "tiling": {
-        "version": 1,
+        "version": 2,
         "kind": "isohedral",
         "width": 60,
         "height": 60,
@@ -1033,6 +1033,13 @@
           "parameters": [
             0.230769230769,
             0.5
+          ]
+        },
+        "colors": {
+          "enabled": true,
+          "palette": [
+            "#c78046",
+            "#e3c792"
           ]
         }
       }

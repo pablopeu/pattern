@@ -73,6 +73,10 @@ export function CompositionPanel({
     () =>
       (['recursive', 'spiral'] as const).map((kind) => {
         const definition = defaultComposition(kind, frame);
+        if (s.pattern.tiling?.colors?.enabled) {
+          definition.palette = [...s.pattern.tiling.colors.palette];
+          definition.colorByLevel = true;
+        }
         const pattern = s.pattern.sourceGeometry.length
           ? { ...s.effectivePattern, sourceGeometry: compositionSource(s.effectivePattern) }
           : { ...s.effectivePattern, sourceGeometry: [sample] };

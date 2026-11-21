@@ -66,19 +66,35 @@ export function clipGeometry(
         outlineStroke || shape.strokeDash.length > 0 || shape.strokeProfile.kind !== 'uniform';
       const stroked = outlineStroke ? strokeRegion(shape, transform, tolerance) : shape;
       const source = paperPath(stroked, outlineStroke ? IDENTITY : transform);
-      const result = source.intersect(mask, { insert: false, trace: outlineStroke });
-      source.remove();
-      if (result.pathData) {
-        const g = pathToGeometry(result, stroked);
-        if (!outlineStroke) {
-          g.fill = 'none';
-          g.closed = false;
-          const full = multiply(transform, shape.transform);
-          g.strokeWidth =
-            shape.strokeWidth * Math.sqrt(Math.abs(full[0] * full[3] - full[1] * full[2]));
+      const axes =
+        !outlineStroke && source instanceof scope.CompoundPath ? [...source.children] : [source];
+      let joined: Geometry | undefined;
+      try {
+        for (const axis of axes) {
+          const result = (axis as paper.PathItem).intersect(mask, {
+            insert: false,
+            trace: outlineStroke,
+          });
+          if (result.pathData) {
+            const g = pathToGeometry(result, stroked);
+            if (!outlineStroke) {
+              g.fill = 'none';
+              g.closed = false;
+              const full = multiply(transform, shape.transform);
+              g.strokeWidth =
+                shape.strokeWidth * Math.sqrt(Math.abs(full[0] * full[3] - full[1] * full[2]));
+            }
+            if (!outlineStroke && joined)
+              joined.pathData = (joined.pathData ?? '') + (g.pathData ?? '');
+            else {
+              out.push(g);
+              if (!outlineStroke) joined = g;
+            }
+          } else result.remove();
         }
-        out.push(g);
-      } else result.remove();
+      } finally {
+        source.remove();
+      }
     }
     return out;
   } finally {

@@ -1003,3 +1003,23 @@
   y DXF2D/mm. Native6 de los4 conserva sus fuentes.
 - README con2 capturas reales y4 JSON descargables, scripts reproducibles.
   AC07 verificado; colores alternados y fases3–7 aún pendientes.
+
+
+## Fase2 · Alternancia de teselas y período exportable
+
+- Paletas2–6 por clase de celda/aspecto, índices negativos estables para93 IH,
+  grupos de pintura derivados y fuente única. UI contextual sin scroll a cuatro
+  resoluciones; Fill recolorea clase vigente/recarga sin duplicar fondos.
+- tiling2 dentro de JSON6, rechazo explícito en lectores previos. Cambio de
+  paleta no invalida caras ni vínculos. CeldaN×N común a referencia y exportación.
+- Corregido recorte de varios ejes abiertos CompoundPath en Paper.js; se reúnen
+  en una geometría para conservar opacidad.637 unidades/TypeScript/build OK.
+-10 estáticas y14 monitor OK;4 figuras con tinta de cada color, SVG/PNG/JPEG/DXF
+  independientes. Celda repetida vs vista directa: error máximo0,176/255.
+  README/capturas/JSON actualizados. Primera regresión149/150: un fallo de
+  igualdad de inputs derivados durante actualización asíncrona en móvil; dos
+  dirigidas posteriores correctas sin cambios. Confirmación completa150/150
+  (229,8s/exit0), sin relajar aserciones. Fase2 verificada.
+- Primaria90% usado: cierre, commit y push autorizados; timer de reanudación
+  primario+60s (07:31 ART21/11/2026), sin iniciar Fase3.
+- Fases3–7 pendientes, PRD no completo.

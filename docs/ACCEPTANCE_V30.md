@@ -1,11 +1,11 @@
 # Aceptación · PRD v3.0
 
-Estado: Fases0–1 verificadas; Fases2–7 pendientes. Baseline 8be6668.
-No se declara completo v3.0 ni su catálogo IH, proyecciones o animaciones.
+Estado: Fases0–2 verificadas; Fases3–7 pendientes. Baseline 8be6668.
+No se declara completo v3.0: proyecciones, aperiódicas/Girih y animaciones pendientes.
 
 | AC | Requisito | Estado y evidencia necesaria |
 |---|---|---|
-|01|Compatibilidad|537 unidades/140 E2E y10 estáticas verificadas tras JSON6 y feedback; repetir con próximas familias|
+|01|Compatibilidad|637 unidades/150 E2E y10 estáticas verificadas tras JSON6 y feedback; repetir con próximas familias|
 |02–03|Navegación/scroll|Base UX v2.3 conservada; nuevas familias pendientes|
 |04–05|Edición/simetría|Base euclidiana verificada; extensiones pendientes|
 |06|IH1–IH93|93/93 verificados/integrados;81 geométricos+12 marcados propios, pruebas individuales/Scene/JSON y exportación independiente de los12 marcados|
@@ -19,7 +19,7 @@ No se declara completo v3.0 ni su catálogo IH, proyecciones o animaciones.
 |20|Exportación|Base SVG/PNG/JPEG/DXF; nuevas familias pendientes|
 |21–22|Ejemplos/derechos|16 ejemplos:8 legados+8 originales portables,4 JSON figurativos/4 de composición; familias posteriores pendientes; sin assets Escher copiados|
 |23–24|Acceso/rendimiento|Base verificada; mediciones de nuevas familias pendientes|
-|25|Regresiones|Figuras/JSON6:145/145 E2E,542 unidades,10 estáticas,build y14 monitor. Repetir tras próximas fases|
+|25|Regresiones|Figuras/paletas/JSON6:150/150 E2E,637 unidades,10 estáticas,build y14 monitor. Repetir tras próximas fases|
 
 Baseline: .runtime/v30-baseline-{check,monitor,build,full}.log,
 v30-baseline-full-result.json y v30-baseline-static-summary.log. Logs/artefactos
@@ -28,3 +28,12 @@ locales excluidos de Git. Matriz se actualiza con evidencia de cada incremento.
 Fase1: logs v30-culling-*, v30-phase1-full-result.json (exit0/205,2s),
 v30-static-summary.log y v30-independent-check.log. README contiene capturas
 y cuatro JSON. Mediciones en TESTING.md. PRD completo todavía pendiente.
+
+Fase2 cerrada21/11/2026UTC: IH93 y figuras originales con colores2–6,
+período de color validado por tipo, silueta editable y detalles independientes.
+637 unidades,150/150 E2E(229,8s),10 estáticas,build,14 monitor. Primera corrida
+149/150 por igualdad de inputs derivados de Fill bajo actualización asíncrona;
+2 dirigidas y repetición completa correctas sin cambiar código/aserciones.
+CairoSVG comparó4 celdas exportadas/repetidas contra vista directa: máximo
+0,176/255. Fuentes únicas, paletas y JSON/PNG/JPEG/DXF verificados.
+Logs tile-colors-* y tile-colors-confirmed-*; fases3–7 aún pendientes.

@@ -1,4 +1,5 @@
 import { tileFillContour } from './coordinates';
+import { tileColorIndex, geometricTiling } from '../tiling/colors';
 import { compositionGeometryContext } from '../composition/model';
 import { geometry, type Geometry, type Pattern, type Project } from '../app/model';
 import type { Scene } from '../patterns/engine';
@@ -41,6 +42,9 @@ export interface TileFillCandidate {
   pathData: string;
   matrix: Matrix;
   z: number;
+  colorIndex?: number;
+  cell?: [number, number];
+  orientation?: number;
 }
 export interface FaceFillCandidate {
   kind: 'face';
@@ -223,6 +227,7 @@ export function immediateFillCandidates(layers: FillLayer[], point: Point): Fill
       const raw = new Map(pattern.sourceGeometry.map((g) => [g.id, g]));
       const inspect = (g: Geometry, matrix: Matrix, z: number) => {
         const source = raw.get(g.id);
+        if (source?.fillRegion?.kind === 'tile' && scene.tiling) return;
         if (
           !source?.closed ||
           !source.visible ||
@@ -273,6 +278,11 @@ export function immediateFillCandidates(layers: FillLayer[], point: Point): Fill
               pathData: paperData(world),
               matrix: tile.matrix,
               z: layerIndex * 100000 - 10,
+              cell: tile.cell,
+              orientation: tile.orientation,
+              ...(pattern.tiling?.colors?.enabled
+                ? { colorIndex: tileColorIndex(pattern.tiling, tile) }
+                : {}),
             });
           } finally {
             world.remove();
@@ -347,7 +357,7 @@ export function fillContext(
             generator: p.generator,
             symmetry: p.symmetry,
             placement: p.placementTransform,
-            tiling: p.tiling,
+            tiling: geometricTiling(p.tiling),
             visible: p.visible,
             ...(p.composition?.enabled
               ? { composition: compositionGeometryContext(p.composition) }
@@ -378,6 +388,8 @@ export function sameFillContext(a: string, b: string, followTileProfiles = false
         const tile = row.tiling;
         if (!tile || typeof tile !== 'object' || Array.isArray(tile)) return row;
         const relevant = { ...tile } as Record<string, unknown>;
+        delete relevant.colors;
+        if (relevant.version === 2) relevant.version = 1;
         delete relevant.showOutline;
         if (followTileProfiles) delete relevant.edges;
         return { ...row, tiling: relevant };
@@ -551,7 +563,7 @@ export function axesFingerprint(project: Project): string {
       p.symmetry,
       p.symmetryMode,
       p.placementTransform,
-      p.tiling,
+      geometricTiling(p.tiling),
       compositionGeometryContext(p.composition),
       p.sourceGeometry.map((g) => [
         g.id,

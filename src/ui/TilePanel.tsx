@@ -64,7 +64,7 @@ export function TilePanel({
       </div>
       <div className="tile-controls compact-fields">
         <div hidden={tab !== 'shape'} className="compact-fields">
-          <p className="help-text">
+          <p className="help-text" hidden={iso}>
             La tesela define la cobertura. El motivo se recorta dentro de ella y usa su propia
             simetría local.
           </p>
@@ -123,7 +123,7 @@ export function TilePanel({
                 options={Object.entries(tileNames).map(([value, label]) => ({ value, label }))}
               />
               {iso && <IsohedralControls studio={s} />}
-              <p className="help-text">
+              <p className="help-text" hidden={iso}>
                 Cambiar de familia reinicia sus bordes; conserva el dibujo. Podés deshacer.
               </p>
               <div className="two-fields">

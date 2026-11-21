@@ -1351,7 +1351,7 @@ export function Canvas({
           if (layer.kind === 'fill')
             return (
               <g
-                key={layer.geometry.id}
+                key={`${layer.geometry.id}/${index}`}
                 data-fill-region={layer.geometry.id}
                 onPointerDown={interactive ? (e) => selectAcrossLayers(e) : undefined}
               >

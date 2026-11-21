@@ -53,10 +53,10 @@
   },
   "mainSymmetryProfiles": {},
   "metadata": {
-    "id": "af81c796-9e85-426f-9af9-f2e8ddc80deb",
+    "id": "d2065c58-49fb-40cc-b4b2-fa47ffa8fc1a",
     "name": "Cometas del giro · IH63",
-    "createdAt": "2026-11-21T06:23:42.593Z",
-    "updatedAt": "2026-11-21T06:23:42.593Z",
+    "createdAt": "2026-11-21T06:43:37.300Z",
+    "updatedAt": "2026-11-21T06:43:37.300Z",
     "example": {
       "id": "figurative-abstract",
       "category": "Figurativas",
@@ -76,11 +76,11 @@
   "documentUnits": "mm",
   "patterns": [
     {
-      "id": "75b14df2-4922-4890-b3bd-084666fb0e7c",
+      "id": "5fb07fcc-deef-475a-aa15-d91c573a11de",
       "name": "Cometas del giro · IH63",
       "sourceGeometry": [
         {
-          "id": "b08c8346-3c63-4dc1-8883-a16205b61881",
+          "id": "5559b7d5-20bf-42b1-82f4-e981e77d46ee",
           "name": "Relleno de tesela",
           "kind": "path",
           "nodes": [
@@ -224,11 +224,11 @@
             "scope": "tile",
             "linked": true,
             "status": "linked",
-            "faceKey": "tile/75b14df2-4922-4890-b3bd-084666fb0e7c",
+            "faceKey": "tile/5fb07fcc-deef-475a-aa15-d91c573a11de",
             "topologyKey": "tile-interior",
             "refs": [],
             "inputs": [],
-            "context": "[{\"id\":\"75b14df2-4922-4890-b3bd-084666fb0e7c\",\"kind\":\"isohedral\",\"type\":63}]",
+            "context": "[{\"id\":\"5fb07fcc-deef-475a-aa15-d91c573a11de\",\"kind\":\"isohedral\",\"type\":63}]",
             "captureMatrix": [
               1,
               0,
@@ -251,7 +251,7 @@
           }
         },
         {
-          "id": "67f617b8-d030-490f-a0d8-1adfee0ea8bb",
+          "id": "4e8b4dfc-646a-420b-9cbc-2ac1c661d525",
           "name": "Cometa · cuatro giros",
           "kind": "path",
           "nodes": [
@@ -343,7 +343,7 @@
           "locked": false
         },
         {
-          "id": "6adda5e9-5c98-4fcf-83d7-7f28933b17f7",
+          "id": "0ca6008f-787e-4faf-8136-094f0d37f558",
           "name": "Centro",
           "kind": "ellipse",
           "nodes": [],
@@ -455,7 +455,7 @@
         }
       },
       "tiling": {
-        "version": 1,
+        "version": 2,
         "kind": "isohedral",
         "width": 60,
         "height": 60,
@@ -510,6 +510,13 @@
           "version": 1,
           "type": 63,
           "parameters": []
+        },
+        "colors": {
+          "enabled": true,
+          "palette": [
+            "#203b48",
+            "#496c75"
+          ]
         }
       }
     }

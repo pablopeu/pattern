@@ -4,6 +4,7 @@ import type { Bounds } from '../symmetry/groups';
 import type { Point } from '../geometry/matrix';
 import type { Geometry } from '../app/model';
 import type { DrawingStyle } from '../app/styles';
+import { tileColorIndex } from '../tiling/colors';
 import { hasFillInk, createTileFill, type FillLayer, type FillCandidate } from './service';
 interface FillClick {
   point: Point;
@@ -281,13 +282,23 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
     } else if (preview.kind === 'tile') {
       const target = s.project.patterns.find((p) => p.id === preview.patternId);
       if (target) {
+        const colorIndex =
+          target.tiling?.colors?.enabled && preview.cell
+            ? tileColorIndex(target.tiling, {
+                cell: preview.cell,
+                orientation: preview.orientation ?? 0,
+              })
+            : undefined;
         const previous = s.projectRef.current.patterns
           .find((p) => p.id === target.id)
           ?.sourceGeometry.find((g) => g.fillRegion?.faceKey === `tile/${target.id}`);
         if (previous?.locked) return;
         if (
           previous &&
-          previous.fill === style.fill &&
+          previous.fill !== 'none' &&
+          (colorIndex === undefined
+            ? previous.fill
+            : target.tiling!.colors!.palette[colorIndex]) === style.fill &&
           previous.fillOpacity === style.fillOpacity &&
           previous.fillRule === style.fillRule
         ) {
@@ -307,11 +318,20 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
           const old = pat.sourceGeometry.find((g) => g.fillRegion?.faceKey === `tile/${target.id}`);
           if (old?.locked) return;
           if (old) {
-            old.fill = style.fill;
+            if (colorIndex !== undefined && pat.tiling?.colors?.enabled) {
+              pat.tiling.colors.palette[colorIndex] = style.fill;
+              old.fill = pat.tiling.colors.palette[0];
+            } else old.fill = style.fill;
             old.fillOpacity = style.fillOpacity;
             old.fillRule = style.fillRule;
             found = true;
-          } else pat.sourceGeometry.unshift(g);
+          } else {
+            if (colorIndex !== undefined && pat.tiling?.colors?.enabled) {
+              pat.tiling.colors.palette[colorIndex] = style.fill;
+              g.fill = pat.tiling.colors.palette[0];
+            }
+            pat.sourceGeometry.unshift(g);
+          }
         });
         s.setSelected([
           found

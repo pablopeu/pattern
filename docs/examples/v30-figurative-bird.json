@@ -53,10 +53,10 @@
   },
   "mainSymmetryProfiles": {},
   "metadata": {
-    "id": "cca73487-8c22-4ead-9914-88da6ba9006e",
+    "id": "b29d7fc6-c2d1-4a87-a207-6b2dcd60ca31",
     "name": "Aves entrelazadas · IH44",
-    "createdAt": "2026-11-21T06:23:42.592Z",
-    "updatedAt": "2026-11-21T06:23:42.592Z",
+    "createdAt": "2026-11-21T06:43:37.299Z",
+    "updatedAt": "2026-11-21T06:43:37.299Z",
     "example": {
       "id": "figurative-bird",
       "category": "Figurativas",
@@ -80,11 +80,11 @@
   "documentUnits": "mm",
   "patterns": [
     {
-      "id": "81489d70-1644-4bba-ae3f-611ed91c818f",
+      "id": "e730d06e-c3c7-44b3-9685-b5db7bbbcd8e",
       "name": "Aves entrelazadas · IH44",
       "sourceGeometry": [
         {
-          "id": "3750e456-295e-4dd2-97d0-ebae60a5ebcf",
+          "id": "334369ba-6758-4856-a451-a7aceb9628bb",
           "name": "Silueta enlazada · motivo",
           "kind": "path",
           "nodes": [
@@ -324,11 +324,11 @@
             "scope": "source",
             "linked": true,
             "status": "linked",
-            "faceKey": "tile/81489d70-1644-4bba-ae3f-611ed91c818f",
+            "faceKey": "tile/e730d06e-c3c7-44b3-9685-b5db7bbbcd8e",
             "topologyKey": "tile-interior",
             "refs": [],
             "inputs": [],
-            "context": "[{\"id\":\"81489d70-1644-4bba-ae3f-611ed91c818f\",\"kind\":\"isohedral\",\"type\":44}]",
+            "context": "[{\"id\":\"e730d06e-c3c7-44b3-9685-b5db7bbbcd8e\",\"kind\":\"isohedral\",\"type\":44}]",
             "captureMatrix": [
               1,
               0,
@@ -351,7 +351,7 @@
           }
         },
         {
-          "id": "f2482337-2c3d-41e4-bd74-9bda2899d203",
+          "id": "26126c81-0eac-49d4-9dcc-2ed053c54d05",
           "name": "Ojo",
           "kind": "ellipse",
           "nodes": [],
@@ -402,7 +402,7 @@
           }
         },
         {
-          "id": "d9288019-5706-46b5-bb80-6ef1204e1c2c",
+          "id": "c93b136c-0f01-4537-af44-d95053a67d0d",
           "name": "Pupila",
           "kind": "ellipse",
           "nodes": [],
@@ -453,7 +453,7 @@
           }
         },
         {
-          "id": "320a4152-50ab-412f-9e19-9155dc520677",
+          "id": "056fa4c6-197d-49b3-96ce-0785def56647",
           "name": "Pico",
           "kind": "path",
           "nodes": [
@@ -533,7 +533,7 @@
           "locked": false
         },
         {
-          "id": "fb554e8c-33d4-4d4e-be27-236930ce1b54",
+          "id": "1c87e6ec-1488-46eb-9d45-b1493b3cb370",
           "name": "Plumas",
           "kind": "compound",
           "nodes": [],
@@ -577,7 +577,7 @@
           "pathData": "M39 0C32-18 17-20 23-4C25 0 30 4 38 7"
         },
         {
-          "id": "d1224c0c-a498-4170-9107-f0a5a240579f",
+          "id": "35a3f952-bab1-40cb-8534-451bd421413b",
           "name": "Cola",
           "kind": "compound",
           "nodes": [],
@@ -621,7 +621,7 @@
           "pathData": "M5-2L17-7M5 2L17 7"
         },
         {
-          "id": "17bede04-c2cb-4985-b0fb-d2584d34e33f",
+          "id": "7eb2d2de-d2f6-45bf-93d8-c7975ef3661e",
           "name": "Pecho",
           "kind": "compound",
           "nodes": [],
@@ -726,7 +726,7 @@
         }
       },
       "tiling": {
-        "version": 1,
+        "version": 2,
         "kind": "isohedral",
         "width": 60,
         "height": 60,
@@ -869,6 +869,13 @@
           "parameters": [
             0.5,
             0.102564102564
+          ]
+        },
+        "colors": {
+          "enabled": true,
+          "palette": [
+            "#487c78",
+            "#b5c9b0"
           ]
         }
       }

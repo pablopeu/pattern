@@ -11,6 +11,7 @@ import {
 } from '../geometry/matrix';
 import type { Bounds } from '../symmetry/groups';
 import type { IsohedralDefinition } from '../isohedral/model';
+import { tileColorPeriod } from './colors';
 import {
   newIsohedral,
   isohedralLayout,
@@ -25,7 +26,8 @@ export type TileKind =
   | 'hexagon'
   | 'isohedral';
 export interface TilingDefinition {
-  version: 1;
+  version: 1 | 2;
+  colors?: { enabled: boolean; palette: string[] };
   kind: TileKind;
   width: number;
   height: number;
@@ -384,6 +386,8 @@ export function tileRectangularCell(t: TilingDefinition): { width: number; heigh
   else if (t.kind === 'parallelogram' && Math.abs(t.shear) > 1e-8) cell = null;
   else cell = { width: t.width, height: t.kind === 'square' ? t.width : t.height };
   if (!cell) return null;
+  const period = tileColorPeriod(t);
+  cell = { width: cell.width * period, height: cell.height * period };
   return Math.abs(Math.round(t.rotation / 90)) % 2
     ? { width: cell.height, height: cell.width }
     : cell;
@@ -409,7 +413,7 @@ export function tileWorldBounds(t: TilingDefinition): Bounds {
 }
 /** The same translation cell is used for clipping, the visible frame and its camera. */
 export function tileCellCorners(t: TilingDefinition): Point[] {
-  const b = tileBasis(t),
+  const b = tilePaintBasis(t),
     frame = tileFrame(t);
   return [
     { x: 0, y: 0 },
@@ -417,6 +421,10 @@ export function tileCellCorners(t: TilingDefinition): Point[] {
     { x: b[0] + b[2], y: b[1] + b[3] },
     { x: b[2], y: b[3] },
   ].map((p) => apply(frame, p));
+}
+export function tilePaintBasis(t: TilingDefinition): Matrix {
+  const n = tileColorPeriod(t);
+  return multiply(tileBasis(t), [n, 0, 0, n, 0, 0]);
 }
 export function tileCellBounds(t: TilingDefinition): Bounds {
   const points = tileCellCorners(t),

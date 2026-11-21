@@ -3,7 +3,7 @@ import { sceneLayers } from '../patterns/layers';
 import { strokeRegion } from '../geometry/stroke-outline';
 import {
   tileRectangularCell,
-  tileBasis,
+  tilePaintBasis,
   tileFrame,
   tileContours,
   tileInstances,
@@ -180,7 +180,7 @@ function preparePatternExport(
       pattern.generator.kind === 'penrose'
     )
       throw Error('Este patrón no tiene una celda de traslación bidimensional.');
-    const basis = tiling ? multiply(tileFrame(tiling), tileBasis(tiling)) : null;
+    const basis = tiling ? multiply(tileFrame(tiling), tilePaintBasis(tiling)) : null;
     const [a, b] = basis
         ? [
             { x: basis[0], y: basis[1] },
