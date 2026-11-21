@@ -8,6 +8,7 @@ import { girihExamples } from './girih';
 import { aperiodicExamples } from './aperiodic';
 import { figurativeExamples } from './figurative';
 import { hyperbolicExamples } from './hyperbolic';
+import { artisticDiskExamples } from './artistic';
 import { fishMotif, birdMotif } from './motifs';
 export { fishMotif, birdMotif } from './motifs';
 
@@ -130,6 +131,7 @@ export const exampleCatalog: CatalogExample[] = [
   ...aperiodicExamples,
   ...girihExamples,
   ...hyperbolicExamples,
+  ...artisticDiskExamples,
   ...exampleNames.map((name, index) => ({
     id: `legacy-${index}`,
     category: 'Clásicos',

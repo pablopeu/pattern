@@ -25,6 +25,7 @@ export default defineConfig({
         '**/frame-weld.spec.ts',
         '**/navigation-feedback.spec.ts',
         '**/poincare.spec.ts',
+        '**/artistic.spec.ts',
       ],
   timeout: 45000,
   expect: { timeout: 8000 },

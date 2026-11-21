@@ -3,8 +3,8 @@
 Este núcleo de Fase4 produce una deformación radial de una fuente plana finita.
 No construye una teselación hiperbólica ni declara preservar simetría, ángulos,
 áreas, longitudes o correspondencia de bordes. Su informe usa ARTISTIC y
-hyperbolicTessellation=false. Todavía no tiene selector público ni registro
-nativo propio; eso corresponde al siguiente incremento.
+hyperbolicTessellation=false. La interfaz ofrece esta modalidad junto a Poincaré y guarda su registro nativo
+version1/kind artistic-disk dentro de JSON7.
 
 ## Fuente y mapa
 
@@ -92,3 +92,34 @@ azul/negro/transparente y cota0,0049976022mm de antes del cambio. Capturas/JSON/
 SVG/raster diagnósticos quedan en .runtime, excluidos del repo. Pendientes UI,
 contrato artístico/ejemplos públicos, bordes pareados canónicos y color por clase;
 no declarar Fase4 ni el PRD completos.
+
+
+## Modalidad artística integrada
+
+El selector Modalidad del diálogo compartido alterna Poincaré/Disco artístico.
+Cada kind tiene esquema estricto y parámetros propios; fuente/recorte/medidas
+se conservan al alternar. El radio del centro se ajusta al límite de cada modo
+con margen numérico, para evitar que el redondeo produzca0,9000000000000001.
+Regresar al editor conserva nodos, generador y configuraciones. Entrar/recargar
+regenera la fuente actual; edición directa del disco deshabilitada por diseño.
+
+La modalidad artística ofrece compresión, cámara, precisión y medidas; los p/q,
+profundidad y estructura geodésica quedan en la modalidad geométrica. Guardado y
+exportación comparten controles, validación, cancelación y protección frente a
+resultados/opciones obsoletos. PNG/JPEG usan DPI físicos y el mismo rasterizador.
+El lector geométrico JSON7 anterior REAL rechaza kind artistic-disk; no pierde
+la configuración ni la interpreta silenciosamente como dibujo plano.
+
+Dos ejemplos originales: peces con9 instancias/117 pinturas/40850 segmentos,
+y anillos con36 instancias/108 pinturas/40669 segmentos. Ambos bajo250000.
+El ejemplo de peces declara presupuesto12000 cúbicas de fuente (límite24000),
+porque sus contornos de trazo detallados superan el predeterminado4096. No se
+amplía el presupuesto general ni se simplifican sus controles canónicos.
+Fuentes, JSON7 y miniaturas generados por el worker; captura real de la UI.
+
+Pruebas de interfaz específicas: desktop/móvil, cambio entre modalidades,
+fuente intacta, guardado/reapertura, PNG/JPEG con hueco/color/perfil reales,
+SVG físico, edición mediante la herramienta Línea en el editor seguida de
+regeneración con su nuevo ID de fuente, y cancelación/reintento de un job real.
+La galería suma25 ejemplos en total. Continúan pendientes bordes pareados
+canónicos, color por clase y criterios restantes de Fase4; fases5–7 pendientes.

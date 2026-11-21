@@ -815,8 +815,8 @@ export default function App() {
             </div>
             <div className="workspace-actions">
               <button
-                aria-label="Visualización de Poincaré"
-                title="Visualización derivada de Poincaré"
+                aria-label="Visualizar patrón"
+                title="Visualización geométrica o artística del patrón"
                 onClick={openVisualization}
               >
                 <Circle size={17} />
@@ -1068,7 +1068,7 @@ export default function App() {
       )}
       {s.loaded && s.project.visualization?.active && (
         <DiskDialog
-          key={s.project.metadata.id}
+          key={s.project.metadata.id + ':' + s.project.visualization.kind}
           studio={s}
           onClose={closeVisualization}
           onSave={() => setSaveOpen(true)}

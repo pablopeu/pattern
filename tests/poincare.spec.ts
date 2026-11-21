@@ -48,7 +48,7 @@ for (const width of [1440, 390])
   }) => {
     await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
     const original = await fixture(page);
-    await page.getByRole('button', { name: 'Visualización de Poincaré', exact: true }).click();
+    await page.getByRole('button', { name: 'Visualizar patrón', exact: true }).click();
     await ready(page);
     await expect(
       dialog(page).getByText(/Motivo adaptado; correspondencia de bordes no garantizada/),
@@ -94,7 +94,7 @@ test('Poincaré exporta SVG físico, PNG/JPEG a DPI y el disco no modifica nodos
   page,
 }) => {
   const original = await fixture(page);
-  await page.getByRole('button', { name: 'Visualización de Poincaré', exact: true }).click();
+  await page.getByRole('button', { name: 'Visualizar patrón', exact: true }).click();
   await ready(page);
   await dialog(page).getByLabel('Radio del disco', { exact: true }).fill('40');
   await dialog(page).getByLabel('Estructura geodésica', { exact: true }).uncheck();
@@ -136,7 +136,7 @@ test('Poincaré cancela trabajo real del worker, mantiene la fuente y permite re
   page,
 }) => {
   const original = await fixture(page);
-  await page.getByRole('button', { name: 'Visualización de Poincaré', exact: true }).click();
+  await page.getByRole('button', { name: 'Visualizar patrón', exact: true }).click();
   await ready(page);
   await dialog(page).getByLabel('Profundidad', { exact: true }).fill('8');
   await dialog(page).getByLabel('Máximo de celdas', { exact: true }).fill('4096');

@@ -384,3 +384,40 @@ test('Poincaré estático: galería, worker y SVG físico sin Internet', async (
   expect(errors).toEqual([]);
   expect(external).toEqual([]);
 });
+
+test('disco artístico estático: miniatura/worker/SVG desde subcarpeta sin Internet', async ({
+  page,
+  baseURL,
+}) => {
+  const errors: string[] = [],
+    external: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.route('**/*', (route) => {
+    const url = new URL(route.request().url());
+    if (url.protocol.startsWith('http') && url.origin !== new URL(baseURL!).origin) {
+      external.push(url.href);
+      return route.abort();
+    }
+    return route.continue();
+  });
+  await page.goto(baseURL!);
+  await page.locator('.main-menu summary').click();
+  await page.getByRole('button', { name: 'Galería de ejemplos', exact: true }).click();
+  const gallery = page.getByRole('dialog', { name: 'Galería de ejemplos', exact: true });
+  await gallery.getByLabel('Categoría de ejemplos').selectOption('Discos artísticos');
+  await gallery
+    .getByRole('button', { name: 'Abrir ejemplo Mosaico de peces · Disco artístico', exact: true })
+    .click();
+  const dialog = page.getByRole('dialog', { name: 'Visualización artística', exact: true });
+  await expect(dialog.getByRole('button', { name: 'SVG', exact: true })).toBeEnabled({
+    timeout: 20000,
+  });
+  const wait = page.waitForEvent('download');
+  await dialog.getByRole('button', { name: 'SVG', exact: true }).click();
+  const svg = await readFile((await (await wait).path())!, 'utf8');
+  expect(svg).toContain('ARTISTIC');
+  expect(svg).toContain('width="200mm"');
+  await dialog.getByRole('button', { name: 'Volver a la fuente', exact: true }).click();
+  expect(errors).toEqual([]);
+  expect(external).toEqual([]);
+});

@@ -1,7 +1,15 @@
+import { deriveArtisticDiskInWorker } from '../artistic/worker-client';
+import { artisticDiskSVG, type ArtisticDiskRepresentation } from '../artistic/disk';
 import { useEffect, useRef, useState } from 'react';
 import { Download, RotateCcw, Save, Square, X } from 'lucide-react';
 import type { Studio } from '../app/useStudio';
-import { defaultVisualization, type Visualization } from '../visualization/model';
+import {
+  defaultVisualization,
+  changeVisualizationKind,
+  type Visualization,
+  type PoincareVisualization,
+  type ArtisticVisualization,
+} from '../visualization/model';
 import { visualizationSchema } from '../visualization/schema';
 import { deriveProjectDiskInWorker } from '../hyperbolic/worker-client';
 import { diskPreviewSVG } from '../hyperbolic/representation';
@@ -24,7 +32,7 @@ export function DiskDialog({
       structuredClone(s.project.visualization ?? defaultVisualization(s.project, s.pattern.id)),
     ),
     [output, setOutput] = useState<{
-      disk: ProjectDiskRepresentation;
+      disk: ProjectDiskRepresentation | ArtisticDiskRepresentation;
       record: Visualization;
       svg: string;
     } | null>(null),
@@ -38,16 +46,20 @@ export function DiskDialog({
     mounted = useRef(true);
   const validation = visualizationSchema.safeParse(record),
     dirty = JSON.stringify(output?.record ?? s.project.visualization) !== JSON.stringify(record);
-  const setting = <K extends keyof Visualization['settings']>(
-    key: K,
-    value: Visualization['settings'][K],
-  ) => setRecord((r) => ({ ...r, settings: { ...r.settings, [key]: value } }));
+  type AllSettings = PoincareVisualization['settings'] & ArtisticVisualization['settings'];
+  const setting = <K extends keyof AllSettings>(key: K, value: AllSettings[K]) =>
+    setRecord((r) => {
+      const next = structuredClone(r);
+      Object.assign(next.settings, { [key]: value });
+      return next;
+    });
   const center = (axis: 'x' | 'y', value: number) => {
     const c = { ...record.settings.view.center, [axis]: value },
-      norm = Math.hypot(c.x, c.y);
-    if (norm > 0.9) {
-      c.x *= 0.9 / norm;
-      c.y *= 0.9 / norm;
+      norm = Math.hypot(c.x, c.y),
+      limit = record.kind === 'poincare' ? 0.9 : 2;
+    if (norm > limit) {
+      c.x *= (limit * (1 - 1e-12)) / norm;
+      c.y *= (limit * (1 - 1e-12)) / norm;
     }
     setting('view', { ...record.settings.view, center: c });
   };
@@ -69,15 +81,35 @@ export function DiskDialog({
       p.visualization = snapshot;
     });
     try {
-      const disk = await deriveProjectDiskInWorker(
-        s.projectRef.current,
-        snapshot.source.patternId,
-        snapshot.source.selection,
-        snapshot.settings,
-        current.signal,
-      );
-      if (!current.signal.aborted && mounted.current)
-        setOutput({ disk, record: snapshot, svg: diskPreviewSVG(disk, snapshot.showStructure) });
+      const publish = (
+        disk: ProjectDiskRepresentation | ArtisticDiskRepresentation,
+        svg: string,
+      ) => {
+        if (!current.signal.aborted && mounted.current) setOutput({ disk, record: snapshot, svg });
+      };
+      if (snapshot.kind === 'poincare') {
+        const disk = await deriveProjectDiskInWorker(
+          s.projectRef.current,
+          snapshot.source.patternId,
+          snapshot.source.selection,
+          snapshot.settings,
+          current.signal,
+        );
+        publish(disk, diskPreviewSVG(disk, snapshot.showStructure));
+      } else {
+        const disk = await deriveArtisticDiskInWorker(
+          s.projectRef.current,
+          snapshot.source.patternId,
+          snapshot.source.selection,
+          {
+            ...snapshot.settings,
+            angle: snapshot.settings.view.angle,
+            center: snapshot.settings.view.center,
+          },
+          current.signal,
+        );
+        publish(disk, artisticDiskSVG(disk));
+      }
     } catch (e) {
       if (mounted.current && controller.current === current)
         setError(
@@ -111,7 +143,7 @@ export function DiskDialog({
     if (!output || busy || dirty) return;
     const file =
         (s.project.metadata.name.replace(/[^\p{L}\p{N} _-]/gu, '').trim() || 'estudio') +
-        '-poincare',
+        (output.record.kind === 'poincare' ? '-poincare' : '-disco-artistico'),
       job = new AbortController();
     rasterController.current = job;
     setExporting(true);
@@ -143,13 +175,18 @@ export function DiskDialog({
       if (mounted.current) setExporting(false);
     }
   };
-  const selection = record.source.selection;
+  const selection = record.source.selection,
+    artistic = record.kind === 'artistic-disk';
   return (
-    <Modal label="Visualización de Poincaré" className="disk-modal" onClose={onClose}>
+    <Modal
+      label={artistic ? 'Visualización artística' : 'Visualización de Poincaré'}
+      className="disk-modal"
+      onClose={onClose}
+    >
       <header className="disk-header">
         <div>
           <span className="eyebrow">VISTA DERIVADA · FUENTE PLANA EDITABLE</span>
-          <h2>Disco de Poincaré</h2>
+          <h2>{artistic ? 'Disco artístico' : 'Disco de Poincaré'}</h2>
         </div>
         <button aria-label="Volver a la fuente" onClick={onClose} autoFocus>
           <X size={19} />
@@ -157,7 +194,20 @@ export function DiskDialog({
         </button>
       </header>
       <div className="disk-body">
-        <section className="disk-controls" aria-label="Opciones de Poincaré">
+        <section className="disk-controls" aria-label="Opciones de visualización">
+          <Select
+            label="Modalidad"
+            value={record.kind}
+            options={[
+              { value: 'poincare', label: 'Poincaré geométrico' },
+              { value: 'artistic-disk', label: 'Disco artístico · deformación' },
+            ]}
+            onChange={(kind) =>
+              s.change((p) => {
+                p.visualization = changeVisualizationKind(p, record, kind as Visualization['kind']);
+              })
+            }
+          />
           <Select
             label="Conjunto fuente"
             value={record.source.patternId}
@@ -218,22 +268,26 @@ export function DiskDialog({
             </div>
           )}
           <div className="disk-fields">
-            <Field
-              label="Lados p"
-              value={record.settings.p}
-              min={3}
-              max={12}
-              integer
-              onChange={(v) => setting('p', v)}
-            />
-            <Field
-              label="Celdas por vértice q"
-              value={record.settings.q}
-              min={3}
-              max={12}
-              integer
-              onChange={(v) => setting('q', v)}
-            />
+            {record.kind === 'poincare' && (
+              <>
+                <Field
+                  label="Lados p"
+                  value={record.settings.p}
+                  min={3}
+                  max={12}
+                  integer
+                  onChange={(v) => setting('p', v)}
+                />
+                <Field
+                  label="Celdas por vértice q"
+                  value={record.settings.q}
+                  min={3}
+                  max={12}
+                  integer
+                  onChange={(v) => setting('q', v)}
+                />
+              </>
+            )}
             <Field
               label="Radio del disco"
               value={record.settings.radiusMm}
@@ -251,24 +305,40 @@ export function DiskDialog({
               unit="mm"
               onChange={(v) => setting('toleranceMm', v)}
             />
-            <Field
-              label="Profundidad"
-              value={record.settings.depth}
-              min={0}
-              max={8}
-              integer
-              onChange={(v) => setting('depth', v)}
-            />
-            <Field
-              label="Máximo de celdas"
-              value={record.settings.maxCells}
-              min={1}
-              max={4096}
-              integer
-              step={10}
-              onChange={(v) => setting('maxCells', v)}
-            />
+            {record.kind === 'poincare' && (
+              <>
+                <Field
+                  label="Profundidad"
+                  value={record.settings.depth}
+                  min={0}
+                  max={8}
+                  integer
+                  onChange={(v) => setting('depth', v)}
+                />
+                <Field
+                  label="Máximo de celdas"
+                  value={record.settings.maxCells}
+                  min={1}
+                  max={4096}
+                  integer
+                  step={10}
+                  onChange={(v) => setting('maxCells', v)}
+                />
+              </>
+            )}
           </div>
+          {record.kind === 'artistic-disk' && (
+            <Field
+              label="Compresión radial"
+              value={record.settings.compression}
+              min={0.1}
+              max={64}
+              step={0.1}
+              slider
+              sliderMax={12}
+              onChange={(v) => setting('compression', v)}
+            />
+          )}
           <Field
             label="Orientación del disco"
             value={(record.settings.view.angle * 180) / Math.PI}
@@ -283,8 +353,8 @@ export function DiskDialog({
           <Field
             label="Centro horizontal"
             value={record.settings.view.center.x}
-            min={-0.9}
-            max={0.9}
+            min={artistic ? -2 : -0.9}
+            max={artistic ? 2 : 0.9}
             step={0.01}
             slider
             onChange={(v) => center('x', v)}
@@ -292,17 +362,21 @@ export function DiskDialog({
           <Field
             label="Centro vertical"
             value={record.settings.view.center.y}
-            min={-0.9}
-            max={0.9}
+            min={artistic ? -2 : -0.9}
+            max={artistic ? 2 : 0.9}
             step={0.01}
             slider
             onChange={(v) => center('y', v)}
           />
-          <Toggle
-            label="Estructura geodésica"
-            checked={record.showStructure}
-            onChange={(v) => setRecord((r) => ({ ...r, showStructure: v }))}
-          />
+          {record.kind === 'poincare' && (
+            <Toggle
+              label="Estructura geodésica"
+              checked={record.showStructure}
+              onChange={(v) =>
+                setRecord((r) => (r.kind === 'poincare' ? { ...r, showStructure: v } : r))
+              }
+            />
+          )}
           {!validation.success && (
             <p className="disk-error" role="alert">
               {validation.error.issues[0].message}
@@ -325,14 +399,19 @@ export function DiskDialog({
         </section>
         <section className="disk-preview" aria-label="Vista derivada no editable" aria-busy={busy}>
           <p>
-            Teselación geométrica {'{p,q}'}. Motivo adaptado; correspondencia de bordes no
-            garantizada.
+            {artistic
+              ? 'Deformación radial artística · ARTISTIC. Simetrías y correspondencia de bordes sin garantía.'
+              : 'Teselación geométrica {p,q}. Motivo adaptado; correspondencia de bordes no garantizada.'}
           </p>
           <div className="disk-image">
             {preview && (
               <img
                 src={preview}
-                alt="Disco de Poincaré derivado de la fuente plana"
+                alt={
+                  artistic
+                    ? 'Disco artístico derivado de la fuente plana'
+                    : 'Disco de Poincaré derivado de la fuente plana'
+                }
                 draggable={false}
               />
             )}
@@ -355,31 +434,45 @@ export function DiskDialog({
           {output && (
             <details className="disk-report">
               <summary>
-                {output.disk.cells.length} celdas ·{' '}
-                {output.disk.report.resources.segments.toLocaleString('es')} segmentos
+                {'cells' in output.disk
+                  ? `${output.disk.cells.length} celdas`
+                  : `${output.disk.contours.length} pinturas`}{' '}
+                · {output.disk.report.resources.segments.toLocaleString('es')} segmentos
               </summary>
-              <p>
-                Modelo {'{' + output.record.settings.p + ',' + output.record.settings.q + '}'} de
-                curvatura−1. Parche finito; {output.disk.report.resources.omitted} celdas omitidas
-                por detalle.
-              </p>
-              <p>
-                Límites:{' '}
-                {Object.entries(output.disk.report.resources.limited)
-                  .filter(([, v]) => v)
-                  .map(
-                    ([key]) =>
-                      ({ depth: 'profundidad', budget: 'celdas', numeric: 'numérico' })[key],
-                  )
-                  .join(', ') || 'ninguno'}
-                .
-              </p>
+              {'cells' in output.disk && output.record.kind === 'poincare' ? (
+                <>
+                  <p>
+                    Modelo {'{' + output.record.settings.p + ',' + output.record.settings.q + '}'}{' '}
+                    de curvatura−1. Parche finito; {output.disk.report.resources.omitted} celdas
+                    omitidas por detalle.
+                  </p>
+                  <p>
+                    Límites:{' '}
+                    {Object.entries(output.disk.report.resources.limited)
+                      .filter(([, v]) => v)
+                      .map(
+                        ([key]) =>
+                          ({ depth: 'profundidad', budget: 'celdas', numeric: 'numérico' })[key],
+                      )
+                      .join(', ') || 'ninguno'}
+                    .
+                  </p>
+                </>
+              ) : (
+                <p>
+                  ARTISTIC · Compresión radial del dibujo plano. Conserva la fuente para editar y
+                  regenerar.
+                </p>
+              )}
               <p>
                 Cota del mapeo: {output.disk.report.numeric.curveProjectionBoundMm.toFixed(5)}mm.
                 Preparación por recorte/contorneado numérico; esa cota no certifica el proceso
                 completo.
               </p>
-              {output.disk.flatSource.warnings.map((warning) => (
+              {('cells' in output.disk
+                ? output.disk.flatSource.warnings
+                : output.disk.report.source.warnings
+              ).map((warning) => (
                 <p key={warning}>{warning}</p>
               ))}
             </details>

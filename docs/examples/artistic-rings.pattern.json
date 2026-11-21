@@ -1,0 +1,308 @@
+{
+  "schemaVersion": 7,
+  "drawingStyle": {
+    "stroke": "#233b2d",
+    "fill": "#3b82f6",
+    "strokeWidth": 0.65,
+    "strokeCap": "round",
+    "strokeJoin": "round",
+    "miterLimit": 10,
+    "opacity": 1,
+    "fillOpacity": 1,
+    "strokeOpacity": 1,
+    "fillRule": "evenodd",
+    "strokeDash": [],
+    "strokeDashOffset": 0,
+    "strokeProfile": {
+      "version": 1,
+      "kind": "uniform",
+      "points": [
+        {
+          "at": 0,
+          "width": 1
+        },
+        {
+          "at": 1,
+          "width": 1
+        }
+      ]
+    }
+  },
+  "stylePresets": [],
+  "palette": {
+    "colors": [],
+    "recent": [],
+    "favorites": []
+  },
+  "mainSymmetry": {
+    "family": "wallpaper",
+    "group": "p1",
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "orientation": 0,
+    "width": 20,
+    "height": 20,
+    "angle": 90,
+    "sectors": 8,
+    "center": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "mainSymmetryProfiles": {},
+  "metadata": {
+    "id": "1769220b-2f58-41fd-9b87-af7a77e141dd",
+    "name": "Anillos y presión · Disco artístico",
+    "createdAt": "2026-11-21T21:24:36.578Z",
+    "updatedAt": "2026-11-21T21:24:36.578Z",
+    "example": {
+      "id": "artistic-rings",
+      "category": "Discos artísticos",
+      "description": "Deformación radial de un mosaico plano finito. Cambiá la fuente o la compresión para explorar el resultado.",
+      "construction": "Mapa radial suave al disco · composición artística derivada",
+      "validity": "ARTISTIC",
+      "artwork": "original",
+      "author": "Pattern Studio",
+      "references": []
+    }
+  },
+  "documentUnits": "mm",
+  "patterns": [
+    {
+      "id": "d3cc9040-11f7-47bd-b616-195fa31c4d19",
+      "name": "Anillos y trazo de presión · fuente plana",
+      "sourceGeometry": [
+        {
+          "id": "57a886fa-a677-4dc9-acb2-eeebc05cee93",
+          "name": "Compuesto",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#111111",
+          "fill": "#3b82f6",
+          "strokeWidth": 0.6,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M2 2H18V18H2Z M7 7H13V13H7Z"
+        },
+        {
+          "id": "c1d05f3c-be20-4b1d-a43c-d74c9852b552",
+          "name": "Trazado",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": 4,
+              "y": 16,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 16,
+              "y": 16,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "closed": false,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#c7337c",
+          "fill": "none",
+          "strokeWidth": 2,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "custom",
+            "points": [
+              {
+                "at": 0,
+                "width": 0.2
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false
+        }
+      ],
+      "generator": {
+        "kind": "motif",
+        "version": 1,
+        "seed": 42,
+        "count": 12,
+        "rows": 4,
+        "columns": 4,
+        "spacing": 22,
+        "offset": 0.5,
+        "aspectRatio": 1,
+        "staggerAxis": "rows",
+        "rotation": 0,
+        "scale": 1,
+        "scaleRatio": 0.9,
+        "amplitude": 6,
+        "frequency": 3,
+        "phase": 0,
+        "radius": 28,
+        "ratio": 0.35,
+        "distribution": "rectangular",
+        "periodicWarp": true,
+        "placements": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        ]
+      },
+      "visible": true,
+      "symmetryMode": "inherit",
+      "symmetryProfiles": {},
+      "placementTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "symmetry": {
+        "family": "none",
+        "group": "none",
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "orientation": 0,
+        "width": 60,
+        "height": 60,
+        "angle": 90,
+        "sectors": 8,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    }
+  ],
+  "regions": [],
+  "applications": [],
+  "preferences": {
+    "styleDefaultsFollowSelection": true,
+    "stylePanelPinned": false,
+    "fillCloseTolerance": 0,
+    "fillLinkedDefault": true,
+    "structureVisible": false,
+    "structureOpacity": 0.22,
+    "grid": false,
+    "snap": true,
+    "snapRadiusPx": 8,
+    "snapNodes": true,
+    "guides": false,
+    "split": false,
+    "background": "#f8faf5",
+    "fundamental": false,
+    "axes": false,
+    "centers": false,
+    "continuity": false,
+    "outside": false,
+    "sourceView": false,
+    "repetitionView": "extended"
+  },
+  "visualization": {
+    "version": 1,
+    "kind": "artistic-disk",
+    "active": true,
+    "source": {
+      "patternId": "d3cc9040-11f7-47bd-b616-195fa31c4d19",
+      "selection": {
+        "target": "view",
+        "bounds": {
+          "x": -60,
+          "y": -60,
+          "width": 120,
+          "height": 120
+        }
+      }
+    },
+    "settings": {
+      "radiusMm": 100,
+      "toleranceMm": 0.03,
+      "strokeTolerance": 0.02,
+      "compression": 6,
+      "maxSegments": 250000,
+      "maxCurves": 4096,
+      "view": {
+        "center": {
+          "x": 0.1,
+          "y": -0.1
+        },
+        "angle": 0.2
+      }
+    }
+  }
+}

@@ -1,3 +1,40 @@
+# Fase4 · Disco artístico integrado/verificado; siguiente bordes compartidos
+
+Selector de modalidad en diálogo común: Poincaré geométrico/disco artístico.
+Fuente/celda/ventana/medidas conservadas al alternar; parámetros específicos
+predeterminados. Arte muestra ARTISTIC y controles propios; no p/q ni estructura
+geodésica. Fuente intacta, guardar/reabrir/regenerar, edición plana real posterior,
+cancelación/reintento y SVG/PNG/JPEG físicos verificados. JSON7 con visualización1
+por kind estricto: lector geométrico7 REAL rechaza artistic-disk sin aplanar.
+
+Galería25:2 nuevos artistas originales (peces9 instancias/117 pinturas/40850
+segmentos; anillos36/108/40669). Miniaturas/JSON7/capturas reales. Peces usa
+presupuesto explícito12000 cúbicas (su contorno detallado excede4096 por defecto;
+no se amplió el límite general24000). README imágenes/instrucciones antes de
+instalación. Cambio de centro entre modalidades deja margen de redondeo: prueba
+expuso0,9000000000000001 y se corrigió sin relajar el límite.
+
+968 unidades/TypeScript;10 E2E específicas(27,8s);regresión189/189(5,1min/exit0),
+build y14 estáticas finales raíz/subcarpeta correctos, con ambas modalidades sin
+Internet. Logs art-ui-*; scripts/validate-v30-older-reader.mjs admite la variante
+artistic contra .runtime/disk-ui-static congelado para probar lector7 anterior.
+Servicios4173/4174 originales conservados;0 feedback pendiente en última lectura.
+No repetir pruebas amplias sin cambios/fallo/preocupación nueva. Sin PROJECT_COMPLETE.
+
+Siguiente incremento: diseño pendiente en HYPERBOLIC_CHAMBERS.md (fuentes
+primarias contrastadas):2p triángulos reflejados, cuadrado→cámara por2 afines en
+Klein→Poincaré→isometría, cota de quiebre Lipschitz y caché topológica para bordes
+coincidentes. Agrupar pinturas evita costuras de alpha; probar C0 real, no sólo
+metadatos. No implementado todavía. Conservar adaptación inscrita predeterminada.
+Falta también color por clase; luego auditar Fase4 antes de Fase5–7, pendientes.
+
+52627b3 publicado (núcleo artístico compartido) y913957b (Poincaré público).
+Incremento actual listo para commit/push autorizado; no inspeccionar Actions/FTP.
+Primaria5h disponible (45% restante en lectura anterior); secundaria sólo avisa,
+Pablo decide banked reset. No tocar timer semanal ni duplicar servicios.
+
+---
+
 # Fase4 · Núcleo artístico verificado; conectar UI/nativo a continuación
 
 913957b publicado: Poincaré geométrico público, JSON7, regreso/cancelación,

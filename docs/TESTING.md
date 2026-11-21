@@ -374,3 +374,16 @@ original23 entradas,2 derivadas regenerables. Lector anterior real JSON6 rechaza
 Logs disk-ui-* y artefactos locales excluidos de Git. Preparación de fuente tiene
 aproximaciones de recorte/contorno separadas de cota del mapeo. No prueba todavía
 modalidad artística, bordes canónicos pareados, esfera ni animación.
+
+
+## Disco artístico público · 21/11/2026
+
+968 unidades/TypeScript,10 E2E específicas(27,8s),189/189 E2E completas(5,1min),
+build y14 estáticas finales raíz/subcarpeta. Guardado/reapertura/cambio de modo,
+conservación de fuente, cancelación/reintento, exportación física/raster con
+hueco/color/presión reales y edición plana con herramienta Línea seguida de
+regeneración. Lectura con el build geométrico7 anterior REAL rechaza artistic-disk.
+2 ejemplos nuevos regenerables con JSON/miniaturas/capturas;25 en galería.
+Primer test de cambio de centro detectó1ULP por encima de0,9; corregido dejando
+margen de clamp, sin relajar la validación. No verifica todavía bordes pareados
+canónicos ni coloración por clase de Poincaré, esfera/animación pendientes.

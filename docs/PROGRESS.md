@@ -1275,3 +1275,27 @@ inicia otro incremento. Monitor conserva timer real, secundaria sólo avisa.
   Selector/contrato nativo artístico/ejemplos públicos pendientes del siguiente
   incremento; bordes canónicos y color por clase aún pendientes en Fase4.
   Servicios LAN conservados. No PROJECT_COMPLETE.
+
+
+## Fase4 · Modalidad artística integrada, ejemplos y regresión verificadas
+
+- Diálogo común con selector geométrico/artístico; parámetros propios y fuente/
+  recorte/medidas conservados al cambiar. Arte explícitamente ARTISTIC, sin
+  controles p/q/geodésicas. JSON7/visualización1 por kind estricto, guardado/
+  reapertura/regeneración y retorno a fuente; lector geométrico7 anterior REAL
+  rechaza el tipo artístico. Margen de clamp evita exceso de1ULP sobre radio0,9
+  detectado por la prueba, sin aflojar el contrato.
+- Fuente intacta también después de editar con herramienta Línea y regenerar:
+  nuevo ID aparece en SVG. SVG físico80mm, PNG/JPEG302px a96DPI con hueco,
+  color/perfil reales; worker cancelado y reintentado, sin geometría parcial.
+- Galería25,2 nuevos originales artísticos: peces117 pinturas/40850 segmentos y
+  anillos108/40669. Fuente única+instancias; presupuesto explícito12000 cúbicas
+  sólo en el ejemplo detallado de peces, dentro del límite24000. Miniaturas/
+  JSON7/capturas UI reales, README imágenes/uso antes de instalación.
+-968 unidades/TypeScript;10 E2E específicas(27,8s),regresión189/189(5,1min/exit0),
+  build y14 estáticas raíz/subcarpeta finales correctos. Ambas modalidades con
+  worker/galería/descarga sin Internet. Logs/artefactos art-ui-* excluidos de Git.
+- Siguiente: bordes compartidos por triángulos reflejados. Diseño NO implementado
+  en HYPERBOLIC_CHAMBERS.md, contrastado con fuentes primarias; no declara
+  exactitud ni criterios completos sin pruebas. Color por clase también pendiente,
+  luego fases5–7. Servicios LAN originales conservados, sin feedback nuevo.

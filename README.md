@@ -298,6 +298,32 @@ rotulados como adaptaciones y con su fuente plana editable:
 | ![Peces originales en Poincaré](public/examples/poincare-fish.png) | ![Aves originales en Poincaré](public/examples/poincare-bird.png) |
 | [Abrir JSON editable](docs/examples/poincare-fish.pattern.json) | [Abrir JSON editable](docs/examples/poincare-bird.pattern.json) |
 
+### Crear un disco artístico
+
+En **Visualizar → Modalidad → Disco artístico**, un mosaico plano finito se
+comprime hacia un disco. **Compresión radial**, centro y orientación cambian
+la deformación; **Actualizar vista** aplica las opciones. Se identifica como
+**ARTISTIC**: es una composición visual, sin garantía de conservar las simetrías
+o la correspondencia de bordes del dibujo plano.
+
+Comparte con Poincaré el regreso a la fuente, guardado JSON7, cancelación y
+exportaciones SVG/PNG/JPEG con medidas físicas. Podés cambiar de modalidad
+conservando el conjunto fuente, el recorte y las medidas; las opciones propias
+de cada modalidad comienzan con sus valores predeterminados. El programa
+regenera la vista al volver de editar el dibujo.
+
+![Disco artístico real con fuente plana editable](docs/images/artistic-studio.png)
+
+La galería **Discos artísticos** incluye dos fuentes originales y sus parámetros:
+
+| Mosaico de peces | Anillos y presión |
+| --- | --- |
+| ![Peces bajo deformación radial](public/examples/artistic-fish.png) | ![Anillos bajo deformación radial](public/examples/artistic-rings.png) |
+| [JSON editable](docs/examples/artistic-fish.pattern.json) | [JSON editable](docs/examples/artistic-rings.pattern.json) |
+
+Si un cálculo supera el presupuesto, reducí la ventana o la compresión, o aumentá
+la tolerancia de proyección. Cancelar conserva todo el trabajo plano.
+
 ### Explorar un motivo sin perder el dibujo original
 
 En **Archivo → Ejemplos editables**, abrí **Hexagonal · p6m** para obtener la escena de la primera imagen. Entrá en **Simetrías → Explorar todas las simetrías**. Pasá por p1, p4m y p6m y confirmá una opción. Las miniaturas se actualizan con tu motivo; la selección, la herramienta y las fuentes siguen disponibles. [Descargar este proyecto de ejemplo](docs/examples/studio-symmetry.json).
@@ -418,7 +444,7 @@ Si ya hay trabajo, crear o abrir otro proyecto, cargar un ejemplo o recuperar un
 
 ![Confirmación antes de reemplazar el trabajo actual](docs/images/work-protection.png)
 
-La galería de Archivo reúne veintitrés ejemplos editables y conserva ocho accesos rápidos. Abrir ejemplos o crear proyectos conserva los anteriores en **Biblioteca de este navegador**. El logo visible usa el archivo local `src/assets/icono.png` aportado por el usuario.
+La galería de Archivo reúne veinticinco ejemplos editables y conserva ocho accesos rápidos. Abrir ejemplos o crear proyectos conserva los anteriores en **Biblioteca de este navegador**. El logo visible usa el archivo local `src/assets/icono.png` aportado por el usuario.
 
 ## Alcances y límites
 
@@ -525,7 +551,7 @@ npm run test:e2e
 npm run benchmark
 ```
 
-Avance v3.0: **964 pruebas unitarias/TypeScript**, **184 flujos E2E** de las funciones públicas y **12 pruebas estáticas** verificadas. Las fases0–3 incluyen93 IH, composición, Hat/Spectre y Girih. La fase4 ya tiene vista geométrica de Poincaré, fuente finita, JSON7 y exportación SVG/PNG/JPEG; modalidad artística, adaptación canónica de bordes y otros criterios siguen pendientes. Estado detallado: [aceptación v3.0](docs/ACCEPTANCE_V30.md).
+Avance v3.0: **968 pruebas unitarias/TypeScript**, **189 flujos E2E** de las funciones públicas y **14 pruebas estáticas** verificadas. Las fases0–3 incluyen93 IH, composición, Hat/Spectre y Girih. La fase4 ya tiene vista geométrica de Poincaré y disco artístico, fuente finita, JSON7 y exportación SVG/PNG/JPEG; adaptación canónica de bordes, color por clase y otros criterios siguen pendientes. Estado detallado: [aceptación v3.0](docs/ACCEPTANCE_V30.md).
 
 Baseline histórico v2.3: **203 pruebas unitarias, 94 flujos E2E, 9 pruebas del monitor y 6 pruebas estáticas**. Se conservan los 75 recorridos anteriores. Builds raíz/subdirectorio y validación independiente de exportaciones correctos.
 

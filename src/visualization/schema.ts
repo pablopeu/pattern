@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { validPQ } from '../hyperbolic/disk';
 const finite = z.number().finite();
-export const visualizationSchema = z
+export const poincareVisualizationSchema = z
   .object({
     version: z.literal(1),
     kind: z.literal('poincare'),
@@ -52,3 +52,33 @@ export const visualizationSchema = z
     showStructure: z.boolean(),
   })
   .strict();
+
+export const artisticVisualizationSchema = z
+  .object({
+    version: z.literal(1),
+    kind: z.literal('artistic-disk'),
+    active: z.boolean(),
+    source: poincareVisualizationSchema.shape.source,
+    settings: z
+      .object({
+        radiusMm: finite.min(1).max(2000),
+        toleranceMm: finite.min(0.001).max(1),
+        strokeTolerance: finite.min(0.001).max(1),
+        maxSegments: finite.int().min(1).max(1000000),
+        maxCurves: finite.int().min(1).max(24000),
+        compression: finite.min(0.1).max(64),
+        view: z
+          .object({ center: z.object({ x: finite, y: finite }).strict(), angle: finite })
+          .strict()
+          .refine(
+            (v) => Math.hypot(v.center.x, v.center.y) <= 2,
+            'El centro artístico debe estar dentro de radio2.',
+          ),
+      })
+      .strict(),
+  })
+  .strict();
+export const visualizationSchema = z.discriminatedUnion('kind', [
+  poincareVisualizationSchema,
+  artisticVisualizationSchema,
+]);
