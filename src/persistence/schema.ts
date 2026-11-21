@@ -176,7 +176,14 @@ const symmetry = z
   });
 export const tilingSchema = z.object({
   version: z.literal(1).default(1),
-  kind: z.enum(['square', 'rectangle', 'parallelogram', 'triangle', 'hexagon']),
+  kind: z.enum(['square', 'rectangle', 'parallelogram', 'triangle', 'hexagon', 'isohedral']),
+  isohedral: z
+    .object({
+      version: z.literal(1),
+      type: n.int().min(1).max(93),
+      parameters: z.array(n.min(-4).max(4)).max(6),
+    })
+    .optional(),
   width: n.min(5).max(400),
   height: n.min(5).max(400),
   shear: n.min(-400).max(400),
@@ -187,11 +194,11 @@ export const tilingSchema = z.object({
     .array(
       z
         .array(point.extend({ in: point, out: point }))
-        .min(3)
-        .max(16),
+        .min(2)
+        .max(32),
     )
-    .min(2)
-    .max(3),
+    .min(1)
+    .max(5),
 });
 const pattern = z.object({
   composition: compositionSchema.optional(),

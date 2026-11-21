@@ -1,3 +1,41 @@
+# V3.0 · IH81 integrado; verificación transversal y12 marcados a continuación
+
+Motor IH conectado a TilingDefinition (`kind:isohedral`, datos opcionales type/
+parameters sin duplicar bordes), Scene, captura, renderer/contornos, Fill, JSON5,
+presets, migraciones legadas y SVG editable/expandido. Lectores viejos rechazan
+el kind desconocido en vez de perder silenciosamente la construcción.
+
+Teselas → Explorar catálogo IH1–IH93 y Ctrl+K: búsqueda, filtros por familia,
+miniaturas reales de tesela/mosaico, preset recto/curvo, indicadores de espejo/
+giro y cobertura honesta81/93;12 marcados deshabilitados como pendientes.
+Parámetros paginados, bordes/tangentes existentes, centros de espejo editables,
+rectos bloqueados, nodos añadidos por de Casteljau sin cambiar la silueta.
+Ediciones IH pasan validador geométrico antes de tocar el modelo; rechazo conserva
+la última válida y la fuente. Cámara encuadra la celda IH al elegirla.
+
+475 unidades/TypeScript y build correctos;6 E2E dirigidas correctas en dos
+corridas:5/6 iniciales y caso IH41 corregido/repetido con éxito. El fallo era
+selector ambiguo Forma de objeto/tesela, no geometría. Cuatro resoluciones
+inspeccionadas sin scroll/desbordes; imágenes reales en.runtime/iso-*.png.
+Gesto/nodo/undo/inversión rechazada/Fill/JSON/SVG/IH93/CtrlK comprobados.
+Logs v30-iso-{ui-check,targeted,gesture,layout}.log, reorganization-build.log.
+
+Regresión integrada123 E2E EN CURSO en.runtime/v30-iso81-full.log, runner
+resultado v30-iso81-full-result.json. No editar módulos activos ni build/notices
+hasta finalizar. Nueva estática IH/referencias añadida; pendiente correr5+5
+raíz/subcarpeta sobre build actual. No declarar completa Fase2:12 marcados y
+ejemplos figurativos aún pendientes, además de estas verificaciones.
+
+Raíz ordenada en85d22aa antes del próximo push: docs técnicos en docs/, PRD
+en docs/prd/prd_v3.0.txt, logo en src/assets/icono.png; hashes originales intactos.
+Docs/README índice y enlaces correctos; uploads crudos en.runtime/original-assets,
+gitignore reforzado. Revisión pública185 archivos sin IP/tokens/claves detectados.
+Referencias visibles fe3d74c y núcleo0f44679 locales; Fase1 publicada0a9a3ce.
+Servicios4173/4174 vivos, primaria26% usada a01:00UTC, secundaria sólo avisa.
+PROJECT_COMPLETE ausente; seguir PRD completo hasta umbral primario real.
+
+---
+
 # Organización pública del repositorio · Antes del próximo push
 
 A pedido de Pablo, documentación técnica en docs/, seis PRD originales en

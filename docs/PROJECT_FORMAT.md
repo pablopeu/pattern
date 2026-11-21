@@ -174,3 +174,19 @@ construcción, validez específica, autor, tipo de obra y referencias HTTPS.
 La geometría original sigue en sourceGeometry. Se usa versión5 para que un
 lector anterior rechace los nuevos datos en vez de eliminarlos silenciosamente.
 El nuevo estudio conserva P3/cámara100%/estructura50%/Dibujo libre.
+
+
+## Teselas isoédricas v3.0
+
+`patterns[].tiling.kind = "isohedral"` identifica explícitamente esta familia.
+`tiling.isohedral` contiene version1, type IH y parameters; `tiling.edges` guarda
+una sola vez las curvas Bézier maestras. Dimensión uniforme en width, colocación
+en origin/rotation y visibilidad de contornos en showOutline, compartidos con
+las teselas clásicas. No se guardan vértices/órbitas regenerables ni clones de
+fuentes. El validador exige tipo implementado, parámetros/partes coherentes,
+área, orientación, ausencia de autointersecciones y encastre con vecinos.
+
+El formato global sigue5: el kind nuevo hace que lectores5 anteriores rechacen
+la construcción desconocida en vez de omitir un campo opcional. Las cinco
+familias clásicas siguen aceptando exactamente sus contratos anteriores.
+Al abrir archivos no se sobreescribe el original ni se convierte a otra familia.

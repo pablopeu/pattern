@@ -10,7 +10,20 @@ import {
   type Point,
 } from '../geometry/matrix';
 import type { Bounds } from '../symmetry/groups';
-export type TileKind = 'square' | 'rectangle' | 'parallelogram' | 'triangle' | 'hexagon';
+import type { IsohedralDefinition } from '../isohedral/model';
+import {
+  newIsohedral,
+  isohedralLayout,
+  isohedralInstances,
+  isohedralConstraints,
+} from '../isohedral/engine';
+export type TileKind =
+  | 'square'
+  | 'rectangle'
+  | 'parallelogram'
+  | 'triangle'
+  | 'hexagon'
+  | 'isohedral';
 export interface TilingDefinition {
   version: 1;
   kind: TileKind;
@@ -21,6 +34,7 @@ export interface TilingDefinition {
   rotation: number;
   edges: Node[][];
   showOutline: boolean;
+  isohedral?: Omit<IsohedralDefinition, 'edges'>;
 }
 export interface TileInstance {
   id: string;
@@ -41,8 +55,10 @@ export const tileNames: Record<TileKind, string> = {
   parallelogram: 'Paralelogramo',
   triangle: 'Triángulo equilátero',
   hexagon: 'Hexágono regular',
+  isohedral: 'Isoédrica IH',
 };
 export function newTiling(kind: TileKind = 'square'): TilingDefinition {
+  if (kind === 'isohedral') return newIsohedralTiling(1);
   return {
     version: 1,
     kind,
@@ -59,7 +75,17 @@ export function newTiling(kind: TileKind = 'square'): TilingDefinition {
     showOutline: true,
   };
 }
+export function newIsohedralTiling(type: number): TilingDefinition {
+  const { edges, ...isohedral } = newIsohedral(type);
+  return { ...newTiling('square'), kind: 'isohedral', isohedral, edges };
+}
+/** Canonical edges are stored once, alongside the tiling's ordinary Bézier paths. */
+export function isohedralDefinition(t: TilingDefinition): IsohedralDefinition {
+  if (t.kind !== 'isohedral' || !t.isohedral) throw Error('Falta la definición isoédrica.');
+  return { ...t.isohedral, edges: t.edges };
+}
 export function tileVertices(t: TilingDefinition): Point[] {
+  if (t.kind === 'isohedral') return isohedralLayout(isohedralDefinition(t), t.width).vertices;
   const w = t.width,
     h = t.kind === 'square' ? w : t.height;
   if (t.kind === 'triangle')
@@ -84,6 +110,7 @@ export function tileVertices(t: TilingDefinition): Point[] {
   ];
 }
 export function tileBasis(t: TilingDefinition): Matrix {
+  if (t.kind === 'isohedral') return isohedralLayout(isohedralDefinition(t), t.width).basis;
   const w = t.width;
   if (t.kind === 'triangle') return [w, 0, w / 2, (w * Math.sqrt(3)) / 2, 0, 0];
   if (t.kind === 'hexagon')
@@ -93,6 +120,13 @@ export function tileBasis(t: TilingDefinition): Matrix {
 export const tileFrame = (t: TilingDefinition) =>
   multiply(translate(t.origin.x, t.origin.y), rotate(t.rotation));
 export function edgeFrame(t: TilingDefinition, index: number): Matrix {
+  if (t.kind === 'isohedral') {
+    const part = isohedralLayout(isohedralDefinition(t), t.width).parts.find(
+      (p) => p.master === index,
+    );
+    if (!part) throw Error('Borde maestro inexistente.');
+    return part.matrix;
+  }
   const v = tileVertices(t),
     a = v[index],
     b = v[(index + 1) % v.length],
@@ -112,6 +146,23 @@ export function transformNodes(nodes: Node[], m: Matrix, reverse = false): Node[
   }));
 }
 export function edgePairs(t: TilingDefinition): EdgePair[] {
+  if (t.kind === 'isohedral') {
+    const parts = isohedralLayout(isohedralDefinition(t), t.width).parts;
+    return parts.flatMap((p, i) => {
+      const master = parts.findIndex((a) => a.master === p.master);
+      return i === master
+        ? []
+        : [
+            {
+              master,
+              partner: i,
+              matrix: multiply(p.matrix, inverse(parts[master].matrix)),
+              reverse: p.reverse !== parts[master].reverse,
+              self: false,
+            },
+          ];
+    });
+  }
   const v = tileVertices(t);
   if (t.kind === 'triangle')
     return v.map((a, i) => ({
@@ -135,6 +186,7 @@ export function edgePairs(t: TilingDefinition): EdgePair[] {
   ];
 }
 export function tileEdges(t: TilingDefinition): Node[][] {
+  if (t.kind === 'isohedral') return isohedralLayout(isohedralDefinition(t), t.width).edges;
   const vertices = tileVertices(t),
     edges: Node[][] = Array.from({ length: vertices.length }, () => []);
   for (let i = 0; i < t.edges.length; i++) {
@@ -169,6 +221,10 @@ export function tileBoundary(t: TilingDefinition): Geometry {
   };
 }
 export function tileArea(t: TilingDefinition): number {
+  if (t.kind === 'isohedral') {
+    const { basis: b, aspects } = isohedralLayout(isohedralDefinition(t), t.width);
+    return Math.abs(b[0] * b[3] - b[1] * b[2]) / aspects.length;
+  }
   if (t.kind === 'triangle') return (t.width * t.width * Math.sqrt(3)) / 4;
   if (t.kind === 'hexagon') return (3 * Math.sqrt(3) * t.width * t.width) / 8;
   return t.width * (t.kind === 'square' ? t.width : t.height);
@@ -190,6 +246,18 @@ export function edgeOffsetLimit(t: TilingDefinition, edge: number, x: number): n
   return (Math.min(0.07, (0.07 * altitude) / length) * Math.max(0, Math.min(x, end - x)) * 2) / end;
 }
 export function constrainTiling(t: TilingDefinition): TilingDefinition {
+  if (t.kind === 'isohedral') {
+    const next = structuredClone(t),
+      constraints = isohedralConstraints(isohedralDefinition(next));
+    next.edges.forEach((edge, e) => {
+      edge[0].x = 0;
+      edge[0].y = 0;
+      edge.at(-1)!.x = 1;
+      if (constraints[e] !== 'mirror') edge.at(-1)!.y = 0;
+    });
+    // Free curves are accepted only after the independent geometric validator.
+    return next;
+  }
   const next = structuredClone(t),
     end = next.kind === 'triangle' ? 0.5 : 1;
   next.edges = next.edges.map((edge, e) =>
@@ -241,6 +309,27 @@ export function tileOperations(
   contentBounds: Bounds,
   limit = 12000,
 ): TileInstance[] {
+  if (t.kind === 'isohedral') {
+    const frame = tileFrame(t),
+      inv = inverse(frame),
+      points = [
+        { x: view.x, y: view.y },
+        { x: view.x + view.width, y: view.y },
+        { x: view.x + view.width, y: view.y + view.height },
+        { x: view.x, y: view.y + view.height },
+      ].map((p) => apply(inv, p)),
+      x = Math.min(...points.map((p) => p.x)),
+      y = Math.min(...points.map((p) => p.y)),
+      local = {
+        x,
+        y,
+        width: Math.max(...points.map((p) => p.x)) - x,
+        height: Math.max(...points.map((p) => p.y)) - y,
+      };
+    return isohedralInstances(isohedralDefinition(t), t.width, local, contentBounds, limit).map(
+      (item) => ({ ...item, matrix: multiply(frame, item.matrix) }),
+    );
+  }
   const frame = tileFrame(t),
     invFrame = inverse(frame),
     basis = tileBasis(t),
@@ -286,6 +375,7 @@ export function tileOperations(
   return out;
 }
 export function tileRectangularCell(t: TilingDefinition): { width: number; height: number } | null {
+  if (t.kind === 'isohedral') return null;
   if (Math.abs(t.rotation / 90 - Math.round(t.rotation / 90)) > 1e-7) return null;
   let cell: { width: number; height: number } | null;
   if (t.kind === 'triangle') cell = { width: t.width, height: t.width * Math.sqrt(3) };

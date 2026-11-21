@@ -1,5 +1,8 @@
 import { ExampleGallery } from '../ui/ExampleGallery';
 import { ReferencesDialog } from '../ui/ReferencesDialog';
+import { IsohedralGallery } from '../ui/IsohedralGallery';
+import { newIsohedralTiling } from '../tiling/tiles';
+import { isohedralPreset } from '../isohedral/catalog';
 import { compositionExample } from '../examples/catalog';
 import { SaveDialog } from '../ui/SaveDialog';
 import { studyFileName } from './naming';
@@ -97,6 +100,7 @@ export default function App() {
     [category, setCategory] = useState<Category>('drawing'),
     [help, setHelp] = useState(false),
     [referencesOpen, setReferencesOpen] = useState(false),
+    [isohedralOpen, setIsohedralOpen] = useState(false),
     [importText, setImportText] = useState<string | null>(null),
     [importWidth, setImportWidth] = useState(100),
     [library, setLibrary] = useState<Awaited<ReturnType<typeof savedProjects>> | null>(null);
@@ -164,13 +168,24 @@ export default function App() {
       commandOpen ||
       help ||
       referencesOpen ||
+      isohedralOpen ||
       importText !== null ||
       library
     ) {
       const menu = document.querySelector<HTMLDetailsElement>('.main-menu');
       if (menu) menu.open = false;
     }
-  }, [examplesOpen, saveOpen, exportOpen, commandOpen, help, referencesOpen, importText, library]);
+  }, [
+    examplesOpen,
+    saveOpen,
+    exportOpen,
+    commandOpen,
+    help,
+    referencesOpen,
+    isohedralOpen,
+    importText,
+    library,
+  ]);
   const openCategory = (next: Category) => {
     setCategory(next);
     setCollapsed(false);
@@ -231,7 +246,20 @@ export default function App() {
     s.setStyleOpen(false);
     setExamplesOpen(true);
   };
+  const openIsohedral = () => {
+    s.setStyleOpen(false);
+    setIsohedralOpen(true);
+  };
   const commands: Command[] = [
+    {
+      id: 'isohedral-catalog',
+      label: 'Explorar catálogo isoédrico IH1–IH93',
+      keywords: 'teselas figurativas encastre bordes',
+      run: () => {
+        openCategory('tiles');
+        openIsohedral();
+      },
+    },
     {
       id: 'references',
       label: 'Repositorios y referencias',
@@ -641,6 +669,7 @@ export default function App() {
           collapsed={collapsed}
           onCollapse={() => setCollapsed(true)}
           onExamples={openExamples}
+          onIsohedral={openIsohedral}
           onCreateRegular={createRegular}
           onImport={() => svgRef.current?.click()}
         />
@@ -1001,6 +1030,38 @@ export default function App() {
             </div>
           </section>
         </Modal>
+      )}
+      {isohedralOpen && (
+        <IsohedralGallery
+          onClose={() => setIsohedralOpen(false)}
+          onSelect={(type, curved) => {
+            setIsohedralOpen(false);
+            if (s.pattern.generator.kind === 'penrose') {
+              s.setMessage('Convertí Penrose a paths antes de usar teselas periódicas.');
+              return;
+            }
+            const fresh = newIsohedralTiling(type);
+            fresh.edges = isohedralPreset(type, curved).edges;
+            s.change((project) => {
+              const p = project.patterns.find((p) => p.id === s.pattern.id)!,
+                previous = p.tiling;
+              p.tiling = {
+                ...fresh,
+                width: previous?.width ?? 60,
+                origin: previous?.origin ?? { x: 0, y: 0 },
+                rotation: previous?.rotation ?? 0,
+                showOutline: previous?.showOutline ?? true,
+              };
+              if (p.composition) p.composition.enabled = false;
+            });
+            s.setTileEdge(0);
+            s.setTileNode(1);
+            s.setInstanceExplicit(false);
+            openCategory('tiles');
+            s.updateViewPreferences({ sourceView: false, repetitionView: 'extended' });
+            s.requestFit();
+          }}
+        />
       )}
       {referencesOpen && <ReferencesDialog onClose={() => setReferencesOpen(false)} />}
       {help && (

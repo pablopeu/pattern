@@ -2,13 +2,29 @@ import type { Studio } from '../app/useStudio';
 import { newTiling, tileNames, constrainTiling, type TileKind } from '../tiling/tiles';
 import { node } from '../app/model';
 import { Field, Select, Toggle } from './Controls';
-export function TilePanel({ studio: s, expanded = false }: { studio: Studio; expanded?: boolean }) {
+import { IsohedralControls } from './IsohedralControls';
+import { newIsohedral, isohedralConstraints } from '../isohedral/engine';
+import { isohedralDefinition } from '../tiling/tiles';
+import { splitCanonicalEdge } from '../isohedral/edit';
+export function TilePanel({
+  studio: s,
+  expanded = false,
+  onIsohedral,
+}: {
+  studio: Studio;
+  expanded?: boolean;
+  onIsohedral: () => void;
+}) {
   const tab = s.tileTab;
   const tile = s.pattern.tiling,
     e = tile ? Math.min(s.tileEdge, tile.edges.length - 1) : 0,
     edge = tile?.edges[e],
     n = edge ? Math.min(s.tileNode, edge.length - 1) : 0,
     selected = edge?.[n];
+  const iso = tile?.kind === 'isohedral',
+    constraints = iso && tile ? isohedralConstraints(isohedralDefinition(tile)) : [],
+    constraint = constraints[e],
+    movableCenter = constraint === 'mirror' && n === (edge?.length ?? 0) - 1;
   const update = (recipe: Parameters<Studio['editTiling']>[0]) => {
     s.editTiling(recipe);
     s.setInstanceExplicit(false);
@@ -17,7 +33,13 @@ export function TilePanel({ studio: s, expanded = false }: { studio: Studio; exp
     <details className="tile-panel" open={expanded}>
       <summary>
         <span>TESELAS ENCASTRABLES</span>
-        <strong>{tile ? tileNames[tile.kind] : 'Desactivadas'}</strong>
+        <strong>
+          {tile?.isohedral
+            ? `IH${tile.isohedral.type}`
+            : tile
+              ? tileNames[tile.kind]
+              : 'Desactivadas'}
+        </strong>
       </summary>
       <div className="context-tabs" role="tablist" aria-label="Opciones de tesela">
         {(['shape', 'placement', 'edge', 'tangents'] as const)
@@ -66,6 +88,9 @@ export function TilePanel({ studio: s, expanded = false }: { studio: Studio; exp
               }}
             />
           )}
+          <button className="wide-button" onClick={onIsohedral}>
+            Explorar catálogo IH1–IH93
+          </button>
         </div>
         {tile && s.pattern.generator.kind !== 'penrose' && (
           <>
@@ -85,19 +110,25 @@ export function TilePanel({ studio: s, expanded = false }: { studio: Studio; exp
                       rotation: tile.rotation,
                       showOutline: tile.showOutline,
                     });
+                    if (kind === 'isohedral' && pat.composition) pat.composition.enabled = false;
                   });
                   s.setTileEdge(0);
                   s.setTileNode(1);
                   s.setInstanceExplicit(false);
+                  if (kind === 'isohedral') {
+                    s.updateViewPreferences({ sourceView: false, repetitionView: 'extended' });
+                    s.requestFit();
+                  }
                 }}
                 options={Object.entries(tileNames).map(([value, label]) => ({ value, label }))}
               />
+              {iso && <IsohedralControls studio={s} />}
               <p className="help-text">
                 Cambiar de familia reinicia sus bordes; conserva el dibujo. Podés deshacer.
               </p>
               <div className="two-fields">
                 <Field
-                  label="Ancho de tesela"
+                  label={iso ? 'Escala de tesela' : 'Ancho de tesela'}
                   value={tile.width}
                   min={5}
                   max={400}
@@ -187,10 +218,20 @@ export function TilePanel({ studio: s, expanded = false }: { studio: Studio; exp
               {s.tileEditing && edge && selected && (
                 <>
                   <p className="math-notice" hidden={tab !== 'edge'}>
-                    {tile.kind === 'triangle'
-                      ? 'Editás medio borde; la otra mitad mantiene simetría central.'
-                      : 'El borde opuesto se actualiza automáticamente.'}{' '}
-                    Los vértices son fijos y la curvatura se limita para conservar encastres.
+                    {iso
+                      ? constraint === 'straight'
+                        ? 'Este borde es un eje de espejo y debe ser recto.'
+                        : constraint === 'halfturn'
+                          ? 'Editás medio borde; su pareja mantiene un giro de180°.'
+                          : constraint === 'mirror'
+                            ? 'Editás medio borde; el otro se refleja. Su punto central puede desplazarse.'
+                            : 'Cada borde relacionado se actualiza con su isometría.'
+                      : tile.kind === 'triangle'
+                        ? 'Editás medio borde; la otra mitad mantiene simetría central.'
+                        : 'El borde opuesto se actualiza automáticamente.'}{' '}
+                    {iso
+                      ? 'Se comprueba área, cierre e intersecciones; una edición inválida conserva el estado anterior.'
+                      : 'Los vértices son fijos y la curvatura se limita para conservar encastres.'}
                   </p>
                   <div className="two-fields">
                     <Select
@@ -212,42 +253,52 @@ export function TilePanel({ studio: s, expanded = false }: { studio: Studio; exp
                       options={edge.map((_, i) => ({
                         value: String(i),
                         label:
-                          i === 0 || i === edge.length - 1
-                            ? `Vértice fijo ${i + 1}`
-                            : `Nodo ${i + 1}`,
+                          constraint === 'mirror' && i === edge.length - 1
+                            ? 'Centro del borde'
+                            : i === 0 || i === edge.length - 1
+                              ? `Vértice fijo ${i + 1}`
+                              : `Nodo ${i + 1}`,
                       }))}
                     />
                   </div>
-                  {tab === 'edge' && n > 0 && n < edge.length - 1 && (
-                    <div className="two-fields">
-                      <Field
-                        label="Posición en el borde"
-                        value={selected.x * 100}
-                        min={edge[n - 1].x * 100 + 0.5}
-                        max={edge[n + 1].x * 100 - 0.5}
-                        unit="%"
-                        onChange={(v) =>
-                          update((t) => {
-                            t.edges[e][n].x = v / 100;
-                          })
-                        }
-                      />
-                      <Field
-                        label="Desvío del borde"
-                        value={selected.y * 100}
-                        min={-7}
-                        max={7}
-                        step={0.1}
-                        unit="%"
-                        onChange={(v) =>
-                          update((t) => {
-                            t.edges[e][n].y = v / 100;
-                          })
-                        }
-                      />
-                    </div>
-                  )}
-                  <div hidden={tab !== 'tangents'} className="compact-fields">
+                  {tab === 'edge' &&
+                    n > 0 &&
+                    (n < edge.length - 1 || movableCenter) &&
+                    constraint !== 'straight' && (
+                      <div className="two-fields">
+                        {!movableCenter && (
+                          <Field
+                            label="Posición en el borde"
+                            value={selected.x * 100}
+                            min={edge[n - 1].x * 100 + 0.5}
+                            max={edge[n + 1].x * 100 - 0.5}
+                            unit="%"
+                            onChange={(v) =>
+                              update((t) => {
+                                t.edges[e][n].x = v / 100;
+                              })
+                            }
+                          />
+                        )}
+                        <Field
+                          label="Desvío del borde"
+                          value={selected.y * 100}
+                          min={iso ? -200 : -7}
+                          max={iso ? 200 : 7}
+                          step={0.1}
+                          unit="%"
+                          onChange={(v) =>
+                            update((t) => {
+                              t.edges[e][n].y = v / 100;
+                            })
+                          }
+                        />
+                      </div>
+                    )}
+                  <div
+                    hidden={tab !== 'tangents' || constraint === 'straight'}
+                    className="compact-fields"
+                  >
                     <strong>Tangentes Bézier del nodo</strong>
                     {(['in', 'out'] as const)
                       .filter(
@@ -278,13 +329,17 @@ export function TilePanel({ studio: s, expanded = false }: { studio: Studio; exp
                   </div>
                   <div className="button-row" hidden={tab !== 'edge'}>
                     <button
-                      disabled={edge.length >= 16}
+                      disabled={edge.length >= (iso ? 32 : 16) || constraint === 'straight'}
                       onClick={() => {
                         let index = 0;
                         for (let i = 1; i < edge.length - 1; i++)
                           if (edge[i + 1].x - edge[i].x > edge[index + 1].x - edge[index].x)
                             index = i;
                         update((t) => {
+                          if (iso) {
+                            splitCanonicalEdge(t.edges[e], index);
+                            return;
+                          }
                           const a = t.edges[e][index],
                             b = t.edges[e][index + 1];
                           t.edges[e].splice(index + 1, 0, node((a.x + b.x) / 2, (a.y + b.y) / 2));
@@ -295,7 +350,12 @@ export function TilePanel({ studio: s, expanded = false }: { studio: Studio; exp
                       Añadir nodo al borde
                     </button>
                     <button
-                      disabled={edge.length <= 3 || n === 0 || n === edge.length - 1}
+                      disabled={
+                        edge.length <= 3 ||
+                        n === 0 ||
+                        n === edge.length - 1 ||
+                        constraint === 'straight'
+                      }
                       onClick={() => {
                         update((t) => {
                           t.edges[e].splice(n, 1);
@@ -310,7 +370,9 @@ export function TilePanel({ studio: s, expanded = false }: { studio: Studio; exp
                     className="wide-button"
                     onClick={() =>
                       update((t) => {
-                        t.edges = newTiling(t.kind).edges;
+                        t.edges = t.isohedral
+                          ? newIsohedral(t.isohedral.type).edges
+                          : newTiling(t.kind).edges;
                       })
                     }
                   >

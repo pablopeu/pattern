@@ -1,6 +1,67 @@
 import { context, styles, catalog, symmetry, field } from './navigation';
 import { readFile } from 'node:fs/promises';
 import { test, expect } from '@playwright/test';
+test('IH y referencias estáticos: catálogo real, JSON y worker desde subcarpeta', async ({
+  page,
+  baseURL,
+}) => {
+  const errors: string[] = [],
+    external: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.route('**/*', (route) => {
+    const url = new URL(route.request().url());
+    if (url.protocol.startsWith('http') && url.origin !== new URL(baseURL!).origin) {
+      external.push(url.href);
+      return route.abort();
+    }
+    return route.continue();
+  });
+  await page.goto(baseURL!);
+  await page.getByRole('button', { name: 'Referencias', exact: true }).click();
+  const references = page.getByRole('dialog', { name: 'Repositorios y referencias' });
+  await expect(references.locator('a[href^="https://github.com/"]')).toHaveCount(16);
+  const href = await references
+    .getByRole('link', { name: 'Avisos de las bibliotecas' })
+    .getAttribute('href');
+  const notices = await page.request.get(new URL(href!, baseURL!).href);
+  expect(notices.ok()).toBe(true);
+  expect(await notices.text()).toContain('TactileJS');
+  await references.getByRole('button', { name: 'Cerrar referencias' }).click();
+  await context(page, 'Teselas');
+  await page.getByRole('button', { name: 'Explorar catálogo IH1–IH93', exact: true }).click();
+  const gallery = page.getByRole('dialog', { name: 'Catálogo isoédrico' });
+  await gallery.getByLabel('Buscar tipo IH').fill('IH41');
+  await gallery.getByLabel('Bordes iniciales del catálogo').selectOption('true');
+  await gallery.getByRole('button', { name: 'Usar IH41', exact: true }).click();
+  await page.getByRole('button', { name: 'Rectángulo', exact: true }).click();
+  const points = await page.locator('.studio-canvas').evaluate((svg) =>
+    [new DOMPoint(20, 20), new DOMPoint(30, 30)].map((p) => {
+      const q = p.matrixTransform((svg as SVGSVGElement).getScreenCTM()!);
+      return { x: q.x, y: q.y };
+    }),
+  );
+  await page.mouse.move(points[0].x, points[0].y);
+  await page.mouse.down();
+  await page.mouse.move(points[1].x, points[1].y, { steps: 3 });
+  await page.mouse.up();
+  await expect(page.locator('.save-indicator')).toHaveText(/Guardado local/);
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Guardar proyecto', exact: true }).click();
+  await page.getByRole('button', { name: 'Guardar archivo', exact: true }).click();
+  const project = JSON.parse(await readFile((await (await download).path())!, 'utf8'));
+  expect(project.patterns[0].tiling.isohedral.type).toBe(41);
+  expect(project.patterns[0].sourceGeometry).toHaveLength(1);
+  await page.getByRole('button', { name: 'Exportar', exact: true }).click();
+  await expect(page.getByAltText('Previsualización de exportación')).toBeVisible();
+  const exported = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Descargar archivo', exact: true }).click();
+  const svg = await readFile((await (await exported).path())!, 'utf8');
+  expect(svg).toContain('isohedral');
+  expect(svg).toContain('PERIODIC_SEAMLESS');
+  expect(svg).toContain('clipPath');
+  expect(errors).toEqual([]);
+  expect(external).toEqual([]);
+});
 test('v3 estático: ejemplos originales, receta portable y raster sin Internet', async ({
   page,
   baseURL,

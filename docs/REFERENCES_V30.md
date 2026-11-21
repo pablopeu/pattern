@@ -40,3 +40,10 @@ IH19,35,48,60,63,65,70,75,80,87,89,92. No se presentan como aliases de otros tip
 Las tablas/fórmulas afines tienen tests propios de matrices, área, cobertura,
 ciclos alrededor de vértices y contornos Bézier; usar esta biblioteca no sustituye
 la validación ni la futura integración UX/exportación del estudio.
+
+
+Metadatos matemáticos del catálogo IH (topología, grupo inducido y wallpaper)
+transcritos como datos en src/isohedral/catalog.json desde la tabla de
+Kaplan/Schattschneider citada arriba. No se copiaron imágenes SVG del artículo.
+Se normaliza `dl` a `d1` en IH65/IH70, notación dihédrica de orden1. Las
+miniaturas se generan desde las construcciones y curvas reales de este motor.

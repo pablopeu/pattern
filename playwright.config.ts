@@ -12,6 +12,7 @@ export default defineConfig({
         '**/v22-fill.spec.ts',
         '**/v23.spec.ts',
         '**/v30.spec.ts',
+        '**/v30-iso.spec.ts',
       ],
   timeout: 45000,
   expect: { timeout: 8000 },

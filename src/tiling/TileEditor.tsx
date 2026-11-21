@@ -1,6 +1,7 @@
 import { useRef, type PointerEvent } from 'react';
 import type { Studio } from '../app/useStudio';
-import { tileFrame, edgeFrame, tileEdges } from './tiles';
+import { tileFrame, edgeFrame, tileEdges, isohedralDefinition } from './tiles';
+import { isohedralConstraints, isohedralLayout } from '../isohedral/engine';
 import { apply, inverse, multiply, matrixString, type Point } from '../geometry/matrix';
 import { pathData } from '../geometry/paths';
 import { geometry } from '../app/model';
@@ -9,7 +10,9 @@ export function TileEditor({ studio: s, scale }: { studio: Studio; scale: number
     t = s.pattern.tiling;
   if (!t || !s.tileEditing || s.mode === 'apply' || s.pattern.generator.kind === 'penrose')
     return null;
-  const frame = tileFrame(t),
+  const constraints = t.isohedral ? isohedralConstraints(isohedralDefinition(t)) : [],
+    parts = t.isohedral ? isohedralLayout(isohedralDefinition(t), t.width).parts : [],
+    frame = tileFrame(t),
     point = (e: PointerEvent<SVGElement>): Point => {
       const svg = e.currentTarget.ownerSVGElement!;
       const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(svg.getScreenCTM()!.inverse());
@@ -60,18 +63,19 @@ export function TileEditor({ studio: s, scale }: { studio: Studio; scale: number
           d={pathData({ ...geometry('path', nodes), transform: frame })}
           transform={matrixString(frame)}
           fill="none"
-          stroke={i === s.tileEdge ? '#ba884c' : '#9cae9e'}
-          strokeWidth={i === s.tileEdge ? 2 : 1}
+          stroke={(parts[i]?.master ?? i) === s.tileEdge ? '#ba884c' : '#9cae9e'}
+          strokeWidth={(parts[i]?.master ?? i) === s.tileEdge ? 2 : 1}
           vectorEffect="non-scaling-stroke"
           pointerEvents="none"
         />
       ))}
       {t.edges.map((edge, e) => {
+        if (constraints[e] === 'straight') return null;
         const m = multiply(frame, edgeFrame(t, e));
         return edge.map((n, i) => {
           const p = apply(m, n),
             selected = e === s.tileEdge && i === s.tileNode,
-            endpoint = i === 0 || i === edge.length - 1;
+            endpoint = i === 0 || (i === edge.length - 1 && constraints[e] !== 'mirror');
           return (
             <g key={`${e}-${i}`}>
               {selected &&

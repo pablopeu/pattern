@@ -14,11 +14,17 @@ import { paperPath, scope } from '../geometry/paper';
 import { node } from '../app/model';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { isohedralCatalog, isohedralPreset } from '../isohedral/catalog';
+import { splitCanonicalEdge } from '../isohedral/edit';
 
 describe('IH · definiciones independientes por tipo', () => {
   it('declara81 tipos geométricos y12 marcados pendientes, sin aliases ficticios', () => {
     expect(supportedIsohedralTypes).toHaveLength(81);
     expect(new Set(supportedIsohedralTypes).size).toBe(81);
+    expect(isohedralCatalog).toHaveLength(93);
+    expect(isohedralCatalog.filter((t) => t.implemented).map((t) => t.id)).toEqual([
+      ...supportedIsohedralTypes,
+    ]);
     expect(markedIsohedralTypes).toEqual([19, 35, 48, 60, 63, 65, 70, 75, 80, 87, 89, 92]);
     for (const id of markedIsohedralTypes)
       expect(() => newIsohedral(id)).toThrow(/no implementado/);
@@ -26,6 +32,29 @@ describe('IH · definiciones independientes por tipo', () => {
     const source = readFileSync('src/vendor/tactile/tactile.js');
     const blob = createHash('sha1').update(`blob ${source.length}\0`).update(source).digest('hex');
     expect(blob).toBe('3d3df7097d91116c1f49041a3b02505c28fab1e8');
+  });
+  it('añadir un nodo conserva la Bézier completa y el centro de un borde espejo sigue enlazado', () => {
+    const def = isohedralPreset(41, true),
+      beforeRoot = paperPath(isohedralLayout(def).boundary) as paper.CompoundPath,
+      before = beforeRoot.children[0] as paper.Path;
+    splitCanonicalEdge(def.edges[0], 0);
+    const afterRoot = paperPath(isohedralLayout(def).boundary) as paper.CompoundPath,
+      after = afterRoot.children[0] as paper.Path;
+    try {
+      expect(after.length).toBeCloseTo(before.length, 5);
+      for (let i = 0; i < 80; i++) {
+        const p = before.getPointAt((before.length * i) / 80),
+          q = after.getNearestPoint(p);
+        expect(p.getDistance(q)).toBeLessThan(1e-6);
+      }
+      expect(isohedralIssue(def)).toBeNull();
+    } finally {
+      beforeRoot.remove();
+      afterRoot.remove();
+    }
+    const mirrored = newIsohedral(12);
+    mirrored.edges[0].at(-1)!.y = 0.04;
+    expect(isohedralIssue(mirrored)).toBeNull();
   });
   for (const id of supportedIsohedralTypes) {
     it(`IH${id}: área, matrices, cierre de ciclos y cobertura local sin solapamiento`, () => {

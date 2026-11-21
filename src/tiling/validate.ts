@@ -1,9 +1,22 @@
 import type { TilingDefinition } from './tiles';
-import { constrainTiling, tileBoundary, tileArea, tileBounds, tileInstances } from './tiles';
+import {
+  constrainTiling,
+  tileBoundary,
+  tileArea,
+  tileBounds,
+  tileInstances,
+  isohedralDefinition,
+} from './tiles';
+import { isohedralIssue } from '../isohedral/validate';
 import { paperPath } from '../geometry/paper';
 import { IDENTITY } from '../geometry/matrix';
 /** Conservative editable corridors + exact edge construction + independent area/adjacency checks. */
 export function tilingIssue(def: TilingDefinition): string | null {
+  if (def.kind === 'isohedral') {
+    if (!def.isohedral) return 'Falta la definición isoédrica.';
+    return isohedralIssue(isohedralDefinition(def), def.width);
+  }
+  if (def.isohedral) return 'Una tesela clásica no puede declarar un tipo IH.';
   const expected = def.kind === 'triangle' || def.kind === 'hexagon' ? 3 : 2;
   if (def.edges.length !== expected || def.edges.some((e) => e.length < 3 || e.length > 16))
     return 'La familia requiere sus bordes maestros y entre 3 y 16 nodos por borde.';

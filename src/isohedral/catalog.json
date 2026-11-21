@@ -1,0 +1,560 @@
+[
+  {
+    "id": 1,
+    "topology": "[3^6]",
+    "tileSymmetry": "c1",
+    "group": "p1"
+  },
+  {
+    "id": 2,
+    "topology": "[3^6]",
+    "tileSymmetry": "c1",
+    "group": "pg"
+  },
+  {
+    "id": 3,
+    "topology": "[3^6]",
+    "tileSymmetry": "c1",
+    "group": "pg"
+  },
+  {
+    "id": 4,
+    "topology": "[3^6]",
+    "tileSymmetry": "c1",
+    "group": "p2"
+  },
+  {
+    "id": 5,
+    "topology": "[3^6]",
+    "tileSymmetry": "c1",
+    "group": "pgg"
+  },
+  {
+    "id": 6,
+    "topology": "[3^6]",
+    "tileSymmetry": "c1",
+    "group": "pgg"
+  },
+  {
+    "id": 7,
+    "topology": "[3^6]",
+    "tileSymmetry": "c1",
+    "group": "p3"
+  },
+  {
+    "id": 8,
+    "topology": "[3^6]",
+    "tileSymmetry": "c2",
+    "group": "p2"
+  },
+  {
+    "id": 9,
+    "topology": "[3^6]",
+    "tileSymmetry": "c2",
+    "group": "pgg"
+  },
+  {
+    "id": 10,
+    "topology": "[3^6]",
+    "tileSymmetry": "c3",
+    "group": "p3"
+  },
+  {
+    "id": 11,
+    "topology": "[3^6]",
+    "tileSymmetry": "c6",
+    "group": "p6"
+  },
+  {
+    "id": 12,
+    "topology": "[3^6]",
+    "tileSymmetry": "d1",
+    "group": "cm"
+  },
+  {
+    "id": 13,
+    "topology": "[3^6]",
+    "tileSymmetry": "d1",
+    "group": "pmg"
+  },
+  {
+    "id": 14,
+    "topology": "[3^6]",
+    "tileSymmetry": "d1",
+    "group": "cm"
+  },
+  {
+    "id": 15,
+    "topology": "[3^6]",
+    "tileSymmetry": "d1",
+    "group": "pmg"
+  },
+  {
+    "id": 16,
+    "topology": "[3^6]",
+    "tileSymmetry": "d1",
+    "group": "p31m"
+  },
+  {
+    "id": 17,
+    "topology": "[3^6]",
+    "tileSymmetry": "d2",
+    "group": "cmm"
+  },
+  {
+    "id": 18,
+    "topology": "[3^6]",
+    "tileSymmetry": "d3",
+    "group": "p31m"
+  },
+  {
+    "id": 19,
+    "topology": "[3^6]",
+    "tileSymmetry": "d3",
+    "group": "p3m1"
+  },
+  {
+    "id": 20,
+    "topology": "[3^6]",
+    "tileSymmetry": "d6",
+    "group": "p6m"
+  },
+  {
+    "id": 21,
+    "topology": "[3^4.6]",
+    "tileSymmetry": "c1",
+    "group": "p6"
+  },
+  {
+    "id": 22,
+    "topology": "[3^3.4^2]",
+    "tileSymmetry": "c1",
+    "group": "cm"
+  },
+  {
+    "id": 23,
+    "topology": "[3^3.4^2]",
+    "tileSymmetry": "c1",
+    "group": "p2"
+  },
+  {
+    "id": 24,
+    "topology": "[3^3.4^2]",
+    "tileSymmetry": "c1",
+    "group": "pmg"
+  },
+  {
+    "id": 25,
+    "topology": "[3^3.4^2]",
+    "tileSymmetry": "c1",
+    "group": "pgg"
+  },
+  {
+    "id": 26,
+    "topology": "[3^3.4^2]",
+    "tileSymmetry": "d1",
+    "group": "cmm"
+  },
+  {
+    "id": 27,
+    "topology": "[3^2.4.3.4]",
+    "tileSymmetry": "c1",
+    "group": "pgg"
+  },
+  {
+    "id": 28,
+    "topology": "[3^2.4.3.4]",
+    "tileSymmetry": "c1",
+    "group": "p4"
+  },
+  {
+    "id": 29,
+    "topology": "[3^2.4.3.4]",
+    "tileSymmetry": "d1",
+    "group": "p4g"
+  },
+  {
+    "id": 30,
+    "topology": "[3.4.6.4]",
+    "tileSymmetry": "c1",
+    "group": "p31m"
+  },
+  {
+    "id": 31,
+    "topology": "[3.4.6.4]",
+    "tileSymmetry": "c1",
+    "group": "p6"
+  },
+  {
+    "id": 32,
+    "topology": "[3.4.6.4]",
+    "tileSymmetry": "d1",
+    "group": "p6m"
+  },
+  {
+    "id": 33,
+    "topology": "[3.6.3.6]",
+    "tileSymmetry": "c1",
+    "group": "p3"
+  },
+  {
+    "id": 34,
+    "topology": "[3.6.3.6]",
+    "tileSymmetry": "c2",
+    "group": "p6"
+  },
+  {
+    "id": 35,
+    "topology": "[3.6.3.6]",
+    "tileSymmetry": "d1",
+    "group": "p3m1"
+  },
+  {
+    "id": 36,
+    "topology": "[3.6.3.6]",
+    "tileSymmetry": "d1",
+    "group": "p31m"
+  },
+  {
+    "id": 37,
+    "topology": "[3.6.3.6]",
+    "tileSymmetry": "d2",
+    "group": "p6m"
+  },
+  {
+    "id": 38,
+    "topology": "[3.12^2]",
+    "tileSymmetry": "c1",
+    "group": "p31m"
+  },
+  {
+    "id": 39,
+    "topology": "[3.12^2]",
+    "tileSymmetry": "c1",
+    "group": "p6"
+  },
+  {
+    "id": 40,
+    "topology": "[3.12^2]",
+    "tileSymmetry": "d1",
+    "group": "p6m"
+  },
+  {
+    "id": 41,
+    "topology": "[4^4]",
+    "tileSymmetry": "c1",
+    "group": "p1"
+  },
+  {
+    "id": 42,
+    "topology": "[4^4]",
+    "tileSymmetry": "c1",
+    "group": "pm"
+  },
+  {
+    "id": 43,
+    "topology": "[4^4]",
+    "tileSymmetry": "c1",
+    "group": "pg"
+  },
+  {
+    "id": 44,
+    "topology": "[4^4]",
+    "tileSymmetry": "c1",
+    "group": "pg"
+  },
+  {
+    "id": 45,
+    "topology": "[4^4]",
+    "tileSymmetry": "c1",
+    "group": "cm"
+  },
+  {
+    "id": 46,
+    "topology": "[4^4]",
+    "tileSymmetry": "c1",
+    "group": "p2"
+  },
+  {
+    "id": 47,
+    "topology": "[4^4]",
+    "tileSymmetry": "c1",
+    "group": "p2"
+  },
+  {
+    "id": 48,
+    "topology": "[4^4]",
+    "tileSymmetry": "c1",
+    "group": "pmm"
+  },
+  {
+    "id": 49,
+    "topology": "[4^4]",
+    "tileSymmetry": "c1",
+    "group": "pmg"
+  },
+  {
+    "id": 50,
+    "topology": "[4^4]",
+    "tileSymmetry": "c1",
+    "group": "pmg"
+  },
+  {
+    "id": 51,
+    "topology": "[4^4]",
+    "tileSymmetry": "c1",
+    "group": "pgg"
+  },
+  {
+    "id": 52,
+    "topology": "[4^4]",
+    "tileSymmetry": "c1",
+    "group": "pgg"
+  },
+  {
+    "id": 53,
+    "topology": "[4^4]",
+    "tileSymmetry": "c1",
+    "group": "pgg"
+  },
+  {
+    "id": 54,
+    "topology": "[4^4]",
+    "tileSymmetry": "c1",
+    "group": "cmm"
+  },
+  {
+    "id": 55,
+    "topology": "[4^4]",
+    "tileSymmetry": "c1",
+    "group": "p4"
+  },
+  {
+    "id": 56,
+    "topology": "[4^4]",
+    "tileSymmetry": "c1",
+    "group": "p4g"
+  },
+  {
+    "id": 57,
+    "topology": "[4^4]",
+    "tileSymmetry": "c2",
+    "group": "p2"
+  },
+  {
+    "id": 58,
+    "topology": "[4^4]",
+    "tileSymmetry": "c2",
+    "group": "pmg"
+  },
+  {
+    "id": 59,
+    "topology": "[4^4]",
+    "tileSymmetry": "c2",
+    "group": "pgg"
+  },
+  {
+    "id": 60,
+    "topology": "[4^4]",
+    "tileSymmetry": "c2",
+    "group": "cmm"
+  },
+  {
+    "id": 61,
+    "topology": "[4^4]",
+    "tileSymmetry": "c2",
+    "group": "p4"
+  },
+  {
+    "id": 62,
+    "topology": "[4^4]",
+    "tileSymmetry": "c4",
+    "group": "p4"
+  },
+  {
+    "id": 63,
+    "topology": "[4^4]",
+    "tileSymmetry": "c4",
+    "group": "p4g"
+  },
+  {
+    "id": 64,
+    "topology": "[4^4]",
+    "tileSymmetry": "d1",
+    "group": "pm"
+  },
+  {
+    "id": 65,
+    "topology": "[4^4]",
+    "tileSymmetry": "d1",
+    "group": "pmm"
+  },
+  {
+    "id": 66,
+    "topology": "[4^4]",
+    "tileSymmetry": "d1",
+    "group": "pmg"
+  },
+  {
+    "id": 67,
+    "topology": "[4^4]",
+    "tileSymmetry": "d1",
+    "group": "cmm"
+  },
+  {
+    "id": 68,
+    "topology": "[4^4]",
+    "tileSymmetry": "d1",
+    "group": "cm"
+  },
+  {
+    "id": 69,
+    "topology": "[4^4]",
+    "tileSymmetry": "d1",
+    "group": "pmg"
+  },
+  {
+    "id": 70,
+    "topology": "[4^4]",
+    "tileSymmetry": "d1",
+    "group": "p4m"
+  },
+  {
+    "id": 71,
+    "topology": "[4^4]",
+    "tileSymmetry": "d1",
+    "group": "p4g"
+  },
+  {
+    "id": 72,
+    "topology": "[4^4]",
+    "tileSymmetry": "d2",
+    "group": "pmm"
+  },
+  {
+    "id": 73,
+    "topology": "[4^4]",
+    "tileSymmetry": "d2",
+    "group": "p4g"
+  },
+  {
+    "id": 74,
+    "topology": "[4^4]",
+    "tileSymmetry": "d2",
+    "group": "cmm"
+  },
+  {
+    "id": 75,
+    "topology": "[4^4]",
+    "tileSymmetry": "d2",
+    "group": "p4m"
+  },
+  {
+    "id": 76,
+    "topology": "[4^4]",
+    "tileSymmetry": "d4",
+    "group": "p4m"
+  },
+  {
+    "id": 77,
+    "topology": "[4.6.12]",
+    "tileSymmetry": "c1",
+    "group": "p6m"
+  },
+  {
+    "id": 78,
+    "topology": "[4.8^2]",
+    "tileSymmetry": "c1",
+    "group": "cmm"
+  },
+  {
+    "id": 79,
+    "topology": "[4.8^2]",
+    "tileSymmetry": "c1",
+    "group": "p4"
+  },
+  {
+    "id": 80,
+    "topology": "[4.8^2]",
+    "tileSymmetry": "c1",
+    "group": "p4m"
+  },
+  {
+    "id": 81,
+    "topology": "[4.8^2]",
+    "tileSymmetry": "c1",
+    "group": "p4g"
+  },
+  {
+    "id": 82,
+    "topology": "[4.8^2]",
+    "tileSymmetry": "d1",
+    "group": "p4m"
+  },
+  {
+    "id": 83,
+    "topology": "[6^3]",
+    "tileSymmetry": "c1",
+    "group": "cm"
+  },
+  {
+    "id": 84,
+    "topology": "[6^3]",
+    "tileSymmetry": "c1",
+    "group": "p2"
+  },
+  {
+    "id": 85,
+    "topology": "[6^3]",
+    "tileSymmetry": "c1",
+    "group": "pmg"
+  },
+  {
+    "id": 86,
+    "topology": "[6^3]",
+    "tileSymmetry": "c1",
+    "group": "pgg"
+  },
+  {
+    "id": 87,
+    "topology": "[6^3]",
+    "tileSymmetry": "c1",
+    "group": "p3m1"
+  },
+  {
+    "id": 88,
+    "topology": "[6^3]",
+    "tileSymmetry": "c1",
+    "group": "p6"
+  },
+  {
+    "id": 89,
+    "topology": "[6^3]",
+    "tileSymmetry": "c3",
+    "group": "p31m"
+  },
+  {
+    "id": 90,
+    "topology": "[6^3]",
+    "tileSymmetry": "c3",
+    "group": "p6"
+  },
+  {
+    "id": 91,
+    "topology": "[6^3]",
+    "tileSymmetry": "d1",
+    "group": "cmm"
+  },
+  {
+    "id": 92,
+    "topology": "[6^3]",
+    "tileSymmetry": "d1",
+    "group": "p6m"
+  },
+  {
+    "id": 93,
+    "topology": "[6^3]",
+    "tileSymmetry": "d3",
+    "group": "p6m"
+  }
+]

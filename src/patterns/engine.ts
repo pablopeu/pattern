@@ -131,7 +131,9 @@ export function buildScene(
       instances,
       tiling: { definition, boundary, tiles, inner },
       status: 'PERIODIC_SEAMLESS',
-      message: 'Teselado geométrico por encastre · simetría del motivo local independiente',
+      message: definition.isohedral
+        ? `IH${definition.isohedral.type} · cobertura isoédrica verificada, motivo local independiente`
+        : 'Teselado geométrico por encastre · simetría del motivo local independiente',
     };
   }
 

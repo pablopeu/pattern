@@ -842,3 +842,19 @@
   privadas; sin artefactos runtime/dist/dependencias seguidos. Enlaces locales
   revisados y475 unidades/TypeScript/build correctos sobre el trabajo actual.
   E2E IH en curso; el próximo push incluirá la reorganización verificada.
+
+
+## V3.0 Fase2 · IH81 en el editor y archivos
+
+- Catálogo visual con búsqueda IH, filtros, miniaturas de tesela/mosaico,
+  presets rectos/curvos y cobertura81/93 explícita. Parámetros por páginas,
+  edición de bordes/tangentes, centro de espejo, restricciones rectas y nodo
+  de Casteljau que preserva la silueta. Ctrl+K y cuatro resoluciones sin overflow.
+- Fuente única, captura/Scene/JSON5/presets/Fill y exportación conectados; nuevo
+  kind evita que lectores anteriores eliminen datos desconocidos silenciosamente.
+  Last-valid ante deformación inválida; no se toca el dibujo interior original.
+- 475 unidades/TypeScript y build correctos;6 E2E dirigidas correctas
+  (5 iniciales+IH41 repetido después de precisar selector de test). Suite completa
+ 123 en curso; nuevas estáticas IH/referencias pendientes.
+- Fase2 todavía pendiente:12 tipos marcados, ejemplos figurativos y cierre
+  transversal. Docs/recursos organizados antes del próximo push en85d22aa.

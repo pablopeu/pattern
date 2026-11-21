@@ -978,6 +978,8 @@ export function Canvas({
     if (focusCell) b = cellBounds;
     else if (activePattern.composition?.enabled && !editorOnly) b = cellBounds;
     else if (s.mode === 'apply' && s.region) b = geometryBounds(s.region.geometry);
+    else if (activePattern.tiling?.isohedral && !editorOnly)
+      b = tileWorldBounds(activePattern.tiling);
     else if (patternView && activePattern.tiling && activePattern.generator.kind !== 'penrose')
       b = tileWorldBounds(activePattern.tiling);
     else if (

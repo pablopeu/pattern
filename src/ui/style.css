@@ -2209,6 +2209,34 @@ input[type='color']::-webkit-color-swatch {
 .references-scroll a svg { flex-shrink:0; }
 .references-scroll p { font-size:12px; color:var(--muted); margin:5px 0 0; }
 .references-notices { margin-top:20px; margin-bottom:4px; }
+.isohedral-gallery { width:900px; }
+.isohedral-gallery header p { margin:6px 0 0; font-size:12px; color:var(--muted); }
+.isohedral-filters { display:grid; grid-template-columns:1.2fr 1fr 1fr; gap:8px; margin-bottom:12px; }
+.isohedral-filters > * { min-width:0; width:100%; padding:9px; border:1px solid var(--line); border-radius:6px; background:var(--panel); }
+.isohedral-cards { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.isohedral-card { display:grid; gap:5px; min-width:0; text-align:left; white-space:normal; border:1px solid var(--line); border-radius:9px; padding:10px; background:#fcfdf8; }
+.isohedral-card:not(:disabled):hover { border-color:#7a965c; background:#f0f4e9; }
+.isohedral-card:disabled { opacity:0.75; cursor:default; }
+.isohedral-thumbnails { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.isohedral-thumbnails img { width:100%; height:94px; object-fit:contain; background:#f3eddf; border-radius:5px; }
+.isohedral-card strong { font-size:14px; display:flex; justify-content:space-between; gap:10px; }
+.isohedral-card strong span { font-weight:400; color:var(--muted); }
+.isohedral-card small { font-size:11px; color:var(--muted); }
+.isohedral-card p { margin:0; font-size:11px; }
+.isohedral-badges { display:flex; gap:5px; min-height:18px; }
+.isohedral-badges span { font-size:10px; padding:2px 5px; border-radius:4px; background:#e5eddc; }
+.isohedral-pending { display:grid; place-items:center; height:94px; background:#edf0e7; font-size:14px; }
+.isohedral-gallery footer { margin-top:16px; display:flex; align-items:center; justify-content:center; gap:16px; font-size:12px; }
+.isohedral-gallery footer button { padding:7px 12px; border:1px solid var(--line); border-radius:6px; }
+.isohedral-controls .button-row { align-items:center; justify-content:space-between; font-size:10px; }
+@media(max-width:650px) {
+  .isohedral-gallery .modal-content { padding:14px; }
+  .isohedral-gallery h2 { font-size:17px; }
+  .isohedral-filters { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .isohedral-filters input { grid-column:1 / -1; }
+  .isohedral-cards { grid-template-columns:minmax(0,1fr); gap:8px; }
+  .isohedral-thumbnails img, .isohedral-pending { height:76px; }
+}
 .modal-content {
   padding: 20px;
 }

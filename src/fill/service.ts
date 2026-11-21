@@ -337,7 +337,11 @@ export function fillContext(
       if (!raw) return { id, missing: true };
       const p = resolvePattern(raw, project);
       return kind === 'tile'
-        ? { id, kind: p.tiling?.kind }
+        ? {
+            id,
+            kind: p.tiling?.kind,
+            ...(p.tiling?.isohedral ? { type: p.tiling.isohedral.type } : {}),
+          }
         : {
             id,
             generator: p.generator,

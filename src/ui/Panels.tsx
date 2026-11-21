@@ -80,6 +80,7 @@ export function Panels({
   onCreateRegular,
   onCollapse,
   onExamples,
+  onIsohedral,
 }: {
   studio: Studio;
   onImport: () => void;
@@ -88,6 +89,7 @@ export function Panels({
   onCreateRegular: () => void;
   onCollapse: () => void;
   onExamples: () => void;
+  onIsohedral: () => void;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [generatorPage, setGeneratorPage] = useState(0),
@@ -301,7 +303,7 @@ export function Panels({
         {category === 'symmetry' && tab === 'composition' && (
           <CompositionPanel studio={s} onExamples={onExamples} />
         )}
-        {category === 'tiles' && <TilePanel studio={s} expanded />}
+        {category === 'tiles' && <TilePanel studio={s} expanded onIsohedral={onIsohedral} />}
         {category === 'layers' && tab === 'layers' ? (
           <>
             <div className="section-caption">

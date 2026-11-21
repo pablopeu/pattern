@@ -8,6 +8,7 @@ import {
   type DrawingStyle,
 } from './styles';
 import { constrainTiling, type TilingDefinition } from '../tiling/tiles';
+import { tilingIssue } from '../tiling/validate';
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { hasClosedGeometry } from '../application/clipping';
 import { History } from '../editor/history';
@@ -507,13 +508,29 @@ export function useStudio() {
     [change, pattern.id],
   );
   const editTiling = useCallback(
-    (recipe: (t: TilingDefinition) => void, transient = false) =>
+    (recipe: (t: TilingDefinition) => void, transient = false) => {
+      const current = ref.current.patterns.find((p) => p.id === pattern.id)?.tiling;
+      if (current?.kind === 'isohedral') {
+        const candidate = structuredClone(current);
+        recipe(candidate);
+        const constrained = constrainTiling(candidate),
+          issue = tilingIssue(constrained);
+        if (issue) {
+          setMessage(issue);
+          return;
+        }
+        change((p) => {
+          p.patterns.find((p) => p.id === pattern.id)!.tiling = constrained;
+        }, transient);
+        return;
+      }
       change((p) => {
         const pat = p.patterns.find((x) => x.id === pattern.id)!;
         if (!pat.tiling) return;
         recipe(pat.tiling);
         pat.tiling = constrainTiling(pat.tiling);
-      }, transient),
+      }, transient);
+    },
     [change, pattern.id],
   );
   const adaptPattern = useCallback(
