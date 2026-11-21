@@ -47,3 +47,14 @@ transcritos como datos en src/isohedral/catalog.json desde la tabla de
 Kaplan/Schattschneider citada arriba. No se copiaron imágenes SVG del artículo.
 Se normaliza `dl` a `d1` en IH65/IH70, notación dihédrica de orden1. Las
 miniaturas se generan desde las construcciones y curvas reales de este motor.
+
+## Fase3 · Sustituciones Hat / Spectre
+
+Consultados los recursos primarios [Hat](https://cs.uwaterloo.ca/~csk/hat/) y
+[Spectre](https://cs.uwaterloo.ca/~csk/spectre/), sus herramientas BSD3 y reglas
+matemáticas. Se adapta sólo el núcleo headless de hatviz (commit
+4bb9d01999e4e84accc2a78d0fa279ef20b47263) y spectreviz (archive SHA256 en
+src/vendor/aperiodic/upstream.json). Licencia completa conservada. La interfaz
+propia no depende de P5. Spectre conserva curvas alternadas; Tile(1,1) recto
+no se presenta como el Spectre estrictamente quiral. Una inversión global del
+marco en generaciones impares conserva la mano canónica de todas sus teselas.

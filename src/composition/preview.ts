@@ -7,6 +7,7 @@ import { matrixString, multiply } from '../geometry/matrix';
 import { svgDocument, previewSVGPathAtTolerance } from '../export/svg';
 import { tileCellBounds } from '../tiling/tiles';
 import { tiledMarkup } from '../tiling/render';
+import { finiteGenerator } from '../aperiodic/model';
 import { geometricTiling } from '../tiling/colors';
 
 /** Real scene, reduced detail for the thumbnail only; the stored recipe is untouched. */
@@ -39,7 +40,7 @@ export function compositionThumbnail(
           width: p.symmetry.width * 1.6,
           height: p.symmetry.width * 1.6,
         };
-  if (p.tiling && !composition?.enabled) {
+  if (p.tiling && !finiteGenerator(p.generator) && !composition?.enabled) {
     const cell = tileCellBounds(geometricTiling(p.tiling)!),
       view = {
         x: cell.x - cell.width * 0.6,
@@ -70,7 +71,17 @@ export function compositionThumbnail(
   }
   let body = '';
   for (const [index, layer] of sceneLayers(scene, p).entries()) {
-    if (layer.kind === 'fill') continue;
+    if (layer.kind === 'fill') {
+      body += layer.matrices
+        .map((m) =>
+          previewSVGPathAtTolerance(
+            { ...layer.geometry, transform: multiply(m, layer.geometry.transform) },
+            0.08,
+          ),
+        )
+        .join('');
+      continue;
+    }
     const id = `preview-${index}`;
     body += `<defs><g id="${id}">${layer.geometry.map((g) => previewSVGPathAtTolerance(g, 0.08)).join('')}</g></defs>`;
     const placements = layer.placements ?? scene.generated.placements;
@@ -78,7 +89,7 @@ export function compositionThumbnail(
       .slice(0, 100)
       .flatMap((instance) =>
         placements
-          .slice(0, 256)
+          .slice(0, scene.generated.aperiodic ? 12000 : 256)
           .map(
             (m) => `<use href="#${id}" transform="${matrixString(multiply(instance.matrix, m))}"/>`,
           ),

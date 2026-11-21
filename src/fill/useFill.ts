@@ -1,3 +1,4 @@
+import { geometricGenerator } from '../aperiodic/model';
 import { useEffect, useRef, useState } from 'react';
 import type { Studio } from '../app/useStudio';
 import type { Bounds } from '../symmetry/groups';
@@ -33,7 +34,7 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
     layers.map((l) => [
       l.pattern.id,
       l.pattern.symmetry,
-      l.pattern.generator,
+      geometricGenerator(l.pattern.generator),
       l.pattern.placementTransform,
       l.pattern.tiling,
       l.pattern.sourceGeometry
@@ -62,7 +63,7 @@ export function useFill(s: Studio, layers: FillLayer[], bounds: Bounds, enabled:
         layers.map((l) => [
           l.pattern.id,
           l.pattern.symmetry,
-          l.pattern.generator,
+          geometricGenerator(l.pattern.generator),
           l.pattern.placementTransform,
           l.pattern.tiling,
           l.pattern.sourceGeometry.map((g) => [

@@ -1,3 +1,4 @@
+import { finiteGenerator } from '../aperiodic/model';
 import type { Pattern, Geometry, Region } from '../app/model';
 import { buildScene, expandedTransforms } from '../patterns/engine';
 import { clipGeometry } from '../application/clipping';
@@ -11,7 +12,7 @@ export function materializeTiling(
   tolerance = 0.02,
 ): Pattern {
   const t = pattern.tiling;
-  if (!t || pattern.generator.kind === 'penrose') return pattern;
+  if (!t || finiteGenerator(pattern.generator)) return pattern;
   const scene = buildScene(pattern, view),
     inner = scene.tiling!.inner,
     boundary = scene.tiling!.boundary,

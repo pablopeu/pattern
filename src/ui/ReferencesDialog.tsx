@@ -3,6 +3,7 @@ import { Modal } from './Modal';
 
 export const consultedRepositories = [
   ['isohedral/tactile-js', 'Motor de teselaciones isoédricas'],
+  ['isohedral/hatviz', 'Reglas de sustitución Hat y jerarquía de metateselas'],
   ['isohedral/tactile', 'Representación y parámetros isoédricos'],
   ['DBraun/tactile-python', 'Referencia de implementación isoédrica'],
   ['mapio/programming-with-escher', 'Composición recursiva y geometría funcional'],

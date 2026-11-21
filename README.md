@@ -192,6 +192,31 @@ el encastre, aunque puede reducir las simetrías del resultado coloreado.
 [Descargar reptiles IH1](docs/examples/v30-figurative-reptile.json) ·
 [Descargar ornamento IH63](docs/examples/v30-figurative-abstract.json).
 
+### Parches aperiódicos: Penrose, Hat y Spectre
+
+En **Teselas**, cambiá la categoría **Encastre → Aperiódicas**. Elegí la
+construcción, su semilla, sustituciones, tamaño y giro. **Color** permite pintar
+por tipo, por grupo de una generación o por reflexión en Hat. **Jerarquía**
+muestra los marcos de sustitución; son ayudas de lectura, no bordes de teselas.
+
+![Penrose, Hat y Spectre en la galería del editor](docs/images/v30-aperiodic-gallery.png)
+
+**Editar motivo fuente** abre una sola tesela de referencia. Dibujá sus detalles
+y usá **Ver parche completo** para verlos propagados. Las copias usan matrices;
+el archivo conserva una sola fuente. **Volver al motivo guardado** recupera el
+dibujo sin convertir miles de copias en objetos. Fill persiste bajo los contornos.
+
+![Hat con colores y marco de jerarquía de sustitución](docs/images/v30-aperiodic-hat.png)
+
+Son parches finitos de sistemas aperiódicos documentados: no tienen una celda
+para repetir por traslación. Hat incluye las reflexiones que requiere su sistema;
+Spectre usa bordes curvos y una sola mano. SVG editable reutiliza definiciones;
+SVG expandido, PNG/JPEG y DXF conservan el resultado y sus medidas físicas.
+
+[Penrose editable](docs/examples/v30-aperiodic-penrose.json) ·
+[Hat con jerarquía](docs/examples/v30-aperiodic-hat.json) ·
+[Spectre por generación](docs/examples/v30-aperiodic-spectre.json).
+
 ### Explorar un motivo sin perder el dibujo original
 
 En **Archivo → Ejemplos editables**, abrí **Hexagonal · p6m** para obtener la escena de la primera imagen. Entrá en **Simetrías → Explorar todas las simetrías**. Pasá por p1, p4m y p6m y confirmá una opción. Las miniaturas se actualizan con tu motivo; la selección, la herramienta y las fuentes siguen disponibles. [Descargar este proyecto de ejemplo](docs/examples/studio-symmetry.json).

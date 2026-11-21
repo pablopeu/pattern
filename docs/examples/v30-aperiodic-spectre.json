@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 6,
+  "drawingStyle": {
+    "stroke": "#233b2d",
+    "fill": "#3b82f6",
+    "strokeWidth": 0.65,
+    "strokeCap": "round",
+    "strokeJoin": "round",
+    "miterLimit": 10,
+    "opacity": 1,
+    "fillOpacity": 1,
+    "strokeOpacity": 1,
+    "fillRule": "evenodd",
+    "strokeDash": [],
+    "strokeDashOffset": 0,
+    "strokeProfile": {
+      "version": 1,
+      "kind": "uniform",
+      "points": [
+        {
+          "at": 0,
+          "width": 1
+        },
+        {
+          "at": 1,
+          "width": 1
+        }
+      ]
+    }
+  },
+  "stylePresets": [],
+  "palette": {
+    "colors": [],
+    "recent": [],
+    "favorites": []
+  },
+  "mainSymmetry": {
+    "family": "none",
+    "group": "none",
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "orientation": 0,
+    "width": 60,
+    "height": 60,
+    "angle": 90,
+    "sectors": 8,
+    "center": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "mainSymmetryProfiles": {},
+  "metadata": {
+    "id": "cc4f6c2d-b8ce-49bc-897a-71e61b0fae03",
+    "name": "Spectre · generaciones curvas",
+    "createdAt": "2026-11-21T10:56:15.385Z",
+    "updatedAt": "2026-11-21T10:56:15.385Z",
+    "example": {
+      "id": "aperiodic-spectre",
+      "category": "Aperiódicas",
+      "description": "Bordes cúbicos alternados, una única mano y colores de grupos de sustitución.",
+      "construction": "Spectre curvo quiral · parche finito, sin celda de traslación",
+      "validity": "EXACT",
+      "artwork": "mathematical",
+      "author": "Pattern Studio · reglas Smith/Myers/Kaplan/Goodman-Strauss",
+      "references": [
+        {
+          "title": "A chiral aperiodic monotile",
+          "url": "https://cs.uwaterloo.ca/~csk/spectre/"
+        }
+      ]
+    }
+  },
+  "documentUnits": "mm",
+  "patterns": [
+    {
+      "id": "9fb6ef0f-4f85-4af1-b5bb-a4d7a76607ba",
+      "name": "Spectre · generaciones curvas",
+      "sourceGeometry": [
+        {
+          "id": "5900bcb3-09a0-4437-846c-0c83304f5ec7",
+          "name": "Detalle canónico editable",
+          "kind": "compound",
+          "nodes": [],
+          "closed": false,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#fff5dc",
+          "fill": "none",
+          "strokeWidth": 0.5,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M10 8C12 5 15 5 17 8"
+        }
+      ],
+      "generator": {
+        "kind": "spectre",
+        "version": 2,
+        "seed": 42,
+        "count": 12,
+        "rows": 4,
+        "columns": 4,
+        "spacing": 22,
+        "offset": 0.5,
+        "aspectRatio": 1,
+        "staggerAxis": "rows",
+        "rotation": 0,
+        "scale": 1,
+        "scaleRatio": 0.9,
+        "amplitude": 6,
+        "frequency": 2,
+        "phase": 0,
+        "radius": 110,
+        "ratio": 0.35,
+        "distribution": "rectangular",
+        "periodicWarp": true,
+        "placements": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        ],
+        "aperiodic": {
+          "version": 1,
+          "seedTile": "Delta",
+          "palette": [
+            "#bd794d",
+            "#e7c88e",
+            "#76978b",
+            "#3d6066"
+          ],
+          "colorBy": "generation",
+          "generation": 1,
+          "showHierarchy": false
+        }
+      },
+      "visible": true,
+      "symmetryMode": "free",
+      "symmetryProfiles": {},
+      "placementTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "symmetry": {
+        "family": "none",
+        "group": "none",
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "orientation": 0,
+        "width": 60,
+        "height": 60,
+        "angle": 90,
+        "sectors": 8,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    }
+  ],
+  "regions": [],
+  "applications": [],
+  "preferences": {
+    "styleDefaultsFollowSelection": true,
+    "stylePanelPinned": false,
+    "fillCloseTolerance": 0,
+    "fillLinkedDefault": true,
+    "structureVisible": false,
+    "structureOpacity": 0.22,
+    "grid": false,
+    "snap": true,
+    "snapRadiusPx": 8,
+    "snapNodes": true,
+    "guides": true,
+    "split": false,
+    "background": "#f8faf5",
+    "fundamental": false,
+    "axes": false,
+    "centers": false,
+    "continuity": false,
+    "outside": false,
+    "sourceView": false,
+    "repetitionView": "extended"
+  }
+}

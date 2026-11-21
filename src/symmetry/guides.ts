@@ -1,3 +1,4 @@
+import { finiteGenerator } from '../aperiodic/model';
 import type { Pattern, Symmetry } from '../app/model';
 import { apply, inverse, multiply, IDENTITY, type Point, type Matrix } from '../geometry/matrix';
 import { cosets, lattice, key, canonical, type Periodicity } from './groups';
@@ -57,14 +58,14 @@ export function verifyPeriodicity(pattern: Pattern): {
       valid: false,
       message: 'Composición finita · sin periodicidad de traslación',
     };
-  if (pattern.tiling && pattern.generator.kind !== 'penrose')
+  if (pattern.tiling && !finiteGenerator(pattern.generator))
     return {
       status: 'PERIODIC_SEAMLESS',
       valid: true,
       message:
         'Traslaciones de la cobertura de teselas verificadas; la simetría del motivo es local.',
     };
-  if (pattern.generator.kind === 'penrose' || pattern.symmetry.family === 'radial')
+  if (finiteGenerator(pattern.generator) || pattern.symmetry.family === 'radial')
     return {
       status: 'FINITE_NONPERIODIC',
       valid: false,

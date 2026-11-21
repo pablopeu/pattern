@@ -1,3 +1,6 @@
+import { sceneLayers } from '../patterns/layers';
+import { AperiodicPanel, activateAperiodic } from './AperiodicPanel';
+import { isAperiodic } from '../aperiodic/model';
 import { CompositionPanel } from './CompositionPanel';
 import { TilePanel } from './TilePanel';
 import { SymmetryGallery } from './SymmetryGallery';
@@ -807,7 +810,10 @@ export function Panels({
                     onChange={(kind) => {
                       setGeneratorPage(0);
                       updatePattern((p) => {
-                        p.generator.kind = kind as Generator['kind'];
+                        if (kind === 'hat' || kind === 'spectre') {
+                          p.generator = activateAperiodic(p.generator, kind);
+                          if (p.composition) p.composition.enabled = false;
+                        } else p.generator.kind = kind as Generator['kind'];
                       });
                     }}
                     options={Object.entries(generatorLabels).map(([value, label]) => ({
@@ -815,7 +821,9 @@ export function Panels({
                       label,
                     }))}
                   />
-                  {s.pattern.generator.kind === 'motif' ? (
+                  {isAperiodic(s.pattern.generator) ? (
+                    <AperiodicPanel studio={s} />
+                  ) : s.pattern.generator.kind === 'motif' ? (
                     <div className="motif-preview">
                       <svg viewBox="-5 -5 80 65">
                         {s.pattern.sourceGeometry
@@ -1022,13 +1030,40 @@ export function Panels({
                       className="wide-button"
                       onClick={() => {
                         const result = generate(s.pattern.generator, s.pattern.sourceGeometry),
-                          shapes = result.placements.flatMap((m) =>
-                            result.geometry.map((g) => ({
-                              ...structuredClone(g),
-                              id: uid(),
-                              transform: multiply(m, g.transform),
-                            })),
-                          );
+                          shapes = (
+                            result.aperiodic
+                              ? sceneLayers(
+                                  {
+                                    generated: result,
+                                    fills: [],
+                                    instances: [],
+                                    status: 'FINITE_NONPERIODIC',
+                                    message: '',
+                                  },
+                                  s.pattern,
+                                )
+                              : [
+                                  {
+                                    kind: 'motif' as const,
+                                    geometry: result.geometry,
+                                    placements: result.placements,
+                                  },
+                                ]
+                          ).flatMap((layer) => {
+                            const geometry =
+                                layer.kind === 'fill' ? [layer.geometry] : layer.geometry,
+                              matrices =
+                                layer.kind === 'fill'
+                                  ? layer.matrices
+                                  : (layer.placements ?? result.placements);
+                            return matrices.flatMap((m) =>
+                              geometry.map((g) => ({
+                                ...structuredClone(g),
+                                id: uid(),
+                                transform: multiply(m, g.transform),
+                              })),
+                            );
+                          });
                         if (shapes.length > 10000) {
                           s.setMessage(
                             'Más de 10.000 objetos. Reducí la cantidad antes de convertir.',

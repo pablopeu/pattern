@@ -1023,3 +1023,22 @@
 - Primaria90% usado: cierre, commit y push autorizados; timer de reanudación
   primario+60s (07:31 ART21/11/2026), sin iniciar Fase3.
 - Fases3–7 pendientes, PRD no completo.
+
+
+## Fase3 · Hat/Spectre reales y ejemplos finitos
+
+- Sustituciones headless BSD3 con atribución/hashes,13 semillas, matrices e
+  IDs estables. Hat admite reflexiones; Spectre cúbico conserva una sola mano.
+  Unión booleana verifica áreas, conexión y ausencia de agujeros significativos.
+- Generador2 dentro de JSON6, fuente única editable/retorno, paletas y marcos
+  de jerarquía, culling estable.657 unidades/TypeScript y build correctos.
+-6 E2E nuevas verifican cuatro resoluciones, recarga tras guardado, dibujo de
+  fuente, exportación y Fill con píxel real/persistencia bajo perímetro.
+  Regresión156/156(239,9s) correcta. Ajuste posterior de encuadre de marcos/HUD:
+  dirigidas finales Aperiódicas+IH93×4:11/11 correctas(48,7s), incluidos marcos
+  visibles fuera del HUD;10 estáticas finales correctas.
+-3 ejemplos matemáticos,2 capturas y3 JSON públicos. CairoSVG/Pillow/ezdxf:
+  SVGeditable/expandido error máximo0,077/255, raster96DPI y DXF2D/mm.
+- Hat4:7921 solicitadas/77 visibles con1 fuente, motor mediana2,8ms y
+  p95observado3,6ms (20 muestras después5 calentamientos), sin medir render/FPS.
+- Falta Girih/entrelazado para Fase3; fases4–7 pendientes.

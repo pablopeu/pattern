@@ -19,6 +19,7 @@ export default defineConfig({
         '**/feedback-fill.spec.ts',
         '**/figurative.spec.ts',
         '**/tile-colors.spec.ts',
+        '**/aperiodic.spec.ts',
       ],
   timeout: 45000,
   expect: { timeout: 8000 },

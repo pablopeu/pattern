@@ -245,3 +245,29 @@ navegador; el perfil local prevalece en los ajustes de trabajo al abrirlo.
 Los rellenos derivados se renderizan antes de los trazos de su conjunto,
 independientemente de su posición de creación en sourceGeometry. El orden de
 objetos normales y el orden entre conjuntos siguen siendo los del documento.
+
+## Generadores aperiódicos · contrato2
+
+El esquema global continúa6. `generator.kind` admite `hat` y `spectre`, ambos
+con `version:2` y `aperiodic:{version:1,seedTile,palette,colorBy,generation,
+showHierarchy}`. Lectores anteriores rechazan el kind/versión nuevos. Opciones
+conservadas al volver al motivo requieren version2 aunque el kind vuelva a motif.
+Las semillas válidas son H/T/P/F para Hat y Delta/Gamma/Theta/Lambda/Xi/Pi/Sigma/
+Phi/Psi para Spectre. `frequency` guarda1–4 sustituciones, radius el radio físico
+normalizado del parche y rotation su giro. Penrose conserva su contrato anterior.
+
+Los árboles, contornos derivados, matrices, clases de color, IDs y marcos de
+jerarquía no se serializan. Los motivos editados siguen en sourceGeometry; se
+recortan sólo al representarlos sobre la tesela. La fuente de trabajo usa mm,
+con coordenadas de referencia multiplicadas por10. El parche usa las matrices
+inversamente escaladas, sin multiplicar fuentes. Spectre usa el contorno cúbico
+alternado; en generaciones impares invierte globalmente el marco para conservar
+una sola mano. Hat incluye las reflexiones de sus reglas H/T/P/F.
+
+Color por generación significa agrupar descendientes del paso seleccionado;
+no implica que teselas de un mismo parche tengan profundidades desiguales.
+Los marcos muestran grupos de sustitución, no límites físicos de teselas.
+Cambios de color/marcos no invalidan el contexto geométrico de Fill. El culling
+conserva IDs/clases y no altera el JSON. Son parches finitos de sistemas
+aperiódicos; no se ofrece celda de traslación ni se certifica aperiodicidad de
+un dibujo aislado por una mera comparación visual.

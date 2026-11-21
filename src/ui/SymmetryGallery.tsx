@@ -1,3 +1,4 @@
+import { finiteGenerator } from '../aperiodic/model';
 import { Modal } from './Modal';
 import { X, Star } from 'lucide-react';
 import { sceneLayers } from '../patterns/layers';
@@ -71,7 +72,7 @@ export function previewSVG(
             ),
           )
           .join('');
-      return `${decorations && structure && pattern.generator.kind !== 'penrose' ? structureMarkup(cachedStructure(pattern.symmetry, bounds), 0.15, 0.7) : ''}<defs><g id="${id}">${layer.geometry.map(renderMotif).join('')}</g></defs>${refs}`;
+      return `${decorations && structure && !finiteGenerator(pattern.generator) ? structureMarkup(cachedStructure(pattern.symmetry, bounds), 0.15, 0.7) : ''}<defs><g id="${id}">${layer.geometry.map(renderMotif).join('')}</g></defs>${refs}`;
     })
     .join('');
   return svgDocument(content, bounds, '#f8faf5');
@@ -311,7 +312,7 @@ export function SymmetryGallery({
     >
       <summary>
         <span>
-          {s.pattern.tiling && s.pattern.generator.kind !== 'penrose'
+          {s.pattern.tiling && !finiteGenerator(s.pattern.generator)
             ? 'SIMETRÍA DEL MOTIVO'
             : 'SIMETRÍA VIVA'}
         </span>
@@ -530,10 +531,10 @@ export function SymmetryGallery({
             ? `Previsualización · ${previewCurrent.group === 'none' ? 'Libre' : previewCurrent.group} · clic para confirmar`
             : 'Hover previsualiza · clic confirma.'}
         </p>
-        {s.pattern.generator.kind === 'penrose' ? (
+        {finiteGenerator(s.pattern.generator) ? (
           <p className="math-notice">
-            Penrose es una región aperiódica finita. La repetición del grupo permanece desactivada;
-            el dibujo fuente se conserva.
+            Esta es una región aperiódica finita. La repetición del grupo permanece desactivada; el
+            dibujo fuente se conserva.
           </p>
         ) : (
           <>

@@ -55,6 +55,38 @@ export function sceneLayers(scene: Scene, pattern: Pattern): SceneLayer[] {
   }
   if (motif.length || !result.some((l) => l.kind === 'motif'))
     result.push({ kind: 'motif', geometry: motif });
+  const aperiodic = scene.generated.aperiodic;
+  if (aperiodic) {
+    const composition = scene.generated.composition,
+      palette = composition?.definition.colorByLevel
+        ? composition.definition.palette
+        : aperiodic.palette;
+    const groups = new Map<number, Matrix[]>();
+    scene.generated.placements.forEach((matrix, index) => {
+      const value = composition?.definition.colorByLevel
+          ? (composition.levels[index] ?? 0)
+          : (aperiodic.classes[index] ?? 0),
+        color = ((value % palette.length) + palette.length) % palette.length;
+      const placements = groups.get(color) ?? [];
+      placements.push(matrix);
+      groups.set(color, placements);
+    });
+    return [
+      ...result.flatMap((layer): SceneLayer[] =>
+        layer.kind === 'fill'
+          ? [layer]
+          : [...groups].map(([color, placements]) => ({
+              kind: 'motif',
+              geometry: layer.geometry.map((g) =>
+                g.id === aperiodic.bodyId && g.fill !== 'none' ? { ...g, fill: palette[color] } : g,
+              ),
+              placements,
+              level: color,
+            })),
+      ),
+      ...aperiodic.guides.map((guide) => ({ kind: 'fill' as const, ...guide })),
+    ];
+  }
   const composition = scene.generated.composition;
   if (!composition?.definition.colorByLevel) return result;
   const groups = new Map<number, Matrix[]>();

@@ -102,42 +102,77 @@ export const geometrySchema = z.object({
     })
     .optional(),
 });
-const generator = z.object({
-  kind: z.enum([
-    'motif',
-    'grid',
-    'warp',
-    'radial',
-    'rosette',
-    'wave',
-    'guilloche',
-    'spirograph',
-    'lattice',
-    'tessellation',
-    'freeform',
-    'penrose',
-  ]),
-  version: z.literal(1),
-  seed: n.int(),
-  count: n.int().min(1).max(128),
-  rows: n.int().min(1).max(32),
-  columns: n.int().min(1).max(32),
-  spacing: positive,
-  offset: n,
-  aspectRatio: positive.max(10).default(1),
-  staggerAxis: z.enum(['rows', 'columns']).default('rows'),
-  rotation: n,
-  scale: positive.max(100),
-  scaleRatio: positive.max(10),
-  amplitude: n.min(0).max(500),
-  frequency: n.min(1).max(64),
-  phase: n,
-  radius: positive.max(1000),
-  ratio: positive.max(1),
-  distribution: z.enum(['rectangular', 'circular', 'freeform']),
-  periodicWarp: z.boolean(),
-  placements: z.array(matrix).max(2000),
-});
+const generator = z
+  .object({
+    kind: z.enum([
+      'motif',
+      'grid',
+      'warp',
+      'radial',
+      'rosette',
+      'wave',
+      'guilloche',
+      'spirograph',
+      'lattice',
+      'tessellation',
+      'freeform',
+      'penrose',
+      'hat',
+      'spectre',
+    ]),
+    version: z.union([z.literal(1), z.literal(2)]),
+    aperiodic: z
+      .object({
+        version: z.literal(1),
+        seedTile: z.string().max(12),
+        palette: z
+          .array(z.string().regex(/^#[\da-fA-F]{6}$/))
+          .min(2)
+          .max(6),
+        colorBy: z.enum(['type', 'generation', 'chirality']),
+        generation: n.int().min(1).max(4),
+        showHierarchy: z.boolean(),
+      })
+      .optional(),
+    seed: n.int(),
+    count: n.int().min(1).max(128),
+    rows: n.int().min(1).max(32),
+    columns: n.int().min(1).max(32),
+    spacing: positive,
+    offset: n,
+    aspectRatio: positive.max(10).default(1),
+    staggerAxis: z.enum(['rows', 'columns']).default('rows'),
+    rotation: n,
+    scale: positive.max(100),
+    scaleRatio: positive.max(10),
+    amplitude: n.min(0).max(500),
+    frequency: n.min(1).max(64),
+    phase: n,
+    radius: positive.max(1000),
+    ratio: positive.max(1),
+    distribution: z.enum(['rectangular', 'circular', 'freeform']),
+    periodicWarp: z.boolean(),
+    placements: z.array(matrix).max(2000),
+  })
+  .superRefine((g, ctx) => {
+    if (g.aperiodic && g.version !== 2)
+      ctx.addIssue({ code: 'custom', message: 'Opciones aperiódicas requieren generador2.' });
+    if (g.kind === 'hat' || g.kind === 'spectre') {
+      if (g.version !== 2 || !g.aperiodic)
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Hat/Spectre requiere definición de sustitución.',
+        });
+      if (!Number.isInteger(g.frequency) || g.frequency > 4)
+        ctx.addIssue({ code: 'custom', message: 'Sustituciones: entero de1 a4.' });
+      const seeds =
+        g.kind === 'hat'
+          ? ['H', 'T', 'P', 'F']
+          : ['Delta', 'Gamma', 'Theta', 'Lambda', 'Xi', 'Pi', 'Sigma', 'Phi', 'Psi'];
+      if (!seeds.includes(g.aperiodic?.seedTile ?? ''))
+        ctx.addIssue({ code: 'custom', message: 'Semilla de sustitución desconocida.' });
+    }
+  });
 const symmetry = z
   .object({
     family: z.enum(['none', 'wallpaper', 'frieze', 'radial']),

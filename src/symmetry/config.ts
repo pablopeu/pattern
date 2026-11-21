@@ -1,3 +1,4 @@
+import { finiteGenerator } from '../aperiodic/model';
 import { tileRectangularCell, tileVertices } from '../tiling/tiles';
 import { newPattern, type Pattern, type Project, type Symmetry } from '../app/model';
 import { multiply, translate, scale, apply, type Matrix, type Point } from '../geometry/matrix';
@@ -137,7 +138,7 @@ export function commonRectangularCell(
   const cells = patterns
     .filter((p) => p.visible)
     .map((p) =>
-      p.generator.kind === 'penrose' || p.composition?.enabled
+      finiteGenerator(p.generator) || p.composition?.enabled
         ? null
         : p.tiling
           ? tileRectangularCell(p.tiling)

@@ -6,3 +6,5 @@ public/THIRD_PARTY_NOTICES.txt
 package-lock.json
 test-results
 src/vendor/tactile/tactile.js
+src/vendor/aperiodic/hat.js
+src/vendor/aperiodic/spectre.js

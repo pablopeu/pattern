@@ -1,3 +1,4 @@
+import { finiteGenerator, isAperiodic } from '../aperiodic/model';
 import { generatedBounds } from '../composition/generated';
 import { geometryHit } from './hitGeometry';
 import { nearestNodeHit, junctionNodes, type JunctionNode, type NodeHit } from './snap';
@@ -210,7 +211,7 @@ export function Canvas({
       s.project.preferences.structureVisible &&
       !editorOnly &&
       s.mode !== 'apply' &&
-      activePattern.generator.kind !== 'penrose' &&
+      !finiteGenerator(activePattern.generator) &&
       !activePattern.composition?.enabled &&
       activePattern.symmetry.family !== 'none'
         ? cachedStructure(
@@ -242,7 +243,7 @@ export function Canvas({
   );
   const split = s.project.preferences.split && s.mode === 'edit';
   const periodic =
-    activePattern.generator.kind !== 'penrose' &&
+    !finiteGenerator(activePattern.generator) &&
     !activePattern.composition?.enabled &&
     (!!activePattern.tiling || ['wallpaper', 'frieze'].includes(activePattern.symmetry.family));
   const cellBounds = useMemo(() => {
@@ -255,7 +256,16 @@ export function Canvas({
       }).scene;
       if (evaluated) return generatedBounds(evaluated.generated);
     }
-    if (activePattern.generator.kind === 'penrose') {
+    if (isAperiodic(activePattern.generator)) {
+      const scene = safeScene(activePattern, {
+        x: -1000,
+        y: -1000,
+        width: 2000,
+        height: 2000,
+      }).scene;
+      if (scene) return generatedBounds(scene.generated, true);
+    }
+    if (finiteGenerator(activePattern.generator)) {
       const r = activePattern.generator.radius;
       return { x: -r, y: -r, width: r * 2, height: r * 2 };
     }
@@ -1129,7 +1139,7 @@ export function Canvas({
     return () => svg.removeEventListener('wheel', wheel);
   });
   const fit = (patternView = false) => {
-    if (focusCell) {
+    if (focusCell || (isAperiodic(activePattern.generator) && !editorOnly && s.mode !== 'apply')) {
       fitReferenceCell();
       return;
     }
@@ -1137,14 +1147,16 @@ export function Canvas({
     let b: Bounds;
     if (activePattern.composition?.enabled && !editorOnly) b = cellBounds;
     else if (s.mode === 'apply' && s.region) b = geometryBounds(s.region.geometry);
+    else if (isAperiodic(activePattern.generator))
+      b = editorOnly ? geometryBounds(scene?.generated.aperiodic?.source ?? s.objects) : cellBounds;
     else if (activePattern.tiling?.isohedral && !editorOnly)
       b = tileWorldBounds(activePattern.tiling);
-    else if (patternView && activePattern.tiling && activePattern.generator.kind !== 'penrose')
+    else if (patternView && activePattern.tiling && !finiteGenerator(activePattern.generator))
       b = tileWorldBounds(activePattern.tiling);
     else if (
       patternView &&
       activePattern.symmetry.family === 'wallpaper' &&
-      activePattern.generator.kind !== 'penrose'
+      !finiteGenerator(activePattern.generator)
     ) {
       const cell = frameBounds(activePattern.symmetry);
       b = {
@@ -1153,7 +1165,7 @@ export function Canvas({
         width: cell.width * 3,
         height: cell.height * 3,
       };
-    } else if (activePattern.generator.kind === 'penrose')
+    } else if (finiteGenerator(activePattern.generator))
       b = {
         x: -activePattern.generator.radius,
         y: -activePattern.generator.radius,
@@ -1660,7 +1672,15 @@ export function Canvas({
           (editorOnly ? (
             <g onPointerDown={(e) => selectInstance(e, IDENTITY)}>
               {sceneLayers(
-                { ...scene, generated: { ...scene.generated, composition: undefined } },
+                {
+                  ...scene,
+                  generated: {
+                    ...scene.generated,
+                    composition: undefined,
+                    aperiodic: undefined,
+                    geometry: scene.generated.aperiodic?.source ?? scene.generated.geometry,
+                  },
+                },
                 activePattern,
               ).map((layer, index) => (
                 <g key={index}>
@@ -1797,7 +1817,7 @@ export function Canvas({
           !editorOnly &&
           s.mode !== 'apply' &&
           activePattern.symmetry.family === 'wallpaper' &&
-          activePattern.generator.kind !== 'penrose' &&
+          !finiteGenerator(activePattern.generator) &&
           !activePattern.composition?.enabled && (
             <g pointerEvents="none">
               <path
@@ -1831,7 +1851,7 @@ export function Canvas({
           !editorOnly &&
           s.mode !== 'apply' &&
           sym.family === 'frieze' &&
-          activePattern.generator.kind !== 'penrose' &&
+          !finiteGenerator(activePattern.generator) &&
           !activePattern.composition?.enabled && (
             <g pointerEvents="none" aria-label="Traslación del friso en una dirección">
               <line
@@ -1857,7 +1877,7 @@ export function Canvas({
           s.project.preferences.guides &&
           !editorOnly &&
           s.mode !== 'apply' &&
-          activePattern.generator.kind !== 'penrose' &&
+          !finiteGenerator(activePattern.generator) &&
           !activePattern.composition?.enabled &&
           activePattern.symmetry.family === 'radial' && (
             <g pointerEvents="none" stroke="#79976b" strokeWidth={0.3} strokeDasharray="2 2">
@@ -1881,7 +1901,7 @@ export function Canvas({
         {!s.project.preferences.structureVisible &&
           s.project.preferences.guides &&
           !editorOnly &&
-          activePattern.generator.kind !== 'penrose' &&
+          !finiteGenerator(activePattern.generator) &&
           !activePattern.composition?.enabled &&
           s.mode !== 'apply' && (
             <g pointerEvents="none">
@@ -2028,7 +2048,7 @@ export function Canvas({
         {s.mode !== 'apply' &&
           !editorOnly &&
           activePattern.symmetry.family !== 'none' &&
-          activePattern.generator.kind !== 'penrose' &&
+          !finiteGenerator(activePattern.generator) &&
           !activePattern.composition?.enabled &&
           s.project.preferences.guides && (
             <g

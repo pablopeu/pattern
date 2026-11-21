@@ -1,3 +1,4 @@
+import { finiteGenerator } from '../aperiodic/model';
 import { useRef, type PointerEvent } from 'react';
 import type { Studio } from '../app/useStudio';
 import { tileFrame, edgeFrame, tileEdges, isohedralDefinition } from './tiles';
@@ -8,7 +9,7 @@ import { geometry } from '../app/model';
 export function TileEditor({ studio: s, scale }: { studio: Studio; scale: number }) {
   const drag = useRef<{ edge: number; index: number; handle: 'node' | 'in' | 'out' } | null>(null),
     t = s.pattern.tiling;
-  if (!t || !s.tileEditing || s.mode === 'apply' || s.pattern.generator.kind === 'penrose')
+  if (!t || !s.tileEditing || s.mode === 'apply' || finiteGenerator(s.pattern.generator))
     return null;
   const constraints = t.isohedral ? isohedralConstraints(isohedralDefinition(t)) : [],
     parts = t.isohedral ? isohedralLayout(isohedralDefinition(t), t.width).parts : [],

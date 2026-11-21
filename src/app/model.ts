@@ -1,4 +1,5 @@
 import type { Composition } from '../composition/model';
+import type { AperiodicOptions } from '../aperiodic/model';
 import type { ExampleProvenance } from '../examples/model';
 import type { FillRegion } from '../fill/model';
 import {
@@ -49,10 +50,13 @@ export type GeneratorKind =
   | 'lattice'
   | 'tessellation'
   | 'freeform'
-  | 'penrose';
+  | 'penrose'
+  | 'hat'
+  | 'spectre';
 export interface Generator {
   kind: GeneratorKind;
-  version: 1;
+  version: 1 | 2;
+  aperiodic?: AperiodicOptions;
   seed: number;
   count: number;
   rows: number;

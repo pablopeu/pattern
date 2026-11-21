@@ -7,7 +7,10 @@ import type { Composition } from './model';
 import { compileComposition, MAX_COMPOSITION_INSTANCES, sourceNormalization } from './evaluate';
 import { strokePadding } from '../geometry/stroke-bounds';
 
-export function generatedBounds(generated: Pick<Generated, 'geometry' | 'placements'>): Bounds {
+export function generatedBounds(
+  generated: Pick<Generated, 'geometry' | 'placements'> & Partial<Pick<Generated, 'aperiodic'>>,
+  includeGuides = false,
+): Bounds {
   const b = geometryBounds(generated.geometry),
     corners = [
       { x: b.x, y: b.y },
@@ -16,6 +19,14 @@ export function generatedBounds(generated: Pick<Generated, 'geometry' | 'placeme
       { x: b.x, y: b.y + b.height },
     ];
   const points = generated.placements.flatMap((m) => corners.map((p) => apply(m, p)));
+  if (includeGuides && generated.aperiodic)
+    for (const guide of generated.aperiodic.guides)
+      for (const matrix of guide.matrices) {
+        const box = geometryBounds([
+          { ...guide.geometry, transform: multiply(matrix, guide.geometry.transform) },
+        ]);
+        points.push({ x: box.x, y: box.y }, { x: box.x + box.width, y: box.y + box.height });
+      }
   if (!points.length) return b;
   const x = Math.min(...points.map((p) => p.x)),
     y = Math.min(...points.map((p) => p.y));
@@ -53,7 +64,8 @@ export function composeGenerated(
     }),
     placements: Matrix[] = [],
     levels: number[] = [],
-    ids: string[] = [];
+    ids: string[] = [],
+    classes: number[] = [];
   for (const leaf of report.leaves)
     for (const [index, matrix] of base.placements.entries()) {
       if (placements.length >= MAX_COMPOSITION_INSTANCES) {
@@ -62,9 +74,16 @@ export function composeGenerated(
       }
       placements.push(multiply(leaf.matrix, matrix));
       levels.push(leaf.level);
+      if (base.aperiodic) classes.push(base.aperiodic.classes[index]);
       ids.push(`${leaf.id}/source-${index}`);
     }
-  return { ...base, placements, finite: true, composition: { definition: c, report, levels, ids } };
+  return {
+    ...base,
+    ...(base.aperiodic ? { aperiodic: { ...base.aperiodic, classes, ids, guides: [] } } : {}),
+    placements,
+    finite: true,
+    composition: { definition: c, report, levels, ids },
+  };
 }
 /** Recolor the first source fill class; eyes, strokes and contrasting detail stay intact. */
 export function levelGeometry(

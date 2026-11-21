@@ -69,3 +69,13 @@ Los12 tipos IH marcados se construyen con código y datos propios mediante
 reflexiones, red primitiva y estabilizadores interiores. Su clasificación se
 contrasta con Kaplan/Schattschneider; no son aliases de los81 tipos de Tactile
 ni contienen imágenes de la tabla. El catálogo visible enlaza las referencias.
+
+## Hat / Spectre · mathematical cores
+
+Adapted headless subsets of Craig S. Kaplan's2023 BSD-3-Clause implementations:
+[isohedral/hatviz](https://github.com/isohedral/hatviz), commit
+4bb9d01999e4e84accc2a78d0fa279ef20b47263, and
+[spectreviz](https://cs.uwaterloo.ca/~csk/spectre/spectreviz.tar.gz).
+Full license in src/vendor/aperiodic/LICENSE and distributed software notices.
+Original source/archive SHA256 recorded in upstream.json; changes documented
+beside the modules. No P5 runtime, reference artwork, images or animations used.

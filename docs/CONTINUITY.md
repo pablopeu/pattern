@@ -1,3 +1,45 @@
+# Fase3 · Hat/Spectre integrados; seguir Girih y entrelazado
+
+Hat y Spectre curvo en Teselas→Aperiódicas junto a Penrose. Núcleos de sustitución
+BSD3 adaptados de Kaplan, sin P5; fuentes/hashes/licencia junto a módulos y avisos
+públicos. Trece semillas,0–4 generaciones en motor/1–4 en UI, hasta7921 Hat y
+4401 Spectre en semillas iniciales a profundidad4. Spectre mantiene una sola mano
+(inversión global del marco en pasos impares); Hat incluye reflexiones.
+
+Generador2/JSON global6; lector anterior rechaza kind/versión. Motivo fuente
+único, recorte derivado a tesela canónica, regreso a motivo y culling con IDs/clases.
+Editor de fuente/resultado, paletas por tipo/grupo de generación/reflexión Hat,
+marcos de jerarquía explícitamente separados de bordes físicos. SVG editable con
+referencias, expandido/raster/DXF y Fill real bajo el perímetro, persistente.
+Colores/marcos no invalidan caras. Las tres nuevas fuentes nativas y dos capturas
+reales del README se generan con capture-v30-aperiodic.mjs. Galería19.
+
+657 unidades/TypeScript, build y regresión156/156(239,9s) correctos. Ajuste posterior
+sólo de cámara: incluir marcos y margen del HUD al encuadrar; dirigidas finales de
+Aperiódicas y celda IH93×4:11/11 correctas(48,7s, aperiodic-frame-targeted.log).10 estáticas
+raíz/subcarpeta sobre build final correctas; primer intento detectó contador de
+referencias16→17 desactualizado, corregido conservando exigencia exacta.
+CairoSVG/Pillow/ezdxf validó3 ejemplos: máximo error medio SVG0,077/255,
+PNG/JPEG907²96DPI/240mm y DXF2D/mm. Logs aperiódicos en.runtime/aperiodic-*.
+Benchmark motor: Hat4,7921 solicitadas/77 visibles en10×10mm, una fuente;
+5 calentamientos/20 mediciones, mediana2,8ms/p95observado3,6ms. No mide FPS.
+
+Fase3 NO completa: falta Girih/catálogo/compatibilidad y regiones de entrelazado
+con alternancia global y conflictos explícitos. Fases4–7 pendientes.
+Investigación siguiente en.runtime/girih-reference: IkarosKappler/girih,
+commite2e55ca6d7609ab8b43544143cccfcb4529ddcc3, GPL2, consultado, NO incorporado.
+Ángulos/definiciones contrastados con Tilings Encyclopedia (Bielefeld) y
+Lu/Steinhardt2007. No copiar texturas ni aproximaciones gráficas del repositorio;
+construir y verificar polígonos/puertos de decoración matemáticamente. Agregar
+repo consultado al modal Referencias al comenzar el próximo incremento.
+
+Primaria nueva comprobada (reset anterior vencido), monitor sólo primaria5h;
+secundaria avisa. Sin feedback nuevo, servicios4173/4174 con sus PIDs conservados.
+PROJECT_COMPLETE ausente. Continuar trabajo autorizado sin iniciar funciones
+nuevas al90% usado. Push autorizado sin inspeccionar Actions/FTP.
+
+---
+
 # Fase2 verificada · Reanudar con Fase3 tras reset primario
 
 Alternancia2–6 colores dentro de Teselas→Forma→Colores (IH), sin nuevos rails

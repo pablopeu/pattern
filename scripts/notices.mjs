@@ -37,5 +37,10 @@ notices.push(
     'https://github.com/isohedral/tactile-js\n\n' +
     (await readFile('src/vendor/tactile/LICENSE', 'utf8')),
 );
+notices.push(
+  '\nHat / Spectre · Craig S. Kaplan\n' +
+    'https://github.com/isohedral/hatviz\nhttps://cs.uwaterloo.ca/~csk/spectre/\n\n' +
+    (await readFile('src/vendor/aperiodic/LICENSE', 'utf8')),
+);
 await writeFile('public/THIRD_PARTY_NOTICES.txt', notices.join('\n') + '\n');
 console.log('Generated public/THIRD_PARTY_NOTICES.txt');

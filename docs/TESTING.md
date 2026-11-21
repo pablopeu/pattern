@@ -280,3 +280,28 @@ y las cuatro fuentes. También repite la supercelda transparente por sus vectore
 reales y compara con una vista directa del mosaico usando CairoSVG. Comprueba
 tinta de cada color, además de detalles claros; no acepta sólo cadenas RGB en
 el XML. Capturas/JSON públicos se generan desde un contexto aislado del editor.
+
+
+## Hat / Spectre · Sustitución, quiralidad y fuente
+
+`aperiodic.test.ts` comprueba conteos de cinco generaciones, IDs deterministas,
+isometrías y mano positiva en todos los Spectre, incluidas generaciones impares.
+Las13 semillas pasan unión booleana a profundidad2: área suma=área unión, un
+componente sin agujeros de área>1e-9 en coordenadas canónicas. Paper puede dejar
+subpaths degenerados del orden1e-15 en las costuras cúbicas. Se conservan estos
+límites numéricos explícitos; no se deduce aperiodicidad de una captura.
+
+`aperiodic-scene.test.ts` verifica JSON6/generador2, rechazo de celda periódica,
+fuente única, paletas, edición/retorno y culling con IDs/clases conservados.
+`aperiodic.spec.ts` prueba cuatro resoluciones sin scroll, recarga real, dibujo
+en la fuente, exportación y Fill visible/persistente bajo el perímetro.
+
+```bash
+node scripts/validate-v30-aperiodic.mjs
+.runtime/validation-env/bin/python scripts/validate_v30_aperiodic.py
+node scripts/capture-v30-aperiodic.mjs
+```
+
+CairoSVG/Pillow/ezdxf verificó los3 ejemplos: error medio máximo0,077/255 entre
+SVG editable/expandido, tinta de paletas, PNG/JPEG907×907 a96DPI sobre240mm y
+DXF plano/mm. La captura usa un contexto aislado, sin tocar proyectos del autor.

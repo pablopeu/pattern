@@ -1,3 +1,4 @@
+import { finiteGenerator } from '../aperiodic/model';
 import { ExampleGallery } from '../ui/ExampleGallery';
 import { ReferencesDialog } from '../ui/ReferencesDialog';
 import { IsohedralGallery } from '../ui/IsohedralGallery';
@@ -685,7 +686,7 @@ export default function App() {
                 disabled={
                   !s.visiblePatterns.some(
                     (p) =>
-                      p.generator.kind !== 'penrose' &&
+                      !finiteGenerator(p.generator) &&
                       !p.composition?.enabled &&
                       (p.tiling || ['wallpaper', 'frieze'].includes(p.symmetry.family)),
                   )
@@ -799,7 +800,7 @@ export default function App() {
                 ? commonCell
                   ? 'Composición · celda común verificada'
                   : 'Composición · sin celda común verificada'
-                : s.effectivePattern.tiling && s.effectivePattern.generator.kind !== 'penrose'
+                : s.effectivePattern.tiling && !finiteGenerator(s.effectivePattern.generator)
                   ? 'Teselas · cobertura periódica'
                   : status === 'FREE_NONPERIODIC'
                     ? 'Libre · sin repetición'
@@ -808,14 +809,18 @@ export default function App() {
                         ? 'Friso · periódico en una dirección'
                         : 'Periódico · seamless'
                       : status === 'FINITE_NONPERIODIC'
-                        ? 'Composición finita · no periódica'
+                        ? finiteGenerator(s.effectivePattern.generator)
+                          ? 'Parche aperiódico finito'
+                          : 'Composición finita · no periódica'
                         : 'Sin verificar'}
               <small>
-                {s.effectivePattern.tiling && s.effectivePattern.generator.kind !== 'penrose'
-                  ? `Motivo local: ${s.effectivePattern.symmetry.family === 'none' ? 'Libre' : s.effectivePattern.symmetry.group}`
-                  : s.effectivePattern.symmetry.family === 'none'
-                    ? 'Libre'
-                    : s.effectivePattern.symmetry.group}
+                {finiteGenerator(s.effectivePattern.generator)
+                  ? s.effectivePattern.generator.kind
+                  : s.effectivePattern.tiling
+                    ? `Motivo local: ${s.effectivePattern.symmetry.family === 'none' ? 'Libre' : s.effectivePattern.symmetry.group}`
+                    : s.effectivePattern.symmetry.family === 'none'
+                      ? 'Libre'
+                      : s.effectivePattern.symmetry.group}
               </small>
             </div>
             <div>
@@ -951,7 +956,10 @@ export default function App() {
             s.setMode('edit');
             setExamplesOpen(false);
             s.setSelected([]);
-            if (project.patterns[0].tiling && !project.patterns[0].composition?.enabled) {
+            if (
+              (project.patterns[0].tiling || finiteGenerator(project.patterns[0].generator)) &&
+              !project.patterns[0].composition?.enabled
+            ) {
               setCategory('tiles');
               s.setTileTab('shape');
             } else {
@@ -1047,8 +1055,10 @@ export default function App() {
           onClose={() => setIsohedralOpen(false)}
           onSelect={(type, curved) => {
             setIsohedralOpen(false);
-            if (s.pattern.generator.kind === 'penrose') {
-              s.setMessage('Convertí Penrose a paths antes de usar teselas periódicas.');
+            if (finiteGenerator(s.pattern.generator)) {
+              s.setMessage(
+                'Convertí el parche aperiódico a paths antes de usar teselas periódicas.',
+              );
               return;
             }
             const fresh = newIsohedralTiling(type);

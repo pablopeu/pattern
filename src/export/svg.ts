@@ -1,3 +1,4 @@
+import { finiteGenerator } from '../aperiodic/model';
 import { profile, drawingStyle } from '../app/styles';
 import { sceneLayers } from '../patterns/layers';
 import { strokeRegion } from '../geometry/stroke-outline';
@@ -153,7 +154,7 @@ function preparePatternExport(
   if (!pattern) throw Error('No se encontró el patrón.');
   pattern = resolvePattern(pattern, project);
   const tiling =
-    pattern.generator.kind !== 'penrose' && !pattern.composition?.enabled
+    !finiteGenerator(pattern.generator) && !pattern.composition?.enabled
       ? pattern.tiling
       : undefined;
   let bounds: Bounds = customBounds ?? {
@@ -168,17 +169,14 @@ function preparePatternExport(
   if (region) bounds = geometryBounds(region.geometry);
   if (options.target === 'tile') {
     const cell = tiling ? tileRectangularCell(tiling) : rectangularCell(pattern.symmetry);
-    if (!cell || pattern.generator.kind === 'penrose')
+    if (!cell || finiteGenerator(pattern.generator))
       throw Error(
         'Este patrón no tiene una celda rectangular seamless. Elegí celda de red o región finita.',
       );
     bounds = { x: 0, y: 0, ...cell };
   }
   if (options.target === 'lattice') {
-    if (
-      (!tiling && pattern.symmetry.family !== 'wallpaper') ||
-      pattern.generator.kind === 'penrose'
-    )
+    if ((!tiling && pattern.symmetry.family !== 'wallpaper') || finiteGenerator(pattern.generator))
       throw Error('Este patrón no tiene una celda de traslación bidimensional.');
     const basis = tiling ? multiply(tileFrame(tiling), tilePaintBasis(tiling)) : null;
     const [a, b] = basis
@@ -203,7 +201,7 @@ function preparePatternExport(
       throw Error(
         'La simetría del motivo es local a la tesela. Exportá celda de red o región finita.',
       );
-    if (pattern.symmetry.family !== 'wallpaper' || pattern.generator.kind === 'penrose')
+    if (pattern.symmetry.family !== 'wallpaper' || finiteGenerator(pattern.generator))
       throw Error('Esta composición no tiene una región fundamental periódica.');
     const points = fundamentalDomain(pattern.symmetry),
       xs = points.map((p) => p.x),
@@ -340,7 +338,11 @@ function preparePatternExport(
     const layerTransforms = layer.placements
       ? scene.instances.flatMap((i) => layer.placements!.map((m) => multiply(i.matrix, m)))
       : transforms;
-    if (pattern.symmetry.family === 'none' && !pattern.composition?.enabled)
+    if (
+      pattern.symmetry.family === 'none' &&
+      !pattern.composition?.enabled &&
+      !scene.generated.aperiodic
+    )
       return layerTransforms
         .flatMap((t) =>
           layer.geometry.map((shape) =>
@@ -366,7 +368,9 @@ function preparePatternExport(
     !expanded &&
     !scene.tiling &&
     options.target !== 'tile' &&
-    (pattern.symmetry.family !== 'none' || pattern.composition?.enabled)
+    (pattern.symmetry.family !== 'none' ||
+      pattern.composition?.enabled ||
+      scene.generated.aperiodic)
   )
     content = defs + content;
   if (region && application?.showOutline) {

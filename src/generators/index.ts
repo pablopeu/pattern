@@ -1,3 +1,5 @@
+import { generateAperiodic } from '../aperiodic/generated';
+import { finiteGenerator, isAperiodic } from '../aperiodic/model';
 import type { Composition, CompositionReport } from '../composition/model';
 import { defaultGenerator, geometry, node, type Generator, type Geometry } from '../app/model';
 import {
@@ -22,6 +24,8 @@ export const generatorLabels: Record<Generator['kind'], string> = {
   tessellation: 'Motivos escalonados · legado',
   freeform: 'Freeform Arrangement',
   penrose: 'Penrose',
+  hat: 'Hat',
+  spectre: 'Spectre',
 };
 export function random(seed: number): () => number {
   let a = seed | 0;
@@ -34,6 +38,15 @@ export function random(seed: number): () => number {
   };
 }
 export interface Generated {
+  aperiodic?: {
+    kind: 'hat' | 'spectre';
+    bodyId: string;
+    palette: string[];
+    classes: number[];
+    ids: string[];
+    guides: { geometry: Geometry; matrices: Matrix[] }[];
+    source: Geometry[];
+  };
   composition?: {
     definition: Composition;
     report: CompositionReport;
@@ -99,11 +112,12 @@ export function penrose(depth: number, radius: number): Geometry[] {
   });
 }
 export function generate(g: Generator, source: Geometry[]): Generated {
+  if (isAperiodic(g)) return generateAperiodic(g, source);
   const rand = random(g.seed),
     result: Generated = {
       geometry: source.filter((s) => s.visible),
       placements: [IDENTITY],
-      finite: g.kind === 'penrose',
+      finite: finiteGenerator(g),
     };
   if (g.kind === 'motif') return result;
   if (g.kind === 'freeform') {
@@ -244,5 +258,7 @@ export const generatorParameters: Record<Generator['kind'], (keyof Generator)[]>
   tessellation: ['rows', 'columns', 'spacing', 'scale', 'rotation'],
   freeform: [],
   penrose: ['radius', 'frequency'],
+  hat: [],
+  spectre: [],
 };
 export { defaultGenerator };

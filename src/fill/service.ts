@@ -1,3 +1,4 @@
+import { geometricGenerator } from '../aperiodic/model';
 import { tileFillContour } from './coordinates';
 import { tileColorIndex, geometricTiling } from '../tiling/colors';
 import { compositionGeometryContext } from '../composition/model';
@@ -354,7 +355,7 @@ export function fillContext(
           }
         : {
             id,
-            generator: p.generator,
+            generator: geometricGenerator(p.generator),
             symmetry: p.symmetry,
             placement: p.placementTransform,
             tiling: geometricTiling(p.tiling),
@@ -559,7 +560,7 @@ export function axesFingerprint(project: Project): string {
     project.patterns.map((p) => [
       p.id,
       p.visible,
-      p.generator,
+      geometricGenerator(p.generator),
       p.symmetry,
       p.symmetryMode,
       p.placementTransform,

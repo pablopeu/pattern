@@ -1,3 +1,4 @@
+import { finiteGenerator } from '../aperiodic/model';
 import { composeGenerated } from '../composition/generated';
 import { tileColorIndex } from '../tiling/colors';
 import { isohedralLayout } from '../isohedral/engine';
@@ -77,7 +78,7 @@ export function buildScene(
       ),
     };
   }
-  if (pattern.tiling && pattern.generator.kind !== 'penrose' && !pattern.composition?.enabled) {
+  if (pattern.tiling && !finiteGenerator(pattern.generator) && !pattern.composition?.enabled) {
     const definition = pattern.tiling,
       boundary = tileBoundary(definition),
       inner = buildScene(
@@ -254,6 +255,46 @@ export function buildScene(
   generated.placements = generated.placements.map((m) =>
     multiply(pattern.placementTransform ?? IDENTITY, m),
   );
+  if (generated.aperiodic)
+    generated.aperiodic = {
+      ...generated.aperiodic,
+      guides: generated.aperiodic.guides.map((guide) => ({
+        ...guide,
+        matrices: guide.matrices.map((m) => multiply(pattern.placementTransform ?? IDENTITY, m)),
+      })),
+    };
+  if (generated.aperiodic && pixelsPerMm && !pattern.composition?.enabled) {
+    const b = geometryBounds(generated.geometry),
+      pad = strokePadding(generated.geometry, generated.placements),
+      indices: number[] = [];
+    generated.placements.forEach((m, index) => {
+      const pts = [
+        { x: b.x, y: b.y },
+        { x: b.x + b.width, y: b.y },
+        { x: b.x + b.width, y: b.y + b.height },
+        { x: b.x, y: b.y + b.height },
+      ].map((p) => apply(m, p));
+      const xs = pts.map((p) => p.x),
+        ys = pts.map((p) => p.y);
+      if (
+        Math.max(...xs) + pad >= bounds.x &&
+        Math.min(...xs) - pad <= bounds.x + bounds.width &&
+        Math.max(...ys) + pad >= bounds.y &&
+        Math.min(...ys) - pad <= bounds.y + bounds.height
+      )
+        indices.push(index);
+    });
+    const a = generated.aperiodic;
+    generated = {
+      ...generated,
+      placements: indices.map((i) => generated.placements[i]),
+      aperiodic: {
+        ...a,
+        classes: indices.map((i) => a.classes[i]),
+        ids: indices.map((i) => a.ids[i]),
+      },
+    };
+  }
   const free = pattern.symmetry.family === 'none' && !generated.finite;
   const finite = generated.finite || pattern.symmetry.family === 'radial';
   const base = geometryBounds(generated.geometry),
@@ -301,7 +342,7 @@ export function buildScene(
       : generated.composition
         ? `${generated.composition.definition.kind === 'recursive' ? 'Composición recursiva' : 'Semejanza en espiral'} · finita, sin periodicidad de traslación${generated.composition.report.limited ? ' · detalle limitado por presupuesto' : ''}`
         : generated.finite
-          ? 'Penrose · región aperiódica finita'
+          ? `${generated.aperiodic?.kind === 'hat' ? 'Hat' : generated.aperiodic?.kind === 'spectre' ? 'Spectre curvo · sin reflexiones' : 'Penrose'} · parche aperiódico finito`
           : pattern.symmetry.family === 'radial'
             ? 'Simetría radial · sin periodicidad de traslación'
             : pattern.symmetry.family === 'frieze'
