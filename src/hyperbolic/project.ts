@@ -1,24 +1,12 @@
-import type { Point } from '../geometry/matrix';
+import { adaptiveMapCubic, type Cubic } from '../geometry/nonlinear';
+export { splitCubic, type Cubic } from '../geometry/nonlinear';
 import type { Iso } from '../vendor/poincare/iso';
 import { diskPoint } from './disk';
-export type Cubic = readonly [Point, Point, Point, Point];
-const mix = (a: Point, b: Point, t = 0.5): Point => ({
+const mix = (a: Cubic[0], b: Cubic[0], t = 0.5) => ({
   x: a.x + (b.x - a.x) * t,
   y: a.y + (b.y - a.y) * t,
 });
-const distance = (a: Point, b: Point) => Math.hypot(a.x - b.x, a.y - b.y);
-export function splitCubic([a, b, c, d]: Cubic): [Cubic, Cubic] {
-  const ab = mix(a, b),
-    bc = mix(b, c),
-    cd = mix(c, d),
-    abc = mix(ab, bc),
-    bcd = mix(bc, cd),
-    mid = mix(abc, bcd);
-  return [
-    [a, ab, abc, mid],
-    [mid, bcd, cd, d],
-  ];
-}
+const distance = (a: Cubic[0], b: Cubic[0]) => Math.hypot(a.x - b.x, a.y - b.y);
 /** Certified upper bound for distance to the mapped endpoint chord.
  * L·BezierDeviation + sup|f''|·chordLength²/8, over the control hull.
  * This detects loops/S-curves that a midpoint-only flatness test can miss.
@@ -43,35 +31,11 @@ export function projectCubic(
   tolerance: number,
   limits: { maxDepth?: number; maxSegments?: number } = {},
 ) {
-  const maxDepth = limits.maxDepth ?? 18,
-    maxSegments = limits.maxSegments ?? 4096;
-  if (
-    !Number.isFinite(tolerance) ||
-    tolerance <= 0 ||
-    !Number.isInteger(maxDepth) ||
-    maxDepth < 0 ||
-    maxDepth > 20 ||
-    !Number.isInteger(maxSegments) ||
-    maxSegments < 1 ||
-    maxSegments > 100000
-  )
-    throw Error('Precisión o presupuesto de proyección inválidos.');
-  const points: Point[] = [diskPoint(f, curve[0])];
-  let bound = 0;
-  const visit = (c: Cubic, depth: number) => {
-    const error = projectedCubicError(c, f);
-    if (error <= tolerance) {
-      if (points.length > maxSegments)
-        throw Error('La proyección excede su presupuesto de segmentos.');
-      points.push(diskPoint(f, c[3]));
-      bound = Math.max(bound, error);
-      return;
-    }
-    if (depth >= maxDepth) throw Error('La profundidad no alcanza la tolerancia de proyección.');
-    const [left, right] = splitCubic(c);
-    visit(left, depth + 1);
-    visit(right, depth + 1);
-  };
-  visit(curve, 0);
-  return { points, errorBound: bound, segments: points.length - 1 };
+  return adaptiveMapCubic(
+    curve,
+    (p) => diskPoint(f, p),
+    (c) => projectedCubicError(c, f),
+    tolerance,
+    limits,
+  );
 }

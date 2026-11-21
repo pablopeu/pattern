@@ -1253,3 +1253,25 @@ inicia otro incremento. Monitor conserva timer real, secundaria sólo avisa.
   push autorizado sin inspeccionar despliegue. Fase4 sigue parcial: modalidad
   artística, bordes pareados canónicos y color por clase pendientes, además de
   fases5–7. No PROJECT_COMPLETE.
+
+
+## Fase4 · Núcleo del disco artístico y geometría compartida
+
+- Deformación radial explícitamente ARTISTIC; mapa suave invertible al disco,
+  cota analítica por hull para S/lazos, subdivisión de Casteljau y límites globales.
+  Conserva pinturas/huecos/opacidad/IDs y fuente intacta, sin afirmar hiperbólica.
+- Escena finita, normalización de regiones, subdivisión y ciclo de vida del worker
+  compartidos; arte no necesita p/q ficticios. Poincaré mantiene API/modelo/cota.
+-964 unidades/TypeScript,12 nuevas (inverso,1001 muestras por curva,4 compresiones,
+  estilos, escala física, límites y XML);5 E2E públicas Poincaré finales correctas,
+  build y12 estáticas raíz/subcarpeta correctos. Regresión184 anterior conservada;
+  no se repitió completa al no cambiar flujos públicos ni quedar fallos abiertos.
+- Worker artístico real:108 pinturas/101669 segmentos/cota≤0,005mm,53 ticks de
+  respuesta observados, cancelación previa/activa, recuperación y fuente intacta.
+  CairoSVG independiente: error medio0,1696/255,6 probes correctos; presión fina/
+  gruesa, agujero y recorte reales. Poincaré worker85 celdas/raster29 conserva
+  exactamente píxeles y cota previos. Evidencia art-core-* en .runtime.
+- ARTISTIC_DISK_CORE.md detalla mapa, derivadas, cota, límites y reproducción.
+  Selector/contrato nativo artístico/ejemplos públicos pendientes del siguiente
+  incremento; bordes canónicos y color por clase aún pendientes en Fase4.
+  Servicios LAN conservados. No PROJECT_COMPLETE.

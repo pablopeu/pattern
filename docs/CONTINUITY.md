@@ -1,3 +1,34 @@
+# Fase4 · Núcleo artístico verificado; conectar UI/nativo a continuación
+
+913957b publicado: Poincaré geométrico público, JSON7, regreso/cancelación,
+SVG/PNG/JPEG físico, galería23 con2 originales,184 E2E/952 unidades/12 estáticas.
+Nuevo núcleo artístico todavía sin selector público ni contrato nativo artístico.
+
+Disco artístico radial F(v)=R·u/sqrt(1+|u|²), u=s(v−c), explícitamente ARTISTIC,
+sin afirmar teselación hiperbólica/simetrías/bordes. Cota analítica Lδ+M|D−A|²/8,
+subdivisión adaptativa, presupuesto global, estilos/huecos/orden/IDs conservados,
+fuente intacta y SVG físico. Detalles/prueba de derivadas ARTISTIC_DISK_CORE.md.
+
+Preparación finita/normalización de pintura/subdivisión/worker ahora compartidas,
+sin p/q ficticios para arte. APIs/modelo/normalización/cota Möbius de Poincaré
+conservados.964 unidades/TypeScript,12 nuevas;5 E2E Poincaré finales correctas,
+build y12 estáticas raíz/subcarpeta correctos. Worker/raster Poincaré real conserva
+mismos píxeles/cota. Diagnóstico artístico108 pinturas/101669 segmentos/cota≤0,005mm,
+worker53 ticks/cancelación/recuperación; CairoSVG independiente error0,1696/255,
+6 probes de hueco/azul/línea/perfil fino-grueso/exterior correctos. Logs art-core-*.
+No repetir pruebas amplias sin cambio/fallo/preocupación nueva. Servicios vivos.
+
+Próximo: ampliar tipo Visualization con artistic-disk y esquema estricto, preservar
+JSON7 (lector geométrico7 debe rechazar kind desconocido, nunca aplanar en silencio),
+reutilizar DiskDialog para selector geométrico/artístico, controles/worker/SVG/
+PNG/JPEG/guardado/regreso y2 ejemplos con fuentes originales. Mantener UI/data
+claramente ARTISTIC. Poincaré sigue parcial: bordes pareados canónicos y color
+por clase pendientes. Fases5–7 pendientes. No PROJECT_COMPLETE. Primaria5h
+vigente con64% restante en última lectura; secundaria sólo avisa. Commit/push
+autorizados sin inspeccionar Actions/FTP. Servicios4173/4174 no duplicados.
+
+---
+
 # Fase4 · Poincaré geométrico integrado y verificado
 
 Vista geométrica pública: botón Visualizar, modal no editable con fuente/celda/
