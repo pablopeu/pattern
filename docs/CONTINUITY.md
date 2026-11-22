@@ -1755,3 +1755,19 @@ real); comandos de paleta para Visualizar y Animar; diálogos de esfera y
 animación sin scroll horizontal en 1440/390 (E2E). Los ejemplos pendientes del
 PRD de galería quedan diferidos por pedido de Pablo hasta después de v3.1.
 Próximo: v3.1 según docs/prd/prd_v3.1.txt.
+
+## V3.1 completado · publicaciones y enlaces compartibles
+
+Botón Compartir junto a Exportar; diálogo con miniatura 1200×630 generada por
+los renderer reales, tamaños estimados, crear enlace, copiar, WhatsApp/Telegram/
+Facebook/X, Instagram honesto (copiar/descargar miniatura), Web Share, retiro
+desde el dispositivo y sugerencia tras guardar archivo con preferencia
+persistente (autosave nunca sugiere). Backend PHP 8.1+ en public/api y public/s:
+ID Base62 sin sesgo, GZIP, atómico, hash, límites 2MiB/256KiB/512KiB, rate
+limit y cuota global con flock, idempotencia, borrado con secreto SHA-256,
+página OG server-side con CSP, preview JPEG con GD o tarjeta genérica.
+Sistema de pruebas: script de integración PHP real (28 comprobaciones, incluye
+OG, traversal, concurrencia y mantenimiento) y E2E con stub del contrato por
+aislamiento de red de los servicios de prueba; FULL al cierre. Documentación en
+docs/SHARE.md y docs/ACCEPTANCE_V31.md. Diferidos (pedido de Pablo): ejemplos
+restantes del PRD de galería.

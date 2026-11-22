@@ -30,7 +30,10 @@
     "qa:failures": "node scripts/qa-runner.mjs failures",
     "qa:cancel": "node scripts/qa-runner.mjs cancel",
     "test:qa": "node --test scripts/qa.test.mjs",
-    "work:close": "node scripts/work-close.mjs"
+    "work:close": "node scripts/work-close.mjs",
+    "share:benchmark": "node scripts/share-benchmark.mjs",
+    "test:share:php": "node scripts/share-php-test.mjs",
+    "build:dist": "npm run build && node scripts/share-manifest.mjs"
   },
   "dependencies": {
     "clipper-lib": "^6.4.2",

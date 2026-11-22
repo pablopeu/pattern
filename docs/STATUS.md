@@ -87,3 +87,18 @@ queda encolado para la reanudación.
 Publicados previamente:6b71fca (borrado),c3f8bfa (uniones/estudio corregido),
 c0d4e40 (parpadeo). El commit que contiene este informe reúne galería, geometría
 funcional y exploración reversible; su hash se informa a Pablo al terminar el push.
+
+## v3.1 · Publicaciones (22/11)
+
+Usuario publica voluntariamente y obtiene enlace permanente con OG. Frontend:
+botón Compartir, diálogo con miniatura real 1200×630, tamaños, copiar enlace,
+WhatsApp/Telegram/Facebook/X, Instagram honesto, Web Share, retiro desde el
+dispositivo y sugerencia tras guardado con preferencia persistente. Backend PHP
+sin base de datos: ID Base62 con random_bytes, GZIP, escritura atómica, hash
+SHA-256, rate limit y cuotas con flock, idempotencia, borrado con secreto,
+página pública con OG y CSP, miniatura re-codificada con GD o fallback seguro.
+Pruebas: integración PHP real (28 comprobaciones) + 3 E2E de compartición.
+Documentación operativa en docs/SHARE.md.
+
+V3.0 y V3.1 completados. Quedan diferidos por pedido de Pablo los ejemplos
+pendientes del PRD de galería.

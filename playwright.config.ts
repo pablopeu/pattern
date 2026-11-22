@@ -27,6 +27,7 @@ export default defineConfig({
         '**/poincare.spec.ts',
         '**/sphere.spec.ts',
         '**/animation.spec.ts',
+        '**/share.spec.ts',
         '**/artistic.spec.ts',
         '**/chambers.spec.ts',
         '**/feedback-study.spec.ts',
@@ -47,5 +48,7 @@ export default defineConfig({
   reporter: [['./scripts/qa-playwright-reporter.mjs']],
   webServer: process.env.TEST_BASE_URL
     ? undefined
-    : { command: 'npm run dev', url: 'http://127.0.0.1:4173', reuseExistingServer: true },
+    : [
+        { command: 'npm run dev', url: 'http://127.0.0.1:4173', reuseExistingServer: true },
+      ],
 });

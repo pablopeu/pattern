@@ -520,6 +520,16 @@ BASE_PATH=/pattern/ npm run build
 
 Copiar `dist/` al subdirectorio `/pattern/`. No se necesitan reglas de reescritura: la aplicación usa un único documento HTML. HTTP por LAN funciona; no depende de service workers, contexto HTTPS, CDN, fuentes externas ni conexión a Internet. Hace falta servir los archivos por HTTP; no se promete abrir el worker mediante `file://`.
 
+### Publicar y compartir creaciones (opcional)
+
+El editor funciona sin conexión; publicar es una acción voluntaria desde el botón
+**Compartir** de la cabecera. Genera un enlace permanente con miniatura Open Graph,
+botones de WhatsApp/Telegram/Facebook/X, compartir nativo y retiro desde el mismo
+dispositivo. El servidor sólo guarda el JSON nativo comprimido (GZIP), metadatos
+mínimos y una miniatura pequeña: requiere PHP 8.1+ y escritura en un directorio
+privado, sin base de datos. Configuración, cuotas, backup y diagnóstico de Open
+Graph: [docs/SHARE.md](docs/SHARE.md).
+
 ### Despliegue automático por FTP con GitHub Actions
 
 [Deploy FTP](.github/workflows/deploy-ftp.yml) se ejecuta con **cada push a

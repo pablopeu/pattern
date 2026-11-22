@@ -35,7 +35,7 @@ jobs:
       - name: TypeScript and unit tests
         run: npm run check
       - name: Build static site
-        run: npm run build
+        run: npm run build:dist
       - name: Validate secrets and prepare destination
         id: ftp
         run: node scripts/prepare-ftp.mjs

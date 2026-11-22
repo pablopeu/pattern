@@ -1,6 +1,13 @@
 import { DiskDialog } from '../ui/DiskDialog';
 import { SphereDialog } from '../ui/SphereDialog';
 import { AnimationDialog } from '../ui/AnimationDialog';
+import { ShareDialog } from '../ui/ShareDialog';
+import {
+  fetchShare,
+  suggestionEnabled,
+  setSuggestionEnabled,
+  sharedIdFromLocation,
+} from '../share/api';
 import { defaultVisualization } from '../visualization/model';
 import { finiteGenerator } from '../aperiodic/model';
 import { ExampleGallery } from '../ui/ExampleGallery';
@@ -20,47 +27,7 @@ import logo from '../assets/icono.png';
 import { commonRectangularCell, resolvePattern } from '../symmetry/config';
 import { useState, useRef, useEffect } from 'react';
 import { railCategories, type Category } from '../ui/navigation';
-import {
-  Search,
-  PaintBucket,
-  MousePointer2,
-  PenTool,
-  Pencil,
-  PenLine,
-  Minus,
-  Square,
-  Circle,
-  Hexagon,
-  Move,
-  Waypoints,
-  Upload,
-  Undo2,
-  Redo2,
-  Download,
-  Save,
-  FolderOpen,
-  Plus,
-  Copy,
-  PanelLeftClose,
-  PanelLeftOpen,
-  PanelRightClose,
-  PanelRightOpen,
-  Palette,
-  Activity,
-  SwatchBook,
-  Bookmark,
-  Shapes,
-  Columns2,
-  LayoutGrid,
-  Check,
-  ChevronDown,
-  X,
-  Settings2,
-  ExternalLink,
-  HelpCircle,
-  BookOpen,
-  Trash2,
-} from 'lucide-react';
+import { Activity, BookOpen, Bookmark, Check, ChevronDown, Circle, Columns2, Copy, Download, ExternalLink, FolderOpen, HelpCircle, Hexagon, LayoutGrid, Minus, MousePointer2, Move, PaintBucket, Palette, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, PenLine, PenTool, Pencil, Plus, Redo2, Save, Search, Settings2, Shapes, Share2, Square, SwatchBook, Trash2, Undo2, Upload, Waypoints, X } from 'lucide-react';
 import { useStudio, type Tool, type StylePage } from './useStudio';
 import { newStudy, geometry, uid, type Project } from './model';
 import { freezePattern } from '../symmetry/config';
@@ -106,6 +73,10 @@ export default function App() {
     [help, setHelp] = useState(false),
     [referencesOpen, setReferencesOpen] = useState(false),
     [animationOpen, setAnimationOpen] = useState(false),
+    [shareOpen, setShareOpen] = useState(false),
+    [sharedLink, setSharedLink] = useState(''),
+    [shareSuggestion, setShareSuggestion] = useState(false),
+    [neverSuggest, setNeverSuggest] = useState(false),
     [isohedralOpen, setIsohedralOpen] = useState(false),
     [importText, setImportText] = useState<string | null>(null),
     [importWidth, setImportWidth] = useState(100),
@@ -295,6 +266,7 @@ export default function App() {
       }
       setSaveOpen(false);
       s.setMessage('Proyecto guardado como archivo JSON editable.');
+      if (!pending && suggestionEnabled()) setShareSuggestion(true);
       if (pending) s.continueDestructive(pending);
     } catch (error) {
       s.setMessage('No se puede guardar: ' + (error as Error).message);
@@ -313,6 +285,27 @@ export default function App() {
       after();
     });
   };
+  // Apertura de un enlace público (PRD v3.1 §11): copia temporal, nunca sobrescribe en silencio.
+  useEffect(() => {
+    const id = sharedIdFromLocation();
+    if (!id) return;
+    let cancelled = false;
+    void fetchShare(id)
+      .then((shared) => {
+        if (cancelled) return;
+        const copy = structuredClone(shared);
+        copy.metadata.id = uid();
+        copy.metadata.createdAt = copy.metadata.updatedAt = new Date().toISOString();
+        replaceProject(copy, 'abrir una creación compartida', () => {
+          setSharedLink(new URL(`s/${id}`, document.baseURI).href);
+        });
+      })
+      .catch((error) => s.setMessage((error as Error).message));
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const openExamples = () => {
     s.setStyleOpen(false);
     setExamplesOpen(true);
@@ -670,6 +663,14 @@ export default function App() {
               )}
             </div>
           </details>
+          <button
+            className="share-trigger"
+            aria-label="Compartir"
+            title="Publicar la creación y obtener un enlace permanente"
+            onClick={() => setShareOpen(true)}
+          >
+            <Share2 size={16} /> <span className="share-label">Compartir</span>
+          </button>
           <button className="primary-button export-trigger" onClick={openExport}>
             <Download size={16} /> Exportar
           </button>
@@ -1051,6 +1052,58 @@ export default function App() {
       )}
       {commandOpen && <CommandPalette commands={commands} onClose={() => setCommandOpen(false)} />}
       {animationOpen && <AnimationDialog studio={s} onClose={() => setAnimationOpen(false)} />}
+      {shareOpen && <ShareDialog studio={s} onClose={() => setShareOpen(false)} />}
+      {shareSuggestion && (
+        <div className="share-suggestion" role="status" aria-label="Sugerencia de compartir">
+          <p>¿Querés compartir tu creación?</p>
+          <label>
+            <input
+              type="checkbox"
+              aria-label="No volver a preguntarme"
+              checked={neverSuggest}
+              onChange={(e) => setNeverSuggest(e.target.checked)}
+            />
+            No volver a preguntarme
+          </label>
+          <span>
+            <button
+              onClick={() => {
+                setShareSuggestion(false);
+                setShareOpen(true);
+                if (neverSuggest) setSuggestionEnabled(false);
+              }}
+            >
+              Compartir
+            </button>
+            <button
+              onClick={() => {
+                setShareSuggestion(false);
+                if (neverSuggest) setSuggestionEnabled(false);
+              }}
+            >
+              Ahora no
+            </button>
+          </span>
+        </div>
+      )}
+      {sharedLink && (
+        <div className="shared-banner" role="status" aria-label="Creación compartida abierta">
+          <p>Creación compartida abierta como copia editable.</p>
+          <span>
+            <button
+              onClick={() =>
+                download(
+                  serialize(s.projectRef.current),
+                  (s.projectRef.current.metadata.name || 'creacion') + '.pattern.json',
+                )
+              }
+            >
+              Descargar JSON
+            </button>
+            <button onClick={() => setSharedLink('')}>Cerrar</button>
+          </span>
+        </div>
+      )}
       {examplesOpen && (
         <ExampleGallery
           onClose={() => setExamplesOpen(false)}

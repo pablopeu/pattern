@@ -1,0 +1,15 @@
+# Publicaciones (PRD v3.1). Rutas bonitas cuando Apache/mod_rewrite estén disponibles;
+# sin rewrite, el frontend usa api/index.php y s/?id= con los mismos resultados.
+Options -Indexes
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^api/shares/([0-9A-Za-z]{16})/?$ api/index.php?id=$1 [L,QSA]
+  RewriteRule ^api/shares/?$ api/index.php [L,QSA]
+  RewriteRule ^s/([0-9A-Za-z]{16})/preview\.jpg$ s/preview.php?id=$1 [L,QSA]
+  RewriteRule ^s/([0-9A-Za-z]{16})/?$ s/index.php?id=$1 [L,QSA]
+</IfModule>
+<FilesMatch "\.(json\.gz|log)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+</FilesMatch>

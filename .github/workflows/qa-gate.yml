@@ -33,6 +33,13 @@ jobs:
           python3 -m venv .runtime/qa-python
           .runtime/qa-python/bin/pip install -r scripts/qa/requirements.txt
           echo "$GITHUB_WORKSPACE/.runtime/qa-python/bin" >> "$GITHUB_PATH"
+      - name: PHP share integration
+        run: |
+          if command -v php >/dev/null; then
+            node scripts/share-php-test.mjs
+          else
+            echo "PHP no disponible en el runner; integración de publicaciones omitida."
+          fi
       - name: Full quality gate
         run: npm run qa:full
       - name: Store QA evidence

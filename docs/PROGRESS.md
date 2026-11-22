@@ -1490,3 +1490,13 @@ inicia otro incremento. Monitor conserva timer real, secundaria sólo avisa.
   modal Referencias y THIRD_PARTY_NOTICES ampliados; miniaturas reales generadas.
 - qa:fast: 1152/1152 unitarias; E2E 209/210 con un flake de timing que pasa
   aislado (v22-fill dense). Runner E2E con presupuesto 1800s.
+
+## v3.1 · Publicaciones
+
+- Backend PHP sin BD en public/api y public/s: ID Base62, GZIP atómico, hash,
+  límites, rate limit/cuota con flock, idempotencia, retiro con secreto, OG+CSP.
+- Frontend: botón Compartir, diálogo con miniatura real, redes, Instagram
+  honesto, retiro local, sugerencia tras guardado con preferencia persistente.
+- Integración PHP real: 28 comprobaciones (scripts/share-php-test.mjs).
+  E2E de compartición: 3 pruebas. Benchmark: JSON p50 5,1 KiB, gzip p50 2,1 KiB.
+- Docs: SHARE.md, ACCEPTANCE_V31.md, README y workflow de CI actualizados.
