@@ -1,3 +1,39 @@
+# Feedback de test1 · Borrado múltiple corregido; uniones y Fill en curso
+
+Reanudación real primaria0% usado; app4173 PID1046850 y monitor4174 PID785001
+conservados. Feedback05da0f0a171043ddb88c8c5145bc920e pendiente en parte:
+tests/estudios/test1.json aportado por Pablo (todavía sin trackear). Prioridad:
+ancho60→61 separa uniones entre copias; dos Fill ya llegan stale desde archivo,
+con contexto anterior de origen/orientación. Después renovar galería completa
+con ejemplos representativos de funciones nuevas y buscar motivos parametrizados
+de Escher adaptables con atribución. No conservar galería antigua como galería
+pública por defecto; preservar regresiones/fixtures del motor.
+
+Primer avance: Delete/Backspace/Eliminar selección borran directamente, con undo,
+sin abrir diálogo de reemplazo de proyecto. Nuevo proyecto/carga/ejemplos siguen
+protegidos. Con varios objetos, pestaña Nodos explica edición individual y ofrece
+Eliminar objetos seleccionados; evita confundir nodo activo con trazados enteros.
+1080 unidades/TypeScript y6 E2E de protección +2 de multiselección reales correctas
+(escritorio/móvil, Shift, Delete, Backspace, undo, bloqueados). Móvil requiere cerrar
+el panel superpuesto para clicar el segundo trazo; prueba lo hace por UI. Dos
+intentos de test corregidos por selector inexistente y tap debajo del panel;
+aplicación no cambió para relajar aserciones. Build correcto.
+
+Próximo: ampliar patchSymmetryFrame a conjugación por base de red al variar
+width/height/angle del MISMO grupo; D=Bnuevo·Bviejo⁻¹, P'=D·P, fuente/nodos/gauges
+intactos, S'P'=D·SP. Marcos físicos de teselas excluidos. Extender pruebas a17
+wallpaper/7 frisos y al archivo real. Para Fill del archivo, diagnosticar geometría
+actual: uno recalcula con límites originales, otro tiene nuevas líneas y la
+política actual de familias exactas lo rechaza. No cambiar archivo de Pablo ni
+inventar un área: reparación debe validar cara cerrada única y reflejar el vínculo.
+
+PRD pendiente: color por celda/orientación, auditoría Fase4, fases5–7. Último cierre
+1e5de6a publicado:1080 unidades/194 E2E/16 estáticas/build. No repetir suites amplias
+correctas sin cambios/fallo/preocupación nueva. No PROJECT_COMPLETE; primaria
+única pausa al90% usado, secundaria sólo aviso. Push autorizado, sin inspección FTP.
+
+---
+
 # Fase4 · Cámaras reflejadas integradas; cierre de ventana primaria
 
 634831d publicado (núcleo), integración pública actual lista y en verificación

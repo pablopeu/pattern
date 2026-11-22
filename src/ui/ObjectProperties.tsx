@@ -257,7 +257,17 @@ export function ObjectProperties({ studio: s }: { studio: Studio }) {
       </div>
       <div hidden={tab !== 'nodes'} className="compact-fields">
         {' '}
-        {shape.kind !== 'path' ? (
+        {selected.length > 1 ? (
+          <>
+            <p className="help-text">
+              Hay {selected.length} objetos seleccionados. Para editar nodos, seleccioná un solo
+              trazado.
+            </p>
+            <button className="wide-button" onClick={s.deleteSelected}>
+              Eliminar objetos seleccionados
+            </button>
+          </>
+        ) : shape.kind !== 'path' ? (
           <button
             className="wide-button"
             onClick={() => {

@@ -109,26 +109,22 @@ test('JSON válido y ejemplos piden permiso; JSON inválido conserva el proyecto
   await guard(page).getByRole('button', { name: 'Cancelar', exact: true }).click();
   expect((await model(page))!.metadata.name).toBe('Otro estudio');
 });
-test('borrar selección se puede cancelar y sólo se ejecuta al confirmar', async ({ page }) => {
+test('borrar selección es inmediato y deshacible; no reemplaza el estudio', async ({ page }) => {
   await page.goto('/');
   await model(page);
   await page.getByRole('button', { name: 'Crear polígono regular', exact: true }).click();
-  const original = await model(page);
+  const original = (await model(page))!;
   await page
     .locator('.tool-rail')
     .getByRole('button', { name: 'Eliminar selección', exact: true })
     .click();
-  await expect(guard(page)).toBeVisible();
-  await guard(page).getByRole('button', { name: 'Cancelar', exact: true }).click();
-  expect((await model(page))!.patterns[0].sourceGeometry).toEqual(
-    original!.patterns[0].sourceGeometry,
-  );
-  await page
-    .locator('.tool-rail')
-    .getByRole('button', { name: 'Eliminar selección', exact: true })
-    .click();
-  await guard(page).getByRole('button', { name: 'Descartar y continuar' }).click();
+  await expect(guard(page)).toHaveCount(0);
   await expect.poll(async () => (await model(page))!.patterns[0].sourceGeometry).toEqual([]);
+  expect((await model(page))!.metadata.id).toBe(original.metadata.id);
+  await page.keyboard.press('Control+z');
+  await expect
+    .poll(async () => (await model(page))!.patterns[0].sourceGeometry)
+    .toEqual(original.patterns[0].sourceGeometry);
 });
 test('un error real de IndexedDB impide continuar y conserva el trabajo', async ({ page }) => {
   await page.goto('/');

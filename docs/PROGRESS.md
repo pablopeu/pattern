@@ -1345,3 +1345,19 @@ inicia otro incremento. Monitor conserva timer real, secundaria sólo avisa.
   después del reset primario real; secundaria sólo aviso. Servicios LAN originales
   conservados,0 feedback pendiente. Color por clase, auditoría Fase4 y fases5–7
   pendientes. No PROJECT_COMPLETE ni inspección Actions/FTP tras el push.
+
+
+## Feedback test1 · Borrado múltiple directo y deshacible
+
+- Delete/Backspace y Eliminar selección ya no abren el diálogo de reemplazar
+  estudio; borran la selección actual y se pueden deshacer. Se conserva protección
+  de nuevo/carga/ejemplos y bloqueo de objetos.
+- Nodos con selección múltiple explica edición individual y ofrece Eliminar
+  objetos seleccionados. Pruebas reales Shift+click, Delete, Backspace, undo y
+  conservación de objetos bloqueados en escritorio/móvil.
+- 1080 unidades/TypeScript,6 E2E de protección y2 de multiselección correctas;
+  build correcto. Primeros selectores de test/mobile tap ajustados a DOM
+  real y cierre de panel superpuesto, manteniendo aserciones de resultado.
+- Feedback restante: uniones al variar ancho60→61, Fill stale del archivo aportado,
+  reemplazar galería y buscar motivos parametrizados adaptables. Servicios LAN
+  originales conservados, primaria real reiniciada; secundaria sólo aviso.
