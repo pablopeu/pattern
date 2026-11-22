@@ -87,7 +87,9 @@ export async function makePlan(profile, impact, root, dir) {
           TEST_STATIC: '',
           TEST_BASE_URL: 'http://127.0.0.1:4173',
         },
-        timeout: 1200000,
+        // 1800s: los E2E completos tomaron ~800s y >1200s en runners de GitHub
+        // con la misma configuración; el presupuesto debe absorber esa varianza.
+        timeout: 1800000,
       },
     );
   if (profile === 'full' || (profile === 'integration' && impact.exports))
