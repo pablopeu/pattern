@@ -1698,3 +1698,7 @@ entre el worker de vínculos y el recálculo manual. `recalculateFill` ahora
 reintenta solo (hasta 2 veces) cuando el fingerprint cambió durante el
 cálculo, en vez de abortar; nunca aplica resultados viejos. Verificado: spec
 completo 26/26 y qa:fast PASS.
+
+Segundo fallo del gate tras el fix de carrera: E2E pasó 210/210 y quedó el
+conteo estático de enlaces del modal Referencias (18→21 por las tres fuentes
+GitHub nuevas: jaredly, Høst y Revello). Test actualizado; pasa local.
