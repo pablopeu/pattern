@@ -71,6 +71,61 @@ const otherReferences = [
     'https://wiki.inkscape.org/wiki/Tiling_tool',
     'Clones y edición desde instancias',
   ],
+  [
+    'Sean Michael Ragan · MC Escher lizard vector art',
+    'https://www.seanmichaelragan.com/html/%5B2008-04-18%5D_MC_Escher_lizard_vector_art.shtml',
+    'Trazado vectorial del lagarto en dominio público; método de celda hexagonal',
+  ],
+  [
+    'reox · create escher lizard tesselation',
+    'https://www.reox.at/blog/posts/create_escher_lizard_tesselation/',
+    'Reconstrucción del mosaico de lagartos (dominio público); fuente del estudio de referencia',
+  ],
+  [
+    'jaredly/tessellations',
+    'https://github.com/jaredly/tessellations',
+    'Perfiles Bézier de encastre (MIT); fuente de los estudios ornamentales',
+  ],
+  [
+    'einarwh/escher-workshop · Henderson Fish',
+    'https://github.com/einarwh/escher-workshop',
+    'Comparación de curvas del pez de Henderson (MIT); sin duplicar el pez GPL3 existente',
+  ],
+  [
+    'Openclipart · Escher style (Night and Day)',
+    'https://openclipart.org/detail/249414',
+    'Aves de contraste claro/oscuro en dominio público; documentado para futuras reconstrucciones',
+  ],
+  [
+    'Openclipart · Seamless Lizards Tessellation',
+    'https://openclipart.org/detail/295026',
+    'Lagartos encastrados en dominio público; variantes cromáticas de una misma geometría',
+  ],
+  [
+    'Openclipart · Tessellating Fish',
+    'https://openclipart.org/detail/167216',
+    'Peces encastrados en dominio público; silueta independiente del pez Henderson',
+  ],
+  [
+    'Openclipart · Escher Lizard spiral set',
+    'https://openclipart.org/detail/357838',
+    'Espiral de lagartos con semejanza en dominio público; documentado',
+  ],
+  [
+    'Openclipart · Tortured Lizard',
+    'https://openclipart.org/detail/340157',
+    'Lagarto sobre hexágono deformado en dominio público; documentado',
+  ],
+  [
+    'Evin Revello · Graphic_Design',
+    'https://github.com/evinr/Graphic_Design',
+    'SVG de peces de Escher consultado; el repositorio no declara licencia y no se redistribuye',
+  ],
+  [
+    'Paulo Henrique Siqueira · Escher tessellations',
+    'https://paulohscwb.github.io/tessellation/escher/',
+    'Escenas sobre poliedros; sólo recursos raster, sin geometría vectorial reutilizable',
+  ],
 ] as const;
 
 export function ReferencesDialog({ onClose }: { onClose: () => void }) {

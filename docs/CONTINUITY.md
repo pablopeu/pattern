@@ -1644,3 +1644,51 @@ consume ya y apuntaba a `dist/`, que qa:full no deja en raíz (latentemente
 rompería el paso en verde). A pedido de Pablo se quitó el trailer
 Co-Authored-By de Claude del commit de la galería (trabajo de Codex) y no se
 agrega ninguno en adelante.
+
+## PRD galería de ejemplos · en curso (22/11)
+
+Investigación de fuentes completada (§4): descargadas a
+.runtime/original-assets/escher-sources/ (no se publican). Licencias
+verificadas: Ragan dominio público (declarado en su página); reox deriva de
+Ragan; openclipart 249414/295026/295027/295028/167216/357838/340157 dominio
+público; Høst MIT (el pez ya está vendoreado de mapio GPL3); jaredly MIT
+(.path con perfiles Bézier unitarios). El lagarto de Ragan es un DIAGRAMA de
+construcción (120 líneas de esqueleto + 7 paths de detalles), no un SVG de
+silueta: su método documentado es celda hexagonal con perfil trazado una vez
+y rotado ±120° en los bordes restantes. Verificado con el motor real que
+kind hexagon acepta perfiles arbitrarios, constrainTiling/tilingIssue pasan
+(encastre exacto) y tileInstances genera el mosaico. reox confirma la celda
+hexagonal (lado 40, vértices a 30°): path52988. Siguiente: construir el
+estudio del lagarto como tesela hexagonal con un perfil Bézier compartido,
+detalles interiores separados, validación por tilingIssue y E2E de
+editabilidad/guardado. Contexto: PRD exige 8–12 composiciones, sin duplicar
+las 15 existentes.
+
+QA: runner con timeout E2E subido a 1800s tras TIMEOUT real del gate en
+runner lento (905s→>1200s, artefacto sin log). qa:fast PASS local.
+
+## PRD galería · primer incremento verificado (22/11)
+
+Entregado: tres estudios nuevos en la galería (categoría nueva «Referencias» y
+«Ornamentales»). (1) «Lagartos de Escher · mosaico de referencia»: silueta de 58
+puntos trazada por reox (dominio público) normalizada al centro triple del grupo de
+120°, tres orientaciones coloreadas y retícula hexagonal de 72 mm (30°/+60°);
+validez APPROXIMATED porque el trazado a mano no es matemáticamente exacto
+(imperfecciones documentadas en docs/ESCHER_VECTOR_SOURCES.md). (2 y 3) «Encaje
+Bézier · rombo» (IH1) y «Panel Bézier · hexágono» (IH7): perfiles Bézier verbatim
+de jaredly/tessellations (MIT), encastre EXACT verificado por tilingIssue y por
+E2E de galería. Miniaturas reales vía scripts/capture-gallery.mjs.
+
+Referencias ampliadas en el modal (12 fuentes nuevas: Ragan, reox, Høst, jaredly,
+Openclipart 249414/295026/167216/357838/340157, Revello, Siqueira) y avisos en
+THIRD_PARTY_NOTICES.md. Catálogo completo de procedencia en
+docs/ESCHER_VECTOR_SOURCES.md. Fuentes descargadas en
+.runtime/original-assets/escher-sources/ (no publicadas); pendientes de próximas
+iteraciones: aves Night and Day (E), lagartos GDJ (F), peces Openclipart (G),
+espirales y Tortured Lizard (H, I). Revello sin licencia declarada: no se
+redistribuye. Siqueira sólo raster.
+
+Gates: qa:fast con 1152/1152 unitarias y 209/210 E2E; el único fallo fue
+v22-fill «dense» por carrera del worker de vínculos bajo carga (pasa aislado,
+21/21 en el spec). Presupuesto E2E del runner subido a 1800s tras TIMEOUT real
+en runner lento. Próximo paso: retomar el PRD v3.0 desde su fase vigente.

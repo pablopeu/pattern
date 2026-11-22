@@ -111,3 +111,24 @@ Functional Geometry y a la versión de Micah Hahn. No se incorporan imágenes de
 grabado ni su textura. El árbol afín se construye con los operadores propios de
 Patterns; no se trasladó código Python a la aplicación. `README.md` del recurso
 explica fuente y marco unitario. No se renormaliza el dibujo al bounding box.
+
+## Datos vectoriales incorporados el 22/11/2026
+
+- **Lagarto de Escher (estudio de referencia).** Silueta trazada por reox
+  (https://www.reox.at/blog/posts/create_escher_lizard_tesselation/), que declara la
+  obra en dominio público y deriva del dibujo de Sean Michael Ragan
+  (https://www.seanmichaelragan.com/html/%5B2008-04-18%5D_MC_Escher_lizard_vector_art.shtml,
+  también dominio público). Se reutiliza el contorno de 58 puntos del archivo SVG;
+  las repeticiones (retícula 72 mm, rotaciones 120°) son de Pattern Studio. Se rotula
+  como reconstrucción aproximada (`APPROXIMATED`). La obra original de M. C. Escher no
+  se reproduce.
+- **Perfiles Bézier de jaredly/tessellations (MIT).**
+  https://github.com/jaredly/tessellations — `docs/rhombus-red.path` y `docs/hex.path`
+  se incorporan verbatim como perfiles de arista de los estudios ornamentales. Licencia
+  MIT del proyecto de origen.
+
+Fuentes adicionales consultadas (sin material redistribuido): einarwh/escher-workshop
+(MIT, comparación), Evin Revello · Graphic_Design (sin licencia declarada),
+Openclipart 249414 / 295026–295028 / 167216 / 357838 / 340157 (dominio público,
+descargadas para próximas iteraciones), Paulo Henrique Siqueira · tessellation
+(sólo recursos raster). Detalle completo en docs/ESCHER_VECTOR_SOURCES.md.

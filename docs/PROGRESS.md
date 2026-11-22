@@ -1480,3 +1480,13 @@ inicia otro incremento. Monitor conserva timer real, secundaria sólo avisa.
   sin bloquear). Artefacto pattern-dist retirado (sin consumidor y con bug
   latente de ruta). README y docs/QA.md actualizados.
 - Pendiente motor: reescritura canónica espuria al abrir ejemplos linkeados.
+
+## PRD galería · incremento 1
+
+- 3 estudios nuevos integrados y verificados: lagarto de Escher (APPROXIMATED,
+  fuente trazada de dominio público) + 2 ornamentales Bézier EXACT (MIT).
+- Catálogo pasó de 15 a 18; test de portabilidad actualizado al conteo nuevo.
+- docs/ESCHER_VECTOR_SOURCES.md con la tabla de las 11 fuentes y su estado;
+  modal Referencias y THIRD_PARTY_NOTICES ampliados; miniaturas reales generadas.
+- qa:fast: 1152/1152 unitarias; E2E 209/210 con un flake de timing que pasa
+  aislado (v22-fill dense). Runner E2E con presupuesto 1800s.

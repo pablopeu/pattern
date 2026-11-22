@@ -1,0 +1,648 @@
+{
+  "schemaVersion": 7,
+  "drawingStyle": {
+    "stroke": "#233b2d",
+    "fill": "#3b82f6",
+    "strokeWidth": 0.65,
+    "strokeCap": "round",
+    "strokeJoin": "round",
+    "miterLimit": 10,
+    "opacity": 1,
+    "fillOpacity": 1,
+    "strokeOpacity": 1,
+    "fillRule": "evenodd",
+    "strokeDash": [],
+    "strokeDashOffset": 0,
+    "strokeProfile": {
+      "version": 1,
+      "kind": "uniform",
+      "points": [
+        {
+          "at": 0,
+          "width": 1
+        },
+        {
+          "at": 1,
+          "width": 1
+        }
+      ]
+    }
+  },
+  "stylePresets": [],
+  "palette": {
+    "colors": [],
+    "recent": [],
+    "favorites": []
+  },
+  "mainSymmetry": {
+    "family": "none",
+    "group": "none",
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "orientation": 0,
+    "width": 60,
+    "height": 60,
+    "angle": 90,
+    "sectors": 8,
+    "center": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "mainSymmetryProfiles": {},
+  "metadata": {
+    "id": "c2453479-3e1b-4411-a356-d6606b0cb9e1",
+    "name": "Encaje Bézier · rombo",
+    "createdAt": "2026-11-22T20:12:47.961Z",
+    "updatedAt": "2026-11-22T20:12:47.961Z",
+    "example": {
+      "id": "gallery-curve-square",
+      "category": "Ornamentales",
+      "description": "Teselación de encastre por curvas Bézier cúbicas. La arista es la fuente editable: mover un nodo rehace el mosaico exacto.",
+      "construction": "IH1 · perfil Bézier de referencia · encastre verificado",
+      "validity": "EXACT",
+      "artwork": "licensed",
+      "author": "Perfiles de Jared Forsyth (jaredly/tessellations, MIT) · reconstrucción Pattern Studio",
+      "references": [
+        {
+          "title": "jaredly/tessellations · perfiles Bézier (MIT)",
+          "url": "https://github.com/jaredly/tessellations/tree/master/docs"
+        },
+        {
+          "title": "Licencia MIT del proyecto de origen",
+          "url": "https://github.com/jaredly/tessellations/blob/master/LICENSE"
+        }
+      ]
+    }
+  },
+  "documentUnits": "mm",
+  "patterns": [
+    {
+      "id": "a7c60f79-0f3b-48de-92d6-f4399bc1c58f",
+      "name": "Encaje Bézier · rombo",
+      "sourceGeometry": [
+        {
+          "id": "dddab125-6ed0-48bc-9ed6-0f65a1dc168d",
+          "name": "Silueta de tesela",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": 0,
+              "y": 0,
+              "in": {
+                "x": -5.801106144533364,
+                "y": 4.121785805854314
+              },
+              "out": {
+                "x": 6.470124289077934,
+                "y": 2.9630123882965043
+              }
+            },
+            {
+              "x": 13.922238247605893,
+              "y": 3.518626574550115,
+              "in": {
+                "x": -7.582932291921653,
+                "y": 0.09922572666372642
+              },
+              "out": {
+                "x": 13.775956164602269,
+                "y": 0.4866092820802604
+              }
+            },
+            {
+              "x": 18.967951665356114,
+              "y": -7.070009693972881,
+              "in": {
+                "x": -14.263147415753869,
+                "y": -0.30636514684192034
+              },
+              "out": {
+                "x": 10.073967763360198,
+                "y": -0.2580617139205755
+              }
+            },
+            {
+              "x": 41.569219381536,
+              "y": 0,
+              "in": {
+                "x": -20.080551822102926,
+                "y": 6.1980121790064
+              },
+              "out": {
+                "x": 0.669018144533363,
+                "y": 7.084798194145686
+              }
+            },
+            {
+              "x": 45.48311850532689,
+              "y": 13.81632528727201,
+              "in": {
+                "x": -3.8773981459542584,
+                "y": -6.517399136668223
+              },
+              "out": {
+                "x": 6.466562082289202,
+                "y": 12.17363264103971
+              }
+            },
+            {
+              "x": 57.17600321419763,
+              "y": 12.891723153019685,
+              "in": {
+                "x": -6.86625370786458,
+                "y": -12.505430573420695
+              },
+              "out": {
+                "x": 5.260471881671372,
+                "y": 8.595281143039935
+              }
+            },
+            {
+              "x": 62.353829072268,
+              "y": 36,
+              "in": {
+                "x": -15.40791191103407,
+                "y": -14.291261910502168
+              },
+              "out": {
+                "x": -5.801106144533362,
+                "y": 4.121785805854315
+              }
+            },
+            {
+              "x": 52.34548994847711,
+              "y": 46.29769871272799,
+              "in": {
+                "x": 3.705534145954258,
+                "y": -6.6166248633317775
+              },
+              "out": {
+                "x": -7.309394082289201,
+                "y": 11.687023358960293
+              }
+            },
+            {
+              "x": 58.99266123960637,
+              "y": 55.96173284698032,
+              "in": {
+                "x": 7.39689370786458,
+                "y": -12.199065426579304
+              },
+              "out": {
+                "x": -4.813495881671373,
+                "y": 8.853342856960063
+              }
+            },
+            {
+              "x": 41.569219381536,
+              "y": 72,
+              "in": {
+                "x": 4.672639911034069,
+                "y": -20.48927408949783
+              },
+              "out": {
+                "x": -20.080551822102926,
+                "y": 6.1980121790064
+              }
+            },
+            {
+              "x": 18.967951665356114,
+              "y": 64.92999030602712,
+              "in": {
+                "x": 10.073967763360198,
+                "y": -0.2580617139205755
+              },
+              "out": {
+                "x": -14.263147415753869,
+                "y": -0.30636514684192034
+              }
+            },
+            {
+              "x": 13.922238247605893,
+              "y": 75.51862657455011,
+              "in": {
+                "x": 13.775956164602269,
+                "y": 0.4866092820802604
+              },
+              "out": {
+                "x": -7.582932291921653,
+                "y": 0.09922572666372642
+              }
+            },
+            {
+              "x": 0,
+              "y": 72,
+              "in": {
+                "x": 6.470124289077934,
+                "y": 2.9630123882965043
+              },
+              "out": {
+                "x": -15.407911911034073,
+                "y": -14.291261910502167
+              }
+            },
+            {
+              "x": -5.177825858070371,
+              "y": 48.89172315301968,
+              "in": {
+                "x": 5.260471881671374,
+                "y": 8.595281143039935
+              },
+              "out": {
+                "x": -6.8662537078645824,
+                "y": -12.505430573420695
+              }
+            },
+            {
+              "x": -16.87071056694111,
+              "y": 49.81632528727201,
+              "in": {
+                "x": 6.4665620822892045,
+                "y": 12.17363264103971
+              },
+              "out": {
+                "x": -3.8773981459542592,
+                "y": -6.517399136668223
+              }
+            },
+            {
+              "x": -20.784609690732,
+              "y": 36,
+              "in": {
+                "x": 0.6690181445333643,
+                "y": 7.084798194145687
+              },
+              "out": {
+                "x": 4.672639911034072,
+                "y": -20.489274089497833
+              }
+            },
+            {
+              "x": -3.3611678326616294,
+              "y": 19.96173284698032,
+              "in": {
+                "x": -4.813495881671375,
+                "y": 8.853342856960063
+              },
+              "out": {
+                "x": 7.3968937078645824,
+                "y": -12.199065426579304
+              }
+            },
+            {
+              "x": -10.00833912379089,
+              "y": 10.29769871272799,
+              "in": {
+                "x": -7.309394082289204,
+                "y": 11.687023358960293
+              },
+              "out": {
+                "x": 3.705534145954259,
+                "y": -6.6166248633317775
+              }
+            }
+          ],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#3a3427",
+          "fill": "#d99a6c",
+          "strokeWidth": 0.5,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "fillRegion": {
+            "version": 1,
+            "kind": "tile",
+            "scope": "tile",
+            "linked": true,
+            "status": "linked",
+            "faceKey": "tile/a7c60f79-0f3b-48de-92d6-f4399bc1c58f",
+            "topologyKey": "tile-interior",
+            "refs": [],
+            "inputs": [],
+            "context": "[{\"id\":\"a7c60f79-0f3b-48de-92d6-f4399bc1c58f\",\"kind\":\"isohedral\",\"type\":1}]",
+            "captureMatrix": [
+              1,
+              0,
+              0,
+              1,
+              0,
+              0
+            ],
+            "orbitMatrices": [
+              [
+                1,
+                0,
+                0,
+                1,
+                0,
+                0
+              ]
+            ],
+            "closeTolerance": 0
+          }
+        }
+      ],
+      "generator": {
+        "kind": "tessellation",
+        "version": 1,
+        "seed": 42,
+        "count": 12,
+        "rows": 4,
+        "columns": 4,
+        "spacing": 22,
+        "offset": 0.5,
+        "aspectRatio": 1,
+        "staggerAxis": "rows",
+        "rotation": 0,
+        "scale": 1,
+        "scaleRatio": 0.9,
+        "amplitude": 6,
+        "frequency": 3,
+        "phase": 0,
+        "radius": 28,
+        "ratio": 0.35,
+        "distribution": "rectangular",
+        "periodicWarp": true,
+        "placements": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        ]
+      },
+      "visible": true,
+      "symmetryMode": "inherit",
+      "symmetryProfiles": {},
+      "placementTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "symmetry": {
+        "family": "none",
+        "group": "none",
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "orientation": 0,
+        "width": 60,
+        "height": 60,
+        "angle": 90,
+        "sectors": 8,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "tiling": {
+        "version": 2,
+        "kind": "isohedral",
+        "width": 72,
+        "height": 60,
+        "shear": 15,
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "rotation": 0,
+        "edges": [
+          [
+            {
+              "x": 0,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0.155647,
+                "y": 0.071279
+              }
+            },
+            {
+              "x": 0.334917,
+              "y": 0.084645,
+              "in": {
+                "x": -0.182417,
+                "y": 0.002387
+              },
+              "out": {
+                "x": 0.331398,
+                "y": 0.011706
+              }
+            },
+            {
+              "x": 0.456298,
+              "y": -0.170078,
+              "in": {
+                "x": -0.343118,
+                "y": -0.00737
+              },
+              "out": {
+                "x": 0.242342,
+                "y": -0.006208
+              }
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "in": {
+                "x": -0.483063,
+                "y": 0.149101
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          [
+            {
+              "x": 0,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0.155647,
+                "y": 0.071279
+              }
+            },
+            {
+              "x": 0.334917,
+              "y": 0.084645,
+              "in": {
+                "x": -0.182417,
+                "y": 0.002387
+              },
+              "out": {
+                "x": 0.331398,
+                "y": 0.011706
+              }
+            },
+            {
+              "x": 0.456298,
+              "y": -0.170078,
+              "in": {
+                "x": -0.343118,
+                "y": -0.00737
+              },
+              "out": {
+                "x": 0.242342,
+                "y": -0.006208
+              }
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "in": {
+                "x": -0.483063,
+                "y": 0.149101
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          [
+            {
+              "x": 0,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0.155647,
+                "y": 0.071279
+              }
+            },
+            {
+              "x": 0.334917,
+              "y": 0.084645,
+              "in": {
+                "x": -0.182417,
+                "y": 0.002387
+              },
+              "out": {
+                "x": 0.331398,
+                "y": 0.011706
+              }
+            },
+            {
+              "x": 0.456298,
+              "y": -0.170078,
+              "in": {
+                "x": -0.343118,
+                "y": -0.00737
+              },
+              "out": {
+                "x": 0.242342,
+                "y": -0.006208
+              }
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "in": {
+                "x": -0.483063,
+                "y": 0.149101
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        ],
+        "showOutline": false,
+        "isohedral": {
+          "version": 1,
+          "type": 1,
+          "parameters": [
+            0.12239750492,
+            0.5,
+            0.143395479017,
+            0.625
+          ]
+        },
+        "colors": {
+          "enabled": true,
+          "palette": [
+            "#d99a6c",
+            "#a8b58c",
+            "#7a93a8",
+            "#c9b98f"
+          ]
+        }
+      }
+    }
+  ],
+  "regions": [],
+  "applications": [],
+  "preferences": {
+    "styleDefaultsFollowSelection": true,
+    "stylePanelPinned": false,
+    "fillCloseTolerance": 0,
+    "fillLinkedDefault": true,
+    "structureVisible": false,
+    "structureOpacity": 0.22,
+    "grid": false,
+    "snap": false,
+    "snapRadiusPx": 8,
+    "snapNodes": true,
+    "guides": false,
+    "split": false,
+    "background": "#f5efe2",
+    "fundamental": false,
+    "axes": false,
+    "centers": false,
+    "continuity": false,
+    "outside": false,
+    "sourceView": false,
+    "repetitionView": "extended"
+  }
+}

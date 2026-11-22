@@ -1,0 +1,969 @@
+{
+  "schemaVersion": 7,
+  "drawingStyle": {
+    "stroke": "#233b2d",
+    "fill": "#3b82f6",
+    "strokeWidth": 0.65,
+    "strokeCap": "round",
+    "strokeJoin": "round",
+    "miterLimit": 10,
+    "opacity": 1,
+    "fillOpacity": 1,
+    "strokeOpacity": 1,
+    "fillRule": "evenodd",
+    "strokeDash": [],
+    "strokeDashOffset": 0,
+    "strokeProfile": {
+      "version": 1,
+      "kind": "uniform",
+      "points": [
+        {
+          "at": 0,
+          "width": 1
+        },
+        {
+          "at": 1,
+          "width": 1
+        }
+      ]
+    }
+  },
+  "stylePresets": [],
+  "palette": {
+    "colors": [],
+    "recent": [],
+    "favorites": []
+  },
+  "mainSymmetry": {
+    "family": "none",
+    "group": "none",
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "orientation": 0,
+    "width": 60,
+    "height": 60,
+    "angle": 90,
+    "sectors": 8,
+    "center": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "mainSymmetryProfiles": {},
+  "metadata": {
+    "id": "4e309f1a-0367-43c5-801e-23ea8efc1746",
+    "name": "Panel Bézier · hexágono",
+    "createdAt": "2026-11-22T20:12:48.110Z",
+    "updatedAt": "2026-11-22T20:12:48.110Z",
+    "example": {
+      "id": "gallery-curve-hex",
+      "category": "Ornamentales",
+      "description": "Teselación de encastre por curvas Bézier cúbicas. La arista es la fuente editable: mover un nodo rehace el mosaico exacto.",
+      "construction": "IH7 · perfil Bézier de referencia · encastre verificado",
+      "validity": "EXACT",
+      "artwork": "licensed",
+      "author": "Perfiles de Jared Forsyth (jaredly/tessellations, MIT) · reconstrucción Pattern Studio",
+      "references": [
+        {
+          "title": "jaredly/tessellations · perfiles Bézier (MIT)",
+          "url": "https://github.com/jaredly/tessellations/tree/master/docs"
+        },
+        {
+          "title": "Licencia MIT del proyecto de origen",
+          "url": "https://github.com/jaredly/tessellations/blob/master/LICENSE"
+        }
+      ]
+    }
+  },
+  "documentUnits": "mm",
+  "patterns": [
+    {
+      "id": "02b9e053-aa17-4430-826c-adcbd6bc93da",
+      "name": "Panel Bézier · hexágono",
+      "sourceGeometry": [
+        {
+          "id": "f70e6937-ab4c-4fb5-815c-bf3d97a3a688",
+          "name": "Silueta de tesela",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": 0,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 13.107028771533491,
+              "y": -19.907906589529937,
+              "in": {
+                "x": -0.9722046894184784,
+                "y": 9.875078639146558
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 17.519911747166017,
+              "y": -15.116965763412963,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 13.841139260503224,
+              "y": -4.09156947794655,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 24.496887864670178,
+              "y": 7.878683197022568,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 30.572356532648435,
+              "y": 4.835505726110059,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": -6.5084049246308435,
+                "y": -15.943106664773246
+              }
+            },
+            {
+              "x": 36,
+              "y": -20.78460969084,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 60.90149253264843,
+              "y": -28.89419027388994,
+              "in": {
+                "x": -10.552932924630843,
+                "y": 13.607997335226756
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 66.57469586467018,
+              "y": -25.154268802977434,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 61.536027260503225,
+              "y": -9.94099347794655,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 50.14836774716602,
+              "y": -7.614205763412964,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 48.20573277153349,
+              "y": -1.3970665895299348,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 9.038171310581522,
+                "y": -4.095585360853442
+              }
+            },
+            {
+              "x": 72,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 82.68723845691026,
+              "y": 21.30497317906898,
+              "in": {
+                "x": -8.06596662115642,
+                "y": -5.779493278300882
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 76.3317205056443,
+              "y": 22.7311715268284,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 68.62283347897946,
+              "y": 14.032562955888423,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 52.928416270643595,
+              "y": 17.275585605933824,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 52.52615093468016,
+              "y": 24.05868454775784,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 17.061337849257818,
+                "y": 2.3351093295637773
+              }
+            },
+            {
+              "x": 71.9999999999574,
+              "y": 41.569219381676405,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 66.57235653258836,
+              "y": 67.18933479857466,
+              "in": {
+                "x": -6.508404924602207,
+                "y": -15.943106664751515
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 60.49688786461778,
+              "y": 70.23251226947525,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 49.8411392604827,
+              "y": 58.26225959451631,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 53.5199117471506,
+              "y": 47.23686330907362,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 49.10702877153109,
+              "y": 42.44592248296057,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": -0.9722046894272252,
+                "y": 9.875078639127779
+              }
+            },
+            {
+              "x": 36,
+              "y": 62.3538290724408,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 12.205732771482324,
+              "y": 60.95676248284647,
+              "in": {
+                "x": 9.03817131061285,
+                "y": -4.095585360839627
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 14.14836774713531,
+              "y": 54.73962330895413,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 25.536027260504703,
+              "y": 52.41283559444447,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 30.57469586472237,
+              "y": 37.19956026939153,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 24.901492532697183,
+              "y": 33.459638798455835,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": -10.552932924690118,
+                "y": 13.607997335230936
+              }
+            },
+            {
+              "x": -2.9400482048913545e-11,
+              "y": 41.56921938146041,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": -19.47384906521101,
+              "y": 24.058684547639015,
+              "in": {
+                "x": 17.061337849169906,
+                "y": 2.3351093295462237
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": -19.07158372925182,
+              "y": 17.275585605850114,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": -3.3771665209985313,
+              "y": 14.032562955816582,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 4.331720505629005,
+              "y": 22.73117152670891,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 10.687238456861495,
+              "y": 21.304973178954885,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": -8.065966621116345,
+                "y": -5.779493278268289
+              }
+            }
+          ],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#3a3427",
+          "fill": "#2f4858",
+          "strokeWidth": 0.5,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "fillRegion": {
+            "version": 1,
+            "kind": "tile",
+            "scope": "tile",
+            "linked": true,
+            "status": "linked",
+            "faceKey": "tile/02b9e053-aa17-4430-826c-adcbd6bc93da",
+            "topologyKey": "tile-interior",
+            "refs": [],
+            "inputs": [],
+            "context": "[{\"id\":\"02b9e053-aa17-4430-826c-adcbd6bc93da\",\"kind\":\"isohedral\",\"type\":7}]",
+            "captureMatrix": [
+              1,
+              0,
+              0,
+              1,
+              0,
+              0
+            ],
+            "orbitMatrices": [
+              [
+                1,
+                0,
+                0,
+                1,
+                0,
+                0
+              ]
+            ],
+            "closeTolerance": 0
+          }
+        }
+      ],
+      "generator": {
+        "kind": "tessellation",
+        "version": 1,
+        "seed": 42,
+        "count": 12,
+        "rows": 4,
+        "columns": 4,
+        "spacing": 22,
+        "offset": 0.5,
+        "aspectRatio": 1,
+        "staggerAxis": "rows",
+        "rotation": 0,
+        "scale": 1,
+        "scaleRatio": 0.9,
+        "amplitude": 6,
+        "frequency": 3,
+        "phase": 0,
+        "radius": 28,
+        "ratio": 0.35,
+        "distribution": "rectangular",
+        "periodicWarp": true,
+        "placements": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        ]
+      },
+      "visible": true,
+      "symmetryMode": "inherit",
+      "symmetryProfiles": {},
+      "placementTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "symmetry": {
+        "family": "none",
+        "group": "none",
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "orientation": 0,
+        "width": 60,
+        "height": 60,
+        "angle": 90,
+        "sectors": 8,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "tiling": {
+        "version": 2,
+        "kind": "isohedral",
+        "width": 72,
+        "height": 60,
+        "shear": 15,
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "rotation": 0,
+        "edges": [
+          [
+            {
+              "x": 0,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.512518,
+              "y": -0.257095,
+              "in": {
+                "x": -0.139033,
+                "y": 0.194037
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.546827,
+              "y": -0.104205,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.337571,
+              "y": 0.081242,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.415586,
+              "y": 0.458791,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.578762,
+              "y": 0.468468,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0.056174,
+                "y": -0.410432
+              }
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          [
+            {
+              "x": 0,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.512518,
+              "y": -0.257095,
+              "in": {
+                "x": -0.139033,
+                "y": 0.194037
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.546827,
+              "y": -0.104205,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.337571,
+              "y": 0.081242,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.415586,
+              "y": 0.458791,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.578762,
+              "y": 0.468468,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0.056174,
+                "y": -0.410432
+              }
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          [
+            {
+              "x": 0,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.512518,
+              "y": -0.257095,
+              "in": {
+                "x": -0.139033,
+                "y": 0.194037
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.546827,
+              "y": -0.104205,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.337571,
+              "y": 0.081242,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.415586,
+              "y": 0.458791,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.578762,
+              "y": 0.468468,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0.056174,
+                "y": -0.410432
+              }
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        ],
+        "showOutline": false,
+        "isohedral": {
+          "version": 1,
+          "type": 7,
+          "parameters": [
+            0.6,
+            0.196416770201
+          ]
+        },
+        "colors": {
+          "enabled": true,
+          "palette": [
+            "#2f4858",
+            "#86bbd8",
+            "#f6ae2d"
+          ]
+        }
+      }
+    }
+  ],
+  "regions": [],
+  "applications": [],
+  "preferences": {
+    "styleDefaultsFollowSelection": true,
+    "stylePanelPinned": false,
+    "fillCloseTolerance": 0,
+    "fillLinkedDefault": true,
+    "structureVisible": false,
+    "structureOpacity": 0.22,
+    "grid": false,
+    "snap": false,
+    "snapRadiusPx": 8,
+    "snapNodes": true,
+    "guides": false,
+    "split": false,
+    "background": "#fbfbf7",
+    "fundamental": false,
+    "axes": false,
+    "centers": false,
+    "continuity": false,
+    "outside": false,
+    "sourceView": false,
+    "repetitionView": "extended"
+  }
+}
