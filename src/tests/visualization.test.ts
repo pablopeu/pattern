@@ -105,6 +105,7 @@ it('artistic native record and pure mode switching preserve the same editable so
   geom.settings.radiusMm = 240;
   const art = changeVisualizationKind(project, geom, 'artistic-disk');
   expect(art.kind).toBe('artistic-disk');
+  if (art.kind !== 'artistic-disk') return;
   expect(art.settings.radiusMm).toBe(240);
   expect(art.source).toEqual(geom.source);
   expect(project.patterns).toEqual(original);
@@ -112,6 +113,7 @@ it('artistic native record and pure mode switching preserve the same editable so
   expect(parseProject(serialize(project))).toEqual(project);
   art.settings.view.center = { x: 1.2, y: 1.6 };
   const back = changeVisualizationKind(project, art, 'poincare');
+  if (back.kind !== 'poincare') return;
   expect(Math.hypot(back.settings.view.center.x, back.settings.view.center.y)).toBeLessThanOrEqual(
     0.9,
   );

@@ -338,6 +338,18 @@ export default function App() {
       run: () => setReferencesOpen(true),
     },
     {
+      id: 'visualization',
+      label: 'Visualizar patrón · disco o esfera',
+      keywords: 'poincaré hiperbólica esfera derivada disco artístico',
+      run: openVisualization,
+    },
+    {
+      id: 'animation',
+      label: 'Animar · GIF y WebM',
+      keywords: 'animación loop línea temporal video gif giro',
+      run: () => setAnimationOpen(true),
+    },
+    {
       id: 'composition-recursive',
       label: 'Explorar composición recursiva',
       keywords: 'square limit cuadrantes autosimilar peces',

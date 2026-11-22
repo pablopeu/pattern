@@ -1,7 +1,8 @@
 # Aceptación · PRD v3.0
 
-Estado: Fases0–3 verificadas; Fases4–7 pendientes. Baseline 8be6668.
-No se declara completo v3.0: proyecciones y animaciones pendientes.
+Estado: **Fases0–7 verificadas el 22/11/2026**. Gate FULL final: 34
+infraestructura, 1168 unitarias/TypeScript, 215 E2E y 16 estáticas
+(8 raíz + 8 subcarpeta), builds y validadores independientes correctos.
 
 | AC | Requisito | Estado y evidencia necesaria |
 |---|---|---|
@@ -42,3 +43,38 @@ Fase3 cerrada con regresión164/164(248,2s), clasificación afín posterior con
 677 unidades/14 dirigidas y10 estáticas/build finales. Girih verifica ángulos,
 bordes completos, ciclos de alternancia y5 cruces rasterizados por SVG, no sólo
 metadatos. Refuerzos exactos y cortes explícitos diferenciados. Logs girih-*.
+
+## Auditoría final v3.0 (22/11/2026)
+
+Gate FULL real: `QA FULL PASS · INFRASTRUCTURE 34/34 · UNIT 1168/1168 ·
+E2E 215/215 · STATIC-ROOT 8/8 · STATIC-SUB 8/8` (.runtime/qa, 532 s).
+
+| AC | Evidencia |
+|---|---|
+|01 Compatibilidad|Esquema7 con campos opcionales (animation, colors, kind esfera) retrocompatible; pruebas de ida y vuelta por tipo; regresiones v1–v2.3 incluidas en las 1168 unitarias y 215 E2E |
+|02 Navegación|Familias por categorías existentes; visualizaciones desde «Visualizar» y modalidad del disco; animación desde «Animar»; ambos con comandos en la paleta |
+|03 Scrollbars|Diálogos de disco, esfera y animación sin scroll horizontal en 1440 y 390 (E2E) |
+|04–05 Edición/simetría|Editor vectorial existente; transformaciones declaradas exactas con validadores (tilingIssue, isohedralIssue, independent-*) |
+|06 IH1–IH93|93/93 verificados/integrados (81 geométricos + 12 marcados), pruebas individuales/Scene/JSON y exportación independiente |
+|07 Figurativas|Peces/aves/reptiles IH con bordes relacionados editables en vivo; silueta y detalles independientes |
+|08–09 Recursión/espirales|Operadores/inversas, determinismo, fuente única, UI/undo/JSON/exportaciones |
+|10 Hat/Spectre|Sustitución publicada, semillas/quiralidad/áreas, ejemplos y exportaciones |
+|11 Girih|5 formas, adyacencias, rayos54°, hebras globales, cortes explícitos, SVG/raster/DXF independientes |
+|12 Hiperbólica|{p,q} validados, geodésicas/adyacencias verificadas, presupuestos y culling; poincare.spec |
+|13 Artístico|Deformaciones rotuladas como tales en UI y reportes |
+|14 Esférica|5 sólidos por planos de soporte, cobertura esférica sin huecos (prueba), subdivisión geodésica y vista rotatoria; sphere.test/sphere.spec |
+|15 Fuente intacta|Entrar/salir/regenerar/guardar/reabrir conserva la fuente en disco, esfera y animación (E2E) |
+|16 Animación|Tiempo normalizado por cuadro, pausa, velocidad, sentido y línea temporal; animation.spec |
+|17 Loop|Presets cíclicos cierran en t=0/t=1 (unitario); no periódicos se rotulan y ofrecen once/ida y vuelta |
+|18 GIF|GIF real por gifenc con cuantización, delay por fps y loop/once; tamaño y descarga verificados en E2E |
+|19 Video|WebM (vp9→vp8) por MediaRecorder con progreso y cancelación; archivo real >1KB verificado |
+|20 Exportación|PNG/JPEG/SVG/DXF por representación; 16 estáticas y comparaciones raster previas |
+|21 Ejemplos|Galería 19 estudios con todas las familias, incluida «Esféricas»; miniaturas reales por el renderer |
+|22 Derechos|Procedencia por ejemplo y docs/ESCHER_VECTOR_SOURCES.md; reconstrucciones APPROXIMATED rotuladas; fuentes sin licencia no redistribuidas |
+|23 Accesibilidad|Comandos «Visualizar patrón» y «Animar · GIF y WebM» con palabras clave en Ctrl+K |
+|24 Rendimiento|Presupuestos por motor, LOD, cancelación, límites de cuadros y de segmentos; sin bloqueos indefinidos |
+|25 Regresiones|215/215 E2E y 1168/1168 unitarias en el cierre; fixture históricos conservados |
+
+Los ejemplos adicionales del PRD de galería (fuentes Openclipart/Ragan pendientes)
+quedan **explícitamente diferidos por pedido de Pablo** hasta después de v3.1; no
+afectan a los criterios de v3.0.

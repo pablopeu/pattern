@@ -43,6 +43,18 @@ async function canvasPixels(page: Page) {
       return colors.size;
     });
 }
+test('esfera en móvil: diálogo sin scroll horizontal y esfera visible', async ({ page }) => {
+  test.setTimeout(90000);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await fixture(page);
+  await page.getByRole('button', { name: 'Visualizar patrón', exact: true }).click();
+  const disk = page.getByRole('dialog', { name: 'Visualización de Poincaré', exact: true });
+  await disk.getByLabel('Modalidad', { exact: true }).selectOption('sphere');
+  await expect(sphere(page)).toBeVisible();
+  expect(await sphere(page).evaluate((el) => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+  await expect.poll(async () => canvasPixels(page), { timeout: 20000 }).toBeGreaterThan(3);
+});
+
 test('esfera derivada: sólidos geodésicos, textura artística, vista y persistencia', async ({
   page,
 }) => {
@@ -53,6 +65,7 @@ test('esfera derivada: sólidos geodésicos, textura artística, vista y persist
   const disk = page.getByRole('dialog', { name: 'Visualización de Poincaré', exact: true });
   await disk.getByLabel('Modalidad', { exact: true }).selectOption('sphere');
   await expect(sphere(page)).toBeVisible();
+  expect(await sphere(page).evaluate((el) => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
   // Modelo geodésico real: varias caras coloreadas distintas.
   await expect.poll(async () => canvasPixels(page), { timeout: 20000 }).toBeGreaterThan(5);
   await sphere(page).getByLabel('Sólido', { exact: true }).selectOption('dodeca');
@@ -87,4 +100,21 @@ test('esfera derivada: sólidos geodésicos, textura artística, vista y persist
   await sphere(page).getByLabel('Modo', { exact: true }).selectOption('geodesic');
   await expect(sphere(page).getByLabel('Sólido', { exact: true })).toHaveValue('dodeca');
   expect((await model(page))?.patterns).toEqual(original.patterns);
+});
+
+test('la galería abre el ejemplo esférico con la vista derivada activa', async ({ page }) => {
+  test.setTimeout(90000);
+  await page.setViewportSize({ width: 1440, height: 950 });
+  await page.goto('/');
+  await model(page);
+  await page.locator('.main-menu summary').click();
+  await page.getByRole('button', { name: 'Galería de ejemplos', exact: true }).click();
+  const gallery = page.getByRole('dialog', { name: 'Galería de ejemplos' });
+  await gallery.getByLabel('Buscar ejemplos').fill('Esfera geodésica');
+  await gallery
+    .getByRole('button', { name: 'Abrir ejemplo Esfera geodésica · icosaedro', exact: true })
+    .click();
+  await expect(sphere(page)).toBeVisible({ timeout: 20000 });
+  await expect(sphere(page).getByLabel('Sólido', { exact: true })).toHaveValue('icosa');
+  expect((await model(page))?.visualization?.kind).toBe('sphere');
 });

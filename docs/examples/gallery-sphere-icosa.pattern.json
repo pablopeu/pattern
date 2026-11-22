@@ -1,0 +1,300 @@
+{
+  "schemaVersion": 7,
+  "drawingStyle": {
+    "stroke": "#233b2d",
+    "fill": "#3b82f6",
+    "strokeWidth": 0.65,
+    "strokeCap": "round",
+    "strokeJoin": "round",
+    "miterLimit": 10,
+    "opacity": 1,
+    "fillOpacity": 1,
+    "strokeOpacity": 1,
+    "fillRule": "evenodd",
+    "strokeDash": [],
+    "strokeDashOffset": 0,
+    "strokeProfile": {
+      "version": 1,
+      "kind": "uniform",
+      "points": [
+        {
+          "at": 0,
+          "width": 1
+        },
+        {
+          "at": 1,
+          "width": 1
+        }
+      ]
+    }
+  },
+  "stylePresets": [],
+  "palette": {
+    "colors": [],
+    "recent": [],
+    "favorites": []
+  },
+  "mainSymmetry": {
+    "family": "none",
+    "group": "none",
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "orientation": 0,
+    "width": 60,
+    "height": 60,
+    "angle": 90,
+    "sectors": 8,
+    "center": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "mainSymmetryProfiles": {},
+  "metadata": {
+    "id": "08e7656e-05b4-4993-8471-180dc56c4066",
+    "name": "Esfera geodésica · icosaedro",
+    "createdAt": "2026-11-22T22:53:36.751Z",
+    "updatedAt": "2026-11-22T22:53:36.751Z",
+    "example": {
+      "id": "gallery-sphere-icosa",
+      "category": "Esféricas",
+      "description": "Icosaedro subdividido geodésicamente y proyectado sobre la esfera, con paleta por cara; la fuente plana sigue editable.",
+      "construction": "Sólido platónico · subdivisión geodésica nivel 2 · vista derivada",
+      "validity": "EXACT",
+      "artwork": "original",
+      "author": "Pattern Studio",
+      "references": [
+        {
+          "title": "Isohedral Tiles, Tilings and Notations · clasificación",
+          "url": "https://isohedral.ca/isohedral-tiles-tilings-and-notations/"
+        }
+      ]
+    }
+  },
+  "documentUnits": "mm",
+  "patterns": [
+    {
+      "id": "1896ec22-cd36-4158-b09b-6adb7140edd9",
+      "name": "Esfera geodésica · icosaedro",
+      "sourceGeometry": [
+        {
+          "id": "e11a1f0f-edb6-4162-8eb1-f59a4c8af3b7",
+          "name": "Pétalo fuente",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": 0,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 30,
+              "y": 6,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 14,
+              "y": 30,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 4,
+              "y": 18,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#253f45",
+          "fill": "#71978c",
+          "strokeWidth": 0.6,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false
+        }
+      ],
+      "generator": {
+        "kind": "grid",
+        "version": 1,
+        "seed": 42,
+        "count": 12,
+        "rows": 4,
+        "columns": 4,
+        "spacing": 32,
+        "offset": 0.5,
+        "aspectRatio": 1,
+        "staggerAxis": "rows",
+        "rotation": 0,
+        "scale": 1,
+        "scaleRatio": 0.9,
+        "amplitude": 6,
+        "frequency": 3,
+        "phase": 0,
+        "radius": 28,
+        "ratio": 0.35,
+        "distribution": "rectangular",
+        "periodicWarp": true,
+        "placements": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        ]
+      },
+      "visible": true,
+      "symmetryMode": "inherit",
+      "symmetryProfiles": {},
+      "placementTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "symmetry": {
+        "family": "none",
+        "group": "none",
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "orientation": 0,
+        "width": 60,
+        "height": 60,
+        "angle": 90,
+        "sectors": 8,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    }
+  ],
+  "regions": [],
+  "applications": [],
+  "preferences": {
+    "styleDefaultsFollowSelection": true,
+    "stylePanelPinned": false,
+    "fillCloseTolerance": 0,
+    "fillLinkedDefault": true,
+    "structureVisible": false,
+    "structureOpacity": 0.22,
+    "grid": false,
+    "snap": false,
+    "snapRadiusPx": 8,
+    "snapNodes": true,
+    "guides": false,
+    "split": false,
+    "background": "#f7f3e8",
+    "fundamental": false,
+    "axes": false,
+    "centers": false,
+    "continuity": false,
+    "outside": false,
+    "sourceView": false,
+    "repetitionView": "extended"
+  },
+  "visualization": {
+    "version": 1,
+    "kind": "sphere",
+    "active": true,
+    "source": {
+      "patternId": "1896ec22-cd36-4158-b09b-6adb7140edd9",
+      "selection": {
+        "target": "view",
+        "bounds": {
+          "x": -50,
+          "y": -50,
+          "width": 100,
+          "height": 100
+        }
+      }
+    },
+    "settings": {
+      "mode": "geodesic",
+      "solid": "icosa",
+      "level": 2,
+      "view": {
+        "yaw": 22,
+        "pitch": -14,
+        "zoom": 1,
+        "spin": 1
+      },
+      "lighting": true,
+      "borders": true,
+      "background": "#f7f3e8",
+      "palette": [
+        "#71978c",
+        "#c78046",
+        "#ab6652",
+        "#253f45",
+        "#c5ccaf",
+        "#e3c792"
+      ]
+    }
+  }
+}

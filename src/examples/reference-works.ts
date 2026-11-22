@@ -5,6 +5,7 @@
  */
 import { geometry, newProject, node, type Geometry, type Node, type Project } from '../app/model';
 import { newIsohedralTiling, type TilingDefinition } from '../tiling/tiles';
+import { defaultSphereVisualization } from '../visualization/model';
 import { createTileFill } from '../fill/service';
 import { drawingStyle } from '../app/styles';
 import type { CatalogExample } from './archive';
@@ -273,5 +274,91 @@ export const referenceExamples: CatalogExample[] = [
     title: 'Panel Bézier · hexágono',
     featured: true,
     create: () => ornamental('gallery-curve-hex', 'Panel Bézier · hexágono', HEX, 7, ['#2f4858', '#86bbd8', '#f6ae2d'], '#fbfbf7'),
+  },
+];
+
+/** Ejemplo esférico: la familia nueva debe poder descubrirse desde la galería. */
+function sphereProject(): Project {
+  const project = newProject(),
+    pattern = project.patterns[0];
+  pattern.name = 'Esfera geodésica · icosaedro';
+  pattern.sourceGeometry = [
+    {
+      ...geometry('path', [
+        node(0, 0),
+        node(30, 6),
+        node(14, 30),
+        node(4, 18),
+      ], true),
+      name: 'Pétalo fuente',
+      fill: '#71978c',
+      stroke: '#253f45',
+      strokeWidth: 0.6,
+    },
+  ];
+  pattern.generator.kind = 'grid';
+  pattern.generator.rows = 4;
+  pattern.generator.columns = 4;
+  pattern.generator.spacing = 32;
+  pattern.symmetry.family = 'none';
+  const visualization = defaultSphereVisualization(project, pattern.id);
+  visualization.settings = {
+    ...visualization.settings,
+    solid: 'icosa',
+    level: 2,
+    palette: ['#71978c', '#c78046', '#ab6652', '#253f45', '#c5ccaf', '#e3c792'],
+    background: '#f7f3e8',
+    view: { yaw: 22, pitch: -14, zoom: 1, spin: 1 },
+  };
+  project.visualization = visualization;
+  project.metadata.name = 'Esfera geodésica · icosaedro';
+  project.metadata.example = {
+    id: 'gallery-sphere-icosa',
+    category: 'Esféricas',
+    description:
+      'Icosaedro subdividido geodésicamente y proyectado sobre la esfera, con paleta por cara; la fuente plana sigue editable.',
+    construction: 'Sólido platónico · subdivisión geodésica nivel 2 · vista derivada',
+    validity: 'EXACT',
+    artwork: 'original',
+    author: 'Pattern Studio',
+    references: [
+      {
+        title: 'Isohedral Tiles, Tilings and Notations · clasificación',
+        url: 'https://isohedral.ca/isohedral-tiles-tilings-and-notations/',
+      },
+    ],
+  };
+  project.preferences = {
+    ...project.preferences,
+    grid: false,
+    guides: false,
+    structureVisible: false,
+    snap: false,
+    split: false,
+    background: '#f7f3e8',
+  };
+  return project;
+}
+
+export const referenceExamplesAll: CatalogExample[] = [
+  ...referenceExamples,
+  {
+    id: 'gallery-sphere-icosa',
+    category: 'Esféricas',
+    description:
+      'Icosaedro subdividido geodésicamente y proyectado sobre la esfera, con paleta por cara; la fuente plana sigue editable.',
+    construction: 'Sólido platónico · subdivisión geodésica nivel 2 · vista derivada',
+    validity: 'EXACT',
+    artwork: 'original',
+    author: 'Pattern Studio',
+    references: [
+      {
+        title: 'Isohedral Tiles, Tilings and Notations · clasificación',
+        url: 'https://isohedral.ca/isohedral-tiles-tilings-and-notations/',
+      },
+    ],
+    title: 'Esfera geodésica · icosaedro',
+    featured: true,
+    create: sphereProject,
   },
 ];

@@ -1744,3 +1744,14 @@ delay por fps, repeat loop/once) y WebM por MediaRecorder (vp9→vp8→webm) con
 progreso, cancelación, límite de cuadros y sin descarga de archivos vacíos;
 tamaños reales verificados en E2E (>1KB). Persistencia `project.animation`
 retrocompatible. Siguiente: Fase7 cierre (auditoría integral §19-23).
+
+## V3.0 completado · Fase7 y auditoría integral
+
+FULL PASS real de cierre: 34 infraestructura, 1168 unitarias/TypeScript,
+215 E2E, 8/8 estáticas raíz y 8/8 subcarpeta, 532 s. Auditoría AC-01–AC-25
+en docs/ACCEPTANCE_V30.md con evidencia por criterio; STATUS actualizado.
+Galería 19 estudios con familia «Esféricas» (ejemplo geodésico icosa, captura
+real); comandos de paleta para Visualizar y Animar; diálogos de esfera y
+animación sin scroll horizontal en 1440/390 (E2E). Los ejemplos pendientes del
+PRD de galería quedan diferidos por pedido de Pablo hasta después de v3.1.
+Próximo: v3.1 según docs/prd/prd_v3.1.txt.

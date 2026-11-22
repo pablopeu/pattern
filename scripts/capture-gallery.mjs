@@ -23,7 +23,24 @@ try {
       const p = compositionExample(id),
         pat = p.patterns[0];
       let svg, report;
-      if (p.visualization?.active) {
+      if (p.visualization?.kind === 'sphere') {
+        const { geodesicFaces } = await import('/src/sphere/geometry.ts'),
+          { drawSphere } = await import('/src/sphere/render.ts'),
+          settings = p.visualization.settings,
+          faces = geodesicFaces(settings.solid, settings.level),
+          canvas = document.createElement('canvas');
+        canvas.width = canvas.height = 640;
+        drawSphere(canvas.getContext('2d'), {
+          faces,
+          settings,
+          width: 640,
+          height: 640,
+          texture: null,
+        });
+        const data = canvas.toDataURL('image/png');
+        svg = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640"><image href="${data}" width="640" height="640"/></svg>`;
+        report = `sphere:${faces.length}`;
+      } else if (p.visualization?.active) {
         const output = await deriveVisualizationInWorker(p, p.visualization);
         svg = output.svg;
         report = output.disk.report.resources;

@@ -1,6 +1,6 @@
 # Estado actual de Patterns
 
-Actualizado:22 de noviembre de2026 (UTC). **PRD v3.0 sigue en desarrollo.**
+Actualizado:22 de noviembre de2026 (UTC). **PRD v3.0 verificado en todas sus fases (0–7).**
 El detalle de criterios está en [ACCEPTANCE_V30.md](ACCEPTANCE_V30.md).
 
 ## QA y siguiente prioridad
@@ -64,7 +64,7 @@ incorpora una imagen del grabado; se reutilizan las curvas acreditadas.
 |4 · Poincaré y disco artístico|**Verificada**: modelos geométricos, fuente finita, cámaras con bordes C0, UI, JSON y SVG/PNG/JPEG; coloración por tesela y por clase de orientación (UI, JSON, unitarias y E2E). Auditoría §10/§10.1–10.6 cubierta por hyperbolic*.test, poincare.spec y artistic-disk.test|
 |5 · esfera|**Verificada**: 5 sólidos platónicos con caras por planos de soporte, subdivisión geodésica 0–4 sin huecos (prueba de cobertura esférica), textura artística por proyección inversa, orientación/zoom/giro/iluminación/fondo/bordes, PNG 1400px real y persistencia JSON. sphere.test + sphere.spec|
 |6 · animación|**Verificada**: 5 presets (giro/oscilación de esfera, rotación de disco, disco artístico, revelado recursivo), frames deterministas, presets cíclicos cerrados, GIF y WebM reales con progreso/cancelación y persistencia JSON. animation.test + animation.spec|
-|7 · cierre|Pendiente: completar exportaciones nuevas, ejemplos futuros, mediciones y auditoría integral|
+|7 · cierre|**Verificada**: FULL 34/1168/215/16, auditoría AC-01–AC-25 en ACCEPTANCE_V30.md, comandos de paleta, UX 1440/390 sin scroll y ejemplo esférico en galería|
 
 **V3.1 queda después de v3.0.** Su PRD exige esa dependencia y no se implementó
 PHP ni publicación de creaciones. El documento nuevo se conserva localmente sin

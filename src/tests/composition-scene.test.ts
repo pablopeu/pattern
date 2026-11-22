@@ -35,8 +35,8 @@ function fixture() {
 const viewport = { x: -100, y: -100, width: 200, height: 200 };
 describe('composición integrada con fuente/archivos/Scene', () => {
   it('los ejemplos originales son portables y reproducen la misma disposición', () => {
-    expect(exampleCatalog).toHaveLength(18);
-    expect(new Set(exampleCatalog.map((e) => e.id)).size).toBe(18);
+    expect(exampleCatalog).toHaveLength(19);
+    expect(new Set(exampleCatalog.map((e) => e.id)).size).toBe(19);
     for (const entry of exampleCatalog.filter((e) => e.featured && e.artwork === 'original')) {
       const project = entry.create(),
         restored = parseProject(serialize(project));

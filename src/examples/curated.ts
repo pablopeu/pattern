@@ -9,7 +9,7 @@ import { defaultArtisticVisualization } from '../visualization/model';
 import { defaultComposition } from '../composition/model';
 import { example } from '../app/examples';
 import type { CatalogExample } from './archive';
-import { referenceExamples } from './reference-works';
+import { referenceExamplesAll } from './reference-works';
 function finish(p: Project, id: string, title: string, category: string, description: string) {
   p.metadata.name = title;
   p.patterns[0].name = title;
@@ -301,5 +301,5 @@ export const curatedCatalog: CatalogExample[] = [
       create,
     };
   }),
-  ...referenceExamples,
+  ...referenceExamplesAll,
 ];

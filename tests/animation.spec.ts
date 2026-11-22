@@ -46,6 +46,7 @@ test('animación esférica: reproducción, línea temporal, GIF/WebM y persisten
   await page.getByRole('button', { name: 'Animar', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Animación', exact: true });
   await expect(dialog).toBeVisible();
+  expect(await dialog.evaluate((el) => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
   await expect(dialog.getByLabel('Preset', { exact: true })).toHaveValue('sphere-spin');
   await expect
     .poll(async () => dialog.getByLabel('Cuadro de animación').evaluate((el) => {
