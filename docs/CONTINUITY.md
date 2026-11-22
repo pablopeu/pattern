@@ -1702,3 +1702,19 @@ completo 26/26 y qa:fast PASS.
 Segundo fallo del gate tras el fix de carrera: E2E pasó 210/210 y quedó el
 conteo estático de enlaces del modal Referencias (18→21 por las tres fuentes
 GitHub nuevas: jaredly, Høst y Revello). Test actualizado; pasa local.
+
+## V3.0 · Fase4 completada: coloración del disco y auditoría §10
+
+Coloración derivada del disco de Poincaré (no altera la fuente): modos
+'source' (colores del motivo), 'cell' (paleta ciclada por tesela) y
+'orientation' (capas de reflexión; la celda canónica normaliza la rotación
+interna, así que esa es la clase real del parche). Selector «Color de celdas»
+en el diálogo, esquema JSON opcional retrocompatible (documentos previos
+equivalen a 'source'), paleta explícita 2–8 colores o la predeterminada.
+Unitaria: ciclado, capas, determinismo, rechazo de modos/paletas.
+E2E: cambia modos, cuenta rellenos distintos en el SVG real y persiste tras
+recargar. Inspección visual 1440×950 de ambos modos correcta.
+Auditoría §10 registrada en STATUS/ACCEPTANCE: 10.1 no editable y retorno,
+10.2 {p,q} y modo artístico, 10.3 distinciones de adaptación, 10.4 parámetros
+completos, 10.5 presupuestos/LOD/cancelación, 10.6 referencias.
+Siguiente: Fase5 esfera (§11).

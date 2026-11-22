@@ -13,11 +13,11 @@ No se declara completo v3.0: proyecciones y animaciones pendientes.
 |08–09|Recursión/espirales|Verificado: operadores/inversas, determinismo, fuente única, detalle/IDs, UI/undo/JSON/exportaciones|
 |10|Hat/Spectre|Implementados por sustitución publicada,13 semillas/quiralidad/áreas; tres ejemplos, UI/JSON/exportaciones verificados|
 |11|Girih|Verificado:5 formas/adyacencias, ensamblado, rayos54°, hebras globales, conflictos/cortes explícitos y regiones vectoriales; SVG/raster/DXF independientes|
-|12–14|Hiperbólica/artística/esférica|Parcial: núcleo/compositor Poincaré:92 pares, cámara/LOD, contornos, fuente finita desde escena/celda/ventana con Fill y worker cancelable, presupuestos y diagnósticos independientes; UI no editable/JSON7/SVG/PNG/JPEG geométricos verificados; disco artístico/UI/nativo/exportaciones verificados; bordes canónicos C0 y UI/nativo verificados; coloración/esférica pendientes|
+|12–14|Hiperbólica/artística/esférica|Parcial: núcleo/compositor Poincaré:92 pares, cámara/LOD, contornos, fuente finita desde escena/celda/ventana con Fill y worker cancelable, presupuestos y diagnósticos independientes; UI no editable/JSON7/SVG/PNG/JPEG geométricos verificados; disco artístico/UI/nativo/exportaciones verificados; bordes canónicos C0 y UI/nativo verificados; coloración por tesela/clase de orientación verificada (unitaria, E2E y persistencia JSON); esférica pendiente|
 |15|Fuente intacta|Poincaré: fuente intacta al entrar/salir, regenerar/cancelar/guardar/reabrir; esfera pendiente|
 |16–19|Timeline/loop/GIF/video|Pendiente|
 |20|Exportación|Base SVG/PNG/JPEG/DXF; nuevas familias pendientes|
-|21–22|Ejemplos/derechos|15 estudios renovados:7 originales,5 matemáticos y3 con datos GPL3; JSON/miniaturas reales y atribución SVG/JSON. Esfera/animación pendientes|
+|21–22|Ejemplos/derechos|18 estudios:15 previos + lagarto de referencia APPROXIMATED y2 ornamentales Bézier EXACT (MIT/dominio público); JSON/miniaturas reales y atribución SVG/JSON. Esfera/animación pendientes|
 |23–24|Acceso/rendimiento|Base verificada; mediciones de nuevas familias pendientes|
 |25|Regresiones|Figuras/paletas/JSON6:150/150 E2E,637 unidades,10 estáticas,build y14 monitor. Repetir tras próximas fases|
 

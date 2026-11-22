@@ -7,6 +7,17 @@ import {
   type HyperbolicOptions,
 } from './disk';
 import { prepareDiskSource, projectDiskSource, type PreparedDiskSource } from './source';
+/** Coloración derivada de la representación: nunca altera la fuente plana.
+ * 'cell' cicla por tesela; 'orientation' usa la profundidad del recorrido de
+ * reflexiones (el parche se genera componiendo un espejo por nivel, así que su
+ * paridad es la clase de orientación del grupo; con paletas de más colores las
+ * capas de reflexión ciclan). La celda canónica normaliza la rotación interna,
+ * por lo que no existe una clase de giro adicional que distinguir. */
+export interface DiskColorSettings {
+  mode: 'source' | 'cell' | 'orientation';
+  palette?: string[];
+}
+const colorDefaults = ['#c78046', '#71978c', '#ab6652', '#253f45', '#c5ccaf', '#e3c792'];
 export interface DiskSettings extends Partial<HyperbolicOptions> {
   p: number;
   q: number;
@@ -16,9 +27,20 @@ export interface DiskSettings extends Partial<HyperbolicOptions> {
   maxSegments?: number;
   strokeTolerance?: number;
   maxCurves?: number;
+  colors?: DiskColorSettings;
 }
 export function validateDiskSettings(settings: DiskSettings) {
   if (!validPQ(settings.p, settings.q)) throw Error('Poincaré: p/q enteros3–12 y (p−2)(q−2)>4.');
+  const colors = settings.colors;
+  if (
+    colors &&
+    (!['source', 'cell', 'orientation'].includes(colors.mode) ||
+      (colors.palette &&
+        (colors.palette.length < 2 ||
+          colors.palette.length > 8 ||
+          colors.palette.some((c) => !/^#[\da-fA-F]{6}$/.test(c)))))
+  )
+    throw Error('Coloración del disco inválida: modo o paleta fuera de rango.');
   if (
     settings.maxCurves !== undefined &&
     (!Number.isInteger(settings.maxCurves) || settings.maxCurves < 1 || settings.maxCurves > 24000)
@@ -60,7 +82,11 @@ export function derivePreparedDisk(source: PreparedDiskSource, settings: DiskSet
   let remaining = maximum,
     curveProjectionBoundMm = 0,
     outlineEstimateMm = 0;
-  const cells = visible.cells.map((cell) => {
+  const cellColors = settings.colors,
+    palette = cellColors?.palette ?? colorDefaults,
+    pick = (cell: (typeof visible.cells)[number], index: number) =>
+      palette[cellColors?.mode === 'orientation' ? cell.depth % palette.length : index % palette.length];
+  const cells = visible.cells.map((cell, index) => {
     if (remaining < 1) throw Error('El disco excede su presupuesto global de segmentos.');
     const projection = projectDiskSource(
       source,
@@ -72,11 +98,17 @@ export function derivePreparedDisk(source: PreparedDiskSource, settings: DiskSet
     remaining -= projection.segments;
     curveProjectionBoundMm = Math.max(curveProjectionBoundMm, projection.curveProjectionBoundMm);
     outlineEstimateMm = Math.max(outlineEstimateMm, projection.outlineToleranceMappedEstimateMm);
+    const contours =
+      !cellColors || cellColors.mode === 'source'
+        ? projection.contours
+        : projection.contours.map((c) =>
+            c.paint === 'fill' ? { ...c, color: pick(cell, index) } : c,
+          );
     return {
       id: cell.id,
       depth: cell.depth,
       boundary: hyperbolicCellPath(cell.display.vertices, settings.radiusMm),
-      contours: projection.contours,
+      contours,
     };
   });
   return {

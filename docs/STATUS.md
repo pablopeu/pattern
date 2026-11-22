@@ -61,7 +61,7 @@ incorpora una imagen del grabado; se reutilizan las curvas acreditadas.
 | Fase | Estado |
 | --- | --- |
 |0–3 · base, IH, figuras, composición, aperiódicas y Girih|Verificadas; regresiones conservadas|
-|4 · Poincaré y disco artístico|Implementados: modelos geométricos, fuente finita, cámaras con bordes C0, UI, JSON y SVG/PNG/JPEG. Pendientes: color por celda/clase de orientación y auditoría final de todos sus criterios|
+|4 · Poincaré y disco artístico|**Verificada**: modelos geométricos, fuente finita, cámaras con bordes C0, UI, JSON y SVG/PNG/JPEG; coloración por tesela y por clase de orientación (UI, JSON, unitarias y E2E). Auditoría §10/§10.1–10.6 cubierta por hyperbolic*.test, poincare.spec y artistic-disk.test|
 |5 · esfera|Pendiente: construcción geométrica, proyección, vista rotatoria y ejemplos|
 |6 · animación|Pendiente: timeline, movimientos, loops y GIF/video|
 |7 · cierre|Pendiente: completar exportaciones nuevas, ejemplos futuros, mediciones y auditoría integral|

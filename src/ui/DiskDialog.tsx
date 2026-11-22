@@ -183,6 +183,33 @@ export function DiskDialog({
           />
           {record.kind === 'poincare' && (
             <Select
+              label="Color de celdas"
+              value={record.settings.colors?.mode ?? 'source'}
+              options={[
+                { value: 'source', label: 'Colores del motivo' },
+                { value: 'cell', label: 'Una por tesela' },
+                { value: 'orientation', label: 'Por clase de orientación' },
+              ]}
+              onChange={(value) =>
+                setRecord((r) =>
+                  r.kind === 'poincare'
+                    ? {
+                        ...r,
+                        settings: {
+                          ...r.settings,
+                          colors: {
+                            mode: value as 'source' | 'cell' | 'orientation',
+                            palette: r.settings.colors?.palette,
+                          },
+                        },
+                      }
+                    : r,
+                )
+              }
+            />
+          )}
+          {record.kind === 'poincare' && (
+            <Select
               label="Adaptación del motivo"
               value={record.settings.adaptation}
               options={[

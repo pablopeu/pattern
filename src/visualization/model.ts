@@ -1,7 +1,7 @@
 import type { ArtisticDiskSettings } from '../artistic/disk';
 import type { Project } from '../app/model';
 import type { FlatSourceSelection } from '../hyperbolic/flat-source';
-import type { DiskSettings } from '../hyperbolic/representation';
+import type { DiskColorSettings, DiskSettings } from '../hyperbolic/representation';
 import { finiteGenerator } from '../aperiodic/model';
 import { resolvePattern } from '../symmetry/config';
 
@@ -11,7 +11,11 @@ export interface PoincareVisualization {
   kind: 'poincare';
   active: boolean;
   source: { patternId: string; selection: FlatSourceSelection };
-  settings: Required<DiskSettings> & { adaptation: 'inscribed' | 'mirrored-chambers' };
+  settings: Required<Omit<DiskSettings, 'colors'>> & {
+    adaptation: 'inscribed' | 'mirrored-chambers';
+    /** Documentos previos no lo traen: ausente equivale a 'source'. */
+    colors?: DiskColorSettings;
+  };
   showStructure: boolean;
 }
 export interface ArtisticVisualization {
@@ -47,6 +51,7 @@ export function defaultVisualization(project: Project, patternId: string): Poinc
     },
     settings: {
       adaptation: 'inscribed',
+      colors: { mode: 'source' },
       maxCurves: 4096,
       p: 7,
       q: 3,

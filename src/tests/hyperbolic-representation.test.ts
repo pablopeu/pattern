@@ -59,3 +59,45 @@ describe('bounded derived disk pipeline', () => {
       expect(() => deriveDisk([source()], { ...settings, ...o })).toThrow();
   });
 });
+
+describe('coloración derivada del disco', () => {
+  const fills = (disk: ReturnType<typeof deriveDisk>, index: number) =>
+    disk.cells[index].contours.filter((c) => c.paint === 'fill').map((c) => c.color);
+  it("mode 'cell' cicla la paleta por tesela sin tocar la fuente ni los trazos", () => {
+    const s = [source()],
+      saved = structuredClone(s),
+      palette = ['#112233', '#445566', '#778899'],
+      disk = deriveDisk(s, { ...settings, colors: { mode: 'cell', palette } });
+    expect(s).toEqual(saved);
+    for (let i = 0; i < Math.min(disk.cells.length, 6); i++)
+      expect(fills(disk, i).every((c) => c === palette[i % 3])).toBe(true);
+    const strokes = disk.cells[1].contours.filter((c) => c.paint !== 'fill');
+    expect(strokes.length).toBe(disk.cells[0].contours.filter((c) => c.paint !== 'fill').length);
+  });
+  it("mode 'orientation' colorea por capa de reflexión y es determinista", () => {
+    const palette = ['#aa1122', '#22aa44'],
+      disk = deriveDisk([source()], { ...settings, colors: { mode: 'orientation', palette } });
+    const used = new Set(disk.cells.flatMap((cell) => cell.contours.filter((c) => c.paint === 'fill').map((c) => c.color)));
+    expect([...used].sort()).toEqual([...palette].sort());
+    for (const cell of disk.cells)
+      expect(
+        cell.contours.filter((c) => c.paint === 'fill').every((c) => c.color === palette[cell.depth % 2]),
+      ).toBe(true);
+    expect(deriveDisk([source()], { ...settings, colors: { mode: 'orientation', palette } })).toEqual(disk);
+  });
+  it('rechaza modos y paletas inválidos y mantiene el modo fuente intacto', () => {
+    expect(() =>
+      deriveDisk([source()], { ...settings, colors: { mode: 'otro' as never } }),
+    ).toThrow(/Coloración/);
+    expect(() =>
+      deriveDisk([source()], { ...settings, colors: { mode: 'cell', palette: ['#123456'] } }),
+    ).toThrow(/Coloración/);
+    expect(() =>
+      deriveDisk([source()], { ...settings, colors: { mode: 'cell', palette: ['red', '#123456'] } }),
+    ).toThrow(/Coloración/);
+    const sourceColors = deriveDisk([source()], settings).cells[0].contours
+      .filter((c) => c.paint === 'fill')
+      .map((c) => c.color);
+    expect(sourceColors.every((c) => c === '#3b82f6')).toBe(true);
+  });
+});

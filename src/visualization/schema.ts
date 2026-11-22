@@ -30,6 +30,17 @@ export const poincareVisualizationSchema = z
     settings: z
       .object({
         adaptation: z.enum(['inscribed', 'mirrored-chambers']),
+        colors: z
+          .object({
+            mode: z.enum(['source', 'cell', 'orientation']),
+            palette: z
+              .array(z.string().regex(/^#[\da-fA-F]{6}$/))
+              .min(2)
+              .max(8)
+              .optional(),
+          })
+          .strict()
+          .optional(),
         maxCurves: finite.int().min(1).max(24000),
         p: finite.int().min(3).max(12),
         q: finite.int().min(3).max(12),

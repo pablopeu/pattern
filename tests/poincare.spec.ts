@@ -180,3 +180,37 @@ test('galería Poincaré ofrece ejemplos reales y permite volver a sus fuentes e
   await dialog(page).getByRole('button', { name: 'Volver a la fuente', exact: true }).click();
   expect((await model(page))?.patterns).toEqual(loaded.patterns);
 });
+
+test('Poincaré colorea por tesela y por orientación, y persiste el modo', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await fixture(page);
+  await page.getByRole('button', { name: 'Visualizar patrón', exact: true }).click();
+  await ready(page);
+  const fills = async () => {
+    const src = await dialog(page)
+      .getByRole('img', { name: 'Disco de Poincaré derivado de la fuente plana', exact: true })
+      .getAttribute('src');
+    if (!src) return [];
+    const svg = await page.evaluate(async (url) => (await fetch(url)).text(), src);
+    return [...new Set([...svg.matchAll(/fill="(#[0-9a-fA-F]{6})"/g)].map((m) => m[1].toLowerCase()))];
+  };
+  const baseline = (await fills()).length;
+  expect(baseline).toBeLessThanOrEqual(2);
+  await dialog(page).getByLabel('Color de celdas', { exact: true }).selectOption('cell');
+  await dialog(page).getByRole('button', { name: 'Actualizar vista', exact: true }).click();
+  await expect
+    .poll(async () => (await fills()).length, { timeout: 20000 })
+    .toBeGreaterThan(baseline + 1);
+  await expect.poll(async () => (await model(page))?.visualization?.settings.colors?.mode).toBe('cell');
+  await dialog(page).getByLabel('Color de celdas', { exact: true }).selectOption('orientation');
+  await dialog(page).getByRole('button', { name: 'Actualizar vista', exact: true }).click();
+  await expect
+    .poll(async () => (await fills()).length, { timeout: 20000 })
+    .toBeGreaterThan(1);
+  await expect
+    .poll(async () => (await model(page))?.visualization?.settings.colors?.mode, { timeout: 20000 })
+    .toBe('orientation');
+  await page.reload();
+  await ready(page);
+  await expect(dialog(page).getByLabel('Color de celdas', { exact: true })).toHaveValue('orientation');
+});
