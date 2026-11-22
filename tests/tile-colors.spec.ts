@@ -4,6 +4,34 @@ async function model(page: Page) {
   await expect(page.locator('.save-indicator')).toHaveText(/Guardado local/);
   return page.evaluate(async () => (await import('/src/persistence/storage.ts')).recover());
 }
+/**
+ * Abrir un ejemplo con silueta linkeada persiste el contorno de creación y un worker
+ * (refreshLinkedFills) reescribe la fuente canónica poco después. En runners lentos
+ * esa escritura aterriza tarde; capturar la fuente sólo cuando dejó de cambiar para
+ * que la comparación mida el efecto de los colores y no esa carrera.
+ */
+async function settledSource(page: Page) {
+  const read = () =>
+    page.evaluate(async () => {
+      const p = (await (await import('/src/persistence/storage.ts')).recover())!;
+      return JSON.stringify(p.patterns[0].sourceGeometry);
+    });
+  let previous = await read(),
+    stable = 0;
+  await expect
+    .poll(
+      async () => {
+        await page.waitForTimeout(200);
+        const current = await read();
+        stable = current === previous ? stable + 1 : 0;
+        previous = current;
+        return stable;
+      },
+      { timeout: 15000 },
+    )
+    .toBeGreaterThanOrEqual(3);
+  return (await model(page))!.patterns[0].sourceGeometry;
+}
 async function load(page: Page) {
   await page.goto('/');
   await model(page);
@@ -28,7 +56,7 @@ for (const viewport of [
   test(`paleta de tesela sin scroll y fuente única ${viewport.width}`, async ({ page }) => {
     await page.setViewportSize(viewport);
     await load(page);
-    const original = (await model(page))!.patterns[0].sourceGeometry;
+    const original = await settledSource(page);
     await page.getByLabel('Colores por ciclo', { exact: true }).fill('6');
     await page.getByLabel('Color de tesela 2', { exact: true }).fill('#45a6bd');
     const scroll = page
