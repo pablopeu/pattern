@@ -24,12 +24,18 @@ export function DiskDialog({
   onClose: () => void;
   onSave: () => void;
 }) {
-  const [record, setRecord] = useState<Visualization>(() =>
-      structuredClone(s.project.visualization ?? defaultVisualization(s.project, s.pattern.id)),
+  type DiskRecord = PoincareVisualization | ArtisticVisualization;
+  const initial = s.project.visualization,
+    [record, setRecord] = useState<DiskRecord>(() =>
+      structuredClone(
+        initial && initial.kind !== 'sphere'
+          ? initial
+          : defaultVisualization(s.project, s.pattern.id),
+      ),
     ),
     [output, setOutput] = useState<{
       disk: DerivedDisk;
-      record: Visualization;
+      record: DiskRecord;
       svg: string;
     } | null>(null),
     [preview, setPreview] = useState(''),
@@ -59,7 +65,7 @@ export function DiskDialog({
     }
     setting('view', { ...record.settings.view, center: c });
   };
-  const run = async (next: Visualization) => {
+  const run = async (next: DiskRecord) => {
     const checked = visualizationSchema.safeParse(next);
     if (!checked.success) {
       setError(checked.error.issues[0].message);
@@ -174,6 +180,7 @@ export function DiskDialog({
             options={[
               { value: 'poincare', label: 'Poincaré geométrico' },
               { value: 'artistic-disk', label: 'Disco artístico · deformación' },
+              { value: 'sphere', label: 'Esfera · sólidos y textura' },
             ]}
             onChange={(kind) =>
               s.change((p) => {

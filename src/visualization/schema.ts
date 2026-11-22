@@ -91,7 +91,38 @@ export const artisticVisualizationSchema = z
       .strict(),
   })
   .strict();
+export const sphereVisualizationSchema = z
+  .object({
+    version: z.literal(1),
+    kind: z.literal('sphere'),
+    active: z.boolean(),
+    source: poincareVisualizationSchema.shape.source,
+    settings: z
+      .object({
+        mode: z.enum(['geodesic', 'artistic']),
+        solid: z.enum(['tetra', 'cube', 'octa', 'dodeca', 'icosa']),
+        level: finite.int().min(0).max(4),
+        view: z
+          .object({
+            yaw: finite,
+            pitch: finite.min(-90).max(90),
+            zoom: finite.min(0.3).max(3),
+            spin: z.union([z.literal(1), z.literal(-1)]),
+          })
+          .strict(),
+        lighting: z.boolean(),
+        borders: z.boolean(),
+        background: z.string().regex(/^#[\da-fA-F]{6}$/),
+        palette: z
+          .array(z.string().regex(/^#[\da-fA-F]{6}$/))
+          .min(2)
+          .max(8),
+      })
+      .strict(),
+  })
+  .strict();
 export const visualizationSchema = z.discriminatedUnion('kind', [
   poincareVisualizationSchema,
   artisticVisualizationSchema,
+  sphereVisualizationSchema,
 ]);

@@ -1,4 +1,5 @@
 import { DiskDialog } from '../ui/DiskDialog';
+import { SphereDialog } from '../ui/SphereDialog';
 import { defaultVisualization } from '../visualization/model';
 import { finiteGenerator } from '../aperiodic/model';
 import { ExampleGallery } from '../ui/ExampleGallery';
@@ -1053,12 +1054,21 @@ export default function App() {
         />
       )}
       {s.loaded && s.project.visualization?.active && (
-        <DiskDialog
-          key={s.project.metadata.id + ':' + s.project.visualization.kind}
-          studio={s}
-          onClose={closeVisualization}
-          onSave={() => setSaveOpen(true)}
-        />
+        s.project.visualization.kind === 'sphere' ? (
+          <SphereDialog
+            key={s.project.metadata.id + ':sphere'}
+            studio={s}
+            onClose={closeVisualization}
+            onSave={() => setSaveOpen(true)}
+          />
+        ) : (
+          <DiskDialog
+            key={s.project.metadata.id + ':' + s.project.visualization.kind}
+            studio={s}
+            onClose={closeVisualization}
+            onSave={() => setSaveOpen(true)}
+          />
+        )
       )}
       {saveOpen && (
         <SaveDialog

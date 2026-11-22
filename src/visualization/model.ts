@@ -2,6 +2,7 @@ import type { ArtisticDiskSettings } from '../artistic/disk';
 import type { Project } from '../app/model';
 import type { FlatSourceSelection } from '../hyperbolic/flat-source';
 import type { DiskColorSettings, DiskSettings } from '../hyperbolic/representation';
+import { defaultSphereSettings, type SphereSettings } from '../sphere/model';
 import { finiteGenerator } from '../aperiodic/model';
 import { resolvePattern } from '../symmetry/config';
 
@@ -27,7 +28,14 @@ export interface ArtisticVisualization {
     view: { center: { x: number; y: number }; angle: number };
   };
 }
-export type Visualization = PoincareVisualization | ArtisticVisualization;
+export interface SphereVisualization {
+  version: 1;
+  kind: 'sphere';
+  active: boolean;
+  source: PoincareVisualization['source'];
+  settings: SphereSettings;
+}
+export type Visualization = PoincareVisualization | ArtisticVisualization | SphereVisualization;
 export function defaultVisualization(project: Project, patternId: string): PoincareVisualization {
   const pattern = project.patterns.find((p) => p.id === patternId);
   if (!pattern) throw Error('No existe el conjunto fuente.');
@@ -69,6 +77,19 @@ export function defaultVisualization(project: Project, patternId: string): Poinc
   };
 }
 
+export function defaultSphereVisualization(
+  project: Project,
+  patternId: string,
+): SphereVisualization {
+  const base = defaultVisualization(project, patternId);
+  return {
+    version: 1,
+    kind: 'sphere',
+    active: true,
+    source: base.source,
+    settings: defaultSphereSettings(),
+  };
+}
 export function defaultArtisticVisualization(
   project: Project,
   patternId: string,
@@ -96,6 +117,21 @@ export function changeVisualizationKind(
   kind: Visualization['kind'],
 ): Visualization {
   if (current.kind === kind) return structuredClone(current);
+  if (kind === 'sphere') {
+    const next = defaultSphereVisualization(project, current.source.patternId);
+    next.active = current.active;
+    next.source = structuredClone(current.source);
+    return next;
+  }
+  if (current.kind === 'sphere') {
+    const next =
+      kind === 'poincare'
+        ? defaultVisualization(project, current.source.patternId)
+        : defaultArtisticVisualization(project, current.source.patternId);
+    next.active = current.active;
+    next.source = structuredClone(current.source);
+    return next;
+  }
   const next =
     kind === 'poincare'
       ? defaultVisualization(project, current.source.patternId)

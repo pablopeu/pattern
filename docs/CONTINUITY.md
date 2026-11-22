@@ -1718,3 +1718,16 @@ Auditoría §10 registrada en STATUS/ACCEPTANCE: 10.1 no editable y retorno,
 10.2 {p,q} y modo artístico, 10.3 distinciones de adaptación, 10.4 parámetros
 completos, 10.5 presupuestos/LOD/cancelación, 10.6 referencias.
 Siguiente: Fase5 esfera (§11).
+
+## V3.0 · Fase5 completada: visualizaciones esféricas
+
+Nuevo kind 'sphere' (derivado, no editable) con dos modos: teselación
+geodésica de los 5 sólidos platónicos y textura artística por proyección
+inversa. Caras por planos de soporte sobre los propios vértices (se descartó
+la dualidad entre listas de coordenadas: dejaba huecos medibles en dodeca/icosa)
+y prueba de cobertura esférica 0% huecos en los cinco. Subdivisión 0–4
+determinista; render Canvas2D con descarte trasero por vértices, sombreado
+lambertiano, fondo, bordes y giro continuo (la vista no persiste el giro).
+Diálogo propio con selector en la Modalidad del disco; JSON retrocompatible;
+PNG 1400px real verificado. sphere.test (6) + sphere.spec E2E con persistencia
+y fuente intacta. Siguiente: Fase6 animaciones y exportación GIF/video.

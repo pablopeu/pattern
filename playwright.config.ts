@@ -25,6 +25,7 @@ export default defineConfig({
         '**/frame-weld.spec.ts',
         '**/navigation-feedback.spec.ts',
         '**/poincare.spec.ts',
+        '**/sphere.spec.ts',
         '**/artistic.spec.ts',
         '**/chambers.spec.ts',
         '**/feedback-study.spec.ts',

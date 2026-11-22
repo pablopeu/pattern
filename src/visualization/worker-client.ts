@@ -16,6 +16,8 @@ export async function deriveVisualizationInWorker(
 ) {
   visualizationSchema.parse(visualization);
   const v = visualization;
+  if (v.kind === 'sphere')
+    throw Error('La esfera esférica se renderiza en la interfaz; no usa el worker de discos.');
   if (v.kind === 'poincare') {
     if (v.settings.adaptation === 'mirrored-chambers') {
       const disk = await deriveChamberDiskInWorker(
