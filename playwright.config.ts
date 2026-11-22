@@ -26,6 +26,7 @@ export default defineConfig({
         '**/navigation-feedback.spec.ts',
         '**/poincare.spec.ts',
         '**/sphere.spec.ts',
+        '**/animation.spec.ts',
         '**/artistic.spec.ts',
         '**/chambers.spec.ts',
         '**/feedback-study.spec.ts',

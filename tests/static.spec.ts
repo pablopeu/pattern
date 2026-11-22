@@ -19,7 +19,7 @@ test('IH y referencias estáticos: catálogo real, JSON y worker desde subcarpet
   await page.goto(baseURL!);
   await page.getByRole('button', { name: 'Referencias', exact: true }).click();
   const references = page.getByRole('dialog', { name: 'Repositorios y referencias' });
-  await expect(references.locator('a[href^="https://github.com/"]')).toHaveCount(21);
+  await expect(references.locator('a[href^="https://github.com/"]')).toHaveCount(22);
   const href = await references
     .getByRole('link', { name: 'Avisos de las bibliotecas' })
     .getAttribute('href');

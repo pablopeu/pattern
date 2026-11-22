@@ -1731,3 +1731,16 @@ lambertiano, fondo, bordes y giro continuo (la vista no persiste el giro).
 Diálogo propio con selector en la Modalidad del disco; JSON retrocompatible;
 PNG 1400px real verificado. sphere.test (6) + sphere.spec E2E con persistencia
 y fuente intacta. Siguiente: Fase6 animaciones y exportación GIF/video.
+
+## V3.0 · Fase6 completada: animaciones y exportación GIF/WebM
+
+Controlador común «Animar» (junto a Visualizar): preset, duración, fps, velocidad,
+sentido, loop (bucle/ida y vuelta/una vez), play/pausa/stop/reiniciar y línea
+temporal. Cada cuadro es `frame(preset, t)` puro: no se acumulan transforms y
+t=0/t=1 coinciden en presets cíclicos; el revelado recursivo se declara no
+periódico. Presets: esfera giro/oscilación, disco Poincaré, disco artístico y
+recursiva por niveles. Exportación GIF con gifenc (MIT, cuantización rgb444,
+delay por fps, repeat loop/once) y WebM por MediaRecorder (vp9→vp8→webm) con
+progreso, cancelación, límite de cuadros y sin descarga de archivos vacíos;
+tamaños reales verificados en E2E (>1KB). Persistencia `project.animation`
+retrocompatible. Siguiente: Fase7 cierre (auditoría integral §19-23).

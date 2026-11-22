@@ -22,6 +22,7 @@ const libraries = [
   ['jakearchibald/idb', 'Guardado local en IndexedDB'],
   ['colinhacks/zod', 'Validación de archivos'],
   ['lucide-icons/lucide', 'Iconos de la interfaz'],
+  ['mattdesl/gifenc', 'Codificación GIF en el cliente para exportar animaciones'],
 ] as const;
 const otherReferences = [
   [

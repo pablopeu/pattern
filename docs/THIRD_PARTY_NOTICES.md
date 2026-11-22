@@ -12,6 +12,7 @@ Los avisos completos de las dependencias distribuidas se generan desde los paque
 | idb | IndexedDB transaccional | ISC |
 | Zod | Validación y contratos de persistencia | MIT |
 | Lucide React | Iconos vectoriales | ISC |
+| gifenc | Codificación GIF local para animaciones | MIT |
 
 Las versiones exactas y transitivas están fijadas en `package-lock.json`. TypeScript, Vite, Vitest y Playwright son herramientas de desarrollo, no servicios requeridos en producción. No hay CDN ni fuentes remotas.
 

@@ -1,4 +1,5 @@
 import type { Visualization } from '../visualization/model';
+import type { AnimationSettings } from '../animation/model';
 import type { GirihOptions } from '../girih/model';
 import type { Composition } from '../composition/model';
 import type { AperiodicOptions } from '../aperiodic/model';
@@ -128,6 +129,7 @@ export interface Project {
   palette: ProjectPalette;
   schemaVersion: 7;
   visualization?: Visualization;
+  animation?: AnimationSettings;
   mainSymmetry: Symmetry;
   mainSymmetryProfiles: Record<string, Symmetry>;
   metadata: {

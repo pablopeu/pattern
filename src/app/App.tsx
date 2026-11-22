@@ -1,5 +1,6 @@
 import { DiskDialog } from '../ui/DiskDialog';
 import { SphereDialog } from '../ui/SphereDialog';
+import { AnimationDialog } from '../ui/AnimationDialog';
 import { defaultVisualization } from '../visualization/model';
 import { finiteGenerator } from '../aperiodic/model';
 import { ExampleGallery } from '../ui/ExampleGallery';
@@ -104,6 +105,7 @@ export default function App() {
     [category, setCategory] = useState<Category>('symmetry'),
     [help, setHelp] = useState(false),
     [referencesOpen, setReferencesOpen] = useState(false),
+    [animationOpen, setAnimationOpen] = useState(false),
     [isohedralOpen, setIsohedralOpen] = useState(false),
     [importText, setImportText] = useState<string | null>(null),
     [importWidth, setImportWidth] = useState(100),
@@ -809,6 +811,14 @@ export default function App() {
                 <Circle size={17} />
                 <span>Visualizar</span>
               </button>
+              <button
+                aria-label="Animar"
+                title="Animación determinística y exportación GIF/WebM"
+                onClick={() => setAnimationOpen(true)}
+              >
+                <Circle size={17} />
+                <span>Animar</span>
+              </button>
               <StyleIndicator studio={s} />
               <button
                 title="Deshacer (Ctrl+Z)"
@@ -1028,6 +1038,7 @@ export default function App() {
         </div>
       )}
       {commandOpen && <CommandPalette commands={commands} onClose={() => setCommandOpen(false)} />}
+      {animationOpen && <AnimationDialog studio={s} onClose={() => setAnimationOpen(false)} />}
       {examplesOpen && (
         <ExampleGallery
           onClose={() => setExamplesOpen(false)}

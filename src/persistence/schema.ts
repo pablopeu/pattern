@@ -1,4 +1,5 @@
 import { visualizationSchema } from '../visualization/schema';
+import { animationSchema } from '../animation/schema';
 import { girihDefinition } from '../girih/model';
 import type { Generator } from '../app/model';
 import { compositionSchema } from '../composition/schema';
@@ -362,6 +363,7 @@ export const drawingStyleSchema = geometrySchema
 export const projectSchema = z.object({
   schemaVersion: z.literal(7),
   visualization: visualizationSchema.optional(),
+  animation: animationSchema.optional(),
   drawingStyle: drawingStyleSchema,
   stylePresets: z
     .array(
