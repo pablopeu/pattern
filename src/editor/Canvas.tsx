@@ -1,3 +1,4 @@
+import { flushSync } from 'react-dom';
 import { finiteGenerator, isAperiodic } from '../aperiodic/model';
 import { generatedBounds } from '../composition/generated';
 import { geometryHit } from './hitGeometry';
@@ -184,24 +185,28 @@ export function Canvas({
     const observer = new ResizeObserver((entries) => {
       const r = entries[0].contentRect;
       const width = Math.max(1, r.width);
-      if (freshView.current) setView(centeredView(width, Math.max(1, r.height)));
-      else if (measuredWidth.current !== undefined) {
-        const ratio = width / measuredWidth.current;
-        setView((v) => {
-          const width = v.width * ratio,
-            center = cellCenter.current;
-          return center
-            ? {
-                x: center.x - width / 2,
-                y: center.y - (width * r.height) / Math.max(1, r.width) / 2,
-                width,
-                height: (width * r.height) / Math.max(1, r.width),
-              }
-            : { ...v, width };
-        });
-      }
-      measuredWidth.current = width;
-      setSize({ width, height: Math.max(1, r.height) });
+      // ResizeObserver runs before paint. Commit the camera and its measured
+      // viewport together, so SVG never paints a new box with an old viewBox.
+      flushSync(() => {
+        if (freshView.current) setView(centeredView(width, Math.max(1, r.height)));
+        else if (measuredWidth.current !== undefined) {
+          const ratio = width / measuredWidth.current;
+          setView((v) => {
+            const width = v.width * ratio,
+              center = cellCenter.current;
+            return center
+              ? {
+                  x: center.x - width / 2,
+                  y: center.y - (width * r.height) / Math.max(1, r.width) / 2,
+                  width,
+                  height: (width * r.height) / Math.max(1, r.width),
+                }
+              : { ...v, width };
+          });
+        }
+        measuredWidth.current = width;
+        setSize({ width, height: Math.max(1, r.height) });
+      });
     });
     observer.observe(container.current);
     return () => observer.disconnect();

@@ -437,3 +437,24 @@ anterior aún esperaba confirmar Delete; se actualizó a ausencia de diálogo y
 las7 pruebas de navegación dirigidas fueron correctas(24,6s). Build y16 estáticas
 finales(8 raíz+8 subcarpeta) correctos. Logs study-* privados. La regresión completa
 se repite tras el cambio pendiente del panel; esta primera corrida no es198/198.
+
+
+## Panel derecho · Regresión del parpadeo en cuadros pintados
+
+ResizeObserver notifica antes de pintar; Canvas usa flushSync de React DOM para
+actualizar medidas y cámara/viewBox juntos. Mantiene la distribución existente
+del panel, sin tapar más superficie del área de trabajo. Uso puntual contrastado
+con [documentación oficial de React](https://react.dev/reference/react-dom/flushSync).
+
+La prueba nueva registra PNG del compositor real Chromium por Page.screencastFrame,
+no sólo valores DOM. Alterna tres veces el botón y hace una selección real que
+abre automáticamente el panel. El ancho de un dibujo magenta de20mm, calibrado
+al zoom efectivo, debe permanecer constante±2 píxeles durante TODOS los cuadros.
+Código anterior falla con66→50→66px; corregido mantiene66px y pasa en1440/1920.
+Se conservan PNG/anchos diagnósticos en .runtime/panel-* privados. Pablo confirmó
+por LAN que ya no ve el parpadeo.
+
+1136 unidades/TypeScript;2 pruebas de pintura nuevas(16,9s); regresión completa
+200/200(5,3min/exit0), incluido borrado directo/uniones/red/Fill corregidos. Build
+y16 estáticas finales correctos(8 raíz+8 subcarpeta, sin Internet). No reabrir este diagnóstico ni
+repetir suites correctas sin cambios/fallo/feedback nuevo.

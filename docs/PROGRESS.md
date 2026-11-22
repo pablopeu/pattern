@@ -1383,3 +1383,20 @@ inicia otro incremento. Monitor conserva timer real, secundaria sólo avisa.
   Repetir suite completa tras el cambio del panel para cerrar regresión actual.
 - Pablo ya recibió enlace al JSON corregido. Nuevo feedback de parpadeo al
   abrir/cerrar panel derecho: próximo incremento antes de renovar galería.
+
+
+## Panel derecho · Corrección del cuadro intermedio
+
+- ResizeObserver actualiza tamaño del lienzo y viewBox antes de pintar mediante
+  flushSync; conserva distribución original desktop/móvil. Prueba con PNG reales
+  del compositor Chromium: código anterior dibuja66→50→66px durante apertura/cierre;
+  corregido mantiene66px durante toda la secuencia. Botón y selección automática.
+- 2 E2E nuevas1440/1920 correctas(16,9s),1136 unidades/TypeScript. Suite completa200
+  flujos200/200 correcta(5,3min/exit0), build y16 estáticas finales correctos
+  (8 raíz+8 subcarpeta, sin Internet). Superposición desktop
+  explorada y descartada por ocultar puntos de edición; CSS original conservado.
+- Pablo confirmó desde su PC LAN: «ya no hace más el flick».
+- Próximo: reemplazar galería por ejemplos nuevos de funciones representativas.
+  Fuente vectorial real de Functional Geometry localizada en mapio/programming-
+  with-escher, con licencia GPL3 disponible. Todavía sin incorporar datos/código;
+  mantener avisos al hacerlo. Servicios LAN originales conservados.

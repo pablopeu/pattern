@@ -1,3 +1,52 @@
+# Panel derecho · Parpadeo corregido y verificado
+
+c3f8bfa publicado: red cambia tamaño manteniendo uniones y dos estudios originales/
+corregido en tests/estudios.6b71fca publicado: selección múltiple Delete directo,
+undo y candados. Feedback05da0f0a171043ddb88c8c5145bc920e parcialmente atendido:
+queda renovar galería y adaptar datos parametrizados de Escher. No marcarlo
+reviewed completo hasta resolver esa parte. Nuevo feedback directo de parpadeo
+al abrir/cerrar panel derecho priorizado antes de galería.
+
+Corrección actual: conservar layout flex de escritorio y panel superpuesto móvil.
+ResizeObserver en Canvas ahora sincroniza tamaño y viewBox con flushSync ANTES
+del paint. Fuente oficial react.dev/reference/react-dom/flushSync contrastada.
+Prueba REAL por Page.screencastFrame de Chromium (PNG del compositor), tres
+aperturas/cierres manuales y selección real que abre panel automáticamente.
+Pablo confirmó por LAN que el parpadeo desapareció. No reabrir diagnóstico sin
+feedback/fallo nuevo. Baseline ANTERIOR falla: un marcador pasa66→50→66 píxeles en cuadros realmente
+pintados. Corrección mantiene66px todos los cuadros, también a1920.2 nuevas E2E
+correctas(16,9s),1136 unidades/TypeScript correctas. Regresión completa200/200 correcta(5,3min/exit0) y build correcto;
+16 estáticas finales correctas(8 raíz+8 subcarpeta), sin Internet.
+Entrega lista para commit/push autorizado. No repetir suites correctas sin nuevos
+cambios/fallos/feedback. Logs panel-* privados.
+
+Se probó primero superponer el panel también en escritorio: ocultaba puntos de
+edición, se descartó y CSS quedó original. Sus tests exploratorios fallaban por
+cambiar herramienta/cerrar panel izquierdo y comparar metadatos Fill derivados;
+se reemplazaron por una prueba del síntoma real en cuadros pintados, con zoom
+calibrado desde CTM. No se relajó la detección de cuadros encogidos: baseline real
+falla y código actual pasa. Capturas/anchos antes/después quedan en .runtime.
+
+Tras cierre: reemplazar galería actual por nuevos ejemplos representativos de
+funciones actuales, incluyendo datos del pez de Functional Geometry encontrados
+en mapio/programming-with-escher, fish.path blob42b1b75631ba2fc678a1a9397db8bfe67c029ab9,
+GPL3. Notebook/licencia/fish.path consultados por plugin GitHub y página primaria
+mapio.github.io/programming-with-escher por web. Datos descargados en .runtime/references/escher/ (fish.path, LICENSE y notebook),
+NO incorporados aún al código/publicación.
+Plan preferible: datos vectoriales como recurso GPL con aviso/licencia íntegra,
+source única y operadores propios. Conservar fixtures del motor, retirar galería
+vieja de UI. Ejemplos de esfera/animación se añaden cuando existan esas funciones.
+Falta también color por celda/orientación para Fase4, auditoría y fases5–7.
+
+Nuevo docs/prd/prd_v3.1.txt aportado por Pablo está sin trackear; su encabezado
+exige esperar la finalización/verificación TOTAL de v3.0. Preservarlo, no implementar
+publicación/PHP/compartir aún ni incluirlo accidentalmente en este commit.
+
+Servicios LAN originales4173/4174 conservados. Primaria31% usada en última lectura;
+sólo pausa al90%, secundaria sólo aviso. Sin PROJECT_COMPLETE ni inspección FTP.
+
+---
+
 # Feedback de test1 · Corregido y verificación final; siguiente parpadeo del panel
 
 Reanudación real primaria0% usado; app4173 PID1046850 y monitor4174 PID785001

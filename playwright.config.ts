@@ -28,6 +28,7 @@ export default defineConfig({
         '**/artistic.spec.ts',
         '**/chambers.spec.ts',
         '**/feedback-study.spec.ts',
+        '**/panel-stability.spec.ts',
       ],
   timeout: 45000,
   expect: { timeout: 8000 },
