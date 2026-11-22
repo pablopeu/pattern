@@ -13,7 +13,12 @@ const families = (refs: BoundaryRef[]) =>
       .map((r) => [r.patternId, r.shapeId, r.curve])
       .sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b))),
   );
-export function recalculateRegion(project: Project, shapeId: string, matrix: Matrix): Geometry {
+export function recalculateRegion(
+  project: Project,
+  shapeId: string,
+  matrix: Matrix,
+  options: { allowBoundaryEvolution?: boolean } = {},
+): Geometry {
   const host = project.patterns.find((p) => p.sourceGeometry.some((g) => g.id === shapeId)),
     old = host?.sourceGeometry.find((g) => g.id === shapeId);
   if (!host || !old?.fillRegion) throw Error('El relleno ya no existe.');
@@ -77,7 +82,13 @@ export function recalculateRegion(project: Project, shapeId: string, matrix: Mat
       signature = families(old.fillRegion.refs),
       contours = previous instanceof scope.CompoundPath ? previous.children.length : 1;
     const matches = arrangement.faces.filter((face) => {
-      if (families(face.refs) !== signature) return false;
+      const sameFamilies = families(face.refs) === signature;
+      if (!sameFamilies) {
+        if (!options.allowBoundaryEvolution) return false;
+        const oldOwners = new Set(old.fillRegion!.refs.map((r) => `${r.patternId}/${r.shapeId}`)),
+          nextOwners = new Set(face.refs.map((r) => `${r.patternId}/${r.shapeId}`));
+        if (![...oldOwners].every((id) => nextOwners.has(id))) return false;
+      }
       const path = new scope.CompoundPath({
         pathData: face.pathData,
         fillRule: 'evenodd',
@@ -88,7 +99,9 @@ export function recalculateRegion(project: Project, shapeId: string, matrix: Mat
         const intersection = path.intersect(previous, { insert: false });
         try {
           const overlap = Math.abs((intersection as paper.CompoundPath).area);
-          return overlap / oldArea >= 0.8 && overlap / face.area >= 0.8;
+          return options.allowBoundaryEvolution
+            ? overlap / Math.min(oldArea, face.area) >= 0.8
+            : overlap / oldArea >= 0.8 && overlap / face.area >= 0.8;
         } finally {
           intersection.remove();
         }

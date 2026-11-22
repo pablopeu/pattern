@@ -107,7 +107,7 @@ test('dos zonas pertenecen al mismo conjunto, nuevo conjunto es explícito y un 
   await page.keyboard.press('Control+a');
   await page.keyboard.press('Delete');
   const guard = page.getByRole('dialog', { name: 'Conservar el trabajo' });
-  await guard.getByRole('button', { name: 'Descartar y continuar' }).click();
+  await expect(guard).toHaveCount(0);
   await expect.poll(async () => (await model(page))!.patterns[0].sourceGeometry.length).toBe(1);
   expect((await model(page))!.patterns[0].sourceGeometry[0].id).toBe(lockedId);
   await context(page, 'Capas');

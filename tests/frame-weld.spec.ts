@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { context } from './navigation';
+import { context, field } from './navigation';
 async function model(page: Page) {
   await expect(page.locator('.save-indicator')).toHaveText(/Guardado local/);
   return page.evaluate(async () => (await import('/src/persistence/storage.ts')).recover());
@@ -95,8 +95,13 @@ for (const width of [1440, 390])
       ['Origen X', '8'],
       ['Origen Y', '-7'],
       ['Orientación de red', '23'],
+      ['Ancho de celda', '61'],
     ]) {
-      await page.getByLabel(label, { exact: true }).fill(value);
+      await (
+        label === 'Ancho de celda'
+          ? await field(page, label)
+          : page.getByLabel(label, { exact: true })
+      ).fill(value);
       await expect
         .poll(async () => {
           const p = (await model(page))!;
@@ -104,7 +109,9 @@ for (const width of [1440, 390])
             p.patterns[0].symmetryMode === 'inherit' ? p.mainSymmetry : p.patterns[0].symmetry;
           return label === 'Orientación de red'
             ? sym.orientation
-            : sym.origin[label.endsWith('X') ? 'x' : 'y'];
+            : label === 'Ancho de celda'
+              ? sym.width
+              : sym.origin[label.endsWith('X') ? 'x' : 'y'];
         })
         .toBe(Number(value));
       await assertJoined(page);

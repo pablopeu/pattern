@@ -415,3 +415,25 @@ de borde, menor al presupuesto250000. Fuente campo con hueco y curva original;
 JSON/miniatura/captura se crean con worker real, sin transformar geometría fuente.
 No se reejecutan pruebas independientes del núcleo sin cambios en su algoritmo:
 sus evidencias anteriores y límites constan en HYPERBOLIC_CHAMBERS.md.
+
+
+## Feedback test1 · Red y recuperación explícita
+
+Fixtures: tests/estudios/test1.json original intacto y test1-corregido.json a pedido
+de Pablo. El original reproduce desfase de0,3mm de una unión antigua y dos rellenos
+stale. Script scripts/repair-study.mjs ejecuta rescate en navegador aislado, no usa
+ni cambia autosave del usuario y rechaza sobrescribir el input. Repara1 unión y
+reconstruye2 caras cerradas vinculadas. Cambio de límites sólo se permite en ese
+rescate explícito con owners previos, solapamiento≥80% del área menor y unicidad;
+las operaciones normales de actualización/carga conservan validación estricta.
+
+1136 unidades/TypeScript. Casos de transporte afín prueban17 wallpaper/7 frisos,
+2 radiales, gauges y controles originales intactos, JSON/undo y comportamiento
+real de copias. Archivo corregido cambia60→61→60 sin separar uniones ni perder
+Fill.12 E2E específicas correctas en escritorio/móvil: Shift/Delete/Backspace,
+candados, protección de reemplazo de proyecto, reabrir estudio/ancho y un píxel
+real de Fill. La primera regresión completa tuvo197/198 correctas: una prueba
+anterior aún esperaba confirmar Delete; se actualizó a ausencia de diálogo y
+las7 pruebas de navegación dirigidas fueron correctas(24,6s). Build y16 estáticas
+finales(8 raíz+8 subcarpeta) correctos. Logs study-* privados. La regresión completa
+se repite tras el cambio pendiente del panel; esta primera corrida no es198/198.

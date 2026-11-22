@@ -309,6 +309,9 @@ it('recálculo rechaza cambio de topología o relleno bloqueado y conserva el an
     before = fill.pathData;
   pattern.sourceGeometry.push({ ...geometry('compound'), pathData: 'M0 10L20 10' });
   expect(() => recalculateRegion(p, fill.id, IDENTITY)).toThrow(/equivalente/);
+  expect(() => recalculateRegion(p, fill.id, IDENTITY, { allowBoundaryEvolution: true })).toThrow(
+    /equivalente|varias/,
+  );
   expect(fill.pathData).toBe(before);
   fill.locked = true;
   expect(() => recalculateRegion(p, fill.id, IDENTITY)).toThrow(/Desbloqueá/);

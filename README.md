@@ -311,6 +311,12 @@ manualmente comienza con un detalle reducido que podés aumentar.
 El archivo conserva JSON7 y usa el componente Poincaré versión2; la versión1
 migra a motivo inscrito. Un lector anterior rechaza la versión2 explícitamente.
 
+Al cambiar el tamaño de celda dentro del mismo grupo, el motivo acompaña la
+nueva red y conserva las uniones entre copias. Sus nodos y tangentes canónicos
+siguen editables. **Delete/Backspace** elimina los objetos seleccionados con
+Shift; **Deshacer** los recupera. Reemplazar el estudio sigue pidiendo conservar,
+guardar o descartar el trabajo.
+
 ### Crear un disco artístico
 
 En **Visualizar → Modalidad → Disco artístico**, un mosaico plano finito se

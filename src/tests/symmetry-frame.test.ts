@@ -24,9 +24,26 @@ const cases = [
   ...friezeNames.map((group) => ({ group, family: 'frieze' as const })),
   ...['Cn', 'Dn'].map((group) => ({ group, family: 'radial' as const })),
 ];
-it.each(cases)(
-  '$family $group: rigid frame motion keeps both Bézier joins and canonical controls intact',
-  (choice) => {
+const motions = cases.flatMap((choice) => [
+  {
+    ...choice,
+    motion: 'rigid',
+    patch: { origin: { x: 8, y: -7 }, center: { x: 8, y: -7 }, orientation: 23 },
+  },
+  ...(choice.family === 'radial'
+    ? []
+    : [
+        { ...choice, motion: 'resize60to61', patch: { width: 61 } },
+        {
+          ...choice,
+          motion: 'affine lattice',
+          patch: { width: 81, height: 57, angle: 53, origin: { x: -3, y: 7 }, orientation: -31 },
+        },
+      ]),
+]);
+it.each(motions)(
+  '$family $group $motion: keeps both Bézier joins and canonical controls intact',
+  ({ patch, motion: _, ...choice }) => {
     const p = newProject(),
       pat = p.patterns[0];
     p.mainSymmetry = { ...p.mainSymmetry, ...choice, sectors: 5, angle: 77, width: 60, height: 45 };
@@ -63,11 +80,7 @@ it.each(cases)(
     const original = structuredClone(pat.sourceGeometry),
       old = structuredClone(p),
       history = new History(old);
-    const changes = patchSymmetryFrame(p, null, {
-        origin: { x: 8, y: -7 },
-        center: { x: 8, y: -7 },
-        orientation: 23,
-      }),
+    const changes = patchSymmetryFrame(p, null, patch),
       delta = changes.get(pat.id)!;
     const next = resolveSymmetry(pat, p.mainSymmetry),
       newOps = cosets(next),
@@ -89,7 +102,7 @@ it.each(cases)(
     expect(history.redo()).toEqual(p);
   },
 );
-it('does not move independent sets or reinterpret a non-rigid grid resize', () => {
+it('moves the periodic construction with a resized grid and keeps independent sets fixed', () => {
   const p = newProject();
   p.mainSymmetry.family = 'wallpaper';
   p.mainSymmetry.group = 'p3';
@@ -100,7 +113,8 @@ it('does not move independent sets or reinterpret a non-rigid grid resize', () =
   expect(other.placementTransform).toEqual(IDENTITY);
   const placement = structuredClone(p.patterns[0].placementTransform);
   patchSymmetryFrame(p, null, { width: 70 });
-  expect(p.patterns[0].placementTransform).toEqual(placement);
+  expect(p.patterns[0].placementTransform).not.toEqual(placement);
+  expect(other.placementTransform).toEqual(IDENTITY);
 });
 it('transports linked fill references along with the drawing without falsely invalidating its face', () => {
   const p = newProject();

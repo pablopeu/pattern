@@ -1361,3 +1361,25 @@ inicia otro incremento. Monitor conserva timer real, secundaria sólo avisa.
 - Feedback restante: uniones al variar ancho60→61, Fill stale del archivo aportado,
   reemplazar galería y buscar motivos parametrizados adaptables. Servicios LAN
   originales conservados, primaria real reiniciada; secundaria sólo aviso.
+
+
+## Feedback test1 · Tamaño de red, unión antigua y archivo corregido
+
+- Cambios de tamaño/base del mismo grupo transportan la construcción por
+  conjugación afín con placement; nodos, tangentes y gauges canónicos intactos.
+  74 casos de marcos rígidos/tamaño60→61/bases afines en17 wallpaper,7 frisos y
+  2 radiales. Teselas físicas y cambio de grupo conservan su semántica.
+- Original de Pablo conservado. Rescate explícito genera test1-corregido.json:
+  una unión antigua con desfase0,3mm reparada, dos Fill stale recalculados contra
+  áreas cerradas actuales. Fuente/candados/estilos/IDs controlados, sin mutar carga
+  normal ni original. Ampliación de límites sólo habilitada en el script de rescate,
+  con dueños anteriores, solapamiento y unicidad; ambigüedad sigue rechazándose.
+- 1136 unidades/TypeScript y12 E2E específicas correctas: protección/borrado,
+  estudio real desktop/móvil, recarga/ancho60→61, Bézier de distintas copias con
+  Fill real. Primeras pruebas de ancho ajustadas para abrir el grupo de controles
+  correspondiente. Primera suite completa197/198: falló sólo la aserción antigua
+  de confirmar Delete, actualizada al borrado directo;7 navegaciones dirigidas
+  correctas(24,6s), build y16 estáticas finales(8 raíz+8 subcarpeta) correctos.
+  Repetir suite completa tras el cambio del panel para cerrar regresión actual.
+- Pablo ya recibió enlace al JSON corregido. Nuevo feedback de parpadeo al
+  abrir/cerrar panel derecho: próximo incremento antes de renovar galería.

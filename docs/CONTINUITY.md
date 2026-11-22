@@ -1,8 +1,9 @@
-# Feedback de test1 · Borrado múltiple corregido; uniones y Fill en curso
+# Feedback de test1 · Corregido y verificación final; siguiente parpadeo del panel
 
 Reanudación real primaria0% usado; app4173 PID1046850 y monitor4174 PID785001
 conservados. Feedback05da0f0a171043ddb88c8c5145bc920e pendiente en parte:
-tests/estudios/test1.json aportado por Pablo (todavía sin trackear). Prioridad:
+tests/estudios/test1.json aportado por Pablo, se conserva intacto como fixture.
+Generado tests/estudios/test1-corregido.json a pedido de Pablo. Ya verificados:
 ancho60→61 separa uniones entre copias; dos Fill ya llegan stale desde archivo,
 con contexto anterior de origen/orientación. Después renovar galería completa
 con ejemplos representativos de funciones nuevas y buscar motivos parametrizados
@@ -19,13 +20,33 @@ el panel superpuesto para clicar el segundo trazo; prueba lo hace por UI. Dos
 intentos de test corregidos por selector inexistente y tap debajo del panel;
 aplicación no cambió para relajar aserciones. Build correcto.
 
-Próximo: ampliar patchSymmetryFrame a conjugación por base de red al variar
-width/height/angle del MISMO grupo; D=Bnuevo·Bviejo⁻¹, P'=D·P, fuente/nodos/gauges
-intactos, S'P'=D·SP. Marcos físicos de teselas excluidos. Extender pruebas a17
-wallpaper/7 frisos y al archivo real. Para Fill del archivo, diagnosticar geometría
-actual: uno recalcula con límites originales, otro tiene nuevas líneas y la
-política actual de familias exactas lo rechaza. No cambiar archivo de Pablo ni
-inventar un área: reparación debe validar cara cerrada única y reflejar el vínculo.
+Uniones/tamaño: patchSymmetryFrame usa D=Bnuevo·Bviejo⁻¹, P'=D·P para el MISMO
+wallpaper/friso; fuente/gauges intactos y S'P'=D·SP.74 casos matemáticos cubren
+17 wallpaper/7 frisos/2 radiales, rígido/60→61/base afín. Teselas físicas excluidas.
+1136 unidades/TypeScript correctas.10 E2E específicas+2 frame-weld correctas,
+escritorio/móvil, origen/rotación/ancho y píxel Fill. Primera suite completa197/198: sólo falló una prueba antigua que esperaba
+confirmación de Delete. Actualizada a ausencia de diálogo; 7 pruebas de navegación dirigidas correctas(24,6s), build y16 estáticas
+finales correctos(8 raíz+8 subcarpeta). Regresión completa se repetirá después
+del cambio pendiente del panel; no atribuir198/198 a esta primera corrida.
+
+El original tenía una unión antigua fuera del grupo actual por0,3mm y dos Fill
+stale. Recuperación EXPLÍCITA (no cambia parse/carga ni archivo original):
+node scripts/repair-study.mjs genera el archivo corregido por navegador aislado;
+repairLegacyJunctionFrames exige motivo plano periódico, evidencia de contexto
+rígido previo sin cambio de grupo/tamaño, sin candados/tesela/composición. Sólo
+corrige marcos relativos cercanos a operaciones legales y extremos vinculados;
+conserva handles/estilos/IDs. Una unión reparada, dos regiones cerradas únicas
+recalculadas y linked. Opción allowBoundaryEvolution sólo en este rescate admite
+nuevos límites/subdivisiones con mismos owners previos y solapamiento80% del área
+menor; rechaza ambigüedad. Flujo normal sigue estricto. Unitarias prueban omisiones,
+idempotencia y operaciones reales60→61→60; E2E archivo corregido abre/reabre/resize.
+
+Nuevo feedback directo: parpadeo molesto al abrir/cerrar panel derecho. Siguiente
+antes de galería: en escritorio el panel entra como flex310px, cambia anchoSVG y
+ResizeObserver aplica viewBox en otro render. Propuesta: panel superpuesto junto
+al rail en todas las resoluciones, ancho del lienzo estable; verificar frame a
+frame tamaño/viewBox/CTM y render sobre estudio real, manualmente y E2E. Todavía
+no implementado. No editar fuentes/build mientras corre la suite actual.
 
 PRD pendiente: color por celda/orientación, auditoría Fase4, fases5–7. Último cierre
 1e5de6a publicado:1080 unidades/194 E2E/16 estáticas/build. No repetir suites amplias

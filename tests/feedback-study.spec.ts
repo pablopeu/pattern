@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
-import { styles } from './navigation';
+import { styles, field } from './navigation';
+import { readFile } from 'node:fs/promises';
 async function model(page: Page) {
   await expect(page.locator('.save-indicator')).toHaveText(/Guardado local/);
   return page.evaluate(async () => (await import('/src/persistence/storage.ts')).recover());
@@ -39,7 +40,7 @@ for (const width of [1440, 390])
     await expect.poll(async () => (await model(page))?.metadata.id).toBe(original.metadata.id);
     await page.keyboard.press('v');
     for (const y of [-10, 5]) {
-      const close = page.getByRole('button', {name:'Cerrar panel de estilos',exact:true});
+      const close = page.getByRole('button', { name: 'Cerrar panel de estilos', exact: true });
       if (await close.isVisible()) await close.click();
       const p = await point(page, 0, y);
       if (y === 5) await page.keyboard.down('Shift');
@@ -47,7 +48,7 @@ for (const width of [1440, 390])
       if (y === 5) await page.keyboard.up('Shift');
     }
     await expect(page.locator('[data-editing-handles]')).toHaveCount(2);
-    const close = page.getByRole('button', {name:'Cerrar panel de estilos',exact:true});
+    const close = page.getByRole('button', { name: 'Cerrar panel de estilos', exact: true });
     if (await close.isVisible()) await close.click();
     await page.locator('.studio-canvas').focus();
     await page.keyboard.press('Delete');
@@ -63,7 +64,7 @@ for (const width of [1440, 390])
       .poll(async () => (await model(page))?.patterns[0].sourceGeometry)
       .toEqual(original.patterns[0].sourceGeometry);
     for (const y of [-10, 5]) {
-      const close = page.getByRole('button', {name:'Cerrar panel de estilos',exact:true});
+      const close = page.getByRole('button', { name: 'Cerrar panel de estilos', exact: true });
       if (await close.isVisible()) await close.click();
       const p = await point(page, 0, y);
       if (y === 5) await page.keyboard.down('Shift');
@@ -89,4 +90,55 @@ for (const width of [1440, 390])
     await expect
       .poll(async () => (await model(page))?.patterns[0].sourceGeometry)
       .toEqual([original.patterns[0].sourceGeometry[2]]);
+  });
+
+for (const width of [1440, 390])
+  test(`test1 corregido abre con Fill vinculados y conserva cierre al cambiar60→61 ${width}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+    await page.goto('/');
+    await model(page);
+    const raw = await readFile('tests/estudios/test1-corregido.json', 'utf8'),
+      native = JSON.parse(raw);
+    await page
+      .locator('input[accept=".json,application/json"]')
+      .setInputFiles({
+        name: 'test1-corregido.json',
+        mimeType: 'application/json',
+        buffer: Buffer.from(raw),
+      });
+    await expect.poll(async () => (await model(page))?.metadata.id).toBe(native.metadata.id);
+    await expect
+      .poll(async () =>
+        (await model(page))?.patterns[0].sourceGeometry
+          .filter((g) => g.fillRegion)
+          .map((g) => g.fillRegion?.status),
+      )
+      .toEqual(['linked', 'linked']);
+    const source = native.patterns[0].sourceGeometry.filter(
+      (g: { fillRegion?: unknown }) => !g.fillRegion,
+    );
+    await (await field(page, 'Ancho de celda')).fill('61');
+    await expect.poll(async () => (await model(page))?.patterns[0].symmetry.width).toBe(61);
+    await expect
+      .poll(async () =>
+        (await model(page))?.patterns[0].sourceGeometry
+          .filter((g) => g.fillRegion)
+          .map((g) => g.fillRegion?.status),
+      )
+      .toEqual(['linked', 'linked']);
+    expect((await model(page))?.patterns[0].sourceGeometry.filter((g) => !g.fillRegion)).toEqual(
+      source,
+    );
+    await page.screenshot({ path: `.runtime/test1-corregido-${width}.png` });
+    await page.reload();
+    await expect
+      .poll(async () =>
+        (await model(page))?.patterns[0].sourceGeometry
+          .filter((g) => g.fillRegion)
+          .map((g) => g.fillRegion?.status),
+      )
+      .toEqual(['linked', 'linked']);
+    expect((await model(page))?.patterns[0].symmetry.width).toBe(61);
   });

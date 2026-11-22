@@ -1,20 +1,34 @@
 import type { Project, Symmetry } from '../app/model';
 import { IDENTITY, inverse, multiply, rotate, translate, type Matrix } from '../geometry/matrix';
 import { resolveSymmetry, symmetryOrigin } from './config';
+import { lattice } from './groups';
 import { fillContext, sameFillContext } from '../fill/service';
 const close = (a: Matrix, b: Matrix) => a.every((n, i) => Math.abs(n - b[i]) < 1e-8);
 function frame(s: Symmetry) {
   const o = symmetryOrigin(s);
-  return multiply(translate(o.x, o.y), rotate(s.orientation));
+  return multiply(
+    translate(o.x, o.y),
+    s.family === 'wallpaper' || s.family === 'frieze' ? lattice(s) : rotate(s.orientation),
+  );
 }
 function structure(s: Symmetry) {
-  const { origin: _, center: __, orientation: ___, ...rest } = s;
+  const {
+    origin: _,
+    center: __,
+    orientation: ___,
+    width: ____,
+    height: _____,
+    angle: ______,
+    ...rest
+  } = s;
   return JSON.stringify(rest);
 }
-/** Move an unwrapped construction WITH its rigid symmetry frame.
+/** Move an unwrapped construction WITH its symmetry coordinate frame.
  * S'=D S D⁻¹ and P'=D P give S'P'=D SP for every instance. Consequently
  * endpoints welded in different copies stay welded, without touching sources,
- * handles or persistent junction gauges. Physical tile frames are independent.
+ * handles or persistent junction gauges. For periodic groups the frame includes
+ * the lattice basis: cell resizing/shearing transports the whole construction.
+ * Physical tile frames and changes to the group itself are independent.
  */
 export function patchSymmetryFrame(
   project: Project,
@@ -44,7 +58,7 @@ export function patchSymmetryFrame(
     deltas.set(p.id, delta);
   }
   // Stored fills may depend on several sets. Only transport their reference
-  // frames as one rigid construction when every dependency shares the motion.
+  // frames as one affine construction when every dependency shares the motion.
   for (const p of project.patterns)
     for (const g of p.sourceGeometry) {
       const fill = g.fillRegion;
