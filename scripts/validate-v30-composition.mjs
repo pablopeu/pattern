@@ -11,7 +11,14 @@ try {
   });
   await page.goto('http://127.0.0.1:4173');
   const result = await page.evaluate(async () => {
-    const { exampleCatalog } = await import('/src/examples/catalog.ts');
+    // This is the historical four-composition regression, independent of gallery curation.
+    const { exampleCatalog: archive } = await import('/src/examples/archive.ts');
+    const ids = ['fish-square', 'birds-quadrants', 'fish-spiral', 'birds-rosette'];
+    const exampleCatalog = ids.map((id) => {
+      const entry = archive.find((e) => e.id === id);
+      if (!entry) throw Error(`Missing historical composition: ${id}`);
+      return entry;
+    });
     const { prepareExport } = await import('/src/export/svg.ts');
     const { exportDXF } = await import('/src/export/dxf.ts');
     const { rasterize } = await import('/src/export/raster.ts');

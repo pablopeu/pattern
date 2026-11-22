@@ -61,14 +61,18 @@ for (const viewport of [
     expect(overflow.y).toBeLessThanOrEqual(1);
     const count = viewport.width < 650 ? 2 : 4;
     await expect(dialog.locator('.example-card')).toHaveCount(count);
-    const images = await dialog
-      .locator('img')
-      .evaluateAll((images) =>
-        images.every(
-          (img) => (img as HTMLImageElement).complete && (img as HTMLImageElement).naturalWidth > 0,
-        ),
-      );
-    expect(images).toBe(true);
+    await expect
+      .poll(() =>
+        dialog
+          .locator('img')
+          .evaluateAll((images) =>
+            images.every(
+              (img) =>
+                (img as HTMLImageElement).complete && (img as HTMLImageElement).naturalWidth > 0,
+            ),
+          ),
+      )
+      .toBe(true);
     await dialog.getByLabel('Categoría de ejemplos').selectOption('Espirales');
     await expect(
       dialog.getByRole('button', {

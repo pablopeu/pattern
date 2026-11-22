@@ -13,7 +13,9 @@ def geodesic(a,b,t):
  u=w/abs(w)*math.tanh(t*math.atanh(min(abs(w),1-1e-15)))
  return (u+a)/(1+a.conjugate()*u)
 def render(svg):return Image.open(io.BytesIO(cairosvg.svg2png(bytestring=ET.tostring(svg),output_width=907,output_height=907))).convert('RGBA')
-for file in sorted(root.glob('*.json')):
+files=sorted(root.glob('*.json'))
+assert files, 'Missing generated proof artifacts'
+for file in files:
  data=json.loads(file.read_text());name=file.stem;svg=ET.parse(root/f'{name}-structure.svg').getroot();arcs=render(svg);arcs.save(root/f'{name}-structure-cairo.png')
  assert svg.attrib['width']=='200mm' and svg.attrib['height']=='200mm'
  assert data['limited']['numeric']==0 and data['maximumBound']*100<=.01

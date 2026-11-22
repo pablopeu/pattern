@@ -42,7 +42,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure',
   },
-  reporter: [['list']],
+  reporter: [['./scripts/qa-playwright-reporter.mjs']],
   webServer: process.env.TEST_BASE_URL
     ? undefined
     : { command: 'npm run dev', url: 'http://127.0.0.1:4173', reuseExistingServer: true },

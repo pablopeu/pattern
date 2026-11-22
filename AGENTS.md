@@ -43,3 +43,23 @@ Implementar `docs/prd/prd_v3.0.txt` como evolución no destructiva del estado ac
   guardar/encolar las solicitudes y ejecutarlas al regresar la ventana de5horas.
   Recibir feedback no autoriza iniciar otro incremento durante esa pausa.
   Con cupo disponible, mantener feedback activo aunque no se esté esperando.
+
+## Política de QA y uso de agentes
+
+- El agente principal desarrolla y resuelve problemas complejos; scripts ejecutan
+  verificaciones, conteos, hashes, Git y resúmenes determinísticos.
+- Usar `npm run qa:fast` durante desarrollo, `qa:integration` al integrar y
+  `qa:full` al cerrar fases/releases o cambios transversales. Comandos anteriores
+  siguen disponibles. `qa:status` y `qa:failures` muestran evidencia acotada.
+- No repetir gates aprobados para entradas equivalentes ni observar tests uno
+  por uno. No leer logs completos correctos. Evidencia íntegra en `.runtime/qa/`.
+- Si hay un fallo, leer el diagnóstico localizado y ejecutar primero su prueba
+  dirigida. No ocultar fallos, relajar assertions ni regenerar fixtures para pasar.
+- `qa_admin` sólo interpreta evidencia acotada cuando agrega valor y su modelo
+  Luna efectivo está verificado. Nunca delegar un simple conteo; fallos geométricos,
+  de persistencia, concurrencia, seguridad o arquitectura vuelven al principal.
+- `npm run work:close -- --files-from <lista> --gate integration --push` aplica
+  staging explícito, gates y remoto/rama autorizados. FULL para fases/releases.
+  Nunca incorporar PRD posteriores o trabajo ajeno ni reescribir historial.
+- Continuidad breve con cambios, gate real, evidencia y próximo paso. No copiar
+  logs completos ni confundir bytes/tokens estimados con cupos reales de Codex.

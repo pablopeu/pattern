@@ -488,3 +488,11 @@ crear, se regeneraron15 JSON/PNG y el helper usa accesos idempotentes del rail.
 regeneración de paletas y su único fallo no se reprodujo). Build de producción
 correcto, BASE_PATH/pattern/ comprobado y16 estáticas sin Internet(8 raíz+8
 subcarpeta) cerradas antes del commit.
+
+
+## QA eficiente
+
+Ver [QA.md](QA.md) para FAST/INTEGRATION/FULL, selección, caché, evidencia y cierre
+Git. La aceptación del incremento se registra en [QA_ACCEPTANCE.md](QA_ACCEPTANCE.md).
+No se sustituye la regresión por conteos simulados. Las pruebas del supervisor usan
+procesos y repositorios temporales para provocar fallos sin publicar ni tocar LAN.

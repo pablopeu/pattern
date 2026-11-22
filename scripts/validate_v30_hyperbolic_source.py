@@ -5,7 +5,9 @@ import io,json,xml.etree.ElementTree as ET
 import cairosvg
 from PIL import Image
 root=Path('.runtime/hyperbolic-source-proof')
-for file in sorted(root.glob('*.json')):
+files=sorted(root.glob('*.json'))
+assert files, 'Missing generated proof artifacts'
+for file in files:
  data=json.loads(file.read_text());name=file.stem;svg=ET.parse(root/f'{name}.svg').getroot()
  assert data['curveProjectionBoundMm']<=.005 and data['hasUncertifiedOutlineStep'] is True
  if name.startswith('pipeline-'):

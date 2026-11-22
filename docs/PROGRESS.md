@@ -1422,3 +1422,49 @@ inicia otro incremento. Monitor conserva timer real, secundaria sólo avisa.
 - Informe solicitado por Pablo: docs/STATUS.md, actualizar checks antes de commit.
   PRD v3.0 todavía parcial; v3.1 no se inicia hasta cerrar/v3.0. Servicios LAN
   originales activos, cupo secundario sólo aviso, sin PROJECT_COMPLETE.
+
+
+## QA eficiente · Primera verificación real
+
+- Runner/reporter compactos, evidencias completas, selección conservadora,
+  bloqueo de suites, timeout/cancelación y reutilización por huellas.
+-25 pruebas nuevas de infraestructura correctas. FAST real:28 infraestructura
+  (incluidas3 FTP)+19 E2E,81s PASS. INTEGRATION y FULL todavía pendientes de cierre.
+- qa_admin confirmado por metadatos reales: rol/modelo gpt-6-luna/low/readonly,
+  retorno al padre; sin cambiar modelo principal ni configuración global.
+- Preparados cierre Git explícito y gate quality→deploy del mismo SHA/dist.
+  Documentación operativa: QA.md. Siguiente: cerrar gates y métricas, commit/push.
+- Pablo cerró44ead3f y validó210 E2E del incremento anterior. Después de QA va
+  el PRD de galería más pulida; luego pendientes v3.0, sin empezar v3.1.
+
+
+## QA eficiente · Integración y diagnóstico localizado
+
+- INTEGRATION PASS:28 infraestructura,19 E2E,8 estáticas/build,113s.
+- Primer FULL:1152 unitarias y208/210 E2E; dos comprobaciones de imágenes no
+  esperaban su descarga. Misma aserción con espera correcta:4/4 dirigidas PASS.
+-28 pruebas del supervisor correctas; conteos de FAIL conservados, flags de
+  estáticas/baseURL aislados y concurrencia local hasta4/CI2. FULL final en curso.
+
+
+## QA eficiente · Reutilización E2E por archivo
+
+- Segunda FULL:209/210 E2E,401s; un test tomaba el documento antes de finalizar
+  el refresco asíncrono de vínculos. Se espera el punto fijo persistido y se
+  mantiene la comparación completa antes/después de abrir paneles:2/2 dirigidas PASS.
+-30 pruebas del supervisor correctas. Inventario real+fuentes/contexto/evidencia
+  permiten reutilizar archivos completos aprobados. La FULL actual ejecuta sólo
+  v22-fill.spec.ts y verifica los demás contra sus pruebas reales anteriores.
+  El gate global sigue pendiente hasta completar también validadores y builds.
+
+
+## QA eficiente · Cierre verificado
+
+- FULL PASS:34 infraestructura,1152 unitarias,210 E2E verificadas,16 estáticas,
+  builds raíz/subdirectorio y21 pasos independientes. Gates/exits/evidencia reales.
+- Tras corregir esperas,21 E2E nuevas+189 reutilizadas; gate256s. Guardia final de
+  cancelación/incompletos: FULL133695ms. Repetición idéntica290ms, sin otra batería.
+- Resumen211B frente a25462B histórico; medición de texto, no equivalencia de cupo.
+  Modelos verificados/fallback, Git explícito y CI dependiente de calidad listos.
+- Siguiente galería de referencia y pulido visual; después pendientes v3.0.
+  Reporte STATUS.md y aceptación QA_ACCEPTANCE.md. Servicios LAN conservados.

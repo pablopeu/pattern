@@ -22,7 +22,15 @@
     "test:static": "TEST_STATIC=1 playwright test",
     "validate:exports": "node scripts/validate-exports.mjs",
     "format": "prettier --write src tests scripts/*.mjs vite.config.ts playwright.config.ts",
-    "test:deploy": "node --test scripts/prepare-ftp.test.mjs"
+    "test:deploy": "node --test scripts/prepare-ftp.test.mjs",
+    "qa:fast": "node scripts/qa-runner.mjs fast",
+    "qa:integration": "node scripts/qa-runner.mjs integration",
+    "qa:full": "node scripts/qa-runner.mjs full",
+    "qa:status": "node scripts/qa-runner.mjs status",
+    "qa:failures": "node scripts/qa-runner.mjs failures",
+    "qa:cancel": "node scripts/qa-runner.mjs cancel",
+    "test:qa": "node --test scripts/qa.test.mjs",
+    "work:close": "node scripts/work-close.mjs"
   },
   "dependencies": {
     "clipper-lib": "^6.4.2",

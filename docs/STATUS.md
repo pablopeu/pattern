@@ -3,6 +3,20 @@
 Actualizado:22 de noviembre de2026 (UTC). **PRD v3.0 sigue en desarrollo.**
 El detalle de criterios está en [ACCEPTANCE_V30.md](ACCEPTANCE_V30.md).
 
+## QA y siguiente prioridad
+
+QA eficiente implementado y verificado: FAST/INTEGRATION/FULL, selección por
+impacto, evidencia completa, caché con inventario E2E, cierre Git explícito y
+quality→deploy del mismo SHA. FULL:34 infraestructura,1152 unitarias,210 E2E
+verificadas y16 estáticas, builds y validadores independientes correctos.
+El gate idéntico se reutilizó en290ms. [Operación](QA.md) ·
+[criterios y mediciones](QA_ACCEPTANCE.md).
+
+Siguiente: `docs/prd/prd_galeria_ejemplos.txt`. Pablo considera que los15 ejemplos
+actuales todavía necesitan mayor calidad artística. El nuevo incremento debe
+incorporar geometría editable mejor resuelta, detalles, paletas, encastres y
+capturas reales. Después se retoma v3.0 desde sus pendientes; v3.1 espera.
+
 ## Entrega actual
 
 - **Estudio de Pablo:** se conserva el original y se entrega

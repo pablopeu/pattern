@@ -1,3 +1,33 @@
+# QA eficiente · Verificado; siguiente galería de referencia
+
+Base44ead3f publicada por Pablo. QA eficiente terminado y verificado localmente:
+31 tests del supervisor+3 FTP,1152 unitarias, inventario210 E2E,16 estáticas,
+TypeScript,21 pasos independientes y dos builds PASS. FULL final133695ms;
+repetición idéntica por caché290ms sin ejecutar baterías. Evidencia:
+.runtime/qa/2026-11-22T07-35-27-323Z-57c63105/report.json y
+2026-11-22T07-38-55-439Z-fab664dd/report.json. Operación/aceptación: QA.md,
+QA_ACCEPTANCE.md. Git se cierra con work:close --gate full y lista explícita.
+
+Dos flakiness previas resueltas con esperas de estado real, sin relajar aserciones:
+miniaturas listas (4 dirigidas) y refinamiento de metadatos de Fill antes de tomar
+snapshot (2 dirigidas). Caché por archivo permite21 casos nuevos+189 reutilizados;
+inventario y cadena de evidencia completos. No cachea corridas canceladas/incompletas.
+qa_admin/Luna/low/readonly verificado en metadatos CLI; scripts para administración.
+No motor modificado. Workflow quality→deploy implementado, no inspeccionar FTP/Actions.
+
+Siguiente OBLIGATORIO: leer/completar docs/prd/prd_galeria_ejemplos.txt, calidad
+artística superior, fuentes editables y encastres verificables. NO empezar con QA
+activo ni commit incompleto. Después volver a v3.0: coloración/auditoría Fase4,
+esfera, animación y cierre pendientes. V3.1 no se inicia. Los3 PRD subidos por Pablo
+se conservan originales locales sin normalizar ni incluirlos en este commit.
+
+Primaria39% usada en última consulta; secundaria97% sólo avisa. Servicios originales
+4173 PID1046850 y4174 PID785001 conservados. Sin PROJECT_COMPLETE. Feedback de QA
+97f40eaf7fea4d57ab5f6be06e88caed atendido al publicar;1e11a30b9d7d4abdbb25202f9fcf2bef y
+671f1fb3ab4347edbfceb18ccd50c25b pendientes para galería. Informe actual STATUS.md.
+
+---
+
 # Galería15 y exploración reversible · Publicado
 
 Último publicado c0d4e40 (parpadeo confirmado por Pablo),c3f8bfa estudio corregido,

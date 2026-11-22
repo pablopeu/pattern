@@ -522,10 +522,11 @@ Copiar `dist/` al subdirectorio `/pattern/`. No se necesitan reglas de reescritu
 
 ### Despliegue automático por FTP con GitHub Actions
 
-[Deploy FTP](.github/workflows/deploy-ftp.yml) se ejecuta con **cada push**,
-sin filtros de rama ni de archivos, y también desde **Actions → Deploy FTP →
-Run workflow**. Instala con `npm ci`, verifica TypeScript y pruebas, compila
-con rutas relativas y sube únicamente el contenido de `dist/`.
+[QA and Deploy FTP](.github/workflows/deploy-ftp.yml) se ejecuta con **cada push a
+main** y también manualmente desde Actions. El job de calidad instala dependencias,
+ejecuta `qa:full`, conserva diagnósticos y verifica el build en raíz y subdirectorio.
+El despliegue espera ese gate y descarga el `dist/` verificado del mismo SHA, con
+rutas relativas. Las credenciales FTP sólo se entregan al job de despliegue.
 
 Configurar estos cuatro **Repository secrets** en Settings → Secrets and
 variables → Actions:
@@ -557,6 +558,13 @@ Referencia: [configuración de FTP Deploy Action](https://github.com/SamKirkland
 ## Desarrollo y seguimiento del trabajo
 
 ### Verificación
+
+El [runner de QA](docs/QA.md) ejecuta baterías con resumen compacto y evidencia
+completa en `.runtime/qa/`: `npm run qa:fast` durante desarrollo,
+`npm run qa:integration` al integrar y `npm run qa:full` al cerrar fases o releases.
+No repite resultados aprobados para entradas equivalentes. `qa:status` y
+`qa:failures` permiten consultar un resumen o los fallos localizados.
+
 
 ```bash
 npm run check

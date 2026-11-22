@@ -709,6 +709,25 @@ for (const width of [1440, 390]) {
     await expect(page.getByRole('button', { name: 'Cancelar cálculo', exact: true })).toHaveCount(
       0,
     );
+    // Creation triggers a real asynchronous link refresh. Capture the invariant
+    // after its persisted metadata reaches the same fixed point as that worker.
+    await expect
+      .poll(() =>
+        page.evaluate(async () => {
+          const { recover } = await import('/src/persistence/storage.ts');
+          const { refreshLinkedFills } = await import('/src/fill/service.ts');
+          const p = (await recover())!;
+          const patches = refreshLinkedFills(p);
+          return p.patterns.every((pat) =>
+            pat.sourceGeometry.every(
+              (g) =>
+                !patches.has(g.id) ||
+                JSON.stringify(g.fillRegion) === JSON.stringify(patches.get(g.id)!.fillRegion),
+            ),
+          );
+        }),
+      )
+      .toBe(true);
     const before = await model(page);
     await tool.click();
     await expect(panel).toBeVisible();

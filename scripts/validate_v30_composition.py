@@ -6,6 +6,7 @@ from PIL import Image, ImageChops, ImageStat
 
 root = pathlib.Path('.runtime/v30-exports')
 manifest = json.loads((root / 'manifest.json').read_text())
+assert {row['id'] for row in manifest['artifacts']} == {'fish-square','birds-quadrants','fish-spiral','birds-rosette'}
 for row in manifest['artifacts']:
     name = row['id']
     images = []
@@ -45,6 +46,6 @@ for row in manifest['artifacts']:
     assert all(abs(p.z) < 1e-9 for e in entities for p in e.vertices_in_wcs())
     assert all(abs(p.x) <= 90.02 and abs(p.y) <= 90.02 for e in entities for p in e.vertices_in_wcs())
     project = json.loads((root / f'{name}.json').read_text())
-    assert project['schemaVersion'] == 5 and project['metadata']['example']['artwork'] == 'original'
+    assert project['schemaVersion'] == 7 and project['metadata']['example']['artwork'] == 'original'
     print(name, row['placementCount'], 'placements;', len(entities), 'DXF polylines; raster error', error)
 print('Independent composition checks passed:', len(manifest['artifacts']), 'original examples.')
