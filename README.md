@@ -522,11 +522,13 @@ Copiar `dist/` al subdirectorio `/pattern/`. No se necesitan reglas de reescritu
 
 ### Despliegue automático por FTP con GitHub Actions
 
-[QA and Deploy FTP](.github/workflows/deploy-ftp.yml) se ejecuta con **cada push a
-main** y también manualmente desde Actions. El job de calidad instala dependencias,
-ejecuta `qa:full`, conserva diagnósticos y verifica el build en raíz y subdirectorio.
-El despliegue espera ese gate y descarga el `dist/` verificado del mismo SHA, con
-rutas relativas. Las credenciales FTP sólo se entregan al job de despliegue.
+[Deploy FTP](.github/workflows/deploy-ftp.yml) se ejecuta con **cada push a
+main** y también manualmente desde Actions: checks rápidos (`test:deploy`, `check`),
+build con rutas relativas y subida por FTP, todo en ~2 minutos. En paralelo,
+[QA gate](.github/workflows/qa-gate.yml) corre el gate completo (`qa:full`, E2E y
+parsers independientes) sin bloquear la publicación; su evidencia queda como
+artefactos y los fallos llegan por email. Las credenciales FTP sólo se entregan
+al job de despliegue.
 
 Configurar estos cuatro **Repository secrets** en Settings → Secrets and
 variables → Actions:

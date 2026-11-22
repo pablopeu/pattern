@@ -1,4 +1,4 @@
-name: QA and Deploy FTP
+name: Deploy FTP
 
 on:
   push:
@@ -8,14 +8,16 @@ on:
 permissions:
   contents: read
 
+# Finish an upload before starting the next one, including pushes to other refs.
 concurrency:
   group: pattern-ftp-hosting
   cancel-in-progress: false
 
 jobs:
-  quality:
+  deploy:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 15
     steps:
       - name: Checkout revision
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -28,50 +30,12 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Install browser
-        run: npx playwright install --with-deps chromium
-      - name: Independent parsers
-        run: |
-          python3 -m venv .runtime/qa-python
-          .runtime/qa-python/bin/pip install -r scripts/qa/requirements.txt
-          echo "$GITHUB_WORKSPACE/.runtime/qa-python/bin" >> "$GITHUB_PATH"
-      - name: Full quality gate
-        run: npm run qa:full
-      - name: Store QA evidence
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: pattern-qa-${{ github.sha }}
-          path: .runtime/qa/
-          include-hidden-files: true
-          retention-days: 7
-          if-no-files-found: error
-      - name: Store verified production files
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: pattern-dist-${{ github.sha }}
-          path: dist/
-          if-no-files-found: error
-
-  deploy:
-    needs: quality
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    steps:
-      - name: Checkout verified revision
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Node.js
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: '24'
-      - name: Download verified production files
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
-        with:
-          name: pattern-dist-${{ github.sha }}
-          path: dist/
+      - name: Check deployment configuration logic
+        run: npm run test:deploy
+      - name: TypeScript and unit tests
+        run: npm run check
+      - name: Build static site
+        run: npm run build
       - name: Validate secrets and prepare destination
         id: ftp
         run: node scripts/prepare-ftp.mjs

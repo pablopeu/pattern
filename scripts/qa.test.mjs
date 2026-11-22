@@ -460,14 +460,22 @@ test('push rechazado conserva el commit local sin forzar', () =>
     assert.equal(r.pushExit, 1);
     assert.notEqual(f.git('rev-parse', 'HEAD').trim(), before);
   }));
-test('workflow separa secretos/QA, bloquea deploy con needs y usa dist del mismo SHA', async () => {
-  const text = await readFile('.github/workflows/deploy-ftp.yml', 'utf8');
-  const quality = text.slice(text.indexOf('  quality:'), text.indexOf('  deploy:'));
-  assert(!quality.includes('secrets.FTP'));
-  assert.match(text, /needs: quality/);
-  assert.match(text, /npm run qa:full/);
-  assert.match(text, /pattern-dist-\$\{\{ github.sha \}\}/);
-  assert.match(text, /github.ref == 'refs\/heads\/main'/);
+test('deploy rápido sin gate y QA completa paralela: secretos sólo en deploy, sin dist compartido', async () => {
+  const deploy = await readFile('.github/workflows/deploy-ftp.yml', 'utf8');
+  const gate = await readFile('.github/workflows/qa-gate.yml', 'utf8');
+  // Deploy publica main con checks rápidos y sin depender del gate completo.
+  assert.match(deploy, /github.ref == 'refs\/heads\/main'/);
+  assert.match(deploy, /npm run test:deploy/);
+  assert.match(deploy, /npm run check/);
+  assert.match(deploy, /npm run build/);
+  assert(!/needs:/.test(deploy));
+  assert(!/qa:full/.test(deploy));
+  assert.match(deploy, /pattern-ftp-hosting/);
+  // El gate completo corre en paralelo y conserva evidencia; sin secretos FTP ni dist.
+  assert.match(gate, /npm run qa:full/);
+  assert.match(gate, /pattern-qa-\$\{\{ github.sha \}\}/);
+  assert(!gate.includes('secrets.FTP'));
+  assert(!/pattern-dist/.test(gate) && !/pattern-dist/.test(deploy));
 });
 
 import { stepFingerprint } from './qa/core.mjs';

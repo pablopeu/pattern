@@ -1468,3 +1468,15 @@ inicia otro incremento. Monitor conserva timer real, secundaria sólo avisa.
   Modelos verificados/fallback, Git explícito y CI dependiente de calidad listos.
 - Siguiente galería de referencia y pulido visual; después pendientes v3.0.
   Reporte STATUS.md y aceptación QA_ACCEPTANCE.md. Servicios LAN conservados.
+
+## Fix E2E de IH43 y CI dividida
+
+- Diagnóstico real del run fallido44999316961 (dos intentos, mismo fallo):
+  209/210, carrera del worker de silueta linkeada, no un hang; los15 min son
+  qa:full completo en el runner.
+- tests/tile-colors.spec.ts: settledSource espera tres lecturas estables antes
+  de capturar la fuente; 5/5 del archivo en verde local.
+- Workflows separados: Deploy FTP (rápido, ~2 min) y QA gate (full, paralelo,
+  sin bloquear). Artefacto pattern-dist retirado (sin consumidor y con bug
+  latente de ruta). README y docs/QA.md actualizados.
+- Pendiente motor: reescritura canónica espuria al abrir ejemplos linkeados.

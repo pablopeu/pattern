@@ -125,8 +125,9 @@ y releases usar `--gate full`. `--dry-run` verifica y prepara un resumen sin com
 Un hook o push rechazado queda como FAIL; el commit local se conserva si el rechazo
 fue remoto. Evidencia: `.runtime/work-close*.json`.
 
-GitHub Actions ejecuta FULL sin observación del agente. El job de despliegue depende
-de calidad, sólo publica main y descarga el `dist` del mismo SHA ya verificado. Las
+GitHub Actions ejecuta FULL sin observación del agente en el workflow paralelo
+`QA gate`; `Deploy FTP` publica main con los checks rápidos (`test:deploy`, `check`,
+`build`) y **no espera** el gate completo (~15 min de E2E en el runner). Las
 credenciales FTP sólo se entregan al job de despliegue. Logs/traces/reportes quedan
 como artefactos de CI durante7 días. Un push aceptado no significa que CI o FTP hayan
 terminado; Pablo recibe fallos por email y Codex no inspecciona el deploy tras el push.

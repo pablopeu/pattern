@@ -1618,3 +1618,29 @@ su resultado final se registra en el marcador local de cierre.
 V2.3 conserva toda su auditoría anterior. Se mantienen app 4173 y monitor 4174,
 y la entrega independiente de feedback. Ante cambios nuevos, retirar
 PROJECT_COMPLETE y comprobar uso real antes de continuar.
+
+## CI separada del gate completo y carrera de la silueta linkeada
+
+El run de QA and Deploy FTP del commit de automatización falló 209/210: el E2E
+`paleta de tesela sin scroll y fuente única 1440` comparaba la fuente antes y
+después de editar colores. Causa raíz verificada: al abrir un ejemplo con
+silueta linkeada (IH43) la app persiste el contorno de creación y el worker de
+`refreshLinkedFills` (useStudio.ts, efecto de carga) lo reescribe poco después
+(nodos ×0.8); en el runner lento de CI esa escritura aterrizó entre ambas
+lecturas. Localmente siempre aterrizaba antes: pura ventana de timing.
+
+El test ahora captura la fuente sólo tras tres lecturas estables (200 ms entre
+ellas); la aserción sigue íntegra: si editar colores mutara la geometría,
+falla. Queda como pendiente explícito del motor: la reescritura canónica al
+abrir es real (autosave espurio y fuente re-derivada en cada apertura de un
+ejemplo linkeado); normalizarla exigiría que la creación del ejemplo coincida
+con el resultado del worker, no se relajó nada para taparlo.
+
+Deploy y gate quedan separados a pedido de Pablo: `deploy-ftp.yml` publica
+main con checks rápidos + build (~2 min, concurrency pattern-ftp-hosting) y
+`qa-gate.yml` corre `qa:full` en paralelo sin bloquear la publicación, con
+evidencia como artefactos. Se retiró el artefacto pattern-dist: nadie lo
+consume ya y apuntaba a `dist/`, que qa:full no deja en raíz (latentemente
+rompería el paso en verde). A pedido de Pablo se quitó el trailer
+Co-Authored-By de Claude del commit de la galería (trabajo de Codex) y no se
+agrega ninguno en adelante.
