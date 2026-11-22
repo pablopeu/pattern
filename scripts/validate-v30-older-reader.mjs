@@ -7,7 +7,8 @@ import { resolve, extname } from 'node:path';
 import { chromium, expect } from '@playwright/test';
 const root = resolve(process.argv[2] ?? '.runtime/flat-source-static'),
   artistic = process.argv[3] === 'artistic',
-  chambers = process.argv[3] === 'chambers';
+  chambers = process.argv[3] === 'chambers',
+  functional = process.argv[3] === 'henderson';
 await readFile(resolve(root, 'index.html'));
 const server = createServer(async (req, res) => {
   let path = new URL(req.url, 'http://localhost').pathname;
@@ -41,12 +42,16 @@ try {
   const source = await browser.newPage();
   await source.goto('http://127.0.0.1:4173');
   const native = await source.evaluate(
-    async ({ artistic, chambers }) => {
+    async ({ artistic, chambers, functional }) => {
       const { newProject, geometry, node } = await import('/src/app/model.ts'),
         { defaultVisualization, defaultArtisticVisualization } = await import(
           '/src/visualization/model.ts'
         ),
         { serialize } = await import('/src/persistence/schema.ts');
+      if (functional) {
+        const { functionalGeometryProject } = await import('/src/examples/functional-geometry.ts');
+        return serialize(functionalGeometryProject());
+      }
       const p = newProject();
       p.patterns[0].sourceGeometry = [geometry('path', [node(1, 1), node(2, 2)])];
       p.visualization = artistic
@@ -56,7 +61,7 @@ try {
         p.visualization.settings.adaptation = 'mirrored-chambers';
       return serialize(p);
     },
-    { artistic, chambers },
+    { artistic, chambers, functional },
   );
   const older = await browser.newPage();
   await older.goto('http://127.0.0.1:4181');
@@ -68,11 +73,13 @@ try {
   });
   await expect(
     older.getByText(
-      chambers
-        ? /Proyecto inválido en visualization.version/
-        : artistic
-          ? /Proyecto inválido en visualization.kind/
-          : /Este archivo usa la versión 7; esta aplicación admite hasta la versión 6\./,
+      functional
+        ? /Proyecto inválido en patterns.0.composition.recipe/
+        : chambers
+          ? /Proyecto inválido en visualization.version/
+          : artistic
+            ? /Proyecto inválido en visualization.kind/
+            : /Este archivo usa la versión 7; esta aplicación admite hasta la versión 6\./,
     ),
   ).toBeVisible();
   await expect(
@@ -80,8 +87,20 @@ try {
   ).toHaveCount(0);
   console.log(
     JSON.stringify({
-      olderReader: chambers ? 'Poincare component1' : artistic ? 'JSON7 geometric' : 6,
-      rejectedKind: chambers ? 'poincare component2' : artistic ? 'artistic-disk' : 'poincare',
+      olderReader: functional
+        ? 'JSON7 before Henderson'
+        : chambers
+          ? 'Poincare component1'
+          : artistic
+            ? 'JSON7 geometric'
+            : 6,
+      rejectedKind: functional
+        ? 'henderson'
+        : chambers
+          ? 'poincare component2'
+          : artistic
+            ? 'artistic-disk'
+            : 'poincare',
       rejectedDocument: 7,
       actualFrozenBuild: true,
       silentFlatFallback: false,

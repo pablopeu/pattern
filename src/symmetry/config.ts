@@ -58,14 +58,25 @@ export function changeSymmetry(
   if (patternId === null) {
     const current = project.mainSymmetry;
     project.mainSymmetryProfiles[symmetryId(current)] = structuredClone(current);
-    project.mainSymmetry = candidateSymmetry(current, project.mainSymmetryProfiles, choice);
+    const next = candidateSymmetry(current, project.mainSymmetryProfiles, choice);
+    for (const pattern of project.patterns.filter((p) => p.symmetryMode === 'inherit')) {
+      pattern.placementProfiles ??= {};
+      pattern.placementProfiles[symmetryId(current)] = [...pattern.placementTransform];
+      pattern.placementTransform = [
+        ...(pattern.placementProfiles[symmetryId(next)] ?? pattern.placementTransform),
+      ];
+    }
+    project.mainSymmetry = next;
     return;
   }
   const p = project.patterns.find((p) => p.id === patternId);
   if (!p) throw Error('No se encontró el conjunto.');
   const current = resolveSymmetry(p, project.mainSymmetry);
   p.symmetryProfiles[symmetryId(current)] = structuredClone(current);
+  p.placementProfiles ??= {};
+  p.placementProfiles[symmetryId(current)] = [...p.placementTransform];
   p.symmetry = candidateSymmetry(current, p.symmetryProfiles, choice);
+  p.placementTransform = [...(p.placementProfiles[symmetryId(p.symmetry)] ?? p.placementTransform)];
   p.symmetryMode = 'own';
 }
 export function freezePattern(pattern: Pattern, main: Symmetry): Pattern {

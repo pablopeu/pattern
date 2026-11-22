@@ -1,0 +1,361 @@
+{
+  "schemaVersion": 7,
+  "drawingStyle": {
+    "stroke": "#233b2d",
+    "fill": "#3b82f6",
+    "strokeWidth": 0.65,
+    "strokeCap": "round",
+    "strokeJoin": "round",
+    "miterLimit": 10,
+    "opacity": 1,
+    "fillOpacity": 1,
+    "strokeOpacity": 1,
+    "fillRule": "evenodd",
+    "strokeDash": [],
+    "strokeDashOffset": 0,
+    "strokeProfile": {
+      "version": 1,
+      "kind": "uniform",
+      "points": [
+        {
+          "at": 0,
+          "width": 1
+        },
+        {
+          "at": 1,
+          "width": 1
+        }
+      ]
+    }
+  },
+  "stylePresets": [],
+  "palette": {
+    "colors": [],
+    "recent": [],
+    "favorites": []
+  },
+  "mainSymmetry": {
+    "family": "none",
+    "group": "none",
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "orientation": 0,
+    "width": 60,
+    "height": 60,
+    "angle": 90,
+    "sectors": 8,
+    "center": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "mainSymmetryProfiles": {},
+  "metadata": {
+    "id": "35b440f6-5e3e-4de3-892a-86797502057e",
+    "name": "Plantilla de corte · Peces vinculados",
+    "createdAt": "2026-11-22T02:48:38.070Z",
+    "updatedAt": "2026-11-22T02:48:38.070Z",
+    "example": {
+      "id": "gallery-cutting",
+      "category": "Aplicaciones",
+      "description": "Patrón vectorial dentro de un perímetro físico; permite editar fuente y exportar el corte.",
+      "construction": "Perímetro físico · patrón vinculado editable",
+      "validity": "EXACT",
+      "artwork": "licensed",
+      "author": "mapio · datos del pez; aplicación Pattern Studio",
+      "references": [
+        {
+          "title": "Programming with Escher · datos vectoriales GPL-3.0",
+          "url": "https://github.com/mapio/programming-with-escher/blob/master/fish.path"
+        },
+        {
+          "title": "Geometría funcional · composición del pez",
+          "url": "https://mapio.github.io/programming-with-escher/"
+        },
+        {
+          "title": "Licencia de los datos reutilizados",
+          "url": "https://github.com/mapio/programming-with-escher/blob/master/LICENSE.txt"
+        }
+      ]
+    }
+  },
+  "documentUnits": "mm",
+  "patterns": [
+    {
+      "id": "9df53ed6-00f6-4cf1-828e-ff85cf772375",
+      "name": "Plantilla de corte · Peces vinculados",
+      "sourceGeometry": [
+        {
+          "id": "df0fec57-8faf-4d07-90c1-1e28011b9721",
+          "name": "Pez · curvas de la referencia GPL3",
+          "kind": "compound",
+          "nodes": [],
+          "closed": false,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#244f4b",
+          "fill": "none",
+          "strokeWidth": 0.009,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M 0.00 0.00\nC 0.08 0.02 0.22 0.18 0.29 0.28\nM 0.30 0.50\nC 0.34 0.60 0.43 0.68 0.50 0.74\nM 0.50 0.74\nC 0.58 0.79 0.66 0.78 0.76 0.80\nM 0.76 0.80\nC 0.82 0.88 0.94 0.95 1.00 1.00\nM 1.00 1.00\nC 0.90 0.97 0.81 0.96 0.76 0.95\nM 0.76 0.95\nC 0.69 0.96 0.62 0.96 0.55 0.96\nM 0.55 0.96\nC 0.49 0.90 0.40 0.83 0.35 0.80\nM 0.35 0.80\nC 0.29 0.76 0.19 0.72 0.14 0.69\nM 0.14 0.69\nC 0.09 0.65 -0.03 0.57 -0.05 0.28\nM -0.05 0.28\nC -0.04 0.18 -0.02 0.05 0.00 0.00\nM 0.10 0.15\nC 0.14 0.18 0.18 0.22 0.18 0.25\nM 0.18 0.25\nC 0.16 0.26 0.14 0.27 0.12 0.27\nM 0.12 0.27\nC 0.11 0.23 0.11 0.19 0.10 0.15\nM 0.05 0.18\nC 0.10 0.20 0.08 0.26 0.09 0.30\nM 0.09 0.30\nC 0.07 0.32 0.06 0.34 0.04 0.33\nM 0.04 0.33\nC 0.04 0.27 0.04 0.19 0.05 0.18\nM 0.11 0.30\nC 0.16 0.44 0.24 0.61 0.30 0.66\nM 0.30 0.66\nC 0.41 0.78 0.62 0.84 0.80 0.92\nM 0.23 0.20\nC 0.35 0.20 0.44 0.22 0.50 0.25\nM 0.50 0.25\nC 0.50 0.33 0.50 0.41 0.50 0.49\nM 0.50 0.49\nC 0.46 0.53 0.42 0.57 0.38 0.61\nM 0.29 0.29\nC 0.36 0.26 0.43 0.27 0.48 0.31\nM 0.34 0.39\nC 0.38 0.34 0.44 0.36 0.48 0.37\nM 0.34 0.49\nC 0.38 0.44 0.41 0.42 0.48 0.43\nM 0.45 0.58\nC 0.46 0.60 0.47 0.61 0.48 0.61\nM 0.42 0.61 \nC 0.43 0.64 0.46 0.68 0.48 0.67\nM 0.25 0.74\nC 0.17 0.83 0.08 0.91 0.00 0.99\nM 0.00 0.99\nC -0.08 0.91 -0.17 0.82 -0.25 0.74\nM -0.25 0.74\nC -0.20 0.63 -0.11 0.53 -0.03 0.43\nM -0.17 0.74\nC -0.13 0.66 -0.08 0.60 -0.01 0.56\nM -0.12 0.79\nC -0.07 0.71 -0.02 0.66 0.05 0.60\nM -0.06 0.86\nC -0.03 0.77 0.03 0.72 0.10 0.66\nM -0.02 0.92\nC 0.02 0.84 0.09 0.77 0.16 0.70\n"
+        }
+      ],
+      "generator": {
+        "kind": "motif",
+        "version": 1,
+        "seed": 42,
+        "count": 12,
+        "rows": 4,
+        "columns": 4,
+        "spacing": 22,
+        "offset": 0.5,
+        "aspectRatio": 1,
+        "staggerAxis": "rows",
+        "rotation": 0,
+        "scale": 1,
+        "scaleRatio": 0.9,
+        "amplitude": 6,
+        "frequency": 3,
+        "phase": 0,
+        "radius": 28,
+        "ratio": 0.35,
+        "distribution": "rectangular",
+        "periodicWarp": true,
+        "placements": [
+          [
+            -0.5,
+            -0.5,
+            -0.5,
+            0.5,
+            1,
+            0
+          ],
+          [
+            -0.5,
+            0.49999999999999994,
+            0.49999999999999994,
+            0.5,
+            6.123233995736766e-17,
+            0
+          ],
+          [
+            0.49999999999999994,
+            0.5000000000000001,
+            0.5000000000000001,
+            -0.49999999999999994,
+            0,
+            0.9999999999999999
+          ],
+          [
+            0.5000000000000001,
+            -0.4999999999999999,
+            -0.4999999999999999,
+            -0.5000000000000001,
+            0.9999999999999998,
+            1
+          ]
+        ]
+      },
+      "visible": true,
+      "symmetryMode": "own",
+      "symmetryProfiles": {},
+      "placementTransform": [
+        40,
+        0,
+        0,
+        40,
+        0,
+        0
+      ],
+      "symmetry": {
+        "family": "wallpaper",
+        "group": "p1",
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "orientation": 0,
+        "width": 40,
+        "height": 40,
+        "angle": 90,
+        "sectors": 8,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    }
+  ],
+  "regions": [
+    {
+      "id": "7fcd83a9-1ffc-428f-8a44-384faa17f70b",
+      "name": "Perímetro orgánico",
+      "geometry": [
+        {
+          "id": "67105b43-26a3-4b10-9857-a6c09998a43b",
+          "name": "Perímetro orgánico",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": -70,
+              "y": -65,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 95,
+                "y": -35
+              }
+            },
+            {
+              "x": 75,
+              "y": -45,
+              "in": {
+                "x": -45,
+                "y": -15
+              },
+              "out": {
+                "x": 60,
+                "y": 55
+              }
+            },
+            {
+              "x": 40,
+              "y": 65,
+              "in": {
+                "x": 60,
+                "y": -5
+              },
+              "out": {
+                "x": -50,
+                "y": 40
+              }
+            },
+            {
+              "x": -75,
+              "y": 35,
+              "in": {
+                "x": 10,
+                "y": 50
+              },
+              "out": {
+                "x": -30,
+                "y": -45
+              }
+            }
+          ],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#233b2d",
+          "fill": "#edf1e8",
+          "strokeWidth": 0.65,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false
+        }
+      ]
+    }
+  ],
+  "applications": [
+    {
+      "id": "beb65844-1224-4483-ada3-d6148affafb0",
+      "name": "Aplicación 01",
+      "patternId": "9df53ed6-00f6-4cf1-828e-ff85cf772375",
+      "regionId": "7fcd83a9-1ffc-428f-8a44-384faa17f70b",
+      "placementTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "linked": true,
+      "showOutline": true
+    }
+  ],
+  "preferences": {
+    "styleDefaultsFollowSelection": true,
+    "stylePanelPinned": false,
+    "fillCloseTolerance": 0,
+    "fillLinkedDefault": true,
+    "structureVisible": false,
+    "structureOpacity": 0.22,
+    "grid": false,
+    "snap": true,
+    "snapRadiusPx": 8,
+    "snapNodes": true,
+    "guides": false,
+    "split": false,
+    "background": "#faf6e9",
+    "fundamental": false,
+    "axes": false,
+    "centers": false,
+    "continuity": false,
+    "outside": false,
+    "sourceView": false,
+    "repetitionView": "extended"
+  }
+}

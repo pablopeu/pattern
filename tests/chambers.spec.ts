@@ -137,7 +137,7 @@ test('galería regenera el ejemplo de bordes compartidos y permite editar la fue
   const gallery = page.getByRole('dialog', { name: 'Galería de ejemplos', exact: true });
   await gallery.getByLabel('Categoría de ejemplos').selectOption('Poincaré');
   await gallery
-    .getByRole('button', { name: 'Abrir ejemplo Bordes compartidos · {7,3}', exact: true })
+    .getByRole('button', { name: 'Abrir ejemplo Poincaré · Rosetas enlazadas {7,3}', exact: true })
     .click();
   await ready(page);
   await expect(dialog(page).getByLabel('Adaptación del motivo', { exact: true })).toHaveValue(

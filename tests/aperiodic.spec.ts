@@ -88,7 +88,7 @@ test('Spectre: ejemplo, edición de fuente, copias, exportación y regreso al mo
   const dialog = page.getByRole('dialog', { name: 'Galería de ejemplos' });
   await dialog.getByLabel('Categoría de ejemplos', { exact: true }).selectOption('Aperiódicas');
   await dialog
-    .getByRole('button', { name: 'Abrir ejemplo Spectre · generaciones curvas', exact: true })
+    .getByRole('button', { name: 'Abrir ejemplo Spectre · Jardín quiral', exact: true })
     .click();
   await model(page);
   await context(page, 'Teselas');

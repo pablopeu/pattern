@@ -140,37 +140,40 @@ enlaces a los repositorios consultados y las bibliotecas del estudio.
 
 ### Peces, aves, recursión y espirales
 
-Abrí **Archivo → Galería de ejemplos**: hay dieciséis proyectos editables, con búsqueda,
-filtros y miniaturas del resultado real. Ocho contienen dibujos vectoriales
-originales. Los ocho ejemplos anteriores conservan sus accesos rápidos.
+Abrí **Archivo → Galería de ejemplos**: hay **15 estudios renovados**, con
+búsqueda, categorías y miniaturas del resultado real. Las tarjetas se paginan
+según el tamaño de pantalla; el diálogo entra completo sin barras de scroll.
 
-![Galería visual de ejemplos originales con clasificación y construcción](docs/images/v30-gallery.png)
+![Galería renovada con ejemplos representativos](docs/images/gallery-studio.png)
 
-En **Peces al límite · original**, un único pez con aletas, ojos y detalles se
-organiza en anillos cada vez menores hacia un borde cuadrado. Entrá en
-**Simetrías → Composición** para cambiar la profundidad o activar reflejos.
-**Editar motivo fuente** permite cambiar los nodos del pez; **Ver composición**
-muestra el resultado actualizado. Las copias se calculan sin duplicar la fuente.
+**Peces · Límite cuadrado de geometría funcional** usa los datos vectoriales
+acreditados de *Programming with Escher*. Una fuente y412 instancias forman la
+construcción clásica. En **Simetrías → Composición**, la profundidad0–5 cambia
+el detalle; **Editar motivo fuente** permite modificar el pez. Los datos y su
+licencia GPL3 se conservan en el repositorio y en los avisos; JSON y SVG llevan
+su procedencia. No se incluye una imagen del grabado.
 
-![Peces originales en anillos recursivos, con controles y fuente única](docs/images/v30-fish-square.png)
+![Geometría funcional en el editor real](docs/images/functional-geometry.png)
 
-[Descargar peces al límite](docs/examples/v30-fish-square.json) ·
-[Descargar aves en cuadrantes](docs/examples/v30-birds-quadrants.json).
+[Descargar el estudio editable](docs/examples/v3-escher-square.pattern.json) ·
+[Fuente y atribución](https://github.com/mapio/programming-with-escher).
 
-En **Aves en roseta · original**, seis brazos combinan giro y escala sobre fondo
-oscuro. La pestaña **Geometría** agrupa forma, posición y detalle: probá el ángulo,
-la razón de escala o la cantidad de brazos. **Color** cambia la paleta por nivel
-sin recolorear los ojos. Podés desactivar ese color por nivel para ver los colores
-del motivo. **Guardadas** conserva recetas personales en este navegador; el JSON
-del proyecto incluye la receta activa para trasladarla a otra PC.
+**Peces · Roseta autosimilar** permite probar giro, escala, brazos y paleta.
+Es un ensayo artístico finito: los espacios son intencionales. Para encastres
+continuos, elegí la categoría **Figurativas** o los ejemplos de Poincaré con
+bordes compartidos.
 
-![Roseta de aves originales con giro, escala y paleta por nivel](docs/images/v30-birds-rosette.png)
+![Roseta autosimilar de la nueva galería](public/examples/gallery-spiral.png)
 
-[Descargar aves en roseta](docs/examples/v30-birds-rosette.json) ·
-[Descargar cardumen en espiral](docs/examples/v30-fish-spiral.json).
+[Descargar la roseta](docs/examples/gallery-spiral.pattern.json).
+
+Cada familia y receta recuerda sus parámetros y colores. Podés alternar recursiva,
+espiral y recetas, volver, y recuperar el resultado anterior, también al reabrir
+el JSON. La fuente y los rellenos de tesela se conservan; no se sustituyen al
+explorar otras disposiciones.
 
 También podés componer tu propio dibujo: **Simetrías → Composición → Recursiva o
-Espiral**. Recursiva ofrece anillos, cuadrantes y ramificación; Espiral ofrece
+Espiral**. Recursiva ofrece geometría funcional, anillos, cuadrantes y ramificación; Espiral ofrece
 repetición discreta, logarítmica, roseta y convergencia hacia un punto fijo.
 **Ajustar composición** encuadra todo el resultado. Ctrl+K encuentra estas funciones.
 
@@ -189,9 +192,9 @@ estilizados **IH1** y un ornamento de cuatro giros **IH63**. Son dibujos propios
 inspirados en la idea de división regular del plano; no son calcos de Escher.
 Cada ejemplo incluye su clasificación y referencias.
 
-![Galería de cuatro ejemplos figurativos originales y sus mosaicos reales](docs/images/v30-figurative-gallery.png)
+![Aves azules con bordes compartidos y colores por clase](public/examples/gallery-bird.png)
 
-Abrí **Peces encastrados → Teselas → Bordes** y arrastrá un nodo: el borde
+Abrí **Peces de jade → Teselas → Bordes** y arrastrá un nodo: el borde
 relacionado y la silueta se actualizan juntos. Ojos, aletas, plumas y escamas
 siguen siendo objetos independientes. Las deformaciones inválidas conservan la
 última forma válida. En **Simetrías → Composición**, una receta recursiva o espiral
@@ -205,12 +208,12 @@ incluyen paletas. La celda repetible y su exportación incluyen el período de
 color completo; puede ser mayor que la celda geométrica. La alternancia conserva
 el encastre, aunque puede reducir las simetrías del resultado coloreado.
 
-![Peces encastrados con bordes Bézier editables y detalles conservados](docs/images/v30-figurative-fish.png)
+![Peces encastrados con bordes Bézier editables y detalles conservados](public/examples/gallery-fish.png)
 
-[Descargar peces IH43](docs/examples/v30-figurative-fish.json) ·
-[Descargar aves IH44](docs/examples/v30-figurative-bird.json) ·
-[Descargar reptiles IH1](docs/examples/v30-figurative-reptile.json) ·
-[Descargar ornamento IH63](docs/examples/v30-figurative-abstract.json).
+[Descargar peces IH43](docs/examples/gallery-fish.pattern.json) ·
+[Descargar aves IH44](docs/examples/gallery-bird.pattern.json) ·
+[Descargar reptiles IH1](docs/examples/gallery-reptile.pattern.json) ·
+[Descargar ornamento IH63](docs/examples/gallery-abstract.pattern.json).
 
 ### Parches aperiódicos: Penrose, Hat y Spectre
 
@@ -219,23 +222,23 @@ construcción, su semilla, sustituciones, tamaño y giro. **Color** permite pint
 por tipo, por grupo de una generación o por reflexión en Hat. **Jerarquía**
 muestra los marcos de sustitución; son ayudas de lectura, no bordes de teselas.
 
-![Penrose, Hat y Spectre en la galería del editor](docs/images/v30-aperiodic-gallery.png)
+![Spectre del nuevo jardín quiral](public/examples/gallery-spectre.png)
 
 **Editar motivo fuente** abre una sola tesela de referencia. Dibujá sus detalles
 y usá **Ver parche completo** para verlos propagados. Las copias usan matrices;
 el archivo conserva una sola fuente. **Volver al motivo guardado** recupera el
 dibujo sin convertir miles de copias en objetos. Fill persiste bajo los contornos.
 
-![Hat con colores y marco de jerarquía de sustitución](docs/images/v30-aperiodic-hat.png)
+![Hat con colores por tipo y detalles vegetales](public/examples/gallery-hat.png)
 
 Son parches finitos de sistemas aperiódicos documentados: no tienen una celda
 para repetir por traslación. Hat incluye las reflexiones que requiere su sistema;
 Spectre usa bordes curvos y una sola mano. SVG editable reutiliza definiciones;
 SVG expandido, PNG/JPEG y DXF conservan el resultado y sus medidas físicas.
 
-[Penrose editable](docs/examples/v30-aperiodic-penrose.json) ·
-[Hat con jerarquía](docs/examples/v30-aperiodic-hat.json) ·
-[Spectre por generación](docs/examples/v30-aperiodic-spectre.json).
+[Penrose editable](docs/examples/gallery-penrose.pattern.json) ·
+[Hat con jerarquía](docs/examples/gallery-hat.pattern.json) ·
+[Spectre por generación](docs/examples/gallery-spectre.pattern.json).
 
 ### Girih: estrellas y bandas entrelazadas
 
@@ -244,14 +247,14 @@ rombos o una tesela del catálogo. El catálogo contiene decágono, pentágono,
 hexágono alargado, corbatín y rombo72°. **Unir** permite agregar una forma por
 un borde completo; rechaza colisiones y conserva el último parche válido.
 
-![Galería de dos construcciones Girih con bandas vectoriales](docs/images/v30-girih-gallery.png)
+![Tejido Girih de rombos con bandas vectoriales](public/examples/gallery-girih-grid.png)
 
 En **Bandas**, ajustá el ancho, la separación de los cruces y **Invertir
 arriba/abajo**. El paso inferior se recorta de verdad: sus huecos viajan en SVG,
 raster y DXF. La alternancia conecta las hebras a través de bordes compartidos;
 girar o trasladar la construcción conserva sus relaciones de cruce.
 
-![Roseta Girih con alternancia verificada y estrella central editable](docs/images/v30-girih-rosette.png)
+![Roseta Girih con alternancia verificada y estrella central editable](public/examples/gallery-girih-rosette.png)
 
 **Entrelazar trazos del motivo** también usa los ejes que dibujaste. **Editar
 fuente** conserva los vectores originales; los ejes curvos se aproximan a0,02mm
@@ -261,8 +264,8 @@ identifica como resultado artístico. Un estiramiento desigual o una cizalla
 se identifica también como artístico. Las construcciones son parches finitos,
 con bordes y contactos verificados, sin afirmar cobertura infinita.
 
-[Roseta Girih editable](docs/examples/v30-girih-rosette.json) ·
-[Red entrelazada editable](docs/examples/v30-girih-rhombus-grid.json).
+[Roseta Girih editable](docs/examples/gallery-girih-rosette.pattern.json) ·
+[Red entrelazada editable](docs/examples/gallery-girih-grid.pattern.json).
 
 ### Ver el dibujo en un disco de Poincaré
 
@@ -292,24 +295,17 @@ elegido; PNG permite transparencia y JPEG usa fondo blanco. Estas descargas se
 hacen dentro de la vista derivada; el exportador del editor sigue exportando el
 trabajo plano. En esta vista no se ofrece DXF.
 
-En **Archivo → Galería de ejemplos → Poincaré** hay tres ejemplos originales,
-rotulados como adaptaciones y con su fuente plana editable:
+La categoría **Poincaré** incluye dos estudios con **Triángulos reflejados**,
+fuente editable y bordes compartidos:
 
-| Peces · {7,3} | Aves · {5,4} |
+| Rosetas enlazadas · {7,3} | Teselas florales · {5,4} |
 | --- | --- |
-| ![Peces originales en Poincaré](public/examples/poincare-fish.png) | ![Aves originales en Poincaré](public/examples/poincare-bird.png) |
-| [Abrir JSON editable](docs/examples/poincare-fish.pattern.json) | [Abrir JSON editable](docs/examples/poincare-bird.pattern.json) |
+| ![Rosetas enlazadas](public/examples/gallery-poincare-seven.png) | ![Teselas florales](public/examples/gallery-poincare-five.png) |
+| [JSON editable](docs/examples/gallery-poincare-seven.pattern.json) | [JSON editable](docs/examples/gallery-poincare-five.pattern.json) |
 
-El ejemplo **Bordes compartidos · {7,3}** combina un campo con hueco y una curva.
-Se abre directamente con **Triángulos reflejados**. Podés volver a la fuente,
-editarla y regenerar el disco. Esta adaptación requiere más cálculo; al elegirla
-manualmente comienza con un detalle reducido que podés aumentar.
-
-![Triángulos reflejados y controles en la aplicación](docs/images/poincare-chambers.png)
-
-[Descargar su JSON editable](docs/examples/poincare-chambers.pattern.json).
-El archivo conserva JSON7 y usa el componente Poincaré versión2; la versión1
-migra a motivo inscrito. Un lector anterior rechaza la versión2 explícitamente.
+El cálculo es finito y muestra sus límites. Podés cambiar la fuente y aumentar
+el detalle. Los estudios usan JSON7 y Poincaré componente2; componente1 migra a
+motivo inscrito. Un lector anterior rechaza componente2 explícitamente.
 
 Al cambiar el tamaño de celda dentro del mismo grupo, el motivo acompaña la
 nueva red y conserva las uniones entre copias. Sus nodos y tangentes canónicos
@@ -333,19 +329,19 @@ regenera la vista al volver de editar el dibujo.
 
 ![Disco artístico real con fuente plana editable](docs/images/artistic-studio.png)
 
-La galería **Discos artísticos** incluye dos fuentes originales y sus parámetros:
+En **Discos artísticos**, **Campo de aves** comprime un mosaico figurativo
+completo. Su fuente plana permite seguir editando las siluetas y los colores.
 
-| Mosaico de peces | Anillos y presión |
-| --- | --- |
-| ![Peces bajo deformación radial](public/examples/artistic-fish.png) | ![Anillos bajo deformación radial](public/examples/artistic-rings.png) |
-| [JSON editable](docs/examples/artistic-fish.pattern.json) | [JSON editable](docs/examples/artistic-rings.pattern.json) |
+![Campo de aves bajo deformación radial](public/examples/gallery-artistic.png)
+
+[Descargar el disco editable](docs/examples/gallery-artistic.pattern.json).
 
 Si un cálculo supera el presupuesto, reducí la ventana o la compresión, o aumentá
 la tolerancia de proyección. Cancelar conserva todo el trabajo plano.
 
 ### Explorar un motivo sin perder el dibujo original
 
-En **Archivo → Ejemplos editables**, abrí **Hexagonal · p6m** para obtener la escena de la primera imagen. Entrá en **Simetrías → Explorar todas las simetrías**. Pasá por p1, p4m y p6m y confirmá una opción. Las miniaturas se actualizan con tu motivo; la selección, la herramienta y las fuentes siguen disponibles. [Descargar este proyecto de ejemplo](docs/examples/studio-symmetry.json).
+En **Archivo → Galería de ejemplos**, abrí **Aves azules · IH44** o dibujá tu propio motivo. Entrá en **Simetrías → Explorar todas las simetrías**. Pasá por p1, p4m y p6m y confirmá una opción. Las miniaturas se actualizan con tu motivo; la selección, la herramienta y las fuentes siguen disponibles. [Descargar este proyecto de ejemplo](docs/examples/studio-symmetry.json).
 
 Diseño y Patrón son vistas de énfasis del mismo documento. **Vista dividida** muestra una celda editable, centrada a la izquierda, y la repetición a la derecha. Ambas comparten el zoom, incluso con la rueda. Al abrirla se ajusta la celda al espacio disponible. **Una celda** permite verla en un solo lienzo, también desde el modo Patrón. La celda queda centrada tanto aquí como en split; el zoom funciona con botones o Ctrl + rueda. Para desplazarte, volvé al patrón repetido. En patrones sin celda periódica se muestra el motivo completo. Los conjuntos pueden heredar la simetría principal, tener una propia o permanecer libres.
 
@@ -570,7 +566,7 @@ npm run test:e2e
 npm run benchmark
 ```
 
-Avance v3.0: **1136 pruebas unitarias/TypeScript**, **200 flujos E2E** y **16 pruebas estáticas** verificadas. Las fases0–3 incluyen93 IH, composición, Hat/Spectre y Girih. La fase4 ya tiene vista geométrica de Poincaré y disco artístico, fuente finita, JSON7 y exportación SVG/PNG/JPEG; adaptación con bordes compartidos ya está disponible; color por clase y otros criterios siguen pendientes. Estado detallado: [aceptación v3.0](docs/ACCEPTANCE_V30.md).
+Avance v3.0: **1136 pruebas unitarias/TypeScript**, **200 flujos E2E** y **16 pruebas estáticas** verificadas. Las fases0–3 incluyen93 IH, composición, Hat/Spectre y Girih. La fase4 ya tiene vista geométrica de Poincaré y disco artístico, fuente finita, JSON7 y exportación SVG/PNG/JPEG; adaptación con bordes compartidos ya está disponible; color por clase y otros criterios siguen pendientes. Estado detallado: [informe actual](docs/STATUS.md) y [aceptación v3.0](docs/ACCEPTANCE_V30.md).
 
 Baseline histórico v2.3: **203 pruebas unitarias, 94 flujos E2E, 9 pruebas del monitor y 6 pruebas estáticas**. Se conservan los 75 recorridos anteriores. Builds raíz/subdirectorio y validación independiente de exportaciones correctos.
 

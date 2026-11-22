@@ -90,17 +90,20 @@ test('v3 estático: ejemplos originales, receta portable y raster sin Internet',
     )
     .toBe(true);
   await dialog
-    .getByRole('button', { name: 'Abrir ejemplo Peces al límite · original', exact: true })
+    .getByRole('button', {
+      name: 'Abrir ejemplo Peces · Límite cuadrado de geometría funcional',
+      exact: true,
+    })
     .click();
-  await expect(page.locator('[data-composition-level="1"]')).toBeVisible();
+  expect(await page.locator('.studio-canvas use').count()).toBeGreaterThan(100);
   let download = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Guardar proyecto', exact: true }).click();
   await page.getByRole('button', { name: 'Guardar archivo', exact: true }).click();
   const project = JSON.parse(await readFile((await (await download).path())!, 'utf8'));
   expect(project.schemaVersion).toBe(7);
-  expect(project.patterns[0].sourceGeometry).toHaveLength(10);
-  expect(project.patterns[0].composition.recipe).toBe('square-limit');
-  expect(project.metadata.example.artwork).toBe('original');
+  expect(project.patterns[0].sourceGeometry).toHaveLength(1);
+  expect(project.patterns[0].composition.recipe).toBe('henderson');
+  expect(project.metadata.example.artwork).toBe('licensed');
   await page.getByRole('button', { name: 'Exportar', exact: true }).click();
   const preview = page.getByAltText('Previsualización de exportación');
   await expect(preview).toBeVisible();
@@ -367,7 +370,7 @@ test('Poincaré estático: galería, worker y SVG físico sin Internet', async (
   const gallery = page.getByRole('dialog', { name: 'Galería de ejemplos', exact: true });
   await gallery.getByLabel('Categoría de ejemplos').selectOption('Poincaré');
   await gallery
-    .getByRole('button', { name: 'Abrir ejemplo Aves en Poincaré · {5,4}', exact: true })
+    .getByRole('button', { name: 'Abrir ejemplo Poincaré · Teselas florales {5,4}', exact: true })
     .click();
   const disk = page.getByRole('dialog', { name: 'Visualización de Poincaré', exact: true });
   await expect(
@@ -378,7 +381,7 @@ test('Poincaré estático: galería, worker y SVG físico sin Internet', async (
   await disk.getByRole('button', { name: 'SVG', exact: true }).click();
   const svg = await readFile((await (await wait).path())!, 'utf8');
   expect(svg).toContain('width="200mm"');
-  expect(svg).toContain('flatPreparation');
+  expect(svg).toContain('CANONICAL_C0');
   await disk.getByRole('button', { name: 'Volver a la fuente', exact: true }).click();
   await expect(page.locator('.studio-canvas')).toBeVisible();
   expect(errors).toEqual([]);
@@ -406,7 +409,7 @@ test('disco artístico estático: miniatura/worker/SVG desde subcarpeta sin Inte
   const gallery = page.getByRole('dialog', { name: 'Galería de ejemplos', exact: true });
   await gallery.getByLabel('Categoría de ejemplos').selectOption('Discos artísticos');
   await gallery
-    .getByRole('button', { name: 'Abrir ejemplo Mosaico de peces · Disco artístico', exact: true })
+    .getByRole('button', { name: 'Abrir ejemplo Disco radial · Campo de aves', exact: true })
     .click();
   const dialog = page.getByRole('dialog', { name: 'Visualización artística', exact: true });
   await expect(dialog.getByRole('button', { name: 'SVG', exact: true })).toBeEnabled({
@@ -442,12 +445,14 @@ test('cámaras estáticas: galería y worker con bordes compartidos sin Internet
   await page.getByRole('button', { name: 'Galería de ejemplos', exact: true }).click();
   const gallery = page.getByRole('dialog', { name: 'Galería de ejemplos', exact: true });
   await gallery.getByLabel('Categoría de ejemplos').selectOption('Poincaré');
-  const card = gallery.locator('.example-card').filter({ hasText: 'Bordes compartidos · {7,3}' });
+  const card = gallery
+    .locator('.example-card')
+    .filter({ hasText: 'Poincaré · Rosetas enlazadas {7,3}' });
   expect((await page.request.get((await card.locator('img').getAttribute('src'))!)).ok()).toBe(
     true,
   );
   await gallery
-    .getByRole('button', { name: 'Abrir ejemplo Bordes compartidos · {7,3}', exact: true })
+    .getByRole('button', { name: 'Abrir ejemplo Poincaré · Rosetas enlazadas {7,3}', exact: true })
     .click();
   const disk = page.getByRole('dialog', { name: 'Visualización de Poincaré', exact: true });
   await expect(disk.getByRole('button', { name: 'SVG', exact: true })).toBeEnabled({

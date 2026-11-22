@@ -1,3 +1,4 @@
+import { hendersonTree } from './henderson';
 import {
   apply,
   linearScaleBound,
@@ -63,10 +64,10 @@ export function compositionIssue(c: Composition): string | null {
   if (!finite(c.angle) || Math.abs(c.angle) > 360) return 'Ángulo de composición inválido.';
   if (c.kind === 'recursive') {
     if (
-      !['square-limit', 'quadrants', 'branching'].includes(c.recipe) ||
+      !['square-limit', 'henderson', 'quadrants', 'branching'].includes(c.recipe) ||
       !Number.isInteger(c.depth) ||
       c.depth < 0 ||
-      c.depth > 6 ||
+      c.depth > (c.recipe === 'henderson' ? 5 : 6) ||
       !finite(c.ratio) ||
       c.ratio < 0.2 ||
       c.ratio > 0.8
@@ -97,6 +98,7 @@ export function compositionTree(c: Composition): CompositionNode {
   const issue = compositionIssue(c);
   if (issue) throw Error(issue);
   if (c.kind === 'recursive') {
+    if (c.recipe === 'henderson') return hendersonTree(c.depth);
     const leaf = (level: number, orientation = 0) => {
       const m = motif(level);
       return turn(c.mirror && level % 2 ? flip(m) : m, orientation + c.angle * level);

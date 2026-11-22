@@ -12,7 +12,7 @@ async function load(page: Page) {
   const dialog = page.getByRole('dialog', { name: 'Galería de ejemplos' });
   await dialog.getByLabel('Buscar ejemplos').fill('IH43');
   await dialog
-    .getByRole('button', { name: 'Abrir ejemplo Peces encastrados · IH43', exact: true })
+    .getByRole('button', { name: 'Abrir ejemplo Peces de jade · IH43', exact: true })
     .click();
   await model(page);
   await context(page, 'Teselas');
@@ -78,7 +78,7 @@ test('Fill recolorea la clase clickeada después de cambiar el período, sin dup
         if (q.x < v.x + 2 || q.y < v.y + 2 || q.x > v.x + v.width - 2 || q.y > v.y + v.height - 2)
           continue;
         const candidate = immediateFillCandidates([{ pattern, scene }], q)[0];
-        if (candidate?.kind !== 'tile') continue;
+        if (candidate?.kind !== 'tile' || candidate.colorIndex !== 2) continue;
         const screen = new DOMPoint(q.x, q.y).matrixTransform(svg.getScreenCTM()!);
         if (screen.y >= toolbar.top - 8) continue;
         return { x: screen.x, y: screen.y };
@@ -90,8 +90,10 @@ test('Fill recolorea la clase clickeada después de cambiar el período, sin dup
   await expect
     .poll(async () => Number(await page.locator('.fill-actions').getAttribute('data-fill-applied')))
     .toBe(1);
+  await expect
+    .poll(async () => (await model(page))!.patterns[0].tiling!.colors!.palette)
+    .toEqual([palette[0], palette[1], '#f43f5e']);
   const after = (await model(page))!;
-  expect(after.patterns[0].tiling!.colors!.palette).toEqual([palette[0], palette[1], '#f43f5e']);
   expect(after.patterns[0].sourceGeometry).toHaveLength(before.patterns[0].sourceGeometry.length);
   await page.reload();
   expect((await model(page))!.patterns[0].tiling!.colors!.palette[2]).toBe('#f43f5e');

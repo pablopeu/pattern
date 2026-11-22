@@ -1,0 +1,251 @@
+{
+  "schemaVersion": 7,
+  "drawingStyle": {
+    "stroke": "#233b2d",
+    "fill": "#3b82f6",
+    "strokeWidth": 0.65,
+    "strokeCap": "round",
+    "strokeJoin": "round",
+    "miterLimit": 10,
+    "opacity": 1,
+    "fillOpacity": 1,
+    "strokeOpacity": 1,
+    "fillRule": "evenodd",
+    "strokeDash": [],
+    "strokeDashOffset": 0,
+    "strokeProfile": {
+      "version": 1,
+      "kind": "uniform",
+      "points": [
+        {
+          "at": 0,
+          "width": 1
+        },
+        {
+          "at": 1,
+          "width": 1
+        }
+      ]
+    }
+  },
+  "stylePresets": [],
+  "palette": {
+    "colors": [],
+    "recent": [],
+    "favorites": []
+  },
+  "mainSymmetry": {
+    "family": "none",
+    "group": "none",
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "orientation": 0,
+    "width": 60,
+    "height": 60,
+    "angle": 90,
+    "sectors": 8,
+    "center": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "mainSymmetryProfiles": {},
+  "metadata": {
+    "id": "bbee3541-69de-424a-a6b0-2190168b70d1",
+    "name": "Peces · Límite cuadrado de geometría funcional",
+    "createdAt": "2026-11-22T02:48:35.944Z",
+    "updatedAt": "2026-11-22T02:48:35.944Z",
+    "example": {
+      "id": "v3-escher-square",
+      "category": "Recursivas",
+      "description": "Reconstrucción de referencia:412 instancias de una fuente editable, con profundidad y tamaño ajustables.",
+      "construction": "Side/corner/nonet · composición afín finita",
+      "validity": "EXACT",
+      "artwork": "licensed",
+      "author": "mapio · datos del pez de Functional Geometry; adaptación Pattern Studio",
+      "references": [
+        {
+          "title": "Programming with Escher · datos vectoriales GPL-3.0",
+          "url": "https://github.com/mapio/programming-with-escher/blob/master/fish.path"
+        },
+        {
+          "title": "Geometría funcional · composición del pez",
+          "url": "https://mapio.github.io/programming-with-escher/"
+        },
+        {
+          "title": "Licencia de los datos reutilizados",
+          "url": "https://github.com/mapio/programming-with-escher/blob/master/LICENSE.txt"
+        }
+      ]
+    }
+  },
+  "documentUnits": "mm",
+  "patterns": [
+    {
+      "id": "0a348654-6579-41eb-9160-b45683386f0e",
+      "name": "Peces · Límite cuadrado de geometría funcional",
+      "sourceGeometry": [
+        {
+          "id": "c58cd481-b393-4b95-a3db-280d17e74108",
+          "name": "Pez · curvas de la referencia GPL3",
+          "kind": "compound",
+          "nodes": [],
+          "closed": false,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#244f4b",
+          "fill": "none",
+          "strokeWidth": 0.009,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M 0.00 0.00\nC 0.08 0.02 0.22 0.18 0.29 0.28\nM 0.30 0.50\nC 0.34 0.60 0.43 0.68 0.50 0.74\nM 0.50 0.74\nC 0.58 0.79 0.66 0.78 0.76 0.80\nM 0.76 0.80\nC 0.82 0.88 0.94 0.95 1.00 1.00\nM 1.00 1.00\nC 0.90 0.97 0.81 0.96 0.76 0.95\nM 0.76 0.95\nC 0.69 0.96 0.62 0.96 0.55 0.96\nM 0.55 0.96\nC 0.49 0.90 0.40 0.83 0.35 0.80\nM 0.35 0.80\nC 0.29 0.76 0.19 0.72 0.14 0.69\nM 0.14 0.69\nC 0.09 0.65 -0.03 0.57 -0.05 0.28\nM -0.05 0.28\nC -0.04 0.18 -0.02 0.05 0.00 0.00\nM 0.10 0.15\nC 0.14 0.18 0.18 0.22 0.18 0.25\nM 0.18 0.25\nC 0.16 0.26 0.14 0.27 0.12 0.27\nM 0.12 0.27\nC 0.11 0.23 0.11 0.19 0.10 0.15\nM 0.05 0.18\nC 0.10 0.20 0.08 0.26 0.09 0.30\nM 0.09 0.30\nC 0.07 0.32 0.06 0.34 0.04 0.33\nM 0.04 0.33\nC 0.04 0.27 0.04 0.19 0.05 0.18\nM 0.11 0.30\nC 0.16 0.44 0.24 0.61 0.30 0.66\nM 0.30 0.66\nC 0.41 0.78 0.62 0.84 0.80 0.92\nM 0.23 0.20\nC 0.35 0.20 0.44 0.22 0.50 0.25\nM 0.50 0.25\nC 0.50 0.33 0.50 0.41 0.50 0.49\nM 0.50 0.49\nC 0.46 0.53 0.42 0.57 0.38 0.61\nM 0.29 0.29\nC 0.36 0.26 0.43 0.27 0.48 0.31\nM 0.34 0.39\nC 0.38 0.34 0.44 0.36 0.48 0.37\nM 0.34 0.49\nC 0.38 0.44 0.41 0.42 0.48 0.43\nM 0.45 0.58\nC 0.46 0.60 0.47 0.61 0.48 0.61\nM 0.42 0.61 \nC 0.43 0.64 0.46 0.68 0.48 0.67\nM 0.25 0.74\nC 0.17 0.83 0.08 0.91 0.00 0.99\nM 0.00 0.99\nC -0.08 0.91 -0.17 0.82 -0.25 0.74\nM -0.25 0.74\nC -0.20 0.63 -0.11 0.53 -0.03 0.43\nM -0.17 0.74\nC -0.13 0.66 -0.08 0.60 -0.01 0.56\nM -0.12 0.79\nC -0.07 0.71 -0.02 0.66 0.05 0.60\nM -0.06 0.86\nC -0.03 0.77 0.03 0.72 0.10 0.66\nM -0.02 0.92\nC 0.02 0.84 0.09 0.77 0.16 0.70\n"
+        }
+      ],
+      "generator": {
+        "kind": "motif",
+        "version": 1,
+        "seed": 42,
+        "count": 12,
+        "rows": 4,
+        "columns": 4,
+        "spacing": 22,
+        "offset": 0.5,
+        "aspectRatio": 1,
+        "staggerAxis": "rows",
+        "rotation": 0,
+        "scale": 1,
+        "scaleRatio": 0.9,
+        "amplitude": 6,
+        "frequency": 3,
+        "phase": 0,
+        "radius": 28,
+        "ratio": 0.35,
+        "distribution": "rectangular",
+        "periodicWarp": true,
+        "placements": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        ]
+      },
+      "visible": true,
+      "symmetryMode": "free",
+      "symmetryProfiles": {},
+      "placementTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "symmetry": {
+        "family": "none",
+        "group": "none",
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "orientation": 0,
+        "width": 60,
+        "height": 60,
+        "angle": 90,
+        "sectors": 8,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "composition": {
+        "version": 1,
+        "enabled": true,
+        "size": 150,
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "sourceFrame": {
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "minSize": 0.08,
+        "colorByLevel": false,
+        "palette": [
+          "#c78039",
+          "#366a70",
+          "#9c4e4a",
+          "#54734a",
+          "#b9985d"
+        ],
+        "kind": "recursive",
+        "recipe": "henderson",
+        "depth": 3,
+        "ratio": 0.5,
+        "angle": 0,
+        "mirror": false
+      }
+    }
+  ],
+  "regions": [],
+  "applications": [],
+  "preferences": {
+    "styleDefaultsFollowSelection": true,
+    "stylePanelPinned": false,
+    "fillCloseTolerance": 0,
+    "fillLinkedDefault": true,
+    "structureVisible": false,
+    "structureOpacity": 0.22,
+    "grid": false,
+    "snap": true,
+    "snapRadiusPx": 8,
+    "snapNodes": true,
+    "guides": false,
+    "split": false,
+    "background": "#faf6e9",
+    "fundamental": false,
+    "axes": false,
+    "centers": false,
+    "continuity": false,
+    "outside": false,
+    "sourceView": false,
+    "repetitionView": "extended"
+  }
+}

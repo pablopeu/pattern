@@ -5,7 +5,7 @@ No se declara completo v3.0: proyecciones y animaciones pendientes.
 
 | AC | Requisito | Estado y evidencia necesaria |
 |---|---|---|
-|01|Compatibilidad|1080 unidades/TypeScript,194 E2E y16 estáticas verificadas tras integración de cámaras; repetir con próximas familias|
+|01|Compatibilidad|1152 unidades/TypeScript; entrega de galería/perfiles en verificación final. Baseline previo200 E2E/16 estáticas|
 |02–03|Navegación/scroll|UX actualizada por feedback:4 contextos útiles, familias visuales, controles por grupos y sin scroll en4 resoluciones; futuras familias pendientes|
 |04–05|Edición/simetría|Base euclidiana verificada; extensiones pendientes|
 |06|IH1–IH93|93/93 verificados/integrados;81 geométricos+12 marcados propios, pruebas individuales/Scene/JSON y exportación independiente de los12 marcados|
@@ -17,7 +17,7 @@ No se declara completo v3.0: proyecciones y animaciones pendientes.
 |15|Fuente intacta|Poincaré: fuente intacta al entrar/salir, regenerar/cancelar/guardar/reabrir; esfera pendiente|
 |16–19|Timeline/loop/GIF/video|Pendiente|
 |20|Exportación|Base SVG/PNG/JPEG/DXF; nuevas familias pendientes|
-|21–22|Ejemplos/derechos|26 ejemplos:8 legados+8 originales+3 aperiódicos+2 Girih matemáticos+3 Poincaré originales+2 discos artísticos; JSON/capturas portables, atribución BSD3; familias posteriores pendientes|
+|21–22|Ejemplos/derechos|15 estudios renovados:7 originales,5 matemáticos y3 con datos GPL3; JSON/miniaturas reales y atribución SVG/JSON. Esfera/animación pendientes|
 |23–24|Acceso/rendimiento|Base verificada; mediciones de nuevas familias pendientes|
 |25|Regresiones|Figuras/paletas/JSON6:150/150 E2E,637 unidades,10 estáticas,build y14 monitor. Repetir tras próximas fases|
 

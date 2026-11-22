@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 7,
+  "drawingStyle": {
+    "stroke": "#233b2d",
+    "fill": "#3b82f6",
+    "strokeWidth": 0.65,
+    "strokeCap": "round",
+    "strokeJoin": "round",
+    "miterLimit": 10,
+    "opacity": 1,
+    "fillOpacity": 1,
+    "strokeOpacity": 1,
+    "fillRule": "evenodd",
+    "strokeDash": [],
+    "strokeDashOffset": 0,
+    "strokeProfile": {
+      "version": 1,
+      "kind": "uniform",
+      "points": [
+        {
+          "at": 0,
+          "width": 1
+        },
+        {
+          "at": 1,
+          "width": 1
+        }
+      ]
+    }
+  },
+  "stylePresets": [],
+  "palette": {
+    "colors": [],
+    "recent": [],
+    "favorites": []
+  },
+  "mainSymmetry": {
+    "family": "none",
+    "group": "none",
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "orientation": 0,
+    "width": 60,
+    "height": 60,
+    "angle": 90,
+    "sectors": 8,
+    "center": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "mainSymmetryProfiles": {},
+  "metadata": {
+    "id": "d9c5aba0-eab3-40af-ba32-4c046b0f3697",
+    "name": "Spectre · Jardín quiral",
+    "createdAt": "2026-11-22T02:48:36.240Z",
+    "updatedAt": "2026-11-22T02:48:36.240Z",
+    "example": {
+      "id": "gallery-spectre",
+      "category": "Aperiódicas",
+      "description": "Spectre curvo de una sola mano, pétalos interiores y colores por generación.",
+      "construction": "Spectre curvo quiral · parche finito, sin celda de traslación",
+      "validity": "EXACT",
+      "artwork": "mathematical",
+      "author": "Pattern Studio · reglas Smith/Myers/Kaplan/Goodman-Strauss",
+      "references": [
+        {
+          "title": "A chiral aperiodic monotile",
+          "url": "https://cs.uwaterloo.ca/~csk/spectre/"
+        }
+      ]
+    }
+  },
+  "documentUnits": "mm",
+  "patterns": [
+    {
+      "id": "da10977c-6612-4800-9ba7-3b4184b7522a",
+      "name": "Spectre · Jardín quiral",
+      "sourceGeometry": [
+        {
+          "id": "05d523aa-8602-4b00-a79c-4ddf37eff767",
+          "name": "Compuesto",
+          "kind": "compound",
+          "nodes": [],
+          "closed": false,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#f4e7c8",
+          "fill": "none",
+          "strokeWidth": 0.65,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M9 7C11 3 14 3 16 7M10 7C12 10 14 10 16 7"
+        }
+      ],
+      "generator": {
+        "kind": "spectre",
+        "version": 2,
+        "seed": 42,
+        "count": 12,
+        "rows": 4,
+        "columns": 4,
+        "spacing": 22,
+        "offset": 0.5,
+        "aspectRatio": 1,
+        "staggerAxis": "rows",
+        "rotation": 0,
+        "scale": 1,
+        "scaleRatio": 0.9,
+        "amplitude": 6,
+        "frequency": 3,
+        "phase": 0,
+        "radius": 100,
+        "ratio": 0.35,
+        "distribution": "rectangular",
+        "periodicWarp": true,
+        "placements": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        ],
+        "aperiodic": {
+          "version": 1,
+          "seedTile": "Delta",
+          "palette": [
+            "#7d482f",
+            "#cb986b",
+            "#ead7af",
+            "#426c66"
+          ],
+          "colorBy": "generation",
+          "generation": 1,
+          "showHierarchy": false
+        }
+      },
+      "visible": true,
+      "symmetryMode": "free",
+      "symmetryProfiles": {},
+      "placementTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "symmetry": {
+        "family": "none",
+        "group": "none",
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "orientation": 0,
+        "width": 60,
+        "height": 60,
+        "angle": 90,
+        "sectors": 8,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    }
+  ],
+  "regions": [],
+  "applications": [],
+  "preferences": {
+    "styleDefaultsFollowSelection": true,
+    "stylePanelPinned": false,
+    "fillCloseTolerance": 0,
+    "fillLinkedDefault": true,
+    "structureVisible": false,
+    "structureOpacity": 0.22,
+    "grid": false,
+    "snap": true,
+    "snapRadiusPx": 8,
+    "snapNodes": true,
+    "guides": false,
+    "split": false,
+    "background": "#faf6e9",
+    "fundamental": false,
+    "axes": false,
+    "centers": false,
+    "continuity": false,
+    "outside": false,
+    "sourceView": false,
+    "repetitionView": "extended"
+  }
+}

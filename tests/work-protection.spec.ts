@@ -1,3 +1,4 @@
+import { openArchivedExample } from './navigation';
 import { test, expect, type Page } from '@playwright/test';
 async function model(page: Page) {
   await expect(page.locator('.save-indicator')).toHaveText(/Guardado local/);
@@ -104,7 +105,7 @@ test('JSON válido y ejemplos piden permiso; JSON inválido conserva el proyecto
   await load(page, next, false);
   await guard(page).getByRole('button', { name: 'Descartar y continuar' }).click();
   await expect.poll(async () => (await model(page))?.metadata.name).toBe('Otro estudio');
-  await menu(page, 'Jardín geométrico');
+  await openArchivedExample(page, 0);
   await expect(guard(page)).toBeVisible();
   await guard(page).getByRole('button', { name: 'Cancelar', exact: true }).click();
   expect((await model(page))!.metadata.name).toBe('Otro estudio');

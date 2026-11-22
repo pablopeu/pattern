@@ -13,7 +13,7 @@ export interface CompositionBase {
 }
 export interface RecursiveComposition extends CompositionBase {
   kind: 'recursive';
-  recipe: 'square-limit' | 'quadrants' | 'branching';
+  recipe: 'square-limit' | 'henderson' | 'quadrants' | 'branching';
   depth: number;
   ratio: number;
   angle: number;

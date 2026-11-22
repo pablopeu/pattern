@@ -10,9 +10,10 @@ export function ExampleGallery({
   onSelect: (id: string) => void;
   onClose: () => void;
 }) {
-  const [narrow, setNarrow] = useState(innerWidth < 650);
+  const [viewport, setViewport] = useState({ width: innerWidth, height: innerHeight });
+  const narrow = viewport.width < 650;
   useEffect(() => {
-    const resize = () => setNarrow(innerWidth < 650);
+    const resize = () => setViewport({ width: innerWidth, height: innerHeight });
     window.addEventListener('resize', resize);
     return () => window.removeEventListener('resize', resize);
   }, []);
@@ -44,7 +45,7 @@ export function ExampleGallery({
         .toLocaleLowerCase()
         .includes(query.toLocaleLowerCase()),
   );
-  const pageSize = narrow ? 2 : 4,
+  const pageSize = viewport.height < 700 ? (narrow ? 1 : 2) : narrow ? 2 : 4,
     pages = Math.max(1, Math.ceil(filtered.length / pageSize)),
     current = Math.min(page, pages - 1);
   return (
@@ -82,30 +83,39 @@ export function ExampleGallery({
           ))}
         </select>
       </div>
-      <div className="example-cards">
+      <div
+        className="example-cards"
+        style={{ gridTemplateRows: `repeat(${pageSize > (narrow ? 1 : 2) ? 2 : 1},minmax(0,1fr))` }}
+      >
         {filtered.slice(current * pageSize, (current + 1) * pageSize).map((entry) => (
           <button
             key={entry.id}
             className="example-card"
             onClick={() => onSelect(entry.id)}
             aria-label={`Abrir ejemplo ${entry.title}`}
+            aria-description={`${entry.description} ${entry.construction}`}
+            title={`${entry.description} ${entry.construction}`}
           >
             <img src={entry.thumbnail} alt={`Vista previa de ${entry.title}`} />
             <span className="example-category">
               {entry.category}
-              {entry.featured ? ' · Original' : ''}
+              {entry.artwork === 'original'
+                ? ' · Original'
+                : entry.artwork === 'licensed'
+                  ? ' · Datos acreditados'
+                  : ' · Geometría'}
             </span>
             <strong>{entry.title}</strong>
-            <span>{entry.description}</span>
-            <small>{entry.construction}</small>
+            <span className="example-description">{entry.description}</span>
+            <small className="example-construction">{entry.construction}</small>
             <small>
               Validación:{' '}
               {entry.validity === 'EXACT' ? 'transformaciones verificadas' : entry.validity}
             </small>
           </button>
         ))}
+        {!filtered.length && <p>No se encontraron ejemplos.</p>}
       </div>
-      {!filtered.length && <p>No se encontraron ejemplos.</p>}
       <div className="page-controls">
         <button disabled={!current} onClick={() => setPage(current - 1)}>
           Ejemplos anteriores

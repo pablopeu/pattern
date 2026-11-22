@@ -165,18 +165,18 @@ test('galería Poincaré ofrece ejemplos reales y permite volver a sus fuentes e
   await page.getByRole('button', { name: 'Galería de ejemplos', exact: true }).click();
   const gallery = page.getByRole('dialog', { name: 'Galería de ejemplos', exact: true });
   await gallery.getByLabel('Categoría de ejemplos').selectOption('Poincaré');
-  await expect(gallery.locator('.example-card')).toHaveCount(3);
+  await expect(gallery.locator('.example-card')).toHaveCount(2);
   const images = await gallery
     .locator('.example-card img')
     .evaluateAll((rows) => rows.map((row) => (row as HTMLImageElement).src));
   for (const url of images) expect((await page.request.get(url)).ok()).toBe(true);
   await gallery
-    .getByRole('button', { name: 'Abrir ejemplo Peces en Poincaré · {7,3}', exact: true })
+    .getByRole('button', { name: 'Abrir ejemplo Poincaré · Rosetas enlazadas {7,3}', exact: true })
     .click();
   await ready(page);
   const loaded = (await model(page))!;
   expect(loaded.metadata.example?.validity).toBe('APPROXIMATED');
-  expect(loaded.patterns[0].sourceGeometry.length).toBeGreaterThan(3);
+  expect(loaded.patterns[0].sourceGeometry).toHaveLength(2);
   await dialog(page).getByRole('button', { name: 'Volver a la fuente', exact: true }).click();
   expect((await model(page))?.patterns).toEqual(loaded.patterns);
 });

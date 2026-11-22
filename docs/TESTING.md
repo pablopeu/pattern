@@ -458,3 +458,33 @@ por LAN que ya no ve el parpadeo.
 200/200(5,3min/exit0), incluido borrado directo/uniones/red/Fill corregidos. Build
 y16 estáticas finales correctos(8 raíz+8 subcarpeta, sin Internet). No reabrir este diagnóstico ni
 repetir suites correctas sin cambios/fallo/feedback nuevo.
+
+## Galería15, Henderson y exploración reversible
+
+1152 unidades/TypeScript. Nueva receta Henderson con4/44/156/412/956/2076
+instancias a profundidad0–5;6 se rechaza. Hashes Git originales de curvas y
+licencia conservados. Fuente única, JSON y SVG con atribución escapada. Un build
+anterior REAL (panel-static) rechaza henderson sin interpretar otra receta.
+
+Perfiles por familia/receta restauran paleta, marco y parámetros tras recargar;
+colocaciones por grupo propio/heredado vuelven al valor guardado después de
+redimensionar otro grupo. Matrices inactivas no invertibles se rechazan al abrir.
+Scene deriva la silueta para composición sin reescribir el scope del Fill original.
+
+La galería se verifica completa, todas las páginas/categorías, en320×568,
+390×844,844×390,1366×768,1440×900 y1920×1080. Sin scroll del diálogo; paginación
+adaptativa y controles dentro del viewport.8 E2E propias correctas antes del
+rediseño; se vuelven a incluir en la regresión final210 flujos. Nuevos recursos
+se generan con scripts/capture-gallery.mjs desde Scene/export/worker reales.
+Poincaré:16 celdas,73108/66760 segmentos; artístico206 pinturas/82630 segmentos.
+
+Primera suite completa202/210: dos fixtures históricos necesitaron importar y
+encuadrar explícitamente; cuatro casos de paleta expusieron Fill base distinto
+de palette[0] en presets nuevos; un selector aún usaba el color anterior y un
+helper abría/cerraba por toggle ante selección asíncrona. Se alineó el Fill al
+crear, se regeneraron15 JSON/PNG y el helper usa accesos idempotentes del rail.
+25 pruebas históricas dirigidas correctas; repetición completa final210/210
+(curated-full-confirmed-2.log, exit0; la anterior209/210 arrancó junto a la
+regeneración de paletas y su único fallo no se reprodujo). Build de producción
+correcto, BASE_PATH/pattern/ comprobado y16 estáticas sin Internet(8 raíz+8
+subcarpeta) cerradas antes del commit.

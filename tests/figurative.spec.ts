@@ -48,7 +48,7 @@ for (const viewport of [
     const reopened = await gallery(page);
     await reopened.getByLabel('Buscar ejemplos', { exact: true }).fill('IH43');
     await reopened
-      .getByRole('button', { name: 'Abrir ejemplo Peces encastrados · IH43', exact: true })
+      .getByRole('button', { name: 'Abrir ejemplo Peces de jade · IH43', exact: true })
       .click();
     const p = (await project(page))!;
     expect(p.patterns[0].tiling?.isohedral?.type).toBe(43);
@@ -66,7 +66,7 @@ test('pez: borde enlazado actualiza silueta en vivo, conserva detalles y pasa a 
   const dialog = await gallery(page);
   await dialog.getByLabel('Buscar ejemplos', { exact: true }).fill('IH43');
   await dialog
-    .getByRole('button', { name: 'Abrir ejemplo Peces encastrados · IH43', exact: true })
+    .getByRole('button', { name: 'Abrir ejemplo Peces de jade · IH43', exact: true })
     .click();
   const original = (await project(page))!.patterns[0].sourceGeometry,
     details = original.slice(1);
@@ -74,7 +74,7 @@ test('pez: borde enlazado actualiza silueta en vivo, conserva detalles y pasa a 
   await panel.getByRole('tab', { name: 'Bordes', exact: true }).click();
   const handle = page.getByLabel('Nodo de borde 1.2', { exact: true }),
     r = (await handle.boundingBox())!,
-    silhouette = page.locator('.studio-canvas path[fill="#c78046"]').first(),
+    silhouette = page.locator(`.studio-canvas path[fill="${original[0].fill}"]`).first(),
     old = await silhouette.getAttribute('d');
   await page.mouse.move(r.x + r.width / 2, r.y + r.height / 2);
   await page.mouse.down();
@@ -92,7 +92,7 @@ test('pez: borde enlazado actualiza silueta en vivo, conserva detalles y pasa a 
   expect(p.patterns[0].sourceGeometry).toHaveLength(original.length);
   expect(p.patterns[0].sourceGeometry.slice(1)).toEqual(details);
   await expect(page.locator('.studio-canvas [data-tiled-pattern]')).toHaveCount(0);
-  await expect(page.locator('.studio-canvas defs path[fill="#c78046"]').first()).toBeAttached();
+  await expect(page.locator(`.studio-canvas defs path[fill="${original[0].fill}"]`).first()).toBeAttached();
   await page.screenshot({ path: '.runtime/figurative-to-composition.png' });
   await page.reload();
   p = (await project(page))!;

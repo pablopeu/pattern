@@ -101,13 +101,11 @@ for (const width of [1440, 390])
     await model(page);
     const raw = await readFile('tests/estudios/test1-corregido.json', 'utf8'),
       native = JSON.parse(raw);
-    await page
-      .locator('input[accept=".json,application/json"]')
-      .setInputFiles({
-        name: 'test1-corregido.json',
-        mimeType: 'application/json',
-        buffer: Buffer.from(raw),
-      });
+    await page.locator('input[accept=".json,application/json"]').setInputFiles({
+      name: 'test1-corregido.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(raw),
+    });
     await expect.poll(async () => (await model(page))?.metadata.id).toBe(native.metadata.id);
     await expect
       .poll(async () =>

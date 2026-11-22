@@ -3,7 +3,7 @@ import { readFile, readdir, writeFile, mkdir } from 'node:fs/promises';
 const lock = JSON.parse(await readFile('package-lock.json', 'utf8'));
 const notices = [
   'Pattern Studio 2D — Third-party software notices\n',
-  'Original illustrative examples; third-party dependencies and vendored modules are credited below.\n',
+  'Examples identify original, mathematical or licensed vector data; third-party dependencies and resources are credited below.\n',
 ];
 for (const [path, entry] of Object.entries(lock.packages)) {
   if (!path || entry.dev || entry.link) continue;
@@ -45,6 +45,10 @@ notices.push(
 notices.push(
   '\nPoincaré Paint mathematical core · Yusuf Pisan2026\nhttps://github.com/pisan-labs/poincare-paint\n\n' +
     (await readFile('src/vendor/poincare/LICENSE', 'utf8')),
+);
+notices.push(
+  '\nFunctional Geometry fish vector data · mapio/programming-with-escher\nhttps://github.com/mapio/programming-with-escher/blob/master/fish.path\nGit blob42b1b75631ba2fc678a1a9397db8bfe67c029ab9\n\n' +
+    (await readFile('src/vendor/escher/LICENSE', 'utf8')),
 );
 await writeFile('public/THIRD_PARTY_NOTICES.txt', notices.join('\n') + '\n');
 console.log('Generated public/THIRD_PARTY_NOTICES.txt');

@@ -313,6 +313,17 @@ export const tilingSchema = z.object({
 });
 const pattern = z.object({
   composition: compositionSchema.optional(),
+  compositionProfiles: z
+    .record(z.string().max(80), compositionSchema)
+    .refine(
+      (records) =>
+        Object.entries(records).length <= 10 &&
+        Object.entries(records).every(
+          ([key, c]) => key === c.kind || key === `${c.kind}:${c.recipe}`,
+        ),
+      'Perfiles de composición inválidos.',
+    )
+    .optional(),
   tiling: tilingSchema.optional(),
   id: z.string(),
   name: z.string(),
@@ -321,6 +332,10 @@ const pattern = z.object({
   symmetry,
   symmetryMode: z.enum(['own', 'inherit', 'free']),
   symmetryProfiles: z.record(z.string(), symmetry),
+  placementProfiles: z
+    .record(z.string().max(80), matrix)
+    .refine((v) => Object.keys(v).length <= 48)
+    .optional(),
   placementTransform: matrix,
   visible: z.boolean(),
 });
@@ -460,6 +475,7 @@ export function parseProject(text: string): Project {
       if (issue) throw Error(`Tesela inválida: ${issue}`);
     }
     checkMatrix(pat.placementTransform);
+    for (const m of Object.values(pat.placementProfiles ?? {})) checkMatrix(m);
     for (const m of pat.generator.placements) checkMatrix(m);
     for (const g of pat.sourceGeometry) checkGeometry(g);
     const issue = junctionIssue(pat.sourceGeometry);

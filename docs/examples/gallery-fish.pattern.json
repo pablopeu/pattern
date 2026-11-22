@@ -1,0 +1,1074 @@
+{
+  "schemaVersion": 7,
+  "drawingStyle": {
+    "stroke": "#233b2d",
+    "fill": "#3b82f6",
+    "strokeWidth": 0.65,
+    "strokeCap": "round",
+    "strokeJoin": "round",
+    "miterLimit": 10,
+    "opacity": 1,
+    "fillOpacity": 1,
+    "strokeOpacity": 1,
+    "fillRule": "evenodd",
+    "strokeDash": [],
+    "strokeDashOffset": 0,
+    "strokeProfile": {
+      "version": 1,
+      "kind": "uniform",
+      "points": [
+        {
+          "at": 0,
+          "width": 1
+        },
+        {
+          "at": 1,
+          "width": 1
+        }
+      ]
+    }
+  },
+  "stylePresets": [],
+  "palette": {
+    "colors": [],
+    "recent": [],
+    "favorites": []
+  },
+  "mainSymmetry": {
+    "family": "none",
+    "group": "none",
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "orientation": 0,
+    "width": 60,
+    "height": 60,
+    "angle": 90,
+    "sectors": 8,
+    "center": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "mainSymmetryProfiles": {},
+  "metadata": {
+    "id": "c9533bbd-bbff-4790-a51f-b34350fa2d20",
+    "name": "Peces de jade · IH43",
+    "createdAt": "2026-11-22T02:48:35.987Z",
+    "updatedAt": "2026-11-22T02:48:35.987Z",
+    "example": {
+      "id": "gallery-fish",
+      "category": "Figurativas",
+      "description": "Siluetas emparejadas, paleta de jade y detalles editables; celda sin huecos.",
+      "construction": "IH43 · teselación isoédrica verificada · silueta y detalles independientes",
+      "validity": "EXACT",
+      "artwork": "original",
+      "author": "Pattern Studio",
+      "references": [
+        {
+          "title": "Kaplan / Schattschneider · clasificación isoédrica",
+          "url": "https://isohedral.ca/isohedral-tiles-tilings-and-notations/"
+        },
+        {
+          "title": "Museo Escher · referencia conceptual, sin calcar imágenes",
+          "url": "https://www.escherinhetpaleis.nl/en/about-escher/escher-today/experimenting-fishes-birds"
+        }
+      ]
+    }
+  },
+  "documentUnits": "mm",
+  "patterns": [
+    {
+      "id": "5fea07f3-d58b-48b4-baf6-95e2b353704a",
+      "name": "Peces de jade · IH43",
+      "sourceGeometry": [
+        {
+          "id": "83f580eb-228a-468d-b92c-72b2936ac46c",
+          "name": "Silueta enlazada · motivo",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": 0,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 3.4560000000000013
+              },
+              "out": {
+                "x": 3.839999999996544,
+                "y": 0
+              }
+            },
+            {
+              "x": 11.9999999999892,
+              "y": -7.19999999999352,
+              "in": {
+                "x": -3.839999999996544,
+                "y": 0
+              },
+              "out": {
+                "x": 3.839999999996544,
+                "y": 0
+              }
+            },
+            {
+              "x": 23.9999999999784,
+              "y": 1.79999999999838,
+              "in": {
+                "x": -3.839999999996544,
+                "y": 0
+              },
+              "out": {
+                "x": 3.839999999996543,
+                "y": 0
+              }
+            },
+            {
+              "x": 35.9999999999676,
+              "y": 5.9999999999946,
+              "in": {
+                "x": -3.839999999996543,
+                "y": 0
+              },
+              "out": {
+                "x": 3.8399999999965457,
+                "y": 0
+              }
+            },
+            {
+              "x": 47.9999999999568,
+              "y": -2.9999999999973,
+              "in": {
+                "x": -3.8399999999965457,
+                "y": 0
+              },
+              "out": {
+                "x": 3.839999999996543,
+                "y": 0
+              }
+            },
+            {
+              "x": 59.999999999946,
+              "y": 0,
+              "in": {
+                "x": -3.839999999996543,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 3.456
+              }
+            },
+            {
+              "x": 62.399999999946,
+              "y": 10.799999999999999,
+              "in": {
+                "x": 0,
+                "y": -3.456
+              },
+              "out": {
+                "x": 0,
+                "y": 4.608
+              }
+            },
+            {
+              "x": 73.199999999946,
+              "y": 25.2,
+              "in": {
+                "x": 0,
+                "y": -4.608
+              },
+              "out": {
+                "x": 0,
+                "y": 1.5360000000000003
+              }
+            },
+            {
+              "x": 67.199999999946,
+              "y": 30,
+              "in": {
+                "x": 0,
+                "y": -1.5360000000000003
+              },
+              "out": {
+                "x": 0,
+                "y": 1.5359999999999991
+              }
+            },
+            {
+              "x": 73.199999999946,
+              "y": 34.8,
+              "in": {
+                "x": 0,
+                "y": -1.5359999999999991
+              },
+              "out": {
+                "x": 0,
+                "y": 4.608
+              }
+            },
+            {
+              "x": 62.399999999946,
+              "y": 49.199999999999996,
+              "in": {
+                "x": 0,
+                "y": -4.608
+              },
+              "out": {
+                "x": 0,
+                "y": 3.4560000000000013
+              }
+            },
+            {
+              "x": 59.999999999946,
+              "y": 60,
+              "in": {
+                "x": 0,
+                "y": -3.4560000000000013
+              },
+              "out": {
+                "x": -3.839999999996543,
+                "y": 0
+              }
+            },
+            {
+              "x": 47.9999999999568,
+              "y": 57.0000000000027,
+              "in": {
+                "x": 3.839999999996543,
+                "y": 0
+              },
+              "out": {
+                "x": -3.8399999999965457,
+                "y": 0
+              }
+            },
+            {
+              "x": 35.9999999999676,
+              "y": 65.9999999999946,
+              "in": {
+                "x": 3.8399999999965457,
+                "y": 0
+              },
+              "out": {
+                "x": -3.839999999996543,
+                "y": 0
+              }
+            },
+            {
+              "x": 23.9999999999784,
+              "y": 61.79999999999838,
+              "in": {
+                "x": 3.839999999996543,
+                "y": 0
+              },
+              "out": {
+                "x": -3.839999999996544,
+                "y": 0
+              }
+            },
+            {
+              "x": 11.9999999999892,
+              "y": 52.80000000000648,
+              "in": {
+                "x": 3.839999999996544,
+                "y": 0
+              },
+              "out": {
+                "x": -3.839999999996544,
+                "y": 0
+              }
+            },
+            {
+              "x": 0,
+              "y": 60,
+              "in": {
+                "x": 3.839999999996544,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": -3.456
+              }
+            },
+            {
+              "x": 2.4,
+              "y": 49.2,
+              "in": {
+                "x": 0,
+                "y": 3.456
+              },
+              "out": {
+                "x": 0,
+                "y": -4.608
+              }
+            },
+            {
+              "x": 13.2,
+              "y": 34.8,
+              "in": {
+                "x": 0,
+                "y": 4.608
+              },
+              "out": {
+                "x": 0,
+                "y": -1.5360000000000003
+              }
+            },
+            {
+              "x": 7.199999999999999,
+              "y": 30,
+              "in": {
+                "x": 0,
+                "y": 1.5360000000000003
+              },
+              "out": {
+                "x": 0,
+                "y": -1.5359999999999991
+              }
+            },
+            {
+              "x": 13.2,
+              "y": 25.200000000000003,
+              "in": {
+                "x": 0,
+                "y": 1.5359999999999991
+              },
+              "out": {
+                "x": 0,
+                "y": -4.608
+              }
+            },
+            {
+              "x": 2.4,
+              "y": 10.800000000000004,
+              "in": {
+                "x": 0,
+                "y": 4.608
+              },
+              "out": {
+                "x": 0,
+                "y": -3.4560000000000013
+              }
+            }
+          ],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#273f37",
+          "fill": "#31574d",
+          "strokeWidth": 0.4,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "fillRegion": {
+            "version": 1,
+            "kind": "tile",
+            "scope": "source",
+            "linked": true,
+            "status": "linked",
+            "faceKey": "tile/5fea07f3-d58b-48b4-baf6-95e2b353704a",
+            "topologyKey": "tile-interior",
+            "refs": [],
+            "inputs": [],
+            "context": "[{\"id\":\"5fea07f3-d58b-48b4-baf6-95e2b353704a\",\"kind\":\"isohedral\",\"type\":43}]",
+            "captureMatrix": [
+              1,
+              0,
+              0,
+              1,
+              0,
+              0
+            ],
+            "orbitMatrices": [
+              [
+                1,
+                0,
+                0,
+                1,
+                0,
+                0
+              ]
+            ],
+            "closeTolerance": 0
+          }
+        },
+        {
+          "id": "7218c1c2-46f2-4ecb-af87-2e85fdca280d",
+          "name": "Aleta",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": 29,
+              "y": 17,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 39,
+              "y": 11,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 43,
+              "y": 25,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 38,
+              "y": 32,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#273f37",
+          "fill": "#dcb980",
+          "strokeWidth": 0.30000000000000004,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false
+        },
+        {
+          "id": "3d75fae8-ac8a-4235-80c6-1ae02f22bf8c",
+          "name": "Ojo",
+          "kind": "ellipse",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#263f37",
+          "fill": "#fcf5df",
+          "strokeWidth": 0.26249999999999996,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "parameters": {
+            "x": 61,
+            "y": 23,
+            "width": 6,
+            "height": 6,
+            "sides": 4,
+            "radius": 0
+          }
+        },
+        {
+          "id": "ee0c3b74-057b-4cb1-af69-cbdf43af3d38",
+          "name": "Pupila",
+          "kind": "ellipse",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "none",
+          "fill": "#273f37",
+          "strokeWidth": 0.26249999999999996,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "parameters": {
+            "x": 64,
+            "y": 25,
+            "width": 2.7,
+            "height": 2.7,
+            "sides": 4,
+            "radius": 0
+          }
+        },
+        {
+          "id": "e041d118-5d7f-4978-812f-ed386914f78b",
+          "name": "Branquia",
+          "kind": "compound",
+          "nodes": [],
+          "closed": false,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#273f37",
+          "fill": "none",
+          "strokeWidth": 0.48750000000000004,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M54 18C47 26 47 35 54 43"
+        },
+        {
+          "id": "97eb7dd7-c257-4108-8abc-d09276ab07ca",
+          "name": "Escamas",
+          "kind": "compound",
+          "nodes": [],
+          "closed": false,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#f9e8c0",
+          "fill": "none",
+          "strokeWidth": 0.6000000000000001,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M20 20Q26 25 20 30M30 26Q36 31 30 36M40 32Q46 37 40 42"
+        },
+        {
+          "id": "69afdb7b-c232-4ca3-be7e-eef24c673857",
+          "name": "Cola",
+          "kind": "compound",
+          "nodes": [],
+          "closed": false,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#273f37",
+          "fill": "none",
+          "strokeWidth": 0.48750000000000004,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M4 38L16 45M1 44L14 49"
+        },
+        {
+          "id": "28c687d0-bccd-4b46-a847-cc87e2d7ac4f",
+          "name": "Boca",
+          "kind": "compound",
+          "nodes": [],
+          "closed": false,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#273f37",
+          "fill": "none",
+          "strokeWidth": 0.375,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M65 30L70 30"
+        }
+      ],
+      "generator": {
+        "kind": "motif",
+        "version": 1,
+        "seed": 42,
+        "count": 12,
+        "rows": 4,
+        "columns": 4,
+        "spacing": 22,
+        "offset": 0.5,
+        "aspectRatio": 1,
+        "staggerAxis": "rows",
+        "rotation": 0,
+        "scale": 1,
+        "scaleRatio": 0.9,
+        "amplitude": 6,
+        "frequency": 3,
+        "phase": 0,
+        "radius": 28,
+        "ratio": 0.35,
+        "distribution": "rectangular",
+        "periodicWarp": true,
+        "placements": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        ]
+      },
+      "visible": true,
+      "symmetryMode": "free",
+      "symmetryProfiles": {},
+      "placementTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "symmetry": {
+        "family": "none",
+        "group": "none",
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "orientation": 0,
+        "width": 60,
+        "height": 60,
+        "angle": 90,
+        "sectors": 8,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "tiling": {
+        "version": 2,
+        "kind": "isohedral",
+        "width": 48,
+        "height": 60,
+        "shear": 15,
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "rotation": 0,
+        "edges": [
+          [
+            {
+              "x": 0,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0.064,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.2,
+              "y": -0.08639999999999999,
+              "in": {
+                "x": -0.064,
+                "y": 0
+              },
+              "out": {
+                "x": 0.064,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.4,
+              "y": 0.021599999999999998,
+              "in": {
+                "x": -0.064,
+                "y": 0
+              },
+              "out": {
+                "x": 0.06399999999999999,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.6,
+              "y": 0.072,
+              "in": {
+                "x": -0.06399999999999999,
+                "y": 0
+              },
+              "out": {
+                "x": 0.06400000000000003,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.8,
+              "y": -0.036,
+              "in": {
+                "x": -0.06400000000000003,
+                "y": 0
+              },
+              "out": {
+                "x": 0.06399999999999999,
+                "y": 0
+              }
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "in": {
+                "x": -0.06399999999999999,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          [
+            {
+              "x": 0,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0.0576,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.18,
+              "y": -0.0288,
+              "in": {
+                "x": -0.0576,
+                "y": 0
+              },
+              "out": {
+                "x": 0.0768,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.42,
+              "y": -0.15839999999999999,
+              "in": {
+                "x": -0.0768,
+                "y": 0
+              },
+              "out": {
+                "x": 0.025600000000000005,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.5,
+              "y": -0.08639999999999999,
+              "in": {
+                "x": -0.025600000000000005,
+                "y": 0
+              },
+              "out": {
+                "x": 0.025599999999999987,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.58,
+              "y": -0.15839999999999999,
+              "in": {
+                "x": -0.025599999999999987,
+                "y": 0
+              },
+              "out": {
+                "x": 0.0768,
+                "y": 0
+              }
+            },
+            {
+              "x": 0.82,
+              "y": -0.0288,
+              "in": {
+                "x": -0.0768,
+                "y": 0
+              },
+              "out": {
+                "x": 0.05760000000000002,
+                "y": 0
+              }
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "in": {
+                "x": -0.05760000000000002,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        ],
+        "showOutline": false,
+        "isohedral": {
+          "version": 1,
+          "type": 43,
+          "parameters": [
+            0.230769230769,
+            0.5
+          ]
+        },
+        "colors": {
+          "enabled": true,
+          "palette": [
+            "#31574d",
+            "#789c70",
+            "#d9ca8c",
+            "#a9583f"
+          ]
+        }
+      }
+    }
+  ],
+  "regions": [],
+  "applications": [],
+  "preferences": {
+    "styleDefaultsFollowSelection": true,
+    "stylePanelPinned": false,
+    "fillCloseTolerance": 0,
+    "fillLinkedDefault": true,
+    "structureVisible": false,
+    "structureOpacity": 0.22,
+    "grid": false,
+    "snap": false,
+    "snapRadiusPx": 8,
+    "snapNodes": false,
+    "guides": false,
+    "split": false,
+    "background": "#faf6e9",
+    "fundamental": false,
+    "axes": false,
+    "centers": false,
+    "continuity": false,
+    "outside": false,
+    "sourceView": false,
+    "repetitionView": "extended"
+  }
+}

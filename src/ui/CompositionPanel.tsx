@@ -1,3 +1,9 @@
+import {
+  rememberComposition,
+  switchCompositionFamily,
+  switchCompositionRecipe,
+  applyCompositionPreset,
+} from '../composition/profiles';
 import { useMemo, useState } from 'react';
 import type { Studio } from '../app/useStudio';
 import { geometry, node } from '../app/model';
@@ -28,6 +34,7 @@ function readSaved(): SavedRecipe[] {
 }
 const labels = {
   'square-limit': 'Peces hacia el borde cuadrado',
+  henderson: 'Límite cuadrado · geometría funcional',
   quadrants: 'Cuadrantes recursivos',
   branching: 'Ramificación autosimilar',
   discrete: 'Espiral discreta',
@@ -72,8 +79,11 @@ export function CompositionPanel({
   const cards = useMemo(
     () =>
       (['recursive', 'spiral'] as const).map((kind) => {
-        const definition = defaultComposition(kind, frame);
-        if (s.pattern.tiling?.colors?.enabled) {
+        const definition = structuredClone(
+          s.pattern.compositionProfiles?.[kind] ??
+            (c?.kind === kind ? c : defaultComposition(kind, frame)),
+        );
+        if (!c && !s.pattern.compositionProfiles?.[kind] && s.pattern.tiling?.colors?.enabled) {
           definition.palette = [...s.pattern.tiling.colors.palette];
           definition.colorByLevel = true;
         }
@@ -87,13 +97,16 @@ export function CompositionPanel({
   const update = (fn: (value: Composition) => void) =>
     s.change((p) => {
       const pattern = p.patterns.find((p) => p.id === s.patternId)!;
-      if (pattern.composition) fn(pattern.composition);
+      if (pattern.composition) {
+        fn(pattern.composition);
+        rememberComposition(pattern);
+      }
     });
-  const activate = (definition: Composition) => {
+  const activate = (definition: Composition, preset = false) => {
     s.change((p) => {
       const pattern = p.patterns.find((p) => p.id === s.patternId)!;
-      pattern.sourceGeometry = structuredClone(compositionSource(s.effectivePattern));
-      pattern.composition = structuredClone(definition);
+      if (preset) applyCompositionPreset(pattern, definition);
+      else switchCompositionFamily(pattern, definition);
     });
     s.updateViewPreferences({ sourceView: false, split: false, repetitionView: 'extended' });
     s.setStyleOpen(false);
@@ -163,23 +176,17 @@ export function CompositionPanel({
                 options={Object.entries(labels)
                   .filter(([id]) =>
                     c.kind === 'recursive'
-                      ? ['square-limit', 'quadrants', 'branching'].includes(id)
-                      : !['square-limit', 'quadrants', 'branching'].includes(id),
+                      ? ['square-limit', 'henderson', 'quadrants', 'branching'].includes(id)
+                      : !['square-limit', 'henderson', 'quadrants', 'branching'].includes(id),
                   )
                   .map(([value, label]) => ({ value, label }))}
                 onChange={(recipe) =>
-                  update((value) => {
-                    if (value.kind === 'recursive') value.recipe = recipe as typeof value.recipe;
-                    else {
-                      value.recipe = recipe as typeof value.recipe;
-                      if (recipe === 'rosette') value.arms = 6;
-                      if (recipe === 'fixed-point') {
-                        value.angle = 0;
-                        value.ratio = 0.85;
-                        value.offset = { x: 0, y: 0 };
-                      }
-                    }
-                  })
+                  s.change((p) =>
+                    switchCompositionRecipe(
+                      p.patterns.find((p) => p.id === s.patternId)!,
+                      recipe as Composition['recipe'],
+                    ),
+                  )
                 }
               />
               {c.kind === 'recursive' ? (
@@ -187,7 +194,7 @@ export function CompositionPanel({
                   label="Profundidad recursiva"
                   value={c.depth}
                   min={0}
-                  max={6}
+                  max={c.recipe === 'henderson' ? 5 : 6}
                   integer
                   onChange={(depth) =>
                     update((c) => {
@@ -209,15 +216,17 @@ export function CompositionPanel({
                   }
                 />
               )}
-              <Toggle
-                label="Reflejos alternados"
-                checked={c.mirror}
-                onChange={(v) =>
-                  update((c) => {
-                    c.mirror = v;
-                  })
-                }
-              />
+              {!(c.kind === 'recursive' && c.recipe === 'henderson') && (
+                <Toggle
+                  label="Reflejos alternados"
+                  checked={c.mirror}
+                  onChange={(v) =>
+                    update((c) => {
+                      c.mirror = v;
+                    })
+                  }
+                />
+              )}
               <p className="help-text">
                 {c.kind === 'recursive'
                   ? 'Subdivide y orienta copias del mismo motivo.'
@@ -252,7 +261,7 @@ export function CompositionPanel({
                       })
                     }
                   />
-                  {(c.kind === 'spiral' || c.recipe !== 'square-limit') && (
+                  {(c.kind === 'spiral' || !['square-limit', 'henderson'].includes(c.recipe)) && (
                     <Field
                       label="Escala por nivel"
                       value={c.ratio}
@@ -266,18 +275,20 @@ export function CompositionPanel({
                       }
                     />
                   )}
-                  <Field
-                    label="Giro por nivel"
-                    unit="°"
-                    min={-360}
-                    max={360}
-                    value={c.angle}
-                    onChange={(angle) =>
-                      update((c) => {
-                        c.angle = angle;
-                      })
-                    }
-                  />
+                  {!(c.kind === 'recursive' && c.recipe === 'henderson') && (
+                    <Field
+                      label="Giro por nivel"
+                      unit="°"
+                      min={-360}
+                      max={360}
+                      value={c.angle}
+                      onChange={(angle) =>
+                        update((c) => {
+                          c.angle = angle;
+                        })
+                      }
+                    />
+                  )}
                 </>
               )}
               {layout === 'position' && (
@@ -451,7 +462,10 @@ export function CompositionPanel({
                   <button
                     key={row.name}
                     onClick={() =>
-                      activate({ ...row.definition, enabled: true, sourceFrame: c.sourceFrame })
+                      activate(
+                        { ...row.definition, enabled: true, sourceFrame: c.sourceFrame },
+                        true,
+                      )
                     }
                   >
                     {row.name}

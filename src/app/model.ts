@@ -94,6 +94,7 @@ export interface Symmetry {
 }
 export interface Pattern {
   composition?: Composition;
+  compositionProfiles?: Record<string, Composition>;
   tiling?: TilingDefinition;
   id: string;
   name: string;
@@ -102,6 +103,7 @@ export interface Pattern {
   symmetry: Symmetry;
   symmetryMode: 'own' | 'inherit' | 'free';
   symmetryProfiles: Record<string, Symmetry>;
+  placementProfiles?: Record<string, Matrix>;
   placementTransform: Matrix;
   visible: boolean;
 }

@@ -1,0 +1,283 @@
+{
+  "schemaVersion": 7,
+  "drawingStyle": {
+    "stroke": "#233b2d",
+    "fill": "#3b82f6",
+    "strokeWidth": 0.65,
+    "strokeCap": "round",
+    "strokeJoin": "round",
+    "miterLimit": 10,
+    "opacity": 1,
+    "fillOpacity": 1,
+    "strokeOpacity": 1,
+    "fillRule": "evenodd",
+    "strokeDash": [],
+    "strokeDashOffset": 0,
+    "strokeProfile": {
+      "version": 1,
+      "kind": "uniform",
+      "points": [
+        {
+          "at": 0,
+          "width": 1
+        },
+        {
+          "at": 1,
+          "width": 1
+        }
+      ]
+    }
+  },
+  "stylePresets": [],
+  "palette": {
+    "colors": [],
+    "recent": [],
+    "favorites": []
+  },
+  "mainSymmetry": {
+    "family": "none",
+    "group": "none",
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "orientation": 0,
+    "width": 60,
+    "height": 60,
+    "angle": 90,
+    "sectors": 8,
+    "center": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "mainSymmetryProfiles": {},
+  "metadata": {
+    "id": "0e00d054-7176-4e02-941e-1a36b5659b5a",
+    "name": "Girih · Estrellas de cobre",
+    "createdAt": "2026-11-22T02:48:36.284Z",
+    "updatedAt": "2026-11-22T02:48:36.284Z",
+    "example": {
+      "id": "gallery-girih-rosette",
+      "category": "Girih",
+      "description": "Estrella central, bandas anchas y entrecruzado con alternancia global.",
+      "construction": "Girih · parche finito de polígonos compatibles · alternancia global de hebras",
+      "validity": "EXACT",
+      "artwork": "mathematical",
+      "author": "Pattern Studio · geometría propia, método de Hankin/Kaplan",
+      "references": [
+        {
+          "title": "Kaplan2005 · Polygons in Contact",
+          "url": "https://cs.uwaterloo.ca/~csk/publications/Papers/kaplan_2005.pdf"
+        },
+        {
+          "title": "Tilings Encyclopedia · Girih",
+          "url": "https://tilings.math.uni-bielefeld.de/glossary/girih/"
+        }
+      ]
+    }
+  },
+  "documentUnits": "mm",
+  "patterns": [
+    {
+      "id": "71b207f2-beee-4943-907e-e335ddb6af34",
+      "name": "Girih · Estrellas de cobre",
+      "sourceGeometry": [
+        {
+          "id": "375921d5-336d-4898-83fe-6e51ecad1747",
+          "name": "Trazado",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": -2,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 0,
+              "y": -4,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 2,
+              "y": 0,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "x": 0,
+              "y": 4,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#315d67",
+          "fill": "#e7c68b",
+          "strokeWidth": 0.35,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false
+        }
+      ],
+      "generator": {
+        "kind": "girih",
+        "version": 3,
+        "seed": 42,
+        "count": 12,
+        "rows": 4,
+        "columns": 6,
+        "spacing": 30,
+        "offset": 0.5,
+        "aspectRatio": 1,
+        "staggerAxis": "rows",
+        "rotation": 0,
+        "scale": 1,
+        "scaleRatio": 0.9,
+        "amplitude": 6,
+        "frequency": 3,
+        "phase": 0,
+        "radius": 28,
+        "ratio": 0.35,
+        "distribution": "rectangular",
+        "periodicWarp": true,
+        "placements": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        ],
+        "girih": {
+          "version": 1,
+          "recipe": "rosette",
+          "tileKind": "decagon",
+          "palette": [
+            "#315d67",
+            "#b77d56",
+            "#e2cda4",
+            "#739080"
+          ],
+          "showTiles": false,
+          "weave": true,
+          "weaveSource": false,
+          "bandWidth": 1.5,
+          "gap": 0.25,
+          "phase": 1,
+          "allowBreaks": false
+        }
+      },
+      "visible": true,
+      "symmetryMode": "free",
+      "symmetryProfiles": {},
+      "placementTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "symmetry": {
+        "family": "none",
+        "group": "none",
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "orientation": 0,
+        "width": 60,
+        "height": 60,
+        "angle": 90,
+        "sectors": 8,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    }
+  ],
+  "regions": [],
+  "applications": [],
+  "preferences": {
+    "styleDefaultsFollowSelection": true,
+    "stylePanelPinned": false,
+    "fillCloseTolerance": 0,
+    "fillLinkedDefault": true,
+    "structureVisible": false,
+    "structureOpacity": 0.22,
+    "grid": false,
+    "snap": true,
+    "snapRadiusPx": 8,
+    "snapNodes": true,
+    "guides": false,
+    "split": false,
+    "background": "#faf6e9",
+    "fundamental": false,
+    "axes": false,
+    "centers": false,
+    "continuity": false,
+    "outside": false,
+    "sourceView": false,
+    "repetitionView": "extended"
+  }
+}

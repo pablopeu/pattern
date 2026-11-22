@@ -1,4 +1,12 @@
-import { context, styles, catalog, symmetry, field, discardExistingWork } from './navigation';
+import {
+  context,
+  styles,
+  catalog,
+  symmetry,
+  field,
+  discardExistingWork,
+  openArchivedExample,
+} from './navigation';
 import { test, expect, type Page } from '@playwright/test';
 async function ready(page: Page) {
   await page.goto('/');
@@ -7,6 +15,21 @@ async function ready(page: Page) {
   await expect(page.locator('.save-indicator')).toHaveText(/Guardado local/);
 }
 async function menu(page: Page, name: string) {
+  const legacy = [
+    'Jardín geométrico',
+    'Espejos · p4m',
+    'Hexagonal · p6m',
+    'Órbita radial',
+    'Warp Grid',
+    'Guilloché',
+    'Jardín en un perímetro',
+    'Penrose aperiódico',
+  ];
+  const index = legacy.indexOf(name);
+  if (index >= 0) {
+    await openArchivedExample(page, index);
+    return;
+  }
   const details = page.locator('.main-menu');
   if ((await details.getAttribute('open')) === null) await details.locator('summary').click();
   await details.getByRole('button', { name, exact: true }).click();
@@ -185,6 +208,7 @@ test('aplicación a perímetro y SVG expandido sin máscara', async ({ page }) =
   await ready(page);
   await menu(page, 'Jardín en un perímetro');
   await discardExistingWork(page);
+  await page.getByRole('tab', { name: 'Aplicar', exact: true }).click();
   await page.getByRole('button', { name: 'Exportar', exact: true }).click();
   await (await field(page, 'Representación')).selectOption('expanded');
   await expect(page.getByRole('button', { name: 'Descargar archivo', exact: true })).toBeEnabled({

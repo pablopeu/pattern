@@ -1,3 +1,58 @@
+# Galería15 y exploración reversible · Publicado
+
+Último publicado c0d4e40 (parpadeo confirmado por Pablo),c3f8bfa estudio corregido,
+6b71fca borrado. Esta entrega se publica en el commit que incluye docs/STATUS.md
+cerrado (hash informado a Pablo tras el push):15 estudios nuevos en curated.ts;
+archive.ts conserva fixtures/modelos anteriores, sin mostrarlos en galería ni
+accesos rápidos de Archivo. No borrar código de regresión. Tests históricos usan
+importación JSON y ajuste de vista explícito. PNG/JSON nuevos generados por
+scripts/capture-gallery.mjs desde Scene/export/worker reales;15 artefactos completos.
+Poincaré nuevo usa cámaras C0,16 celdas,73108/66760 segmentos. Artístico206 pinturas/
+82630 segmentos. Sin presupuestos globales ampliados.
+
+Henderson: nuevo recipe recursive:henderson, misma composición1/globalJSON7;
+4/44/156/412/956/2076 hojas para profundidad0–5,6 rechazada. Fuente única, marco
+unitario exacto; datos1475 bytes blob42b1b75631ba2fc678a1a9397db8bfe67c029ab9 y
+licencia GPL3 íntegra en src/vendor/escher. Avisos/referencias actualizados; SVG
+plano/derivado y JSON llevan procedencia, escape XML probado. Build anterior REAL
+rechaza receta nueva; evidencia henderson-older-reader.json. No código Python
+copiado al motor; operadores y árbol propios.
+
+Feedback nuevo: galería con scroll y colores perdidos al alternar familias.
+Corregido: grid del wrapper modal, páginas según altura, textos compactos sin
+scroll;8 E2E propias pasaron antes del rediseño completo (6 resoluciones y2
+round-trips de composición). compositionProfiles opcional por familia/receta,
+validado y persistente; fuente NO se reescribe al cambiar familia. Scene deriva
+compositionSource para silueta de tesela. placementProfiles opcional recuerda P
+por grupo propio/heredado; matrices inactivas validadas.3 pruebas de perfiles y
+3 de colocación nuevas.1152 unidades/TypeScript correctas.
+
+Regresión final210/210 confirmada (curated-full-confirmed-2.log, exit0). La
+repetición anterior quedó209/210: arrancó contemporánea a la regeneración de
+paletas de los15 archivos; el pez falló con Fill viejo#c78046, pasa aislado y en
+la repetición completa, sin cambios de código entre ambas. Primera corrida202/210:
+fixtures de menú retirado necesitaban esperar confirmación antes de Aplicar y
+ajustar vista;25 históricas dirigidas después correctas. Nuevos presets tenían
+Fill base viejo frente a palette[0]: se igualaron al crear y se regeneraron15
+archivos. Selector figurativo ahora usa color real; helper styles abre por acceso
+idempotente del rail. No se relajaron aserciones de contenido/conservación.
+Cierre verificado: build correcto, BASE_PATH/pattern/, estáticas8+8 sin Internet,
+STATUS.md actualizado con resultados reales antes del commit.
+
+README actualizado con uso/imágenes primero, instalación/trabajo al final.
+No añadir docs/prd/prd_v3.1.txt (nuevo documento de Pablo sin trackear) al commit;
+su instrucción exige completar/verificar TODO v3.0 antes de empezar v3.1.
+No implementar PHP/compartir ahora. Pendiente v3.0: color por celda/orientación,
+auditoría Fase4, fases5–7. Sin PROJECT_COMPLETE.
+
+Primaria86% usada en última lectura; cerrar este incremento al llegar90%, sin
+abrir otro. Secundaria sólo avisa. Servicios originales4173/4174 conservados.
+Feedback05da0f0a171043ddb88c8c5145bc920e puede marcarse reviewed sólo al terminar
+checks de esta entrega. Push autorizado, no inspeccionar Actions/FTP. Pablo pidió
+informe tras el push: enlazar docs/STATUS.md y hash final; no declarar PRD completo.
+
+---
+
 # Panel derecho · Parpadeo corregido y verificado
 
 c3f8bfa publicado: red cambia tamaño manteniendo uniones y dos estudios originales/

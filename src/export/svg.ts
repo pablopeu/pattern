@@ -463,7 +463,7 @@ export function prepareFlatPatternExport(
 }
 
 /** Exports always resolve confirmed state; UI hover is never an input. */
-export function prepareExport(
+function prepareExportContent(
   project: Project,
   options: ExportOptions,
   onProgress?: (n: number) => void,
@@ -530,4 +530,24 @@ export function prepareExport(
       ]),
     ],
   };
+}
+
+/** Keep the source credits with editable examples and their downloaded vectors. */
+export function exampleProvenanceSVG(svg: string, project: Project): string {
+  const provenance = project.metadata.example;
+  return provenance
+    ? svg.replace(
+        /<svg\b[^>]*>/,
+        (root) =>
+          `${root}<metadata data-patterns-example="true">${escapeXML(JSON.stringify(provenance))}</metadata>`,
+      )
+    : svg;
+}
+export function prepareExport(
+  project: Project,
+  options: ExportOptions,
+  onProgress?: (n: number) => void,
+): ExportResult {
+  const result = prepareExportContent(project, options, onProgress);
+  return { ...result, svg: exampleProvenanceSVG(result.svg, project) };
 }

@@ -1,0 +1,320 @@
+{
+  "schemaVersion": 7,
+  "drawingStyle": {
+    "stroke": "#233b2d",
+    "fill": "#3b82f6",
+    "strokeWidth": 0.65,
+    "strokeCap": "round",
+    "strokeJoin": "round",
+    "miterLimit": 10,
+    "opacity": 1,
+    "fillOpacity": 1,
+    "strokeOpacity": 1,
+    "fillRule": "evenodd",
+    "strokeDash": [],
+    "strokeDashOffset": 0,
+    "strokeProfile": {
+      "version": 1,
+      "kind": "uniform",
+      "points": [
+        {
+          "at": 0,
+          "width": 1
+        },
+        {
+          "at": 1,
+          "width": 1
+        }
+      ]
+    }
+  },
+  "stylePresets": [],
+  "palette": {
+    "colors": [],
+    "recent": [],
+    "favorites": []
+  },
+  "mainSymmetry": {
+    "family": "none",
+    "group": "none",
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "orientation": 0,
+    "width": 60,
+    "height": 60,
+    "angle": 90,
+    "sectors": 8,
+    "center": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "mainSymmetryProfiles": {},
+  "metadata": {
+    "id": "fbefff93-19ab-4db1-9c8f-8eb3e81006ef",
+    "name": "Poincaré · Rosetas enlazadas {7,3}",
+    "createdAt": "2026-11-22T02:48:36.498Z",
+    "updatedAt": "2026-11-22T02:48:36.498Z",
+    "example": {
+      "id": "gallery-poincare-seven",
+      "category": "Poincaré",
+      "description": "Cámaras reflejadas con bordes compartidos y curvas de luz. Fuente plana editable.",
+      "construction": "{7,3} · cámaras reflejadas C0 · fuente editable",
+      "validity": "APPROXIMATED",
+      "artwork": "original",
+      "author": "Pattern Studio",
+      "references": [
+        {
+          "title": "Tschanz · Grupos triangulares por reflexión",
+          "url": "https://link.springer.com/article/10.1007/s12220-023-01208-x"
+        }
+      ]
+    }
+  },
+  "documentUnits": "mm",
+  "patterns": [
+    {
+      "id": "5e7fe321-530c-4665-813d-32ec791f9915",
+      "name": "Poincaré · Rosetas enlazadas {7,3}",
+      "sourceGeometry": [
+        {
+          "id": "8914c7f1-443e-4793-b8ec-571f278bcc48",
+          "name": "Compuesto",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "none",
+          "fill": "#315d67",
+          "strokeWidth": 0.65,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-30 -30H30V30H-30Z M-6 -6H6V6H-6Z"
+        },
+        {
+          "id": "f809a8fe-d57f-430e-bd00-2a1c304ea38b",
+          "name": "Trazado",
+          "kind": "path",
+          "nodes": [
+            {
+              "x": -45,
+              "y": -12,
+              "in": {
+                "x": 0,
+                "y": 0
+              },
+              "out": {
+                "x": 36,
+                "y": -18
+              }
+            },
+            {
+              "x": 45,
+              "y": 12,
+              "in": {
+                "x": -36,
+                "y": 18
+              },
+              "out": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "closed": false,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#f1ddad",
+          "fill": "none",
+          "strokeWidth": 1.6,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false
+        }
+      ],
+      "generator": {
+        "kind": "motif",
+        "version": 1,
+        "seed": 42,
+        "count": 12,
+        "rows": 4,
+        "columns": 4,
+        "spacing": 22,
+        "offset": 0.5,
+        "aspectRatio": 1,
+        "staggerAxis": "rows",
+        "rotation": 0,
+        "scale": 1,
+        "scaleRatio": 0.9,
+        "amplitude": 6,
+        "frequency": 3,
+        "phase": 0,
+        "radius": 28,
+        "ratio": 0.35,
+        "distribution": "rectangular",
+        "periodicWarp": true,
+        "placements": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        ]
+      },
+      "visible": true,
+      "symmetryMode": "inherit",
+      "symmetryProfiles": {},
+      "placementTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "symmetry": {
+        "family": "none",
+        "group": "none",
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "orientation": 0,
+        "width": 60,
+        "height": 60,
+        "angle": 90,
+        "sectors": 8,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    }
+  ],
+  "regions": [],
+  "applications": [],
+  "preferences": {
+    "styleDefaultsFollowSelection": true,
+    "stylePanelPinned": false,
+    "fillCloseTolerance": 0,
+    "fillLinkedDefault": true,
+    "structureVisible": false,
+    "structureOpacity": 0.22,
+    "grid": false,
+    "snap": true,
+    "snapRadiusPx": 8,
+    "snapNodes": true,
+    "guides": false,
+    "split": false,
+    "background": "#faf6e9",
+    "fundamental": false,
+    "axes": false,
+    "centers": false,
+    "continuity": false,
+    "outside": false,
+    "sourceView": false,
+    "repetitionView": "extended"
+  },
+  "visualization": {
+    "version": 2,
+    "kind": "poincare",
+    "active": true,
+    "source": {
+      "patternId": "5e7fe321-530c-4665-813d-32ec791f9915",
+      "selection": {
+        "target": "view",
+        "bounds": {
+          "x": -30,
+          "y": -30,
+          "width": 60,
+          "height": 60
+        }
+      }
+    },
+    "settings": {
+      "adaptation": "mirrored-chambers",
+      "maxCurves": 4096,
+      "p": 7,
+      "q": 3,
+      "radiusMm": 100,
+      "toleranceMm": 0.04,
+      "strokeTolerance": 0.02,
+      "depth": 2,
+      "maxCells": 16,
+      "radius": 0.97,
+      "minimumDiameter": 0.008,
+      "maxSegments": 250000,
+      "view": {
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": 0
+      }
+    },
+    "showStructure": false
+  }
+}

@@ -218,13 +218,13 @@ test('galería artística carga dos fuentes originales y sus miniaturas derivada
   await page.getByRole('button', { name: 'Galería de ejemplos', exact: true }).click();
   const gallery = page.getByRole('dialog', { name: 'Galería de ejemplos', exact: true });
   await gallery.getByLabel('Categoría de ejemplos').selectOption('Discos artísticos');
-  await expect(gallery.locator('.example-card')).toHaveCount(2);
+  await expect(gallery.locator('.example-card')).toHaveCount(1);
   for (const url of await gallery
     .locator('.example-card img')
     .evaluateAll((rows) => rows.map((row) => (row as HTMLImageElement).src)))
     expect((await page.request.get(url)).ok()).toBe(true);
   await gallery
-    .getByRole('button', { name: 'Abrir ejemplo Anillos y presión · Disco artístico', exact: true })
+    .getByRole('button', { name: 'Abrir ejemplo Disco radial · Campo de aves', exact: true })
     .click();
   await ready(page);
   const p = (await model(page))!;

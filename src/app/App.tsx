@@ -60,7 +60,6 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useStudio, type Tool, type StylePage } from './useStudio';
-import { example, exampleNames } from './examples';
 import { newStudy, geometry, uid, type Project } from './model';
 import { freezePattern } from '../symmetry/config';
 import { IDENTITY } from '../geometry/matrix';
@@ -627,19 +626,6 @@ export default function App() {
               <button onClick={openExamples}>
                 <LayoutGrid size={15} /> Galería de ejemplos
               </button>
-              <label>Ejemplos editables</label>
-              {exampleNames.map((name, index) => (
-                <button
-                  key={name}
-                  onClick={() => {
-                    replaceProject(example(index), 'cargar un ejemplo', () =>
-                      s.setMode(index === 6 ? 'apply' : 'edit'),
-                    );
-                  }}
-                >
-                  {name}
-                </button>
-              ))}
               <hr />
               <button
                 onClick={() => {

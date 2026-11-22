@@ -1,3 +1,4 @@
+import { exampleProvenanceSVG } from '../export/svg';
 import type { Project } from '../app/model';
 import type { Visualization } from './model';
 import { visualizationSchema } from './schema';
@@ -24,7 +25,7 @@ export async function deriveVisualizationInWorker(
         v.settings,
         signal,
       );
-      return { disk, svg: chamberDiskSVG(disk, v.showStructure) };
+      return { disk, svg: exampleProvenanceSVG(chamberDiskSVG(disk, v.showStructure), project) };
     }
     const disk = await deriveProjectDiskInWorker(
       project,
@@ -33,7 +34,7 @@ export async function deriveVisualizationInWorker(
       v.settings,
       signal,
     );
-    return { disk, svg: diskPreviewSVG(disk, v.showStructure) };
+    return { disk, svg: exampleProvenanceSVG(diskPreviewSVG(disk, v.showStructure), project) };
   }
   const disk = await deriveArtisticDiskInWorker(
     project,
@@ -42,6 +43,6 @@ export async function deriveVisualizationInWorker(
     { ...v.settings, angle: v.settings.view.angle, center: v.settings.view.center },
     signal,
   );
-  return { disk, svg: artisticDiskSVG(disk) };
+  return { disk, svg: exampleProvenanceSVG(artisticDiskSVG(disk), project) };
 }
 export type DerivedDisk = Awaited<ReturnType<typeof deriveVisualizationInWorker>>['disk'];

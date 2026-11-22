@@ -7,7 +7,7 @@ export const consultedRepositories = [
   ['isohedral/hatviz', 'Reglas de sustitución Hat y jerarquía de metateselas'],
   ['isohedral/tactile', 'Representación y parámetros isoédricos'],
   ['DBraun/tactile-python', 'Referencia de implementación isoédrica'],
-  ['mapio/programming-with-escher', 'Composición recursiva y geometría funcional'],
+  ['mapio/programming-with-escher', 'Datos del pez GPL3 y composición funcional'],
   ['levskaya/eschersketch', 'Dibujo y generadores de simetría'],
   ['guilbep/patterns', 'Simetrías del plano y Penrose'],
   ['ratpi-studio/svg-pattern-generator', 'Generadores vectoriales y controles'],

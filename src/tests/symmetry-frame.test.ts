@@ -13,7 +13,7 @@ import {
 } from '../geometry/matrix';
 import { joinNodes, junctionIssue } from '../editor/junctions';
 import { patchSymmetryFrame } from '../symmetry/frame';
-import { resolvePattern, resolveSymmetry } from '../symmetry/config';
+import { resolvePattern, resolveSymmetry, changeSymmetry } from '../symmetry/config';
 import { parseProject, serialize } from '../persistence/schema';
 import { History } from '../editor/history';
 import { buildScene } from '../patterns/engine';
@@ -155,4 +155,34 @@ it('editing this set detaches an inherited symmetry without moving the shared fr
   expect(p.patterns[0].symmetry.origin).toEqual({ x: 9, y: 8 });
   expect(p.mainSymmetry.origin).toEqual({ x: 0, y: 0 });
   expect(other.placementTransform).toEqual(IDENTITY);
+});
+
+it.each(['own', 'inherit'] as const)(
+  'group exploration restores placement for %s after resizing a different group',
+  (mode) => {
+    const p = newProject(),
+      pat = p.patterns[0];
+    p.mainSymmetry = { ...p.mainSymmetry, family: 'wallpaper', group: 'p3', width: 60, height: 60 };
+    pat.symmetry = structuredClone(p.mainSymmetry);
+    pat.symmetryMode = mode;
+    pat.placementTransform = multiply(translate(7, -3), rotate(13));
+    pat.sourceGeometry = [{ ...geometry('path', [node(0, 0), node(10, 10)]), stroke: '#bd7a41' }];
+    const original = structuredClone(pat),
+      target = mode === 'inherit' ? null : pat.id;
+    changeSymmetry(p, target, { family: 'wallpaper', group: 'p4' });
+    patchSymmetryFrame(p, target, { width: 85 });
+    const other = structuredClone(pat.placementTransform);
+    changeSymmetry(p, target, { family: 'wallpaper', group: 'p3' });
+    expect(pat.placementTransform).toEqual(original.placementTransform);
+    expect(pat.sourceGeometry).toEqual(original.sourceGeometry);
+    changeSymmetry(p, target, { family: 'wallpaper', group: 'p4' });
+    expect(pat.placementTransform).toEqual(other);
+    expect(parseProject(serialize(p))).toEqual(p);
+  },
+);
+
+it('rejects an invalid inactive placement profile before it can be restored', () => {
+  const p = newProject();
+  p.patterns[0].placementProfiles = { 'wallpaper:p3': [0, 0, 0, 0, 0, 0] };
+  expect(() => parseProject(serialize(p))).toThrow(/no invertible/);
 });

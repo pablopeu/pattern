@@ -1,3 +1,4 @@
+import { compositionSource } from '../composition/source';
 import { placedGirihReport } from '../girih/generated';
 import { finiteGenerator } from '../aperiodic/model';
 import { composeGenerated } from '../composition/generated';
@@ -46,6 +47,9 @@ export function buildScene(
   prepared?: Generated,
   pixelsPerMm?: number,
 ): Scene {
+  // Carry a tile silhouette into a derived composition without changing its canonical scope.
+  if (pattern.composition?.enabled)
+    pattern = { ...pattern, sourceGeometry: compositionSource(pattern) };
   // A figurative silhouette belongs to the source of a composition as well as
   // its tile. Derive it during transient border edits, without waiting for autosave/worker.
   if (

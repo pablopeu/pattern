@@ -21,7 +21,7 @@ export const compositionSchema = z
     z.object({
       ...base,
       kind: z.literal('recursive'),
-      recipe: z.enum(['square-limit', 'quadrants', 'branching']),
+      recipe: z.enum(['square-limit', 'henderson', 'quadrants', 'branching']),
       depth: n.int().min(0).max(6),
       ratio: n.min(0.2).max(0.8),
       angle: n.min(-360).max(360),

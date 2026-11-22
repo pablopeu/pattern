@@ -9,11 +9,13 @@ export async function context(page: Page, name: string) {
 }
 export async function styles(page: Page, tab: string) {
   const panel = page.getByRole('complementary', { name: 'Panel de estilos' });
-  if (!(await panel.isVisible()))
-    await page.getByRole('button', { name: 'Abrir panel de estilos', exact: true }).click();
-  if (tab === 'Colores')
-    await page.getByRole('button', { name: 'Colores de trazo y relleno', exact: true }).click();
-  else await panel.getByRole('tab', { name: tab, exact: true }).click();
+  await page
+    .getByRole('button', {
+      name: tab === 'Colores' ? 'Colores de trazo y relleno' : `Panel derecho: ${tab}`,
+      exact: true,
+    })
+    .click();
+  await expect(panel).toBeVisible();
   return panel;
 }
 export async function catalog(page: Page) {
@@ -208,4 +210,32 @@ export async function discardExistingWork(page: Page) {
   await expect(dialog).toBeVisible();
   await dialog.getByRole('button', { name: 'Descartar y continuar', exact: true }).click();
   await expect(dialog).toHaveCount(0);
+}
+
+/** Historical geometry fixtures still exercise import/editor regressions after the gallery redesign. */
+export async function openArchivedExample(page: Page, index: number) {
+  const json = await page.evaluate(async (index) => {
+      const { example } = await import('/src/app/examples.ts'),
+        { serialize } = await import('/src/persistence/schema.ts');
+      return serialize(example(index));
+    }, index),
+    id = JSON.parse(json).metadata.id;
+  await page.locator('input[accept=".json,application/json"]').setInputFiles({
+    name: 'archived-example.pattern.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(json),
+  });
+  await expect
+    .poll(
+      async () =>
+        (await page
+          .getByRole('dialog', { name: 'Conservar el trabajo', exact: true })
+          .isVisible()) ||
+        (await page.evaluate(
+          async (id) =>
+            (await (await import('/src/persistence/storage.ts')).recover())?.metadata.id === id,
+          id,
+        )),
+    )
+    .toBe(true);
 }

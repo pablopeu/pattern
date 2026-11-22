@@ -19,8 +19,22 @@ async function gallery(page: Page) {
 async function load(page: Page, title = 'Peces al límite · original') {
   await page.goto('/');
   await project(page);
-  await gallery(page);
-  await page.getByRole('button', { name: `Abrir ejemplo ${title}`, exact: true }).click();
+  const id = title === 'Cardumen en espiral · original' ? 'fish-spiral' : 'fish-square';
+  const raw = await page.evaluate(async (id) => {
+    const { compositionExample } = await import('/src/examples/catalog.ts'),
+      { serialize } = await import('/src/persistence/schema.ts');
+    return serialize(compositionExample(id));
+  }, id);
+  await page.locator('input[accept=".json,application/json"]').setInputFiles({
+    name: 'archived-composition.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(raw),
+  });
+  await expect
+    .poll(async () => (await project(page)).metadata.id)
+    .toBe(JSON.parse(raw).metadata.id);
+  await composition(page);
+  await page.getByRole('button', { name: 'Ajustar contenido', exact: true }).click();
   return project(page);
 }
 async function composition(page: Page) {
@@ -58,7 +72,7 @@ for (const viewport of [
     await dialog.getByLabel('Categoría de ejemplos').selectOption('Espirales');
     await expect(
       dialog.getByRole('button', {
-        name: 'Abrir ejemplo Cardumen en espiral · original',
+        name: 'Abrir ejemplo Peces · Roseta autosimilar',
         exact: true,
       }),
     ).toBeVisible();
@@ -66,10 +80,13 @@ for (const viewport of [
     expect(await project(page)).toEqual(before);
     const reopened = await gallery(page);
     await reopened
-      .getByRole('button', { name: 'Abrir ejemplo Peces al límite · original', exact: true })
+      .getByRole('button', {
+        name: 'Abrir ejemplo Peces · Límite cuadrado de geometría funcional',
+        exact: true,
+      })
       .click();
     const source = (await project(page)).patterns[0].sourceGeometry;
-    expect(source).toHaveLength(10);
+    expect(source).toHaveLength(1);
     const panel = await composition(page);
     await expect(panel.getByLabel('Profundidad recursiva')).toBeVisible();
     for (const name of ['Receta', 'Geometría', 'Color', 'Guardadas']) {

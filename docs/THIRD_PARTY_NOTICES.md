@@ -50,8 +50,8 @@ V2 conserva las mismas dependencias de ejecución y licencias; no incorpora bibl
   en src/vendor/tactile; licencia original y atribución incluidas en los avisos
   distribuidos. El adaptador TypeScript, validación y pruebas son propios.
 - Composición funcional y cuatro ejemplos de peces/aves: implementación y
-  vectores originales. Programming with Escher se consultó como referencia
-  conceptual; no se incorporó código ni ilustraciones de ese notebook.
+  vectores originales. La galería nueva incorpora además los datos del pez de
+  Programming with Escher bajo GPL3, detallados a continuación.
 - Los repositorios de hiperbólicas y otras familias se agregan al registro
   cuando son consultados. Consultar no significa que todo su código esté integrado.
 
@@ -98,3 +98,16 @@ tiling), pinned commit38abc004bb57133c894b7abeb1e8b07a255d1b77; SHA256 and full
 license in src/vendor/poincare. Distributed software notices include MIT terms.
 No UI/editor/media/storage copied. Own finite-polygon adapter and certified
 cubic projection in src/hyperbolic. User-facing representation remains pending.
+
+
+## Datos del pez de Functional Geometry
+
+Se conserva `fish.path` sin cambios desde
+[mapio/programming-with-escher](https://github.com/mapio/programming-with-escher/blob/master/fish.path),
+blob Git42b1b75631ba2fc678a1a9397db8bfe67c029ab9. GPL-3.0 íntegra en
+src/vendor/escher/LICENSE y avisos distribuidos. Los JSON/miniaturas que usan estos
+datos llevan procedencia y enlaces en su metadata. El notebook remite al pez de
+Functional Geometry y a la versión de Micah Hahn. No se incorporan imágenes del
+grabado ni su textura. El árbol afín se construye con los operadores propios de
+Patterns; no se trasladó código Python a la aplicación. `README.md` del recurso
+explica fuente y marco unitario. No se renormaliza el dibujo al bounding box.

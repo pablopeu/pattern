@@ -1400,3 +1400,25 @@ inicia otro incremento. Monitor conserva timer real, secundaria sólo avisa.
   Fuente vectorial real de Functional Geometry localizada en mapio/programming-
   with-escher, con licencia GPL3 disponible. Todavía sin incorporar datos/código;
   mantener avisos al hacerlo. Servicios LAN originales conservados.
+
+
+## Galería renovada y exploración sin pérdida de información
+
+- Galería15 con miniaturas/JSON reales:7 originales,5 construcciones matemáticas
+  y3 estudios con datos licenciados. Se retiran del menú los ejemplos anteriores;
+  fixtures y compatibilidad interna quedan en archive.ts. Referencia de peces de
+  Functional Geometry, fuente única y receta Henderson con412 instancias a nivel3.
+- GPL3 y archivos originales íntegros/hashes comprobados; créditos en Referencias,
+  JSON y SVG plano/derivado. Lector previo REAL rechaza nueva receta. No incorpora
+  imagen del grabado. Nuevos ejemplos con encastres priorizados; variantes artísticas
+  diferenciadas. README con imágenes/uso antes de instalación.
+- Galería sin scroll en6 resoluciones, incluida320×568 y844×390. Familias/recetas
+  recuerdan colores, marco y parámetros en JSON; composición usa silueta derivada
+  sin reescribir fuente. Colocación por grupo recuperada tras explorar otra red.
+- 1152 unidades/TypeScript.8 E2E nuevas de galería/perfiles correctas previamente;
+  primera regresión210 tuvo202 correctas. Se corrigieron fixture histórico/foco,
+  preset cuyo Fill no coincidía con palette[0], selector de color y helper de panel;
+  repetición completa final en curso. Datos15 regenerados después de la corrección.
+- Informe solicitado por Pablo: docs/STATUS.md, actualizar checks antes de commit.
+  PRD v3.0 todavía parcial; v3.1 no se inicia hasta cerrar/v3.0. Servicios LAN
+  originales activos, cupo secundario sólo aviso, sin PROJECT_COMPLETE.
