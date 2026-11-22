@@ -1692,3 +1692,9 @@ Gates: qa:fast con 1152/1152 unitarias y 209/210 E2E; el único fallo fue
 v22-fill «dense» por carrera del worker de vínculos bajo carga (pasa aislado,
 21/21 en el spec). Presupuesto E2E del runner subido a 1800s tras TIMEOUT real
 en runner lento. Próximo paso: retomar el PRD v3.0 desde su fase vigente.
+
+El gate de CI volvió a fallar sólo en v22-fill «dense» (209/210): carrera real
+entre el worker de vínculos y el recálculo manual. `recalculateFill` ahora
+reintenta solo (hasta 2 veces) cuando el fingerprint cambió durante el
+cálculo, en vez de abortar; nunca aplica resultados viejos. Verificado: spec
+completo 26/26 y qa:fast PASS.

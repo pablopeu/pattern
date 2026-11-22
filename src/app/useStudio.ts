@@ -331,7 +331,7 @@ export function useStudio() {
       recalcWorker.current?.terminate();
     };
   }, [project.metadata.id]);
-  const recalculateFill = (shapeId: string) => {
+  const recalculateFill = (shapeId: string, attempt = 0) => {
     cancelRecalculation();
     const fingerprint = axesFingerprint(ref.current),
       worker = new Worker(new URL('../fill/worker.ts', import.meta.url), { type: 'module' });
@@ -350,7 +350,12 @@ export function useStudio() {
       }
       if (e.data.type !== 'recalculated') return;
       if (axesFingerprint(ref.current) !== fingerprint) {
-        fail('La geometría cambió durante el cálculo. El contorno se conservó; podés reintentar.');
+        // El worker de vínculos pudo reescribir contornos mientras calculábamos.
+        // Nunca aplicar resultados viejos: reintentar una vez sobre la geometría nueva.
+        worker.terminate();
+        if (recalcWorker.current === worker) recalcWorker.current = null;
+        if (attempt < 2) recalculateFill(shapeId, attempt + 1);
+        else fail('La geometría cambió durante el cálculo. El contorno se conservó; podés reintentar.');
         return;
       }
       const result = e.data.geometry as Geometry;
