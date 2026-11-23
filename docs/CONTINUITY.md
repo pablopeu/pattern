@@ -1771,3 +1771,10 @@ OG, traversal, concurrencia y mantenimiento) y E2E con stub del contrato por
 aislamiento de red de los servicios de prueba; FULL al cierre. Documentación en
 docs/SHARE.md y docs/ACCEPTANCE_V31.md. Diferidos (pedido de Pablo): ejemplos
 restantes del PRD de galería.
+
+Corrección tras prueba real de Pablo (estudio denso, “No se pudo generar una
+miniatura dentro de 100 KiB”): la miniatura escala progresivamente 1200×630 →
+600×315 con calidades decrecientes y, si no cabe, la publicación continúa con
+la tarjeta genérica sin bloquear; el servidor guarda las dimensiones reales y
+las emite en og:image:width/height. Integración PHP 28/28 y E2E de compartición
+3/3 tras el cambio.

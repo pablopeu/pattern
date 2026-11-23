@@ -68,8 +68,8 @@ $styles = is_array($manifest['styles'] ?? null) ? $manifest['styles'] : [];
     <meta property="og:url" content="<?= share_escape($link) ?>" />
     <meta property="og:image" content="<?= share_escape($image) ?>" />
     <meta property="og:image:type" content="image/jpeg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <meta property="og:image:width" content="<?= (int) ($meta['previewWidth'] ?? 1200) ?>" />
+    <meta property="og:image:height" content="<?= (int) ($meta['previewHeight'] ?? 630) ?>" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="<?= share_escape($title) ?>" />
     <meta name="twitter:description" content="<?= share_escape($description) ?>" />

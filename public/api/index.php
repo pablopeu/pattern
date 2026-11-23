@@ -110,10 +110,19 @@ if ($method === 'POST' && $id === '') {
         'contentHash' => hash('sha256', $document),
         'preview' => $preview !== null ? 'jpeg' : 'none',
         'previewVersion' => 1,
+        'previewWidth' => 1200,
+        'previewHeight' => 630,
         'title' => share_truncate((string) ($payload['title'] ?? 'Creación'), 120),
         'description' => share_truncate((string) ($payload['description'] ?? ''), 300),
         'secretHash' => hash('sha256', $secret),
     ];
+    if ($preview !== null) {
+        $dims = @getimagesizefromstring($preview);
+        if (is_array($dims) && $dims[0] > 0 && $dims[1] > 0) {
+            $meta['previewWidth'] = (int) $dims[0];
+            $meta['previewHeight'] = (int) $dims[1];
+        }
+    }
     try {
         if ($preview !== null) {
             share_atomic_write(share_path('preview', $id), $preview);

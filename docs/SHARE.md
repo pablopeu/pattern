@@ -60,6 +60,10 @@ bonitos funcionan con Apache.
   `image/jpeg`. Las plataformas pueden conservar vistas previas tras retirar.
 - **GD ausente**: el servidor no acepta miniaturas subidas y usa
   `share-default.jpg`; publicar sigue funcionando.
+- **Miniatura sin presupuesto**: el cliente intenta 1200×630 y escala hasta 600×315
+  con calidades decrecientes; si aun así supera 100 KiB, la publicación continúa
+  con la tarjeta genérica (nunca se bloquea el enlace). Las dimensiones reales de
+  la miniatura se guardan y se emiten en Open Graph.
 - **Rate limit/cuota alcanzados**: responden 429 sin afectar publicaciones previas.
 
 ## Seguridad

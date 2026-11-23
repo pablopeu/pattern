@@ -30,13 +30,41 @@ async function svgImage(svg: string) {
   }
 }
 
-/** Dibuja la creación tal como el usuario la estaba viendo, encuadrada en 1200×630. */
-export async function renderSharePreview(project: Project): Promise<string> {
+export interface SharePreview {
+  dataUrl: string;
+  width: number;
+  height: number;
+}
+
+/**
+ * Dibuja la creación tal como el usuario la estaba viendo, encuadrada en 1200×630.
+ * Si el contenido no cabe en 100 KiB, escala progresivamente conservando el
+ * aspecto; si aun así no cabe, devuelve null y se publica con la tarjeta genérica.
+ */
+export async function renderSharePreview(project: Project): Promise<SharePreview | null> {
   const visualization: Visualization | undefined = project.visualization,
-    background = project.preferences.background ?? '#f7f3e8',
-    canvas = canvasOf(),
-    ctx = canvas.getContext('2d');
-  if (!ctx) throw Error('Canvas no disponible.');
+    background = project.preferences.background ?? '#f7f3e8';
+  for (const scale of [1, 0.875, 0.75, 0.625, 0.5]) {
+    const width = Math.round(1200 * scale),
+      height = Math.round(630 * scale),
+      canvas = canvasOf(width, height),
+      ctx = canvas.getContext('2d');
+    if (!ctx) throw Error('Canvas no disponible.');
+    await drawCreation(ctx, width, height, visualization, project, background);
+    const dataUrl = encodeBudget(canvas);
+    if (dataUrl) return { dataUrl, width, height };
+  }
+  return null;
+}
+
+async function drawCreation(
+  ctx: CanvasRenderingContext2D,
+  WIDTH: number,
+  HEIGHT: number,
+  visualization: Visualization | undefined,
+  project: Project,
+  background: string,
+) {
   ctx.fillStyle = background;
   ctx.fillRect(0, 0, WIDTH, HEIGHT);
   if (visualization?.kind === 'sphere') {
@@ -88,18 +116,18 @@ export async function renderSharePreview(project: Project): Promise<string> {
       image.height * scale,
     );
   }
-  // Marca discreta y nombre del estudio.
+  // Marca discreta y nombre del estudio, escalados con la miniatura.
+  const unit = WIDTH / 1200;
   ctx.fillStyle = 'rgba(20,26,20,0.78)';
-  ctx.font = '600 26px system-ui, sans-serif';
+  ctx.font = `600 ${Math.round(26 * unit)}px system-ui, sans-serif`;
   ctx.textAlign = 'left';
-  ctx.fillText('Patterns', 36, HEIGHT - 34);
+  ctx.fillText('Patterns', Math.round(36 * unit), HEIGHT - Math.round(34 * unit));
   const name = project.metadata.name.trim();
   if (name) {
     ctx.textAlign = 'right';
-    ctx.font = '500 22px system-ui, sans-serif';
-    ctx.fillText(name.slice(0, 60), WIDTH - 36, HEIGHT - 34);
+    ctx.font = `500 ${Math.round(22 * unit)}px system-ui, sans-serif`;
+    ctx.fillText(name.slice(0, 60), WIDTH - Math.round(36 * unit), HEIGHT - Math.round(34 * unit));
   }
-  return encodeBudget(canvas);
 }
 
 async function sphereTexture(project: Project, visualization: Visualization) {
@@ -128,11 +156,11 @@ async function sphereTexture(project: Project, visualization: Visualization) {
 }
 
 /** Ajusta la calidad JPEG para quedar dentro de 100 KiB (PRD §7.2). */
-function encodeBudget(canvas: HTMLCanvasElement): string {
-  for (const quality of [0.84, 0.72, 0.6, 0.5]) {
+function encodeBudget(canvas: HTMLCanvasElement): string | null {
+  for (const quality of [0.84, 0.72, 0.6, 0.5, 0.42, 0.35]) {
     const url = canvas.toDataURL('image/jpeg', quality),
       bytes = Math.ceil((url.length - url.indexOf(',') - 1) * 0.75);
     if (bytes <= 100 * 1024) return url;
   }
-  throw Error('No se pudo generar una miniatura dentro de 100 KiB.');
+  return null;
 }

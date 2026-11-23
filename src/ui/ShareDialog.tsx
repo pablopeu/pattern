@@ -11,13 +11,14 @@ import {
   secretFor,
 } from '../share/api';
 import { byteLength, gzipSize, shareDocument } from '../share/document';
-import { renderSharePreview } from '../share/preview';
+import { renderSharePreview, type SharePreview } from '../share/preview';
 import { download } from '../persistence/storage';
 
 export function ShareDialog({ studio: s, onClose }: { studio: Studio; onClose: () => void }) {
   const project = s.project,
     previous = publishedFor(project.metadata.id),
-    [preview, setPreview] = useState<string>(''),
+    [preview, setPreview] = useState<SharePreview | null>(null),
+    [previewReady, setPreviewReady] = useState(false),
     [sizes, setSizes] = useState<{ json: number; gzip: number } | null>(null),
     [currentHash, setCurrentHash] = useState(''),
     [busy, setBusy] = useState(''),
@@ -40,8 +41,12 @@ export function ShareDialog({ studio: s, onClose }: { studio: Studio; onClose: (
         if (cancelled) return;
         setSizes({ json: byteLength(document), gzip: await gzipSize(document) });
         setCurrentHash(await documentHash(document));
-        const data = await renderSharePreview(project);
-        if (!cancelled) setPreview(data);
+        try {
+          const data = await renderSharePreview(project);
+          if (!cancelled) setPreview(data);
+        } finally {
+          if (!cancelled) setPreviewReady(true);
+        }
       } catch (e) {
         if (!cancelled) setError((e as Error).message);
       }
@@ -71,7 +76,7 @@ export function ShareDialog({ studio: s, onClose }: { studio: Studio; onClose: (
     setBusy('Publicando…');
     setError('');
     try {
-      const published = await publishShare(project, preview || undefined, title, description);
+      const published = await publishShare(project, preview?.dataUrl, title, description);
       setResult(published);
     } catch (e) {
       setError((e as Error).message);
@@ -123,7 +128,17 @@ export function ShareDialog({ studio: s, onClose }: { studio: Studio; onClose: (
       <div className="share-body">
         <div className="share-preview">
           {preview ? (
-            <img src={preview} alt="Miniatura de la creación" width={1200} height={630} />
+            <img
+              src={preview.dataUrl}
+              alt="Miniatura de la creación"
+              width={preview.width}
+              height={preview.height}
+            />
+          ) : previewReady ? (
+            <p role="status">
+              Esta creación no cabe en una miniatura de 100 KiB: se publicará con la tarjeta
+              genérica de Patterns. El enlace y la creación siguen siendo válidos.
+            </p>
           ) : (
             <p role="status">Preparando la miniatura…</p>
           )}
@@ -163,7 +178,7 @@ export function ShareDialog({ studio: s, onClose }: { studio: Studio; onClose: (
           {!result && !link && (
             <button
               className="primary"
-              disabled={!!busy || !preview}
+              disabled={!!busy || !previewReady}
               onClick={() => void publish()}
             >
               <Share2 size={16} /> {busy || 'Crear enlace público'}
@@ -217,7 +232,11 @@ export function ShareDialog({ studio: s, onClose }: { studio: Studio; onClose: (
                 {preview && (
                   <button
                     onClick={() =>
-                      download(dataUrlToBlob(preview), `${title.slice(0, 40)}.jpg`, 'image/jpeg')
+                      download(
+                        dataUrlToBlob(preview.dataUrl),
+                        `${title.slice(0, 40)}.jpg`,
+                        'image/jpeg',
+                      )
                     }
                   >
                     <Download size={14} /> Descargar miniatura
