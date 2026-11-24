@@ -1,7 +1,10 @@
 # Estado actual de Patterns
 
-Actualizado:22 de noviembre de2026 (UTC). **PRD v3.0 verificado en todas sus fases (0–7).**
-El detalle de criterios está en [ACCEPTANCE_V30.md](ACCEPTANCE_V30.md).
+Actualizado:24 de noviembre de2026 (UTC). **PRD v4.0 verificado:** idioma ES/EN,
+tema claro/oscuro con lienzo oscuro y trazos claros, modo simple por defecto con
+escapes a avanzado, sin tocar documentos. Criterios en
+[ACCEPTANCE_V40.md](ACCEPTANCE_V40.md).
+
 
 ## QA y siguiente prioridad
 
@@ -12,10 +15,10 @@ verificadas y16 estáticas, builds y validadores independientes correctos.
 El gate idéntico se reutilizó en290ms. [Operación](QA.md) ·
 [criterios y mediciones](QA_ACCEPTANCE.md).
 
-Siguiente: `docs/prd/prd_galeria_ejemplos.txt`. Pablo considera que los15 ejemplos
-actuales todavía necesitan mayor calidad artística. El nuevo incremento debe
-incorporar geometría editable mejor resuelta, detalles, paletas, encastres y
-capturas reales. Después se retoma v3.0 desde sus pendientes; v3.1 espera.
+Siguiente: retomar `docs/prd/prd_galeria_ejemplos.txt` (aplazado por Pablo hasta
+cerrar v3.0/v3.1/v4.0, ya elegible). Fuentes ya descargadas en
+.runtime/original-assets/escher-sources; ampliar el modal de Referencias al
+consultar nuevas.
 
 ## Entrega actual
 

@@ -3100,3 +3100,89 @@ input[type='color']::-webkit-color-swatch {
     font-size: 11px;
   }
 }
+/* Modo simple (v4.0 §5) */
+.simple-symmetries {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.simple-symmetry {
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid var(--ui-border);
+  border-radius: 10px;
+  background: var(--ui-surface-1);
+  text-align: left;
+}
+.simple-symmetry img,
+.simple-symmetry-placeholder {
+  width: 100%;
+  aspect-ratio: 1.15;
+  object-fit: cover;
+  border-radius: 6px;
+  background: var(--ui-surface-3);
+}
+.simple-symmetry strong {
+  font-size: 12px;
+}
+.simple-symmetry small {
+  color: var(--ui-muted);
+  font-size: 10px;
+}
+.simple-symmetry[aria-pressed='true'] {
+  border-color: var(--ui-accent);
+  box-shadow: 0 0 0 1px var(--ui-accent) inset;
+}
+.simple-symmetry.explore {
+  grid-column: 1 / -1;
+  align-content: center;
+  justify-items: center;
+  padding: 14px;
+  border-style: dashed;
+}
+.advanced-escape {
+  margin-left: auto;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--ui-border-strong);
+  font-size: 10px;
+  color: var(--ui-muted);
+}
+.empty-examples {
+  margin-top: 10px;
+  padding: 7px 14px;
+  border-radius: 9px;
+  border: 1px solid var(--ui-border-strong);
+  background: var(--ui-surface-1);
+  color: var(--ui-text);
+  pointer-events: auto;
+}
+.simple-symmetry-chips {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 8px 0;
+}
+.simple-symmetry-chips > button {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  padding: 7px 9px;
+  border: 1px solid var(--ui-border);
+  border-radius: 8px;
+  background: var(--ui-surface-1);
+  font-size: 12px;
+  text-align: left;
+}
+.simple-symmetry-chips > button small {
+  color: var(--ui-muted);
+  font-size: 10px;
+}
+.simple-symmetry-chips > button[aria-pressed='true'] {
+  border-color: var(--ui-accent);
+  box-shadow: 0 0 0 1px var(--ui-accent) inset;
+}
+.simple-symmetry-chips .wide-button {
+  grid-column: 1 / -1;
+}

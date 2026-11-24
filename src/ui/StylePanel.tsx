@@ -20,7 +20,7 @@ import {
 import { fromMM, toMM } from '../geometry/matrix';
 import { Field, Select, Toggle } from './Controls';
 
-import { tr , translateMessage } from '../i18n';
+import { tr, translateMessage, useI18n } from '../i18n';
 function Paint({
   label,
   value,
@@ -661,6 +661,7 @@ export function StyleIndicator({ studio: s }: { studio: Studio }) {
   );
 }
 export function StylePanel({ studio: s }: { studio: Studio }) {
+  const simpleMode = useI18n().uiMode === 'simple';
   const [name, setName] = useState(''),
     [presetId, setPresetId] = useState('');
   const preset = s.project.stylePresets.find((p) => p.id === presetId),
@@ -718,6 +719,7 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
       <div className="context-tabs style-tabs" role="tablist" aria-label={tr('Estilos y propiedades')}>
         {(['stroke', 'profile', 'fill', 'palette', 'presets', 'object', 'options'] as const)
           .filter((id) => id !== 'object' || !!s.styleSelection.length)
+          .filter((id) => !simpleMode || id !== 'options')
           .map((id) => (
             <button
               key={id}
@@ -780,15 +782,17 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
             checked={s.project.preferences.fillLinkedDefault}
             onChange={(v) => s.updateViewPreferences({ fillLinkedDefault: v })}
           />
-          <Field
-            label={tr('Tolerancia de cierre de Fill')}
-            unit="mm"
-            value={s.project.preferences.fillCloseTolerance}
-            min={0}
-            max={5}
-            step={0.01}
-            onChange={(v) => s.updateViewPreferences({ fillCloseTolerance: v })}
-          />
+          {!simpleMode && (
+            <Field
+              label={tr('Tolerancia de cierre de Fill')}
+              unit="mm"
+              value={s.project.preferences.fillCloseTolerance}
+              min={0}
+              max={5}
+              step={0.01}
+              onChange={(v) => s.updateViewPreferences({ fillCloseTolerance: v })}
+            />
+          )}
           <small>
             {s.project.preferences.fillCloseTolerance > 0
               ? 'Cierre aproximado explícito. No modifica los límites originales.'

@@ -28,7 +28,7 @@ import {
   type SymmetryChoice,
 } from '../symmetry/config';
 import { Field, Select, Toggle } from './Controls';
-import { tr } from '../i18n';
+import { tr, useI18n, useExperienceActions } from '../i18n';
 export function previewSVG(
   pattern: Pattern,
   bounds: Bounds,
@@ -120,6 +120,19 @@ export function SymmetryGallery({
   studio: Studio;
   section?: 'parameters' | 'placement';
 }) {
+  const experience = useI18n(),
+    experienceActions = useExperienceActions(),
+    simpleMode = experience.uiMode === 'simple',
+    simpleChoices: { family: 'wallpaper' | 'frieze' | 'radial' | 'none'; group: string; label: string; hint: string }[] = [
+      { family: 'wallpaper', group: 'p1', label: 'Repetición en cuadrícula', hint: 'p1' },
+      { family: 'frieze', group: 'p1', label: 'Repetición horizontal', hint: 'friso p1' },
+      { family: 'wallpaper', group: 'pm', label: 'Espejo vertical', hint: 'pm' },
+      { family: 'wallpaper', group: 'p3', label: 'Giro de 3', hint: 'Giro de 3 · p3' },
+      { family: 'wallpaper', group: 'p4', label: 'Giro de 4', hint: 'Giro de 4 · p4' },
+      { family: 'wallpaper', group: 'p6', label: 'Giro de 6', hint: 'Giro de 6 · p6' },
+      { family: 'wallpaper', group: 'p4m', label: 'Combinar espejos y giros', hint: 'p4m' },
+    ];
+
   const [capturing, setCapturing] = useState(false),
     [expanded, setExpanded] = [s.catalogOpen, s.setCatalogOpen],
     [page, setPage] = useState(0),
@@ -434,6 +447,41 @@ export function SymmetryGallery({
               ]}
             />
           </div>
+          {simpleMode && (
+            <div className="simple-symmetries" role="group" aria-label={tr('Ideas para empezar')}>
+              {simpleChoices.map((entry) => {
+                const choice = symmetryCatalog.find(
+                    (c) => c.family === entry.family && c.group === entry.group,
+                  )!,
+                  key = symmetryId(choice),
+                  preview = previews[key];
+                return (
+                  <button
+                    key={key}
+                    className="simple-symmetry"
+                    aria-pressed={symmetryId(confirmed) === key}
+                    onClick={() => choose(choice)}
+                  >
+                    {preview ? (
+                      <img alt={tr(entry.label)} src={preview.url} />
+                    ) : (
+                      <span className="simple-symmetry-placeholder" />
+                    )}
+                    <strong>{tr(entry.label)}</strong>
+                    <small>{entry.hint}</small>
+                  </button>
+                );
+              })}
+              <button
+                className="simple-symmetry explore"
+                onClick={() => experienceActions.setUiMode('advanced')}
+              >
+                <strong>{tr('Explorar más simetrías')}</strong>
+                <small>{tr('Se muestran todas las familias y grupos')}</small>
+              </button>
+            </div>
+          )}
+          {!simpleMode && (
           <div
             className="dynamic-symmetry-grid"
             role="group"
@@ -534,6 +582,7 @@ export function SymmetryGallery({
               );
             })}
           </div>
+          )}
           {choices.length > pageSize && (
             <div className="page-controls">
               <button disabled={!page} onClick={() => setPage(page - 1)}>

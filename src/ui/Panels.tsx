@@ -141,6 +141,9 @@ export function Panels({
   onExamples: () => void;
   onIsohedral: () => void;
 }) {
+  const experience = useI18n(),
+    experienceActions = useExperienceActions();
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const [generatorPage, setGeneratorPage] = useState(0),
     [placementPage, setPlacementPage] = useState(0),
@@ -224,6 +227,15 @@ export function Panels({
     >
       <header className="context-heading">
         <span>{message(`category.${category}` as MessageKey)}</span>
+        {experience.uiMode === 'simple' && (
+          <button
+            className="advanced-escape"
+            title={tr('Mostrar todas las herramientas y parámetros')}
+            onClick={() => experienceActions.setUiMode('advanced')}
+          >
+            {tr('Opciones avanzadas')}
+          </button>
+        )}
         <button
           aria-label={tr('Cerrar panel izquierdo')}
           title={tr('Cerrar panel izquierdo (Esc)')}
@@ -252,7 +264,40 @@ export function Panels({
           </button>
         </div>
       )}
-      {category === 'symmetry' && (
+      {category === 'symmetry' && experience.uiMode === 'simple' && (
+        <div className="simple-symmetry-chips" role="group" aria-label={tr('Ideas para empezar')}>
+          {[
+            ['Repetición en cuadrícula', 'wallpaper', 'p1'],
+            ['Repetición horizontal', 'frieze', 'p1'],
+            ['Espejo vertical', 'wallpaper', 'pm'],
+            ['Giro de 3', 'wallpaper', 'p3'],
+            ['Giro de 4', 'wallpaper', 'p4'],
+            ['Giro de 6', 'wallpaper', 'p6'],
+            ['Combinar espejos y giros', 'wallpaper', 'p4m'],
+          ].map(([label, family, group]) => (
+            <button
+              key={label}
+              aria-pressed={
+                s.effectivePattern.symmetry.family === family &&
+                s.effectivePattern.symmetry.group === group
+              }
+              onClick={() =>
+                s.changeSymmetryChoice({
+                  family: family as 'wallpaper' | 'frieze',
+                  group,
+                })
+              }
+            >
+              {tr(label)}
+              <small>{family === 'frieze' ? `friso ${group}` : group}</small>
+            </button>
+          ))}
+          <button className="wide-button" onClick={() => experienceActions.setUiMode('advanced')}>
+            {tr('Explorar más simetrías')}
+          </button>
+        </div>
+      )}
+      {category === 'symmetry' && experience.uiMode !== 'simple' && (
         <div className="panel-tabs" role="tablist" aria-label={tr('Opciones de simetría')}>
           <button role="tab" aria-selected={tab === 'design'} onClick={() => setTab('design')}>
             {tr('Grupo y red')}

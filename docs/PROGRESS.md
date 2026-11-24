@@ -1500,3 +1500,19 @@ inicia otro incremento. Monitor conserva timer real, secundaria sólo avisa.
 - Integración PHP real: 28 comprobaciones (scripts/share-php-test.mjs).
   E2E de compartición: 3 pruebas. Benchmark: JSON p50 5,1 KiB, gzip p50 2,1 KiB.
 - Docs: SHARE.md, ACCEPTANCE_V31.md, README y workflow de CI actualizados.
+
+## v4.0 · Experiencia
+
+- Preferencias de experiencia (idioma/tema/modo) en localStorage propio
+  `pattern.experience.v1`, separadas del documento; sin undo ni dirty.
+- i18n completo ES/EN: 84 claves tipadas, 777 frases UI, 186 mensajes técnicos
+  (incluye defaults de geometría y motor). Barrido permanente en
+  tests/i18n.spec.ts tras dos pasadas por feedback de Pablo.
+- Tema claro/oscuro con tokens semánticos (245 literales migrados) y bootstrap
+  pre-React sin destello. Lienzo oscuro #1b211c con trazo #e7eee1 y relleno
+  #a9cfe0 para geometría nueva (pedido de Pablo); fondos elegidos intactos.
+- Modo simple por defecto con curaduría declarativa (ui-mode.ts): rail
+  esencial, chips de simetría, teselas periódicas, galería amigable y escapes
+  explícitos a avanzado. Sin mutación de documentos.
+- tests/experience.spec.ts: 6 pruebas (detección, manual, simple, integridad,
+  8 combinaciones) + 6 de i18n. qa:fast PASS 25/25 y 132/132.

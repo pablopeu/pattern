@@ -944,7 +944,7 @@ export default function App() {
                 <Canvas studio={s} previewOnly />
               </>
             ) : (
-              <Canvas studio={s} editorOnly={s.project.preferences.sourceView} />
+              <Canvas studio={s} editorOnly={s.project.preferences.sourceView} onExamples={openExamples} />
             )}
           </div>
           <footer className="statusbar">

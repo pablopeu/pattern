@@ -68,6 +68,7 @@ interface Props {
   editorOnly?: boolean;
   previewOnly?: boolean;
   cellOnly?: boolean;
+  onExamples?: () => void;
 }
 interface Drag {
   type: 'pan' | 'move' | 'node' | 'draw' | 'penhandle' | 'marquee' | 'origin' | 'orientation';
@@ -118,8 +119,9 @@ export function Canvas({
   editorOnly = false,
   previewOnly = false,
   cellOnly = false,
+  onExamples,
 }: Props) {
-  useI18n(); // re-render al cambiar tema/idioma
+  const experience = useI18n(); // re-render al cambiar tema/idioma
   const activePattern = s.effectivePattern;
   const [view, setView] = useState<Bounds>({ x: -110, y: -100, width: 300, height: 240 }),
     [size, setSize] = useState({ width: 1000, height: 800 }),
@@ -2204,6 +2206,11 @@ export function Canvas({
         <div className="empty-canvas" style={{ color: canvasTextColor(themedBackground(s.project.preferences.background)) }}>
           <span>{tr('Todo empieza con una línea.')}</span>
           <small>{tr('Elegí una herramienta y dibujá. El patrón aparece mientras trazás.')}</small>
+          {experience.uiMode === 'simple' && onExamples && (
+            <button className="empty-examples" onClick={onExamples}>
+              {tr('Explorar ejemplos')}
+            </button>
+          )}
         </div>
       )}
       {s.mode === 'apply' && !s.project.regions.length && (

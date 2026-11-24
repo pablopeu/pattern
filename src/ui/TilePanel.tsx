@@ -10,8 +10,11 @@ import { IsohedralControls } from './IsohedralControls';
 import { newIsohedral, isohedralConstraints } from '../isohedral/engine';
 import { isohedralDefinition } from '../tiling/tiles';
 import { splitCanonicalEdge } from '../isohedral/edit';
-import { tr } from '../i18n';
+import { tr, useI18n, useExperienceActions } from '../i18n';
 export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohedral: () => void }) {
+  const experience = useI18n(),
+    experienceActions = useExperienceActions(),
+    simpleMode = experience.uiMode === 'simple';
   const [family, setFamily] = useState(
     s.pattern.generator.kind === 'girih'
       ? 'girih'
@@ -54,7 +57,9 @@ export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohed
             ],
             ['girih', 'Girih', 'M16 1L20 11L31 11L22 18L25 30L16 23L7 30L10 18L1 11L12 11Z'],
           ] as const
-        ).map(([id, label, d]) => (
+        )
+          .filter(([id]) => !simpleMode || id === 'periodic')
+          .map(([id, label, d]) => (
           <button
             key={id}
             aria-pressed={family === id}
@@ -70,6 +75,11 @@ export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohed
           </button>
         ))}
       </div>
+      {simpleMode && (
+        <button className="wide-button" onClick={() => experienceActions.setUiMode('advanced')}>
+          {tr('Más familias de teselas')}
+        </button>
+      )}
       {family === 'girih' ? (
         <GirihPanel studio={s} />
       ) : family === 'aperiodic' ? (

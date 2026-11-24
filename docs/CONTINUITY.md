@@ -1,3 +1,23 @@
+# v4.0 Experiencia · Cerrado con FULL, pendiente de push final
+
+Base f39a2e8 (v4.0 dark+traducción) local, no publicada aún. Este incremento
+termina v4.0: modo simple por defecto con curaduría declarativa y escapes
+(ui-mode.ts, Panels/StylePanel/TilePanel/SymmetryGallery/Canvas), fila de
+experiencia compacta en Preferencias, CTA Explorar ejemplos en lienzo vacío,
+tests/experience.spec.ts 6 pruebas + i18n.spec 6 barridas. qa:fast PASS
+25/25 unit y132/132 E2E (256s). FULL de cierre ejecutado con este commit;
+evidencia en .runtime/qa. Docs: ACCEPTANCE_V40.md con AC-01..20 y §14.
+Dos feedbacks de Pablo incorporados: lienzo oscuro con trazo/fill claros
+(themedBackground/themedDrawingStyle respetan fondos elegidos) y barrido de
+español en la versión inglesa (catálogos 84/777/186, coverage test obligatorio).
+
+PRDs de Pablo en docs/prd quedan fuera de Git (originales locales). Siguiente:
+prd_galeria_ejemplos.txt (elegible; fuentes en .runtime/original-assets).
+Servicios 4173/4174 conservados. Sin PROJECT_COMPLETE. Al fallar el action,
+Pablo recibe email; no inspeccionar workflow/FTP post-push.
+
+---
+
 # QA eficiente · Verificado; siguiente galería de referencia
 
 Base44ead3f publicada por Pablo. QA eficiente terminado y verificado localmente:
