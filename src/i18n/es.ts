@@ -46,6 +46,7 @@ export const es = {
   'category.tiles': 'Teselas',
   'category.layers': 'Capas',
   'category.preferences': 'Preferencias',
+  'category.application': 'Aplicación',
   'tool.select': 'Seleccionar',
   'tool.nodes': 'Editar nodos',
   'tool.pen': 'Pluma Bézier',

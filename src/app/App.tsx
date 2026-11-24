@@ -40,7 +40,7 @@ import { Canvas } from '../editor/Canvas';
 import { Panels } from '../ui/Panels';
 import { ExportDialog } from '../ui/ExportDialog';
 import { buildScene } from '../patterns/engine';
-import { message, useI18n, useExperienceActions, type LanguagePreference, type MessageKey, type ThemePreference, type UiMode } from '../i18n';
+import { tr, message, useI18n, useExperienceActions, type LanguagePreference, type MessageKey, type ThemePreference, type UiMode , translateMessage } from '../i18n';
 import { isToolVisible } from './ui-mode';
 const stylePages: { id: StylePage; key: MessageKey; icon: typeof Palette }[] = [
   { id: 'stroke', key: 'style.stroke', icon: PenLine },
@@ -322,7 +322,7 @@ export default function App() {
   const commands: Command[] = [
     {
       id: 'isohedral-catalog',
-      label: 'Explorar catálogo isoédrico IH1–IH93',
+      label: tr('Explorar catálogo isoédrico IH1–IH93'),
       keywords: 'teselas figurativas encastre bordes',
       run: () => {
         openCategory('tiles');
@@ -331,25 +331,25 @@ export default function App() {
     },
     {
       id: 'references',
-      label: 'Repositorios y referencias',
+      label: tr('Repositorios y referencias'),
       keywords: 'código fuentes proyectos consultados',
       run: () => setReferencesOpen(true),
     },
     {
       id: 'visualization',
-      label: 'Visualizar patrón · disco o esfera',
+      label: tr('Visualizar patrón · disco o esfera'),
       keywords: 'poincaré hiperbólica esfera derivada disco artístico',
       run: openVisualization,
     },
     {
       id: 'animation',
-      label: 'Animar · GIF y WebM',
+      label: tr('Animar · GIF y WebM'),
       keywords: 'animación loop línea temporal video gif giro',
       run: () => setAnimationOpen(true),
     },
     {
       id: 'composition-recursive',
-      label: 'Explorar composición recursiva',
+      label: tr('Explorar composición recursiva'),
       keywords: 'square limit cuadrantes autosimilar peces',
       run: () => {
         openCategory('symmetry');
@@ -358,7 +358,7 @@ export default function App() {
     },
     {
       id: 'composition-spiral',
-      label: 'Explorar espirales y semejanzas',
+      label: tr('Explorar espirales y semejanzas'),
       keywords: 'espiral roseta escala giro',
       run: () => {
         openCategory('symmetry');
@@ -367,7 +367,7 @@ export default function App() {
     },
     {
       id: 'examples-gallery',
-      label: 'Galería de ejemplos',
+      label: tr('Galería de ejemplos'),
       keywords: 'peces aves ejemplos escher originales',
       run: openExamples,
     },
@@ -396,13 +396,13 @@ export default function App() {
     })),
     {
       id: 'regular',
-      label: 'Polígono paramétrico',
+      label: tr('Polígono paramétrico'),
       keywords: 'forma regular lados',
       run: createRegular,
     },
     {
       id: 'catalog',
-      label: 'Explorar catálogo de simetrías',
+      label: tr('Explorar catálogo de simetrías'),
       run: () => {
         openCategory('symmetry');
         s.setCatalogOpen(true);
@@ -410,7 +410,7 @@ export default function App() {
     },
     {
       id: 'width',
-      label: 'Cambiar grosor de trazo',
+      label: tr('Cambiar grosor de trazo'),
       run: () => {
         s.setStylePage('stroke');
         s.setStyleOpen(true);
@@ -419,15 +419,15 @@ export default function App() {
         );
       },
     },
-    { id: 'export-svg', label: 'Exportar SVG', run: openExport },
+    { id: 'export-svg', label: tr('Exportar SVG'), run: openExport },
     {
       id: 'save',
-      label: 'Guardar proyecto JSON',
+      label: tr('Guardar proyecto JSON'),
       run: () => {
         void save();
       },
     },
-    { id: 'import', label: 'Importar SVG', run: () => svgRef.current?.click() },
+    { id: 'import', label: tr('Importar SVG'), run: () => svgRef.current?.click() },
   ];
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
@@ -497,11 +497,11 @@ export default function App() {
   return (
     <div className="app-shell">
       <header className="topbar">
-        <a className="brand" href="./" aria-label="Pattern Studio">
+        <a className="brand" href="./" aria-label={tr('Pattern Studio')}>
           <img src={logo} alt="PEU Patterns" width="142" height="66" />
         </a>
         <div className="app-title">
-          <strong>Patterns</strong>
+          <strong>{tr('Patterns')}</strong>
           <small>{message('app.tagline')}</small>
         </div>
         <div className="mode-switch" role="tablist" aria-label={message('work.context')}>
@@ -583,7 +583,7 @@ export default function App() {
           </button>
           <span className={`save-indicator ${s.saved.includes('Error') ? 'error' : ''}`}>
             <Check size={13} />
-            {s.saved}
+            {translateMessage(s.saved)}
           </span>
           <button
             className="icon-button"
@@ -713,13 +713,13 @@ export default function App() {
         </div>
       </header>
       <main className={`workspace ${collapsed ? 'panel-collapsed' : ''}`}>
-        <nav className="tool-rail" aria-label="Herramientas y categorías">
-          <div className="category-rail" role="group" aria-label="Categorías">
-            {railCategories.map(({ id, label }) => (
+        <nav className="tool-rail" aria-label={tr('Herramientas y categorías')}>
+          <div className="category-rail" role="group" aria-label={message('rail.categories')}>
+            {railCategories.map(({ id }) => (
               <button
                 key={id}
-                title={label}
-                aria-label={`Abrir ${label}`}
+                title={message(`category.${id}` as MessageKey)}
+                aria-label={message('rail.open', { name: message(`category.${id}` as MessageKey) })}
                 aria-pressed={!collapsed && category === id}
                 className={!collapsed && category === id ? 'active' : ''}
                 onClick={() => openCategory(id)}
@@ -773,15 +773,15 @@ export default function App() {
               <small>+</small>
             </button>
             <button
-              title="Importar SVG"
-              aria-label="Importar SVG"
+              title={tr('Importar SVG')}
+              aria-label={tr('Importar SVG')}
               onClick={() => svgRef.current?.click()}
             >
               <Upload size={19} />
             </button>
             <button
-              title="Eliminar selección"
-              aria-label="Eliminar selección"
+              title={tr('Eliminar selección')}
+              aria-label={tr('Eliminar selección')}
               disabled={!s.selected.length}
               onClick={s.deleteSelected}
             >
@@ -790,18 +790,18 @@ export default function App() {
           </div>
           <div className="rail-bottom">
             <button
-              title="Panel de propiedades"
-              aria-label="Plegar panel"
+              title={tr('Panel de propiedades')}
+              aria-label={tr('Plegar panel')}
               onClick={() => setCollapsed((v) => !v)}
             >
               {collapsed ? <PanelLeftOpen size={19} /> : <PanelLeftClose size={19} />}
             </button>
-            <button title="Ayuda y atajos" aria-label="Ayuda" onClick={() => setHelp(true)}>
+            <button title={tr('Ayuda y atajos')} aria-label={tr('Ayuda')} onClick={() => setHelp(true)}>
               <HelpCircle size={19} />
             </button>
             <button
-              title="Repositorios y referencias"
-              aria-label="Referencias"
+              title={tr('Repositorios y referencias')}
+              aria-label={tr('Referencias')}
               onClick={() => setReferencesOpen(true)}
             >
               <BookOpen size={19} />
@@ -841,7 +841,7 @@ export default function App() {
                   })
                 }
               >
-                Una celda
+                {tr('Una celda')}
               </button>
               <span>
                 {s.symmetryPreview
@@ -849,8 +849,8 @@ export default function App() {
                   : s.pattern.composition?.enabled
                     ? s.project.preferences.sourceView
                       ? 'Motivo fuente · composición enlazada'
-                      : 'Composición finita'
-                    : 'Simetría confirmada'}{' '}
+                      : tr('Composición finita')
+                    : tr('Simetría confirmada')}{' '}
                 · {(() => {
                   const found = tools.find((t) => t.id === s.tool);
                   return found ? message(found.key) : s.tool;
@@ -872,33 +872,33 @@ export default function App() {
             </div>
             <div className="workspace-actions">
               <button
-                aria-label="Visualizar patrón"
-                title="Visualización geométrica o artística del patrón"
+                aria-label={tr('Visualizar patrón')}
+                title={tr('Visualización geométrica o artística del patrón')}
                 onClick={openVisualization}
               >
                 <Circle size={17} />
-                <span>Visualizar</span>
+                <span>{tr('Visualizar')}</span>
               </button>
               <button
-                aria-label="Animar"
-                title="Animación determinística y exportación GIF/WebM"
+                aria-label={tr('Animar')}
+                title={tr('Animación determinística y exportación GIF/WebM')}
                 onClick={() => setAnimationOpen(true)}
               >
                 <Circle size={17} />
-                <span>Animar</span>
+                <span>{tr('Animar')}</span>
               </button>
               <StyleIndicator studio={s} />
               <button
-                title="Deshacer (Ctrl+Z)"
-                aria-label="Deshacer"
+                title={tr('Deshacer (Ctrl+Z)')}
+                aria-label={tr('Deshacer')}
                 disabled={!s.canUndo}
                 onClick={s.undo}
               >
                 <Undo2 size={17} />
               </button>
               <button
-                title="Rehacer (Ctrl+Shift+Z)"
-                aria-label="Rehacer"
+                title={tr('Rehacer (Ctrl+Shift+Z)')}
+                aria-label={tr('Rehacer')}
                 disabled={!s.canRedo}
                 onClick={s.redo}
               >
@@ -908,8 +908,8 @@ export default function App() {
               {s.mode === 'edit' && (
                 <button
                   className={s.project.preferences.split ? 'active' : ''}
-                  title="Vista dividida sincronizada"
-                  aria-label="Vista dividida"
+                  title={tr('Vista dividida sincronizada')}
+                  aria-label={tr('Vista dividida')}
                   onClick={() =>
                     s.change((p) => {
                       p.preferences.split = !p.preferences.split;
@@ -917,13 +917,13 @@ export default function App() {
                   }
                 >
                   {s.project.preferences.split ? <Columns2 size={18} /> : <LayoutGrid size={18} />}
-                  <span>{s.project.preferences.split ? 'Dividida' : 'Una vista'}</span>
+                  <span>{s.project.preferences.split ? tr('Dividida') : tr('Una vista')}</span>
                 </button>
               )}
               <button
-                title="Snap · Distancia de atracción en Preferencias"
+                title={tr('Snap · Distancia de atracción en Preferencias')}
                 className={(s.project.preferences.snapNodes ?? true) ? 'active' : ''}
-                aria-label="Snapping"
+                aria-label={tr('Snapping')}
                 onClick={() =>
                   s.change((p) => {
                     p.preferences.snapNodes = !(p.preferences.snapNodes ?? true);
@@ -931,7 +931,7 @@ export default function App() {
                 }
               >
                 <Settings2 size={16} />
-                <span>Snap</span>
+                <span>{tr('Snap')}</span>
               </button>
             </div>
           </div>
@@ -950,7 +950,7 @@ export default function App() {
           <footer className="statusbar">
             <div
               className={`periodicity-status ${status === 'PERIODIC_SEAMLESS' ? 'periodic' : 'finite'}`}
-              title={statusText}
+              title={translateMessage(statusText)}
             >
               <span />
               {mixed
@@ -958,20 +958,20 @@ export default function App() {
                   ? 'Composición · celda común verificada'
                   : 'Composición · sin celda común verificada'
                 : s.effectivePattern.tiling && !finiteGenerator(s.effectivePattern.generator)
-                  ? 'Teselas · cobertura periódica'
+                  ? tr('Teselas · cobertura periódica')
                   : status === 'FREE_NONPERIODIC'
-                    ? 'Libre · sin repetición'
+                    ? tr('Libre · sin repetición')
                     : status === 'PERIODIC_SEAMLESS'
                       ? s.effectivePattern.symmetry.family === 'frieze'
-                        ? 'Friso · periódico en una dirección'
-                        : 'Periódico · seamless'
+                        ? tr('Friso · periódico en una dirección')
+                        : tr('Periódico · seamless')
                       : status === 'FINITE_NONPERIODIC'
                         ? s.effectivePattern.generator.kind === 'girih'
-                          ? 'Girih · parche finito'
+                          ? tr('Girih · parche finito')
                           : finiteGenerator(s.effectivePattern.generator)
-                            ? 'Parche aperiódico finito'
-                            : 'Composición finita · no periódica'
-                        : 'Sin verificar'}
+                            ? tr('Parche aperiódico finito')
+                            : tr('Composición finita · no periódica')
+                        : tr('Sin verificar')}
               <small>
                 {finiteGenerator(s.effectivePattern.generator)
                   ? s.effectivePattern.generator.kind
@@ -983,17 +983,17 @@ export default function App() {
               </small>
             </div>
             <div>
-              {s.objects.length} objetos fuente <i />{' '}
+              {tr('{n} objetos fuente', { n: s.objects.length })} <i />{' '}
               {s.selected.length
-                ? `${s.selected.length} seleccionados`
-                : 'Geometría no destructiva'}{' '}
+                ? tr('{n} seleccionados', { n: s.selected.length })
+                : tr('Geometría no destructiva')}{' '}
               <i /> {s.project.documentUnits}
             </div>
           </footer>
         </section>
         <div className="style-dock">
           <StylePanel studio={s} />
-          <nav className="style-panel-rail" aria-label="Accesos del panel derecho">
+          <nav className="style-panel-rail" aria-label={tr('Accesos del panel derecho')}>
             {stylePages.map(({ id, key, icon: Icon }) => {
               const label = message(key);
               return (
@@ -1018,8 +1018,8 @@ export default function App() {
             })}
             <button
               className="quick-colors"
-              title="Colores de trazo y relleno"
-              aria-label="Colores de trazo y relleno"
+              title={tr('Colores de trazo y relleno')}
+              aria-label={tr('Colores de trazo y relleno')}
               aria-pressed={s.styleOpen && s.stylePage === 'colors'}
               onClick={() => {
                 s.setStylePage('colors');
@@ -1102,8 +1102,8 @@ export default function App() {
       />
       {s.message && (
         <div className="toast" role="status">
-          {s.message}
-          <button aria-label="Cerrar mensaje" onClick={() => s.setMessage('')}>
+          {translateMessage(s.message)}
+          <button aria-label={tr('Cerrar mensaje')} onClick={() => s.setMessage('')}>
             <X size={16} />
           </button>
         </div>
@@ -1112,12 +1112,12 @@ export default function App() {
       {animationOpen && <AnimationDialog studio={s} onClose={() => setAnimationOpen(false)} />}
       {shareOpen && <ShareDialog studio={s} onClose={() => setShareOpen(false)} />}
       {shareSuggestion && (
-        <div className="share-suggestion" role="status" aria-label="Sugerencia de compartir">
-          <p>¿Querés compartir tu creación?</p>
+        <div className="share-suggestion" role="status" aria-label={tr('Sugerencia de compartir')}>
+          <p>{tr('¿Querés compartir tu creación?')}</p>
           <label>
             <input
               type="checkbox"
-              aria-label="No volver a preguntarme"
+              aria-label={tr('No volver a preguntarme')}
               checked={neverSuggest}
               onChange={(e) => setNeverSuggest(e.target.checked)}
             />
@@ -1145,7 +1145,7 @@ export default function App() {
         </div>
       )}
       {sharedLink && (
-        <div className="shared-banner" role="status" aria-label="Creación compartida abierta">
+        <div className="shared-banner" role="status" aria-label={tr('Creación compartida abierta')}>
           <p>Creación compartida abierta como copia editable.</p>
           <span>
             <button
@@ -1158,7 +1158,7 @@ export default function App() {
             >
               Descargar JSON
             </button>
-            <button onClick={() => setSharedLink('')}>Cerrar</button>
+            <button onClick={() => setSharedLink('')}>{tr('Cerrar')}</button>
           </span>
         </div>
       )}
@@ -1216,15 +1216,15 @@ export default function App() {
         />
       )}
       {s.pendingAction && !saveOpen && (
-        <Modal label="Conservar el trabajo" className="simple-modal" onClose={s.cancelDestructive}>
+        <Modal label={tr('Conservar el trabajo')} className="simple-modal" onClose={s.cancelDestructive}>
           <section className="small-dialog">
-            <h2>¿Qué querés hacer con el trabajo actual?</h2>
+            <h2>{tr('¿Qué querés hacer con el trabajo actual?')}</h2>
             <p>Antes de {s.pendingAction.label}, podés guardar el proyecto editable.</p>
             <div className="save-actions destructive-actions">
               <button autoFocus onClick={s.cancelDestructive}>
                 Cancelar
               </button>
-              <button onClick={() => setSaveOpen(true)}>Guardar trabajo y continuar</button>
+              <button onClick={() => setSaveOpen(true)}>{tr('Guardar trabajo y continuar')}</button>
               <button className="danger-text" onClick={() => s.continueDestructive()}>
                 Descartar y continuar
               </button>
@@ -1234,11 +1234,11 @@ export default function App() {
       )}
       {exportOpen && <ExportDialog studio={s} onClose={() => setExportOpen(false)} />}
       {importText !== null && (
-        <Modal label="Importar SVG" className="simple-modal" onClose={() => setImportText(null)}>
+        <Modal label={tr('Importar SVG')} className="simple-modal" onClose={() => setImportText(null)}>
           <section className="small-dialog">
             <header>
-              <h2>Importar geometría</h2>
-              <button aria-label="Cerrar importación" onClick={() => setImportText(null)}>
+              <h2>{tr('Importar geometría')}</h2>
+              <button aria-label={tr('Cerrar importación')} onClick={() => setImportText(null)}>
                 <X size={19} />
               </button>
             </header>
@@ -1249,7 +1249,7 @@ export default function App() {
             <label className="text-field">
               <span>Ancho si no hay escala física (mm)</span>
               <input
-                aria-label="Ancho físico de importación"
+                aria-label={tr('Ancho físico de importación')}
                 type="number"
                 min={0.1}
                 value={importWidth}
@@ -1268,14 +1268,14 @@ export default function App() {
       )}
       {library && (
         <Modal
-          label="Biblioteca de proyectos"
+          label={tr('Biblioteca de proyectos')}
           className="simple-modal"
           onClose={() => setLibrary(null)}
         >
           <section className="small-dialog">
             <header>
-              <h2>Tu biblioteca local</h2>
-              <button aria-label="Cerrar biblioteca" onClick={() => setLibrary(null)}>
+              <h2>{tr('Tu biblioteca local')}</h2>
+              <button aria-label={tr('Cerrar biblioteca')} onClick={() => setLibrary(null)}>
                 <X size={19} />
               </button>
             </header>
@@ -1341,17 +1341,16 @@ export default function App() {
       )}
       {referencesOpen && <ReferencesDialog onClose={() => setReferencesOpen(false)} />}
       {help && (
-        <Modal label="Ayuda" className="simple-modal" onClose={() => setHelp(false)}>
+        <Modal label={tr('Ayuda')} className="simple-modal" onClose={() => setHelp(false)}>
           <section className="small-dialog help-dialog">
             <header>
-              <h2>Un estudio para explorar.</h2>
-              <button aria-label="Cerrar ayuda" onClick={() => setHelp(false)}>
+              <h2>{tr('Un estudio para explorar.')}</h2>
+              <button aria-label={tr('Cerrar ayuda')} onClick={() => setHelp(false)}>
                 <X size={19} />
               </button>
             </header>
             <p>
-              Dibujá una forma, elegí una simetría y mirá cómo se transforma. Cada copia sigue
-              vinculada a la geometría original.
+              {tr('Dibujá una forma, elegí una simetría y mirá cómo se transforma. Cada copia sigue vinculada a la geometría original.')}
             </p>
             <div className="shortcut-grid">
               {tools
@@ -1363,46 +1362,43 @@ export default function App() {
                   </div>
                 ))}
               <div>
-                <span>Deshacer / rehacer</span>
-                <kbd>Ctrl Z / Shift Z</kbd>
+                <span>{tr('Deshacer / rehacer')}</span>
+                <kbd>{tr('Ctrl Z / Shift Z')}</kbd>
               </div>
               <div>
-                <span>Duplicar</span>
-                <kbd>Ctrl D</kbd>
+                <span>{tr('Duplicar')}</span>
+                <kbd>{tr('Ctrl D')}</kbd>
               </div>
               <div>
-                <span>Seleccionar todo</span>
-                <kbd>Ctrl A</kbd>
+                <span>{tr('Seleccionar todo')}</span>
+                <kbd>{tr('Ctrl A')}</kbd>
               </div>
               <div>
-                <span>Pan</span>
-                <kbd>Espacio + arrastrar</kbd>
+                <span>{tr('Pan')}</span>
+                <kbd>{tr('Espacio + arrastrar')}</kbd>
               </div>
               <div>
-                <span>Zoom al cursor</span>
-                <kbd>Ctrl + rueda</kbd>
+                <span>{tr('Zoom al cursor')}</span>
+                <kbd>{tr('Ctrl + rueda')}</kbd>
               </div>
               <div>
-                <span>Terminar path</span>
-                <kbd>Enter / doble clic</kbd>
+                <span>{tr('Terminar path')}</span>
+                <kbd>{tr('Enter / doble clic')}</kbd>
               </div>
               <div>
-                <span>Cerrar path</span>
-                <kbd>Shift Enter / primer nodo</kbd>
+                <span>{tr('Cerrar path')}</span>
+                <kbd>{tr('Shift Enter / primer nodo')}</kbd>
               </div>
               <div>
-                <span>Cancelar path</span>
-                <kbd>Esc</kbd>
+                <span>{tr('Cancelar path')}</span>
+                <kbd>{tr('Esc')}</kbd>
               </div>
             </div>
             <p className="help-text">
-              Pluma: clic para anclar; arrastrá para crear tangentes. Nodos: mové los cuadrados y
-              sus tiradores. Alt permite separar tangentes. Shift suma objetos a la selección; Alt
-              selecciona un miembro del grupo.
+              {tr('Pluma: clic para anclar; arrastrá para crear tangentes. Nodos: mové los cuadrados y sus tiradores. Alt permite separar tangentes. Shift suma objetos a la selección; Alt selecciona un miembro del grupo.')}
             </p>
             <p className="help-text">
-              En Aplicar, dibujá un perímetro y usá «Aplicar al perímetro». El guardado JSON
-              conserva el proyecto completo; el autosave vive en este navegador.
+              {tr('En Aplicar, dibujá un perímetro y usá «Aplicar al perímetro». El guardado JSON conserva el proyecto completo; el autosave vive en este navegador.')}
             </p>
           </section>
         </Modal>

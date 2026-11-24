@@ -1,6 +1,7 @@
 import { ExternalLink, X } from 'lucide-react';
 import { Modal } from './Modal';
 
+import { tr } from '../i18n';
 export const consultedRepositories = [
   ['isohedral/tactile-js', 'Motor de teselaciones isoédricas'],
   ['IkarosKappler/girih', 'Catálogo Girih consultado; construcción matemática independiente'],
@@ -131,15 +132,15 @@ const otherReferences = [
 
 export function ReferencesDialog({ onClose }: { onClose: () => void }) {
   return (
-    <Modal label="Repositorios y referencias" className="references-modal" onClose={onClose}>
+    <Modal label={tr('Repositorios y referencias')} className="references-modal" onClose={onClose}>
       <header>
-        <h2>Repositorios y referencias</h2>
-        <button aria-label="Cerrar referencias" onClick={onClose}>
+        <h2>{tr('Repositorios y referencias')}</h2>
+        <button aria-label={tr('Cerrar referencias')} onClick={onClose}>
           <X size={20} />
         </button>
       </header>
       <p className="help-text">Fuentes consultadas y bibliotecas que hacen posible Patterns.</p>
-      <div className="references-scroll" tabIndex={0} aria-label="Listado de referencias">
+      <div className="references-scroll" tabIndex={0} aria-label={tr('Listado de referencias')}>
         {[
           ['Repositorios consultados', consultedRepositories],
           ['Bibliotecas del estudio', libraries],
@@ -166,7 +167,7 @@ export function ReferencesDialog({ onClose }: { onClose: () => void }) {
           </section>
         ))}
         <section>
-          <h3>Otras referencias</h3>
+          <h3>{tr('Otras referencias')}</h3>
           <ul>
             {otherReferences.map(([title, url, description]) => (
               <li key={url}>

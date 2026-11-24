@@ -40,12 +40,22 @@ test('cambios manuales inmediatos, independientes y persistentes', async ({ page
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await page.getByLabel('Apariencia / Appearance').selectOption('dark');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  // El lienzo artístico conserva su fondo propio.
+  // El lienzo se oscurece con el tema cuando usa el fondo predeterminado (pedido de Pablo).
   const canvasBg = await page
     .locator('.studio-canvas')
     .evaluate((el) => (el as SVGElement).style.background || getComputedStyle(el).backgroundColor);
-  expect(canvasBg).toBe('rgb(248, 250, 245)');
-  await page.getByLabel('Interface').selectOption('simple');
+  expect(canvasBg).toBe('rgb(27, 33, 28)');
+  // Un fondo elegido por el usuario se respeta en modo oscuro.
+  await page.getByRole('button', { name: 'Open Preferences', exact: true }).click();
+  await page.getByLabel('Canvas background', { exact: true }).fill('#112233');
+  await expect
+    .poll(async () =>
+      page
+        .locator('.studio-canvas')
+        .evaluate((el) => (el as SVGElement).style.background || getComputedStyle(el).backgroundColor),
+    )
+    .toBe('rgb(17, 34, 51)');
+  await page.locator('.experience-menu').getByLabel('Interface').selectOption('simple');
   await expect(page.locator('html')).toHaveAttribute('data-ui-mode', 'simple');
   // Persisten tras recargar y el documento no cambió.
   await page.reload();

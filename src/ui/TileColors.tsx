@@ -2,6 +2,7 @@ import type { Studio } from '../app/useStudio';
 import { createTileFill } from '../fill/service';
 import { drawingStyle } from '../app/styles';
 import { Field, Toggle } from './Controls';
+import { tr } from '../i18n';
 const defaults = ['#c78046', '#e3c792', '#71978c', '#ab6652', '#253f45', '#c5ccaf'];
 export function TileColors({ studio: s }: { studio: Studio }) {
   const tile = s.pattern.tiling!,
@@ -40,12 +41,12 @@ export function TileColors({ studio: s }: { studio: Studio }) {
   return (
     <div className="tile-color-controls">
       <Toggle
-        label="Alternar colores de tesela"
+        label={tr('Alternar colores de tesela')}
         checked={tile.colors?.enabled ?? false}
         onChange={(enabled) => edit(() => {}, enabled)}
       />
       <Field
-        label="Colores por ciclo"
+        label={tr('Colores por ciclo')}
         integer
         min={2}
         max={6}

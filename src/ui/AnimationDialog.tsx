@@ -14,8 +14,10 @@ import {
 } from '../animation/model';
 import { drawAnimationFrame, makeCanvas, type FrameAssets } from '../animation/frames';
 import { animationSchema } from '../animation/schema';
+import { themedBackground } from '../app/experience';
 import { geodesicFaces } from '../sphere/geometry';
 
+import { tr , translateMessage } from '../i18n';
 const PREVIEW = 520;
 const SIZES = [
   { value: '1080x1080', label: '1080 × 1080' },
@@ -58,6 +60,7 @@ export function AnimationDialog({ studio: s, onClose }: { studio: Studio; onClos
   const background = viz && 'settings' in viz && 'background' in viz.settings
     ? (viz.settings.background as string)
     : s.project.preferences.background;
+  const themedBack = themedBackground(background);
 
   // Recursos por preset: disco rasterizado una vez, malla esférica o revelado recursivo.
   useEffect(() => {
@@ -256,7 +259,7 @@ export function AnimationDialog({ studio: s, onClose }: { studio: Studio; onClos
             next.direction,
             assetsRef.current,
             sphereSettings,
-            background,
+            themedBack,
             maxLevel,
           );
           const data = ctx.getImageData(0, 0, w, h).data,
@@ -304,7 +307,7 @@ export function AnimationDialog({ studio: s, onClose }: { studio: Studio; onClos
             next.direction,
             assetsRef.current,
             sphereSettings,
-            background,
+            themedBack,
             maxLevel,
           );
           setProgress((k + 1) / total);
@@ -326,10 +329,10 @@ export function AnimationDialog({ studio: s, onClose }: { studio: Studio; onClos
 
   if (!presets.length)
     return (
-      <Modal label="Animación" className="disk-dialog" onClose={onClose}>
+      <Modal label={tr('Animación')} className="disk-dialog" onClose={onClose}>
         <header>
-          <h2>Animación</h2>
-          <button aria-label="Cerrar animación" onClick={onClose}>
+          <h2>{tr('Animación')}</h2>
+          <button aria-label={tr('Cerrar animación')} onClick={onClose}>
             <X size={18} />
           </button>
         </header>
@@ -338,28 +341,28 @@ export function AnimationDialog({ studio: s, onClose }: { studio: Studio; onClos
     );
 
   return (
-    <Modal label="Animación" className="disk-dialog" onClose={onClose}>
+    <Modal label={tr('Animación')} className="disk-dialog" onClose={onClose}>
       <header>
         <div>
-          <small>REPRODUCCIÓN DETERMINÍSTICA · NO ALTERA LA FUENTE</small>
-          <h2>Animación</h2>
+          <small>{tr('REPRODUCCIÓN DETERMINÍSTICA · NO ALTERA LA FUENTE')}</small>
+          <h2>{tr('Animación')}</h2>
         </div>
-        <button aria-label="Cerrar animación" onClick={onClose}>
-          <X size={18} /> Cerrar
+        <button aria-label={tr('Cerrar animación')} onClick={onClose}>
+          <X size={18} /> {tr('Cerrar')}
         </button>
       </header>
       <div className="disk-body">
-        <section aria-label="Controles de animación">
+        <section aria-label={tr('Controles de animación')}>
           <Select
-            label="Preset"
+            label={tr('Preset')}
             value={settings.preset}
-            options={presets.map((p) => ({ value: p.id, label: p.label }))}
+            options={presets.map((p) => ({ value: p.id, label: tr(p.label) }))}
             onChange={(preset) => patch({ preset: preset as AnimationSettings['preset'] })}
           />
-          <p className="help-text">{presetById(settings.preset).description}</p>
+          <p className="help-text">{tr(presetById(settings.preset).description)}</p>
           <div className="disk-fields">
             <Field
-              label="Duración"
+              label={tr('Duración')}
               value={settings.duration}
               min={250}
               max={60000}
@@ -368,7 +371,7 @@ export function AnimationDialog({ studio: s, onClose }: { studio: Studio; onClos
               onChange={(duration) => patch({ duration })}
             />
             <Select
-              label="FPS"
+              label={tr('FPS')}
               value={String(settings.fps)}
               options={[8, 12, 15, 24, 30].map((f) => ({ value: String(f), label: `${f} fps` }))}
               onChange={(fps) => patch({ fps: Number(fps) })}
@@ -376,7 +379,7 @@ export function AnimationDialog({ studio: s, onClose }: { studio: Studio; onClos
           </div>
           <div className="disk-fields">
             <Field
-              label="Velocidad"
+              label={tr('Velocidad')}
               value={settings.speed}
               min={0.1}
               max={4}
@@ -384,22 +387,22 @@ export function AnimationDialog({ studio: s, onClose }: { studio: Studio; onClos
               onChange={(speed) => patch({ speed })}
             />
             <Select
-              label="Sentido"
+              label={tr('Sentido')}
               value={settings.direction === 1 ? '1' : '-1'}
               options={[
-                { value: '1', label: 'Directo' },
-                { value: '-1', label: 'Inverso' },
+                { value: '1', label: tr('Directo') },
+                { value: '-1', label: tr('Inverso') },
               ]}
               onChange={(d) => patch({ direction: d === '1' ? 1 : -1 })}
             />
           </div>
           <Select
-            label="Loop"
+            label={tr('Loop')}
             value={settings.loop}
             options={[
-              { value: 'loop', label: 'Bucle' },
-              { value: 'pingpong', label: 'Ida y vuelta' },
-              { value: 'once', label: 'Una vez' },
+              { value: 'loop', label: tr('Bucle') },
+              { value: 'pingpong', label: tr('Ida y vuelta') },
+              { value: 'once', label: tr('Una vez') },
             ]}
             onChange={(loop) => patch({ loop: loop as AnimationSettings['loop'] })}
           />
@@ -408,11 +411,11 @@ export function AnimationDialog({ studio: s, onClose }: { studio: Studio; onClos
               {playing ? <Pause size={16} /> : <Play size={16} />}
               {playing ? 'Pausa' : 'Play'}
             </button>
-            <button aria-label="Detener" onClick={stop}>
+            <button aria-label={tr('Detener')} onClick={stop}>
               <Square size={15} /> Stop
             </button>
             <button
-              aria-label="Reiniciar"
+              aria-label={tr('Reiniciar')}
               onClick={() => {
                 setPosition(0);
                 setSettings((prev) => {
@@ -426,7 +429,7 @@ export function AnimationDialog({ studio: s, onClose }: { studio: Studio; onClos
             </button>
           </div>
           <Field
-            label="Línea temporal"
+            label={tr('Línea temporal')}
             value={Number(position.toFixed(3))}
             min={0}
             max={1}
@@ -443,18 +446,18 @@ export function AnimationDialog({ studio: s, onClose }: { studio: Studio; onClos
             }}
           />
           <Select
-            label="Resolución de exportación"
+            label={tr('Resolución de exportación')}
             value={size}
             options={SIZES.map((x) => ({ value: x.value, label: x.label }))}
             onChange={(v) => setSize(v as typeof size)}
           />
           <div className="disk-fields">
             <Select
-              label="Formato"
+              label={tr('Formato')}
               value={exportFormat}
               options={[
-                { value: 'gif', label: 'GIF animado' },
-                { value: 'webm', label: 'WebM (video)' },
+                { value: 'gif', label: tr('GIF animado') },
+                { value: 'webm', label: tr('WebM (video)') },
               ]}
               onChange={(f) => setExportFormat(f as 'gif' | 'webm')}
             />
@@ -464,25 +467,25 @@ export function AnimationDialog({ studio: s, onClose }: { studio: Studio; onClos
               disabled={!!busy || !assetsReady}
               onClick={() => void exportAnimation()}
             >
-              <Download size={15} /> Exportar
+              <Download size={15} /> {tr('Exportar')}
             </button>
           </div>
           {!!busy && (
             <>
-              <progress value={progress} max={1} aria-label="Progreso de exportación" />
-              <button onClick={() => (cancelRef.current = true)}>Cancelar exportación</button>
+              <progress value={progress} max={1} aria-label={tr('Progreso de exportación')} />
+              <button onClick={() => (cancelRef.current = true)}>{tr('Cancelar exportación')}</button>
             </>
           )}
           {error && (
             <p className="disk-error" role="alert">
-              {error}
+              {translateMessage(error)}
             </p>
           )}
         </section>
-        <section className="disk-preview" aria-label="Vista previa de la animación">
+        <section className="disk-preview" aria-label={tr('Vista previa de la animación')}>
           <p>
             {presetById(settings.preset).cyclic
-              ? 'Preset cíclico: el cuadro final coincide con el inicial.'
+              ? tr('Preset cíclico: el cuadro final coincide con el inicial.')
               : 'Preset no periódico: se reproduce una vez o de ida y vuelta, sin prometer bucle perfecto.'}
           </p>
           <div className="disk-image">
@@ -490,7 +493,7 @@ export function AnimationDialog({ studio: s, onClose }: { studio: Studio; onClos
               ref={canvasRef}
               width={PREVIEW}
               height={PREVIEW}
-              aria-label="Cuadro de animación"
+              aria-label={tr('Cuadro de animación')}
             />
           </div>
           <p className="help-text">

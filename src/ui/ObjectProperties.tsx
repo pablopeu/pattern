@@ -14,6 +14,7 @@ import { geometryBounds } from '../application/clipping';
 import { pathData } from '../geometry/paths';
 import { Field, Toggle, Select } from './Controls';
 
+import { tr } from '../i18n';
 export function ObjectProperties({ studio: s }: { studio: Studio }) {
   const { nodeIndex, setNodeIndex } = s;
   const selected = s.objects.filter((g) => !g.locked && s.selected.includes(g.id)),
@@ -54,7 +55,7 @@ export function ObjectProperties({ studio: s }: { studio: Studio }) {
   if (!shape) return <p className="help-text">Seleccioná un objeto para editar sus propiedades.</p>;
   return (
     <div className="object-properties">
-      <div className="context-tabs" role="tablist" aria-label="Propiedades del objeto">
+      <div className="context-tabs" role="tablist" aria-label={tr('Propiedades del objeto')}>
         {(['shape', 'transform', 'nodes', 'actions'] as const).map((t) => (
           <button key={t} role="tab" aria-selected={tab === t} onClick={() => s.setObjectTab(t)}>
             {{ shape: 'Forma', transform: 'Transformar', nodes: 'Nodos', actions: 'Acciones' }[t]}
@@ -67,7 +68,7 @@ export function ObjectProperties({ studio: s }: { studio: Studio }) {
           <>
             <div className="two-fields">
               <Field
-                label="Ancho"
+                label={tr('Ancho')}
                 value={units(shape.parameters.width)}
                 min={0.01}
                 step={0.1}
@@ -79,7 +80,7 @@ export function ObjectProperties({ studio: s }: { studio: Studio }) {
                 }
               />
               <Field
-                label="Alto"
+                label={tr('Alto')}
                 value={units(shape.parameters.height)}
                 min={0.01}
                 step={0.1}
@@ -93,7 +94,7 @@ export function ObjectProperties({ studio: s }: { studio: Studio }) {
             </div>
             {shape.kind === 'rectangle' && (
               <Field
-                label="Redondez"
+                label={tr('Redondez')}
                 value={units(shape.parameters.radius)}
                 min={0}
                 unit={u}
@@ -108,7 +109,7 @@ export function ObjectProperties({ studio: s }: { studio: Studio }) {
             {shape.kind === 'polygon' && (
               <Field
                 integer
-                label="Lados"
+                label={tr('Lados')}
                 value={shape.parameters.sides}
                 min={3}
                 max={128}
@@ -128,7 +129,7 @@ export function ObjectProperties({ studio: s }: { studio: Studio }) {
           )
         )}
         <Field
-          label="Rotación"
+          label={tr('Rotación')}
           value={(Math.atan2(shape.transform[1], shape.transform[0]) * 180) / Math.PI}
           min={-180}
           max={180}
@@ -142,11 +143,11 @@ export function ObjectProperties({ studio: s }: { studio: Studio }) {
           }
         />
         <Select
-          label="Tipo de relleno"
+          label={tr('Tipo de relleno')}
           value={shape.fill === 'none' ? 'none' : 'color'}
           options={[
-            { value: 'none', label: 'Sin relleno' },
-            { value: 'color', label: 'Color sólido' },
+            { value: 'none', label: tr('Sin relleno') },
+            { value: 'color', label: tr('Color sólido') },
           ]}
           onChange={(v) =>
             s.applyStyle(
@@ -163,7 +164,7 @@ export function ObjectProperties({ studio: s }: { studio: Studio }) {
           }
         />
         <button className="style-indicator" onClick={() => s.setStylePage('colors')}>
-          Trazo {shape.stroke} · {units(shape.strokeWidth).toFixed(2)} {u} · editar colores
+          {tr('Trazo')} {shape.stroke} · {units(shape.strokeWidth).toFixed(2)} {u} · {tr('editar colores')}
         </button>
         <svg
           className="shape-context-preview"
@@ -172,7 +173,7 @@ export function ObjectProperties({ studio: s }: { studio: Studio }) {
               ? `${bounds.x - 5} ${bounds.y - 5} ${bounds.width + 10} ${bounds.height + 10}`
               : '-5 -5 40 40'
           }
-          aria-label="Vista previa del objeto"
+          aria-label={tr('Vista previa del objeto')}
         >
           <path
             d={pathData(shape)}
@@ -183,9 +184,9 @@ export function ObjectProperties({ studio: s }: { studio: Studio }) {
           />
         </svg>
         <label className="text-field">
-          <span>Nombre</span>
+          <span>{tr('Nombre')}</span>
           <input
-            aria-label="Nombre del objeto"
+            aria-label={tr('Nombre del objeto')}
             value={shape.name}
             onChange={(e) =>
               updateShape((g) => {
@@ -199,7 +200,7 @@ export function ObjectProperties({ studio: s }: { studio: Studio }) {
         {' '}
         <div className="two-fields">
           <Field
-            label="Posición X"
+            label={tr('Posición X')}
             value={units(shape.transform[4])}
             step={0.1}
             unit={u}
@@ -210,7 +211,7 @@ export function ObjectProperties({ studio: s }: { studio: Studio }) {
             }
           />
           <Field
-            label="Posición Y"
+            label={tr('Posición Y')}
             value={units(shape.transform[5])}
             step={0.1}
             unit={u}
@@ -222,7 +223,7 @@ export function ObjectProperties({ studio: s }: { studio: Studio }) {
           />
         </div>
         <Field
-          label="Escala"
+          label={tr('Escala')}
           value={Math.hypot(shape.transform[0], shape.transform[1])}
           min={0.01}
           max={100}
@@ -242,7 +243,7 @@ export function ObjectProperties({ studio: s }: { studio: Studio }) {
               })
             }
           >
-            Reflejar X
+            {tr('Reflejar X')}
           </button>
           <button
             onClick={() =>
@@ -251,7 +252,7 @@ export function ObjectProperties({ studio: s }: { studio: Studio }) {
               })
             }
           >
-            Reflejar Y
+            {tr('Reflejar Y')}
           </button>
         </div>
       </div>
@@ -283,7 +284,7 @@ export function ObjectProperties({ studio: s }: { studio: Studio }) {
         ) : (
           <>
             <Toggle
-              label="Path cerrado"
+              label={tr('Path cerrado')}
               checked={shape.closed}
               onChange={(v) => {
                 if (s.mode === 'apply' && !v) {
@@ -297,7 +298,7 @@ export function ObjectProperties({ studio: s }: { studio: Studio }) {
             />
             <Field
               integer
-              label="Nodo activo"
+              label={tr('Nodo activo')}
               value={Math.min(nodeIndex + 1, shape.nodes.length)}
               min={1}
               max={Math.max(1, shape.nodes.length)}
@@ -398,10 +399,10 @@ export function ObjectProperties({ studio: s }: { studio: Studio }) {
         {' '}
         <div className="button-row">
           <button onClick={s.duplicate}>
-            <Copy size={14} /> Duplicar
+            <Copy size={14} /> {tr('Duplicar')}
           </button>
           {selected.length > 1 ? (
-            <button onClick={group}>Agrupar</button>
+            <button onClick={group}>{tr('Agrupar')}</button>
           ) : shape.groupId ? (
             <button
               onClick={() =>
@@ -417,13 +418,13 @@ export function ObjectProperties({ studio: s }: { studio: Studio }) {
               Desagrupar
             </button>
           ) : null}
-          <button title="Eliminar selección" onClick={s.deleteSelected}>
+          <button title={tr('Eliminar selección')} onClick={s.deleteSelected}>
             <Trash2 size={15} />
           </button>
         </div>
         {selected.length > 1 && (
           <>
-            <div className="section-caption">OPERACIONES GEOMÉTRICAS</div>
+            <div className="section-caption">{tr('OPERACIONES GEOMÉTRICAS')}</div>
             <div className="boolean-buttons">
               {(
                 [

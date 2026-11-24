@@ -1,5 +1,6 @@
 import { Facebook, Instagram, MessageCircle, Send, X } from 'lucide-react';
 
+import { tr } from '../i18n';
 const socialLinks = [
   { name: 'Instagram', href: 'https://instagram.com/peu_ar', icon: Instagram },
   { name: 'X', href: 'https://x.com/peu_ar', icon: X },
@@ -12,18 +13,18 @@ export function SiteFooter() {
   return (
     <footer
       className="site-footer"
-      aria-label="Patterns y redes del autor"
+      aria-label={tr('Patterns y redes del autor')}
       onKeyDown={(event) => event.stopPropagation()}
     >
       <div className="site-footer-line">
         <span className="site-footer-copy">
-          <strong>Patterns</strong> — Hecho con pasión por un cuchillero.
+          <strong>{tr('Patterns')}</strong> — {tr('Hecho con pasión por un cuchillero.')}
         </span>
         <span className="site-footer-divider" aria-hidden="true" />
         <span>
-          <strong className="site-footer-follow">¿Te gustan los cuchillos?</strong> Seguime en:
+          <strong className="site-footer-follow">{tr('¿Te gustan los cuchillos?')}</strong> {tr('Seguime en:')}
         </span>
-        <nav className="site-footer-social" aria-label="Redes de Pablo">
+        <nav className="site-footer-social" aria-label={tr('Redes de Pablo')}>
           {socialLinks.map(({ name, href, icon: Icon }) => (
             <a
               key={name}
@@ -39,7 +40,7 @@ export function SiteFooter() {
           <a
             className="site-footer-web"
             href="https://peu.net"
-            title="PEU.NET"
+            title={tr('PEU.NET')}
             target="_blank"
             rel="noopener noreferrer"
           >

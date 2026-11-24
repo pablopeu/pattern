@@ -60,6 +60,8 @@ import { buildScene, expandedTransforms, sceneScaleBound, type Scene } from '../
 import { lattice, latticeVectors, fundamentalDomain, type Bounds } from '../symmetry/groups';
 import { symmetryGuides, verifyPeriodicity } from '../symmetry/guides';
 import { geometryBounds, regionData, hasClosedGeometry } from '../application/clipping';
+import { tr, useI18n, translateMessage } from '../i18n';
+import { themedBackground, themedDrawingStyle, themedGridDot } from '../app/experience';
 
 interface Props {
   studio: Studio;
@@ -104,12 +106,20 @@ const centeredView = (width: number, height: number): Bounds => ({
   width: width / PIXELS_PER_MM,
   height: height / PIXELS_PER_MM,
 });
+const canvasTextColor = (background: string) => {
+  const value = background.replace('#', '');
+  if (value.length !== 6) return undefined;
+  const r = parseInt(value.slice(0, 2), 16), g = parseInt(value.slice(2, 4), 16), b = parseInt(value.slice(4, 6), 16);
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 128 ? '#2b3a2f' : '#dfe7dd';
+};
+
 export function Canvas({
   studio: s,
   editorOnly = false,
   previewOnly = false,
   cellOnly = false,
 }: Props) {
+  useI18n(); // re-render al cambiar tema/idioma
   const activePattern = s.effectivePattern;
   const [view, setView] = useState<Bounds>({ x: -110, y: -100, width: 300, height: 240 }),
     [size, setSize] = useState({ width: 1000, height: 800 }),
@@ -881,7 +891,7 @@ export function Canvas({
         return;
       }
       if (!current) {
-        const g = { ...geometry('path', [node(q.x, q.y)], false), ...s.drawStyle };
+        const g = { ...geometry('path', [node(q.x, q.y)], false), ...themedDrawingStyle(s.drawStyle) };
         g.name = s.mode === 'apply' ? 'Perímetro' : 'Curva';
         if (s.mode === 'apply') g.fill = '#dce6d4';
         addShape(g);
@@ -924,7 +934,7 @@ export function Canvas({
       [node(q.x, q.y), node(q.x, q.y)],
       kind !== 'path' || s.mode === 'apply',
     );
-    Object.assign(g, s.drawStyle);
+    Object.assign(g, themedDrawingStyle(s.drawStyle));
     if (kind !== 'path')
       g.parameters = { x: q.x, y: q.y, width: 0.1, height: 0.1, radius: 0, sides: 5 };
     if (s.mode === 'apply') g.fill = '#dce6d4';
@@ -1551,13 +1561,13 @@ export function Canvas({
           hidden={!fillSlow && fill.count < 2}
         >
           <span hidden>{fill.status}</span>
-          {fillSlow && <span>Calculando relleno…</span>}
+          {fillSlow && <span>{tr('Calculando relleno…')}</span>}
           {fill.count > 1 && (
             <button onClick={fill.cycle}>
               Otra región ({fill.index + 1}/{fill.count})
             </button>
           )}
-          {fillSlow && <button onClick={fill.cancel}>Cancelar cálculo</button>}
+          {fillSlow && <button onClick={fill.cancel}>{tr('Cancelar cálculo')}</button>}
         </div>
       )}
       {strokeWarning.message && (
@@ -1590,7 +1600,7 @@ export function Canvas({
         className={`studio-canvas tool-${s.tool}`}
         tabIndex={0}
         viewBox={`${actualView.x} ${actualView.y} ${actualView.width} ${actualView.height}`}
-        style={{ background: s.project.preferences.background }}
+        style={{ background: themedBackground(s.project.preferences.background) }}
         onPointerDownCapture={(e) => {
           if (e.button === 0 && !previewOnly) s.interactionActive.current = true;
         }}
@@ -1654,7 +1664,7 @@ export function Canvas({
             setContextMenu(hit);
           } else setContextMenu(null);
         }}
-        aria-label={editorOnly ? 'Editor de geometría' : 'Lienzo de patrones'}
+        aria-label={editorOnly ? tr('Editor de geometría') : tr('Lienzo de patrones')}
       >
         <defs>
           {focusCell && cellPolygon && (
@@ -1670,7 +1680,7 @@ export function Canvas({
             height={5}
             patternUnits="userSpaceOnUse"
           >
-            <circle cx={2.5} cy={2.5} r={0.25} fill="#000000" />
+            <circle cx={2.5} cy={2.5} r={0.25} fill={themedGridDot()} />
           </pattern>
         </defs>
         {s.project.preferences.grid && (
@@ -1685,7 +1695,7 @@ export function Canvas({
         )}
         {structure && !scene?.tiling && (
           <g
-            aria-label="Estructura matemática de simetría"
+            aria-label={tr('Estructura matemática de simetría')}
             clipPath={focusCell && cellPolygon ? `url(#${prefix}-reference-cell)` : undefined}
             pointerEvents="none"
             dangerouslySetInnerHTML={{
@@ -1695,7 +1705,7 @@ export function Canvas({
         )}
         {focusCell && cellPolygon && (
           <polygon
-            aria-label="Límite de la celda"
+            aria-label={tr('Límite de la celda')}
             points={cellPolygon}
             fill="none"
             stroke="#60794b"
@@ -1892,7 +1902,7 @@ export function Canvas({
           sym.family === 'frieze' &&
           !finiteGenerator(activePattern.generator) &&
           !activePattern.composition?.enabled && (
-            <g pointerEvents="none" aria-label="Traslación del friso en una dirección">
+            <g pointerEvents="none" aria-label={tr('Traslación del friso en una dirección')}>
               <line
                 x1={sym.origin.x}
                 y1={sym.origin.y}
@@ -2074,7 +2084,7 @@ export function Canvas({
         </g>
         {snapTarget && (
           <circle
-            aria-label="Atracción a nodo"
+            aria-label={tr('Atracción a nodo')}
             cx={snapTarget.x}
             cy={snapTarget.y}
             r={7 / scalePx}
@@ -2111,7 +2121,7 @@ export function Canvas({
               />
               <circle
                 data-symmetry-origin="true"
-                aria-label="Mover origen de simetría"
+                aria-label={tr('Mover origen de simetría')}
                 className="origin-handle"
                 pointerEvents={['select', 'nodes'].includes(s.tool) ? 'all' : 'none'}
                 cx={symmetryOrigin(activePattern.symmetry).x}
@@ -2127,7 +2137,7 @@ export function Canvas({
                 }}
               />
               <circle
-                aria-label="Orientar red de simetría"
+                aria-label={tr('Orientar red de simetría')}
                 className="orientation-handle"
                 pointerEvents={['select', 'nodes'].includes(s.tool) ? 'all' : 'none'}
                 cx={
@@ -2181,7 +2191,7 @@ export function Canvas({
       {s.project.preferences.continuity && (
         <div className="continuity-report">
           <strong>{inspection.valid ? 'Uniones de la red' : 'Inspección de continuidad'}</strong>
-          <span>{inspection.message}</span>
+          <span>{translateMessage(inspection.message)}</span>
         </div>
       )}
       {error && <div className="canvas-warning">{error}</div>}
@@ -2191,22 +2201,22 @@ export function Canvas({
         </div>
       )}
       {scene?.generated.geometry.length === 0 && s.mode !== 'apply' && (
-        <div className="empty-canvas">
-          <span>Todo empieza con una línea.</span>
-          <small>Elegí una herramienta y dibujá. El patrón aparece mientras trazás.</small>
+        <div className="empty-canvas" style={{ color: canvasTextColor(themedBackground(s.project.preferences.background)) }}>
+          <span>{tr('Todo empieza con una línea.')}</span>
+          <small>{tr('Elegí una herramienta y dibujá. El patrón aparece mientras trazás.')}</small>
         </div>
       )}
       {s.mode === 'apply' && !s.project.regions.length && (
-        <div className="empty-canvas">
-          <span>Dale un lugar a tu patrón.</span>
-          <small>Dibujá un perímetro cerrado o importá un SVG.</small>
+        <div className="empty-canvas" style={{ color: canvasTextColor(themedBackground(s.project.preferences.background)) }}>
+          <span>{tr('Dale un lugar a tu patrón.')}</span>
+          <small>{tr('Dibujá un perímetro cerrado o importá un SVG.')}</small>
         </div>
       )}
       <div className="canvas-floats">
         {!cellOnly && (
           <button
-            aria-label="Desplazar vista"
-            title={fixedCell ? 'Celda centrada: usá el zoom' : 'Desplazar vista · H'}
+            aria-label={tr('Desplazar vista')}
+            title={fixedCell ? tr('Celda centrada: usá el zoom') : tr('Desplazar vista · H')}
             className={s.tool === 'pan' ? 'active' : ''}
             aria-pressed={s.tool === 'pan'}
             disabled={fixedCell}
@@ -2215,20 +2225,20 @@ export function Canvas({
             <Hand size={17} />
           </button>
         )}
-        <button title="Alejar" aria-label="Alejar" onClick={() => zoom(1.25)}>
+        <button title={tr('Alejar')} aria-label={tr('Alejar')} onClick={() => zoom(1.25)}>
           <ZoomOut size={17} />
         </button>
         <span>{Math.round((scalePx / PIXELS_PER_MM) * 100)}%</span>
-        <button title="Acercar" aria-label="Acercar" onClick={() => zoom(0.8)}>
+        <button title={tr('Acercar')} aria-label={tr('Acercar')} onClick={() => zoom(0.8)}>
           <ZoomIn size={17} />
         </button>
         <i />
-        <button title="Ajustar contenido" aria-label="Ajustar contenido" onClick={() => fit()}>
+        <button title={tr('Ajustar contenido')} aria-label={tr('Ajustar contenido')} onClick={() => fit()}>
           <Maximize size={17} />
         </button>
         <button
-          title="Restablecer vista"
-          aria-label="Restablecer vista"
+          title={tr('Restablecer vista')}
+          aria-label={tr('Restablecer vista')}
           onClick={() => {
             if (fixedCell) {
               fitReferenceCell();
@@ -2243,15 +2253,15 @@ export function Canvas({
         >
           <Scan size={17} />
         </button>
-        <button aria-label="Ajustar al patrón" title="Ajustar al patrón" onClick={() => fit(true)}>
+        <button aria-label={tr('Ajustar al patrón')} title={tr('Ajustar al patrón')} onClick={() => fit(true)}>
           <Scan size={17} />
         </button>
         <i />
         {!editorOnly && s.mode !== 'apply' && (
           <>
             <button
-              aria-label="Mostrar/Ocultar estructura de simetría"
-              title="Mostrar/Ocultar estructura de simetría"
+              aria-label={tr('Mostrar/Ocultar estructura de simetría')}
+              title={tr('Mostrar/Ocultar estructura de simetría')}
               aria-pressed={s.project.preferences.structureVisible}
               className={s.project.preferences.structureVisible ? 'active' : ''}
               onClick={() =>
@@ -2263,11 +2273,11 @@ export function Canvas({
               <span aria-hidden="true">◇</span>
             </button>
             {s.project.preferences.structureVisible && (
-              <label className="structure-opacity" title="Opacidad de la estructura">
+              <label className="structure-opacity" title={tr('Opacidad de la estructura')}>
                 Opacidad
                 <input
                   type="range"
-                  aria-label="Opacidad de la estructura"
+                  aria-label={tr('Opacidad de la estructura')}
                   min=".03"
                   max=".8"
                   step=".01"
@@ -2283,8 +2293,8 @@ export function Canvas({
           </>
         )}
         <button
-          title="Grilla de puntos cada 5 mm · mostrar u ocultar (Snap se activa por separado)"
-          aria-label="Mostrar grilla"
+          title={tr('Grilla de puntos cada 5 mm · mostrar u ocultar (Snap se activa por separado)')}
+          aria-label={tr('Mostrar grilla')}
           aria-pressed={s.project.preferences.grid}
           className={s.project.preferences.grid ? 'active' : ''}
           onClick={() =>
@@ -2296,8 +2306,8 @@ export function Canvas({
           <Grid2X2 size={17} />
         </button>
         <button
-          title="Guías detalladas · inspección individual"
-          aria-label="Mostrar guías"
+          title={tr('Guías detalladas · inspección individual')}
+          aria-label={tr('Mostrar guías')}
           onClick={() =>
             s.change((p) => {
               p.preferences.guides = !p.preferences.guides;
@@ -2312,7 +2322,7 @@ export function Canvas({
         <div
           className="canvas-context-menu"
           role="menu"
-          aria-label="Edición rápida"
+          aria-label={tr('Edición rápida')}
           style={{ left: contextMenu.x, top: contextMenu.y }}
           onKeyDown={(event) => {
             if (event.key === 'Escape') {
@@ -2394,11 +2404,11 @@ export function Canvas({
           </button>
         </div>
       )}
-      <div className="coordinate">
+      <div className="coordinate" style={{ color: canvasTextColor(themedBackground(s.project.preferences.background)), opacity: 0.82 }}>
         {fixedCell ? <Scan size={12} /> : <Hand size={12} />}{' '}
         {fixedCell
-          ? 'Celda centrada · Ctrl + rueda para zoom'
-          : 'Espacio + arrastrar · Ctrl + rueda para zoom'}{' '}
+          ? tr('Celda centrada · Ctrl + rueda para zoom')
+          : tr('Espacio + arrastrar · Ctrl + rueda para zoom')}{' '}
         <span>
           {cursor.x.toFixed(1)}, {cursor.y.toFixed(1)} mm
         </span>

@@ -28,6 +28,7 @@ import {
   type SymmetryChoice,
 } from '../symmetry/config';
 import { Field, Select, Toggle } from './Controls';
+import { tr } from '../i18n';
 export function previewSVG(
   pattern: Pattern,
   bounds: Bounds,
@@ -325,7 +326,7 @@ export function SymmetryGallery({
         <span>
           {s.pattern.tiling && !finiteGenerator(s.pattern.generator)
             ? 'SIMETRÍA DEL MOTIVO'
-            : 'SIMETRÍA VIVA'}
+            : tr('SIMETRÍA VIVA')}
         </span>
         <strong>
           {confirmed.family === 'none'
@@ -337,38 +338,38 @@ export function SymmetryGallery({
       </summary>
       <div className="gallery-controls">
         <Select
-          label="Cambiar simetría en"
+          label={tr('Cambiar simetría en')}
           value={s.galleryTarget}
           onChange={(v) => {
             s.setSymmetryPreview(null);
             s.setGalleryTarget(v as 'pattern' | 'project');
           }}
           options={[
-            { value: 'pattern', label: 'Este conjunto' },
-            { value: 'project', label: 'Compartida' },
+            { value: 'pattern', label: tr('Este conjunto') },
+            { value: 'project', label: tr('Compartida') },
           ]}
         />
         <Select
-          label="Repetición de este conjunto"
+          label={tr('Repetición de este conjunto')}
           value={s.pattern.symmetryMode}
           onChange={(v) => s.setSymmetryMode(v as 'own' | 'inherit' | 'free')}
           options={[
-            { value: 'own', label: 'Propia' },
-            { value: 'inherit', label: 'Compartida' },
-            { value: 'free', label: 'Sin repetir' },
+            { value: 'own', label: tr('Propia') },
+            { value: 'inherit', label: tr('Compartida') },
+            { value: 'free', label: tr('Sin repetir') },
           ]}
         />
       </div>
       <div className="compact-symmetry">
         <div className="symmetry-explore-actions">
           <button className="wide-button primary-soft" onClick={() => setExpanded(true)}>
-            Explorar todas las simetrías · 27
+            {tr('Explorar todas las simetrías')} · 27
           </button>
           <button
             className="favorite-current"
-            aria-label={`Favorito actual ${confirmed.group}`}
+            aria-label={tr('Favorito actual {group}', { group: confirmed.group })}
             aria-pressed={favorites.includes(symmetryId(confirmed))}
-            title="Agregar o quitar la simetría actual de favoritos"
+            title={tr('Agregar o quitar la simetría actual de favoritos')}
             onClick={() => favorite(symmetryId(confirmed))}
           >
             <Star
@@ -381,7 +382,7 @@ export function SymmetryGallery({
           .filter((kind) => kind === 'recent' || favorites.length > 0)
           .map((kind) => (
             <div className="symmetry-shortcuts" key={kind}>
-              <small>{kind === 'recent' ? 'Recientes' : 'Favoritos'}</small>
+              <small>{kind === 'recent' ? tr('Recientes') : tr('Favoritos')}</small>
               {(kind === 'recent' ? recent : favorites).slice(0, 4).map((key) => {
                 const choice = symmetryCatalog.find((c) => symmetryId(c) === key);
                 return (
@@ -403,40 +404,40 @@ export function SymmetryGallery({
           ))}
       </div>
       {expanded && (
-        <Modal label="Catálogo de simetrías" className="symmetry-modal" onClose={closeGallery}>
+        <Modal label={tr('Catálogo de simetrías')} className="symmetry-modal" onClose={closeGallery}>
           <header>
-            <h2>Explorá las simetrías</h2>
-            <button aria-label="Cerrar catálogo" onClick={closeGallery}>
+            <h2>{tr('Explorá las simetrías')}</h2>
+            <button aria-label={tr('Cerrar catálogo')} onClick={closeGallery}>
               <X size={20} />
             </button>
           </header>
           <div className="gallery-filters">
             <Select
-              label="Sistema"
+              label={tr('Sistema')}
               value={family}
               onChange={setFamily}
               options={[
-                { value: 'all', label: 'Todos' },
-                { value: 'wallpaper', label: 'Plano · 17 grupos' },
-                { value: 'frieze', label: 'Friso · 7 grupos' },
-                { value: 'radial', label: 'Radial · Cn / Dn' },
-                { value: 'none', label: 'Libre' },
+                { value: 'all', label: tr('Todos') },
+                { value: 'wallpaper', label: tr('Plano · 17 grupos') },
+                { value: 'frieze', label: tr('Friso · 7 grupos') },
+                { value: 'radial', label: tr('Radial · Cn / Dn') },
+                { value: 'none', label: tr('Libre') },
               ]}
             />
             <Select
-              label="Encuadre de miniaturas"
+              label={tr('Encuadre de miniaturas')}
               value={comparison}
               onChange={setComparison}
               options={[
-                { value: 'physical', label: '120 × 90 mm' },
-                { value: 'cell', label: 'Por celda' },
+                { value: 'physical', label: tr('120 × 90 mm') },
+                { value: 'cell', label: tr('Por celda') },
               ]}
             />
           </div>
           <div
             className="dynamic-symmetry-grid"
             role="group"
-            aria-label="Galería de simetrías"
+            aria-label={tr('Galería de simetrías')}
             data-preview-pending={metrics.pending}
             data-preview-ms={metrics.totalMs.toFixed(1)}
             data-preview-completed={metrics.completed}
@@ -460,10 +461,10 @@ export function SymmetryGallery({
                     aria-pressed={symmetryId(confirmed) === key}
                     aria-label={
                       choice.family === 'none'
-                        ? 'Simetría Libre'
+                        ? tr('Simetría Libre')
                         : choice.family === 'frieze'
-                          ? `Friso ${choice.group}`
-                          : `Simetría ${choice.group}`
+                          ? tr('Friso {group}', { group: choice.group })
+                          : tr('Simetría {group}', { group: choice.group })
                     }
                     data-symmetry-id={key}
                     data-preview-revision={p?.revision ?? 0}
@@ -489,17 +490,19 @@ export function SymmetryGallery({
                     }}
                     title={
                       choice.family === 'none'
-                        ? 'Sin transformaciones de grupo'
-                        : (choice.family === 'frieze' ? friezeDescriptions : groupDescriptions)[
-                            choice.group
-                          ]
+                        ? tr('Sin transformaciones de grupo')
+                        : tr(
+                            (choice.family === 'frieze' ? friezeDescriptions : groupDescriptions)[
+                              choice.group
+                            ],
+                          )
                     }
                   >
                     <div className="drawing-thumbnail">
                       {p ? (
-                        <img alt={`Dibujo con ${choice.family} ${label}`} src={p.url} />
+                        <img alt={tr('Dibujo con {family} {label}', { family: choice.family, label })} src={p.url} />
                       ) : (
-                        <span>Sin trazos</span>
+                        <span>{tr('Sin trazos')}</span>
                       )}
                     </div>
                     <span className="gallery-caption">
@@ -508,22 +511,22 @@ export function SymmetryGallery({
                         {label}
                         <small>
                           {choice.family === 'frieze'
-                            ? 'friso'
+                            ? tr('friso')
                             : choice.family === 'none'
-                              ? 'sin repetir'
+                              ? tr('sin repetir')
                               : choice.family === 'radial'
-                                ? 'radial'
-                                : 'plano'}
+                                ? tr('radial')
+                                : tr('plano')}
                         </small>
                       </span>
                     </span>
                   </button>
                   <button
                     className="favorite-symmetry"
-                    aria-label={`Favorito ${choice.family} ${choice.group}`}
+                    aria-label={tr('Favorito {family} {group}', { family: choice.family, group: choice.group })}
                     aria-pressed={favorites.includes(key)}
                     onClick={() => favorite(key)}
-                    title="Marcar como favorito"
+                    title={tr('Marcar como favorito')}
                   >
                     <Star size={13} fill={favorites.includes(key) ? 'currentColor' : 'none'} />
                   </button>
@@ -556,7 +559,7 @@ export function SymmetryGallery({
         <p className="help-text" role="status">
           {s.symmetryPreview
             ? `Previsualización · ${previewCurrent.group === 'none' ? 'Libre' : previewCurrent.group} · clic para confirmar`
-            : 'Hover previsualiza · clic confirma.'}
+            : tr('Hover previsualiza · clic confirma.')}
         </p>
         {finiteGenerator(s.pattern.generator) ? (
           <p className="math-notice">
@@ -571,10 +574,10 @@ export function SymmetryGallery({
                   className="symmetry-frame-controls"
                   name={`symmetry-options-${s.pattern.id}`}
                 >
-                  <summary>Orientación y origen</summary>
+                  <summary>{tr('Orientación y origen')}</summary>
                   <div className="compact-fields">
                     <Field
-                      label="Orientación de red"
+                      label={tr('Orientación de red')}
                       value={confirmed.orientation}
                       min={-180}
                       max={180}
@@ -617,12 +620,12 @@ export function SymmetryGallery({
                   name={`symmetry-options-${s.pattern.id}`}
                   open
                 >
-                  <summary>Tamaño de red</summary>
+                  <summary>{tr('Tamaño de red')}</summary>
                   <div className="compact-fields">
                     {confirmed.family === 'radial' ? (
                       <Field
                         integer
-                        label="Sectores"
+                        label={tr('Sectores')}
                         value={confirmed.sectors}
                         min={2}
                         max={64}
@@ -631,7 +634,7 @@ export function SymmetryGallery({
                     ) : (
                       <>
                         <Field
-                          label="Ancho de celda"
+                          label={tr('Ancho de celda')}
                           value={confirmed.width}
                           min={5}
                           max={200}
@@ -640,7 +643,7 @@ export function SymmetryGallery({
                         />
                         {!/^p[346]/.test(confirmed.group) && (
                           <Field
-                            label="Alto de celda"
+                            label={tr('Alto de celda')}
                             value={confirmed.height}
                             min={5}
                             max={200}
@@ -651,7 +654,7 @@ export function SymmetryGallery({
                         {confirmed.family === 'wallpaper' &&
                           ['p1', 'p2'].includes(confirmed.group) && (
                             <Field
-                              label="Ángulo de red"
+                              label={tr('Ángulo de red')}
                               value={confirmed.angle}
                               min={15}
                               max={165}
@@ -685,7 +688,7 @@ export function SymmetryGallery({
               Restablecer colocación del motivo
             </button>
             <Toggle
-              label="Guías detalladas"
+              label={tr('Guías detalladas')}
               checked={s.project.preferences.guides}
               onChange={(v) =>
                 s.change((p) => {

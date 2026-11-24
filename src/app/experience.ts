@@ -124,3 +124,44 @@ export function applyMessageLocale(locale: Locale) {
 export function currentMessageLocale(): Locale {
   return messageLocale;
 }
+
+
+/** Fondo claro predeterminado de un estudio nuevo. */
+export const lightDefaultBackground = '#f8faf5';
+/** Lienzo oscuro cuando el tema es oscuro y el fondo es el predeterminado claro. */
+export const darkCanvasBackground = '#1b211c';
+export const darkStroke = '#e7eee1';
+export const darkFill = '#a9cfe0';
+export const lightGridDot = '#000000';
+export const darkGridDot = '#7d917d';
+
+export function isDarkTheme(): boolean {
+  if (typeof document !== 'undefined' && document.documentElement.dataset.theme)
+    return document.documentElement.dataset.theme === 'dark';
+  return resolveTheme(loadExperience().theme) === 'dark';
+}
+
+/**
+ * Fondo efectivo del lienzo: el tema lo oscurece sólo cuando el estudio usa el
+ * fondo predeterminado. Un fondo elegido por el usuario se respeta siempre
+ * (PRD v4.0 §3.5; ajuste pedido por Pablo para el área de trabajo oscura).
+ */
+export function themedBackground(background: string): string {
+  return isDarkTheme() && background.toLowerCase() === lightDefaultBackground
+    ? darkCanvasBackground
+    : background;
+}
+
+/** Estilo para geometría nueva: los defaults claros se aclaran aún más en oscuro. */
+export function themedDrawingStyle<T extends { stroke: string; fill: string }>(style: T): T {
+  if (!isDarkTheme()) return style;
+  return {
+    ...style,
+    stroke: style.stroke.toLowerCase() === '#233b2d' ? darkStroke : style.stroke,
+    fill: style.fill.toLowerCase() === '#3b82f6' ? darkFill : style.fill,
+  };
+}
+
+export function themedGridDot(): string {
+  return isDarkTheme() ? darkGridDot : lightGridDot;
+}

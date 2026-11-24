@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { hexHSV, hsvHex } from './color';
+import { tr } from '../i18n';
 export function ColorPicker({
   value,
   onChange,
@@ -35,7 +36,7 @@ export function ColorPicker({
         className="color-plane"
         role="slider"
         tabIndex={0}
-        aria-label="Selector de relleno"
+        aria-label={tr('Selector de relleno')}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={Math.round(hsv.s * 100)}
@@ -91,7 +92,7 @@ export function ColorPicker({
       <input
         type="range"
         className="color-hue"
-        aria-label="Tono de relleno"
+        aria-label={tr('Tono de relleno')}
         min={0}
         max={359}
         step={1}

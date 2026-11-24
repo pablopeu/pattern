@@ -7,6 +7,7 @@ import { attachGirih } from '../girih/patch';
 import { girihNames, girihPolygon, girihAngles, type GirihKind } from '../girih/polygons';
 import { Field, Select, Toggle } from './Controls';
 import { Modal } from './Modal';
+import { tr } from '../i18n';
 export function activateGirih(g: Generator): Generator {
   return {
     ...g,
@@ -81,7 +82,7 @@ export function GirihPanel({ studio: s }: { studio: Studio }) {
         </>
       ) : (
         <>
-          <div className="context-tabs" role="tablist" aria-label="Opciones Girih">
+          <div className="context-tabs" role="tablist" aria-label={tr('Opciones Girih')}>
             {['design', 'bands', 'color', 'join'].map((id) => (
               <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)}>
                 {{ design: 'Diseño', bands: 'Bandas', color: 'Color', join: 'Unir' }[id]}
@@ -91,14 +92,14 @@ export function GirihPanel({ studio: s }: { studio: Studio }) {
           {tab === 'design' && (
             <>
               <Select
-                label="Construcción Girih"
+                label={tr('Construcción Girih')}
                 value={options.recipe}
                 options={[
-                  { value: 'rosette', label: 'Roseta decagonal y pentágonos' },
-                  { value: 'rhombus-grid', label: 'Red de rombos72°' },
-                  { value: 'star', label: 'Estrella de cinco rombos' },
-                  { value: 'single', label: 'Una tesela del catálogo' },
-                  { value: 'custom', label: 'Parche personalizado' },
+                  { value: 'rosette', label: tr('Roseta decagonal y pentágonos') },
+                  { value: 'rhombus-grid', label: tr('Red de rombos72°') },
+                  { value: 'star', label: tr('Estrella de cinco rombos') },
+                  { value: 'single', label: tr('Una tesela del catálogo') },
+                  { value: 'custom', label: tr('Parche personalizado') },
                 ]}
                 onChange={(value) => {
                   change((g) => {
@@ -111,7 +112,7 @@ export function GirihPanel({ studio: s }: { studio: Studio }) {
               />
               <div className="two-fields">
                 <Field
-                  label="Lado Girih"
+                  label={tr('Lado Girih')}
                   value={g.spacing}
                   min={5}
                   max={100}
@@ -125,7 +126,7 @@ export function GirihPanel({ studio: s }: { studio: Studio }) {
                   }
                 />
                 <Field
-                  label="Giro Girih"
+                  label={tr('Giro Girih')}
                   value={g.rotation}
                   min={-180}
                   max={180}
@@ -140,7 +141,7 @@ export function GirihPanel({ studio: s }: { studio: Studio }) {
               {options.recipe === 'rhombus-grid' && (
                 <div className="two-fields">
                   <Field
-                    label="Filas Girih"
+                    label={tr('Filas Girih')}
                     value={g.rows}
                     min={1}
                     max={8}
@@ -152,7 +153,7 @@ export function GirihPanel({ studio: s }: { studio: Studio }) {
                     }
                   />
                   <Field
-                    label="Columnas Girih"
+                    label={tr('Columnas Girih')}
                     value={g.columns}
                     min={1}
                     max={8}
@@ -169,7 +170,7 @@ export function GirihPanel({ studio: s }: { studio: Studio }) {
                 Catálogo de cinco teselas Girih
               </button>
               <Toggle
-                label="Mostrar polígonos Girih"
+                label={tr('Mostrar polígonos Girih')}
                 checked={options.showTiles}
                 onChange={(v) =>
                   change((g) => {
@@ -188,7 +189,7 @@ export function GirihPanel({ studio: s }: { studio: Studio }) {
           {tab === 'bands' && (
             <>
               <Toggle
-                label="Entrelazar bandas Girih"
+                label={tr('Entrelazar bandas Girih')}
                 checked={options.weave}
                 onChange={(v) =>
                   change((g) => {
@@ -197,7 +198,7 @@ export function GirihPanel({ studio: s }: { studio: Studio }) {
                 }
               />
               <Toggle
-                label="Entrelazar trazos del motivo"
+                label={tr('Entrelazar trazos del motivo')}
                 checked={options.weaveSource}
                 onChange={(v) =>
                   change((g) => {
@@ -207,7 +208,7 @@ export function GirihPanel({ studio: s }: { studio: Studio }) {
               />
               <div className="two-fields">
                 <Field
-                  label="Ancho de banda Girih"
+                  label={tr('Ancho de banda Girih')}
                   value={options.bandWidth}
                   min={0.1}
                   max={Math.min(5, g.spacing * 0.2)}
@@ -221,7 +222,7 @@ export function GirihPanel({ studio: s }: { studio: Studio }) {
                   }
                 />
                 <Field
-                  label="Separación de cruce Girih"
+                  label={tr('Separación de cruce Girih')}
                   value={options.gap}
                   min={0}
                   max={options.bandWidth}
@@ -263,7 +264,7 @@ export function GirihPanel({ studio: s }: { studio: Studio }) {
               </p>
               {!!derived?.conflicts && (
                 <Toggle
-                  label="Permitir cortes explícitos de alternancia"
+                  label={tr('Permitir cortes explícitos de alternancia')}
                   checked={options.allowBreaks}
                   onChange={(v) =>
                     change((g) => {
@@ -307,7 +308,7 @@ export function GirihPanel({ studio: s }: { studio: Studio }) {
             <>
               <div className="two-fields">
                 <Field
-                  label="Tesela base Girih"
+                  label={tr('Tesela base Girih')}
                   value={baseIndex + 1}
                   min={1}
                   max={patch.length}
@@ -318,7 +319,7 @@ export function GirihPanel({ studio: s }: { studio: Studio }) {
                   }}
                 />
                 <Field
-                  label="Borde base Girih"
+                  label={tr('Borde base Girih')}
                   value={Math.min(edge, maxEdge) + 1}
                   min={1}
                   max={maxEdge + 1}
@@ -327,7 +328,7 @@ export function GirihPanel({ studio: s }: { studio: Studio }) {
                 />
               </div>
               <Select
-                label="Tesela nueva Girih"
+                label={tr('Tesela nueva Girih')}
                 value={kind}
                 options={Object.entries(girihNames).map(([value, label]) => ({ value, label }))}
                 onChange={(v) => {
@@ -336,7 +337,7 @@ export function GirihPanel({ studio: s }: { studio: Studio }) {
                 }}
               />
               <Field
-                label="Borde nuevo Girih"
+                label={tr('Borde nuevo Girih')}
                 value={incoming + 1}
                 min={1}
                 max={girihPolygon(kind).length}
@@ -388,7 +389,7 @@ export function GirihPanel({ studio: s }: { studio: Studio }) {
             </button>
             <button
               className="wide-button"
-              aria-label="Volver al motivo guardado"
+              aria-label={tr('Volver al motivo guardado')}
               onClick={() => {
                 change((g) => {
                   g.kind = 'motif';
@@ -403,13 +404,13 @@ export function GirihPanel({ studio: s }: { studio: Studio }) {
       )}
       {catalog && (
         <Modal
-          label="Catálogo Girih"
+          label={tr('Catálogo Girih')}
           className="simple-modal girih-catalog"
           onClose={() => setCatalog(false)}
         >
           <header>
-            <h2>Cinco teselas Girih</h2>
-            <button aria-label="Cerrar catálogo Girih" onClick={() => setCatalog(false)}>
+            <h2>{tr('Cinco teselas Girih')}</h2>
+            <button aria-label={tr('Cerrar catálogo Girih')} onClick={() => setCatalog(false)}>
               ×
             </button>
           </header>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { X } from 'lucide-react';
 import { Modal } from './Modal';
 
+import { tr } from '../i18n';
 export type Command = { id: string; label: string; keywords?: string; run: () => void };
 const normalize = (value: string) =>
   value
@@ -27,22 +28,22 @@ export function CommandPalette({
     command.run();
   };
   return (
-    <Modal label="Buscar comandos" className="command-modal" onClose={onClose}>
+    <Modal label={tr('Buscar comandos')} className="command-modal" onClose={onClose}>
       <header>
-        <h2>Buscar herramientas y acciones</h2>
-        <button aria-label="Cerrar comandos" onClick={onClose}>
+        <h2>{tr('Buscar herramientas y acciones')}</h2>
+        <button aria-label={tr('Cerrar comandos')} onClick={onClose}>
           <X size={20} />
         </button>
       </header>
       <input
         autoFocus
         role="combobox"
-        aria-label="Buscar acción"
+        aria-label={tr('Buscar acción')}
         aria-autocomplete="list"
         aria-controls="command-results"
         aria-expanded="true"
         aria-activedescendant={visible[active] ? `command-${visible[active].id}` : undefined}
-        placeholder="Polígono, rellenar, p6m, grosor, exportar…"
+        placeholder={tr('Polígono, rellenar, p6m, grosor, exportar…')}
         value={query}
         onChange={(e) => {
           setQuery(e.target.value);
@@ -62,7 +63,7 @@ export function CommandPalette({
           }
         }}
       />
-      <div id="command-results" role="listbox" aria-label="Resultados de comandos">
+      <div id="command-results" role="listbox" aria-label={tr('Resultados de comandos')}>
         {visible.map((command, i) => (
           <button
             key={command.id}
@@ -75,9 +76,9 @@ export function CommandPalette({
           </button>
         ))}
       </div>
-      {!visible.length && <p role="status">No hay coincidencias.</p>}
+      {!visible.length && <p role="status">{tr('No hay coincidencias.')}</p>}
       <p className="help-text">
-        Escribí para filtrar · ↑ ↓ para elegir · Enter para ejecutar · Escape para volver.
+        {tr('Escribí para filtrar · ↑ ↓ para elegir · Enter para ejecutar · Escape para volver.')}
       </p>
     </Modal>
   );

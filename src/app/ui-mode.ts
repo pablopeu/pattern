@@ -8,18 +8,21 @@ export function isToolVisible(tool: string, mode: UiMode): boolean {
 
 /** Categorías amigables de galería en modo simple (presentación, no taxonomía). */
 const friendlyCategories: Record<string, string> = {
-  Figurativas: 'gallery.cat.figures',
-  Referencias: 'gallery.cat.figures',
-  Espirales: 'gallery.cat.flowers',
-  Recursivas: 'gallery.cat.repeating',
-  Aperiódicas: 'gallery.cat.repeating',
-  Aplicaciones: 'gallery.cat.repeating',
-  Girih: 'gallery.cat.decorative',
-  Esféricas: 'gallery.cat.decorative',
-  'Artísticas': 'gallery.cat.decorative',
-  Ornamentales: 'gallery.cat.decorative',
-  Hiperbólicas: 'gallery.cat.decorative',
+  Figurativas: 'Peces, aves y reptiles',
+  Referencias: 'Peces, aves y reptiles',
+  Espirales: 'Flores y rosetas',
+  Recursivas: 'Figuras repetidas',
+  Aperiódicas: 'Figuras repetidas',
+  Aplicaciones: 'Figuras repetidas',
+  Girih: 'Diseños decorativos',
+  Esféricas: 'Diseños decorativos',
+  'Artísticas': 'Diseños decorativos',
+  Ornamentales: 'Diseños decorativos',
+  Hiperbólicas: 'Diseños decorativos',
+  'Discos artísticos': 'Diseños decorativos',
+  Poincaré: 'Diseños decorativos',
 };
-export function friendlyCategoryKey(category: string): string | undefined {
+/** Etiqueta de presentación amigable en modo simple; undefined conserva la original. */
+export function friendlyCategoryLabel(category: string): string | undefined {
   return friendlyCategories[category];
 }

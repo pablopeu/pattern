@@ -44,6 +44,7 @@ export const en: Record<MessageKey, string> = {
   'category.tiles': 'Tiles',
   'category.layers': 'Layers',
   'category.preferences': 'Preferences',
+  'category.application': 'Application',
   'tool.select': 'Select',
   'tool.nodes': 'Edit nodes',
   'tool.pen': 'Bézier pen',

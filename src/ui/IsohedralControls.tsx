@@ -5,6 +5,7 @@ import { Field } from './Controls';
 import { Palette, SlidersHorizontal } from 'lucide-react';
 import { TileColors } from './TileColors';
 
+import { tr } from '../i18n';
 export function IsohedralControls({ studio: s }: { studio: Studio }) {
   const [page, setPage] = useState(0),
     [colorPage, setColorPage] = useState(false),
@@ -66,7 +67,7 @@ export function IsohedralControls({ studio: s }: { studio: Studio }) {
               {pages > 1 && (
                 <div className="button-row">
                   <button
-                    aria-label="Parámetros IH anteriores"
+                    aria-label={tr('Parámetros IH anteriores')}
                     disabled={!current}
                     onClick={() => setPage(current - 1)}
                   >
@@ -77,7 +78,7 @@ export function IsohedralControls({ studio: s }: { studio: Studio }) {
                     {params.length}
                   </span>
                   <button
-                    aria-label="Parámetros IH siguientes"
+                    aria-label={tr('Parámetros IH siguientes')}
                     disabled={current + 1 >= pages}
                     onClick={() => setPage(current + 1)}
                   >

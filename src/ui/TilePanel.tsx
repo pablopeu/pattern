@@ -10,6 +10,7 @@ import { IsohedralControls } from './IsohedralControls';
 import { newIsohedral, isohedralConstraints } from '../isohedral/engine';
 import { isohedralDefinition } from '../tiling/tiles';
 import { splitCanonicalEdge } from '../isohedral/edit';
+import { tr } from '../i18n';
 export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohedral: () => void }) {
   const [family, setFamily] = useState(
     s.pattern.generator.kind === 'girih'
@@ -37,8 +38,8 @@ export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohed
     s.setInstanceExplicit(false);
   };
   return (
-    <section className="tile-panel" aria-label="Construcción de teselas">
-      <div className="tile-family-cards" role="group" aria-label="Familias de teselas">
+    <section className="tile-panel" aria-label={tr('Construcción de teselas')}>
+      <div className="tile-family-cards" role="group" aria-label={tr('Familias de teselas')}>
         {(
           [
             [
@@ -65,7 +66,7 @@ export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohed
             <svg viewBox="0 0 32 32" aria-hidden="true">
               <path d={d} />
             </svg>
-            <span>{label}</span>
+            <span>{tr(label)}</span>
           </button>
         ))}
       </div>
@@ -76,7 +77,7 @@ export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohed
       ) : (
         <>
           {tile && (
-            <div className="context-tabs" role="tablist" aria-label="Opciones de tesela">
+            <div className="context-tabs" role="tablist" aria-label={tr('Opciones de tesela')}>
               {(['shape', 'placement', 'edge', 'tangents'] as const)
                 .filter((id) => !!tile || id === 'shape')
                 .map((id) => (
@@ -104,8 +105,7 @@ export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohed
           <div className="tile-controls compact-fields">
             <div hidden={tab !== 'shape'} className="compact-fields">
               <p className="help-text" hidden={iso}>
-                La tesela define la cobertura. El motivo se recorta dentro de ella y usa su propia
-                simetría local.
+                {tr('La tesela define la cobertura. El motivo se recorta dentro de ella y usa su propia simetría local.')}
               </p>
               {finiteGenerator(s.pattern.generator) ? (
                 <p className="math-notice">
@@ -114,7 +114,7 @@ export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohed
                 </p>
               ) : (
                 <Toggle
-                  label="Usar teselas geométricas"
+                  label={tr('Usar teselas geométricas')}
                   checked={!!tile}
                   onChange={(enabled) => {
                     s.change((p) => {
@@ -128,14 +128,14 @@ export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohed
                 />
               )}
               <button className="wide-button" onClick={onIsohedral}>
-                Explorar catálogo IH1–IH93
+                {tr('Explorar catálogo IH1–IH93')}
               </button>
             </div>
             {tile && !finiteGenerator(s.pattern.generator) && (
               <>
                 <div hidden={tab !== 'shape'} className="compact-fields">
                   <Select
-                    label="Forma de tesela"
+                    label={tr('Forma de tesela')}
                     value={tile.kind}
                     onChange={(kind) => {
                       const fresh = newTiling(kind as TileKind);
@@ -181,7 +181,7 @@ export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohed
                     />
                     {['rectangle', 'parallelogram'].includes(tile.kind) && (
                       <Field
-                        label="Alto de tesela"
+                        label={tr('Alto de tesela')}
                         value={tile.height}
                         min={5}
                         max={400}
@@ -196,7 +196,7 @@ export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohed
                   </div>
                   {tile.kind === 'parallelogram' && (
                     <Field
-                      label="Desplazamiento del paralelogramo"
+                      label={tr('Desplazamiento del paralelogramo')}
                       value={tile.shear}
                       min={-400}
                       max={400}
@@ -211,7 +211,7 @@ export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohed
                 </div>
                 <div hidden={tab !== 'placement'} className="compact-fields">
                   <Field
-                    label="Orientación de teselas"
+                    label={tr('Orientación de teselas')}
                     value={tile.rotation}
                     min={-180}
                     max={180}
@@ -240,7 +240,7 @@ export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohed
                     ))}
                   </div>
                   <Toggle
-                    label="Contornos de teselas"
+                    label={tr('Contornos de teselas')}
                     checked={tile.showOutline}
                     onChange={(v) =>
                       update((t) => {
@@ -251,7 +251,7 @@ export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohed
                 </div>
                 <div hidden={tab !== 'edge' && tab !== 'tangents'} className="compact-fields">
                   <Toggle
-                    label="Editar bordes de tesela"
+                    label={tr('Editar bordes de tesela')}
                     checked={s.tileEditing}
                     onChange={s.setTileEditing}
                   />
@@ -275,7 +275,7 @@ export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohed
                       </p>
                       <div className="two-fields">
                         <Select
-                          label="Borde maestro"
+                          label={tr('Borde maestro')}
                           value={String(e)}
                           onChange={(v) => {
                             s.setTileEdge(Number(v));
@@ -287,7 +287,7 @@ export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohed
                           }))}
                         />
                         <Select
-                          label="Nodo del borde"
+                          label={tr('Nodo del borde')}
                           value={String(n)}
                           onChange={(v) => s.setTileNode(Number(v))}
                           options={edge.map((_, i) => ({
@@ -308,7 +308,7 @@ export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohed
                           <div className="two-fields">
                             {!movableCenter && (
                               <Field
-                                label="Posición en el borde"
+                                label={tr('Posición en el borde')}
                                 value={selected.x * 100}
                                 min={edge[n - 1].x * 100 + 0.5}
                                 max={edge[n + 1].x * 100 - 0.5}
@@ -321,7 +321,7 @@ export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohed
                               />
                             )}
                             <Field
-                              label="Desvío del borde"
+                              label={tr('Desvío del borde')}
                               value={selected.y * 100}
                               min={iso ? -200 : -7}
                               max={iso ? 200 : 7}
@@ -339,7 +339,7 @@ export function TilePanel({ studio: s, onIsohedral }: { studio: Studio; onIsohed
                         hidden={tab !== 'tangents' || constraint === 'straight'}
                         className="compact-fields"
                       >
-                        <strong>Tangentes Bézier del nodo</strong>
+                        <strong>{tr('Tangentes Bézier del nodo')}</strong>
                         {(['in', 'out'] as const)
                           .filter(
                             (handle) =>

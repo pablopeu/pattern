@@ -6,6 +6,7 @@
 import type { Project } from '../app/model';
 import type { Visualization } from '../visualization/model';
 import { geodesicFaces } from '../sphere/geometry';
+import { themedBackground } from '../app/experience';
 import { drawSphere } from '../sphere/render';
 
 const WIDTH = 1200,
@@ -43,7 +44,7 @@ export interface SharePreview {
  */
 export async function renderSharePreview(project: Project): Promise<SharePreview | null> {
   const visualization: Visualization | undefined = project.visualization,
-    background = project.preferences.background ?? '#f7f3e8';
+    background = themedBackground(project.preferences.background ?? '#f7f3e8');
   for (const scale of [1, 0.875, 0.75, 0.625, 0.5]) {
     const width = Math.round(1200 * scale),
       height = Math.round(630 * scale),

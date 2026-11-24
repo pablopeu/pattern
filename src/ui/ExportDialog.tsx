@@ -8,6 +8,7 @@ import { rasterize } from '../export/raster';
 import { download } from '../persistence/storage';
 import { rectangularCell } from '../symmetry/groups';
 import { Field, Select, Toggle } from './Controls';
+import { tr , translateMessage } from '../i18n';
 export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: () => void }) {
   const [tab, setTab] = useState('content');
   const [options, setOptions] = useState<ExportOptions>({
@@ -122,69 +123,69 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
       ? tileRectangularCell(s.pattern.tiling)
       : rectangularCell(s.confirmedSymmetry);
   return (
-    <Modal label="Exportar patrón" className="export-modal" onClose={onClose}>
+    <Modal label={tr('Exportar patrón')} className="export-modal" onClose={onClose}>
       <section className="export-dialog">
         <header>
           <div>
-            <span className="eyebrow">DE LA IDEA AL ARCHIVO</span>
-            <h2>Exportar tu diseño</h2>
+            <span className="eyebrow">{tr('DE LA IDEA AL ARCHIVO')}</span>
+            <h2>{tr('Exportar tu diseño')}</h2>
           </div>
-          <button aria-label="Cerrar exportación" onClick={onClose}>
+          <button aria-label={tr('Cerrar exportación')} onClick={onClose}>
             <X size={20} />
           </button>
         </header>
         <div className="export-body">
           <div className="export-options">
             <Select
-              label="Formato"
+              label={tr('Formato')}
               value={options.format}
               onChange={(v) => set('format', v as ExportOptions['format'])}
               options={[
-                { value: 'svg', label: 'SVG · vectorial' },
-                { value: 'png', label: 'PNG · transparente' },
-                { value: 'jpeg', label: 'JPEG · imagen' },
-                { value: 'dxf', label: 'DXF · líneas y polilíneas' },
+                { value: 'svg', label: tr('SVG · vectorial') },
+                { value: 'png', label: tr('PNG · transparente') },
+                { value: 'jpeg', label: tr('JPEG · imagen') },
+                { value: 'dxf', label: tr('DXF · líneas y polilíneas') },
               ]}
             />
-            <div className="context-tabs" role="tablist" aria-label="Opciones de exportación">
+            <div className="context-tabs" role="tablist" aria-label={tr('Opciones de exportación')}>
               {['content', 'size', 'precision'].map((id) => (
                 <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)}>
-                  {{ content: 'Contenido', size: 'Tamaño', precision: 'Precisión' }[id]}
+                  {{ content: tr('Contenido'), size: tr('Tamaño'), precision: tr('Precisión') }[id]}
                 </button>
               ))}
             </div>
             <div hidden={tab !== 'content'} className="compact-fields">
               {' '}
               <Select
-                label="Contenido"
+                label={tr('Contenido')}
                 value={options.scope ?? 'pattern'}
                 onChange={(v) => set('scope', v as 'pattern' | 'composition')}
                 options={[
-                  { value: 'composition', label: 'Composición visible' },
-                  { value: 'pattern', label: 'Conjunto activo' },
+                  { value: 'composition', label: tr('Composición visible') },
+                  { value: 'pattern', label: tr('Conjunto activo') },
                 ]}
               />
               <Select
-                label="Qué exportar"
+                label={tr('Qué exportar')}
                 value={options.target}
                 onChange={(v) => set('target', v as ExportOptions['target'])}
                 options={[
-                  { value: 'view', label: 'Región finita' },
+                  { value: 'view', label: tr('Región finita') },
                   ...(!s.pattern.composition?.enabled
                     ? [
-                        { value: 'tile', label: 'Celda rectangular seamless' },
-                        { value: 'lattice', label: 'Celda de red · geometría real' },
-                        { value: 'fundamental', label: 'Región fundamental del grupo' },
+                        { value: 'tile', label: tr('Celda rectangular seamless') },
+                        { value: 'lattice', label: tr('Celda de red · geometría real') },
+                        { value: 'fundamental', label: tr('Región fundamental del grupo') },
                       ]
                     : []),
                   ...(s.project.applications.length
-                    ? [{ value: 'application', label: 'Patrón aplicado' }]
+                    ? [{ value: 'application', label: tr('Patrón aplicado') }]
                     : []),
                 ]}
               />
               {options.target === 'application' && (
                 <Select
-                  label="Aplicación a exportar"
+                  label={tr('Aplicación a exportar')}
                   value={options.applicationId ?? ''}
                   onChange={(v) => set('applicationId', v)}
                   options={s.project.applications.map((a) => ({ value: a.id, label: a.name }))}
@@ -193,7 +194,7 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
               {(s.project.patterns.some((p) => p.tiling) ||
                 s.project.applications.some((a) => a.frozenPattern?.tiling)) && (
                 <Toggle
-                  label="Exportar contornos de teselas"
+                  label={tr('Exportar contornos de teselas')}
                   checked={options.includeTileOutlines ?? false}
                   onChange={(v) => set('includeTileOutlines', v)}
                 />
@@ -204,7 +205,7 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
               {options.target === 'view' && (
                 <div className="two-fields">
                   <Field
-                    label="Ancho de exportación"
+                    label={tr('Ancho de exportación')}
                     value={options.width}
                     min={1}
                     max={2000}
@@ -212,7 +213,7 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
                     onChange={(v) => set('width', v)}
                   />
                   <Field
-                    label="Alto de exportación"
+                    label={tr('Alto de exportación')}
                     value={options.height}
                     min={1}
                     max={2000}
@@ -224,7 +225,7 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
               {['png', 'jpeg'].includes(options.format) && (
                 <>
                   <Field
-                    label="Resolución"
+                    label={tr('Resolución')}
                     value={options.dpi}
                     unit="DPI"
                     min={36}
@@ -233,7 +234,7 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
                   />
                   {options.format === 'jpeg' && (
                     <Field
-                      label="Calidad JPEG"
+                      label={tr('Calidad JPEG')}
                       value={options.quality}
                       min={0.1}
                       max={1}
@@ -248,7 +249,7 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
                 <>
                   {options.format !== 'jpeg' && (
                     <Toggle
-                      label="Fondo transparente"
+                      label={tr('Fondo transparente')}
                       checked={options.transparent}
                       onChange={(v) => set('transparent', v)}
                     />
@@ -257,7 +258,7 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
                     <label className="color-row">
                       Color de fondo
                       <input
-                        aria-label="Color de fondo de exportación"
+                        aria-label={tr('Color de fondo de exportación')}
                         type="color"
                         value={options.background}
                         onChange={(e) => set('background', e.target.value)}
@@ -271,19 +272,19 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
               {' '}
               {options.format === 'svg' && (
                 <Select
-                  label="Representación"
+                  label={tr('Representación')}
                   value={options.representation}
                   onChange={(v) => set('representation', v as ExportOptions['representation'])}
                   options={[
-                    { value: 'editable', label: 'Instancias reutilizables' },
-                    { value: 'expanded', label: 'Geometría expandida' },
+                    { value: 'editable', label: tr('Instancias reutilizables') },
+                    { value: 'expanded', label: tr('Geometría expandida') },
                   ]}
                 />
               )}
               {(options.representation === 'expanded' || options.format === 'dxf') && (
                 <>
                   <Field
-                    label="Tolerancia de aproximación"
+                    label={tr('Tolerancia de aproximación')}
                     value={options.tolerance}
                     min={0.001}
                     max={1}
@@ -293,7 +294,7 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
                   />
                   {options.target === 'application' && (
                     <Toggle
-                      label="Convertir trazos a contornos"
+                      label={tr('Convertir trazos a contornos')}
                       checked={options.outlineStrokes}
                       onChange={(v) => set('outlineStrokes', v)}
                     />
@@ -320,20 +321,20 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
             <div className="export-preview-image">
               {result ? (
                 <img
-                  alt="Previsualización de exportación"
+                  alt={tr('Previsualización de exportación')}
                   src={'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(result.svg)}
                 />
               ) : (
                 <div className="export-placeholder">
                   <FileCode2 size={36} />
-                  <span>{busy ? 'Preparando geometría…' : 'Sin previsualización'}</span>
+                  <span>{busy ? tr('Preparando geometría…') : 'Sin previsualización'}</span>
                 </div>
               )}
               {(busy || downloading) && (
                 <div className="processing">
                   <LoaderCircle className="spin" size={22} />
                   {downloading ? 'Generando imagen…' : `${Math.round(progress * 100)}%`}{' '}
-                  <button onClick={cancel}>Cancelar</button>
+                  <button onClick={cancel}>{tr('Cancelar')}</button>
                 </div>
               )}
             </div>
@@ -358,20 +359,20 @@ export function ExportDialog({ studio: s, onClose }: { studio: Studio; onClose: 
             ))}
             {error && (
               <p className="error-message" role="alert">
-                {error}
+                {translateMessage(error)}
               </p>
             )}
           </div>
         </div>
         <footer>
-          <span>Vector real. Sin recursos externos.</span>
+          <span>{tr('Vector real. Sin recursos externos.')}</span>
           <button
             className="primary-button"
             disabled={busy || !result || downloading}
             onClick={exportFile}
           >
             <Download size={16} />
-            {downloading ? 'Generando imagen…' : 'Descargar archivo'}
+            {downloading ? tr('Generando imagen…') : tr('Descargar archivo')}
           </button>
         </footer>
       </section>

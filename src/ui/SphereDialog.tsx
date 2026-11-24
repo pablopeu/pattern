@@ -10,6 +10,7 @@ import { drawSphere } from '../sphere/render';
 import { visualizationSchema } from '../visualization/schema';
 import type { SphereVisualization } from '../visualization/model';
 
+import { tr , translateMessage } from '../i18n';
 const PREVIEW = 520;
 
 /** Vista esférica derivada: nunca toca la fuente plana (PRD v3.0 §11). */
@@ -196,37 +197,37 @@ export function SphereDialog({
   };
 
   return (
-    <Modal label="Visualización esférica" className="disk-dialog" onClose={onClose}>
+    <Modal label={tr('Visualización esférica')} className="disk-dialog" onClose={onClose}>
       <header>
         <div>
-          <small>VISTA DERIVADA · FUENTE PLANA EDITABLE</small>
-          <h2>Esfera</h2>
+          <small>{tr('VISTA DERIVADA · FUENTE PLANA EDITABLE')}</small>
+          <h2>{tr('Esfera')}</h2>
         </div>
-        <button aria-label="Volver a la fuente" onClick={onClose}>
-          <X size={18} /> Volver a la fuente
+        <button aria-label={tr('Volver a la fuente')} onClick={onClose}>
+          <X size={18} /> {tr('Volver a la fuente')}
         </button>
       </header>
       <div className="disk-body">
-        <section aria-label="Opciones de la esfera">
+        <section aria-label={tr('Opciones de la esfera')}>
           <Select
-            label="Modo"
+            label={tr('Modo')}
             value={settings.mode}
             options={[
-              { value: 'geodesic', label: 'Teselación geodésica · sólidos' },
-              { value: 'artistic', label: 'Textura artística sobre esfera' },
+              { value: 'geodesic', label: tr('Teselación geodésica · sólidos') },
+              { value: 'artistic', label: tr('Textura artística sobre esfera') },
             ]}
             onChange={(mode) => patch({ mode: mode as SphereSettings['mode'] })}
           />
           {settings.mode === 'geodesic' && (
             <>
               <Select
-                label="Sólido"
+                label={tr('Sólido')}
                 value={settings.solid}
                 options={solids.map((s0) => ({ value: s0.kind, label: s0.label }))}
                 onChange={(solid) => patch({ solid: solid as SphereSettings['solid'] })}
               />
               <Field
-                label="Nivel geodésico"
+                label={tr('Nivel geodésico')}
                 value={settings.level}
                 min={0}
                 max={4}
@@ -234,14 +235,14 @@ export function SphereDialog({
                 onChange={(level) => patch({ level })}
               />
               <Toggle
-                label="Bordes de teselas"
+                label={tr('Bordes de teselas')}
                 checked={settings.borders}
                 onChange={(borders) => patch({ borders })}
               />
             </>
           )}
           <Field
-            label="Orientación horizontal"
+            label={tr('Orientación horizontal')}
             value={Math.round(settings.view.yaw)}
             min={-180}
             max={180}
@@ -250,7 +251,7 @@ export function SphereDialog({
             onChange={(yaw) => patch({ view: { ...settings.view, yaw } })}
           />
           <Field
-            label="Orientación vertical"
+            label={tr('Orientación vertical')}
             value={Math.round(settings.view.pitch)}
             min={-90}
             max={90}
@@ -259,7 +260,7 @@ export function SphereDialog({
             onChange={(pitch) => patch({ view: { ...settings.view, pitch } })}
           />
           <Field
-            label="Zoom"
+            label={tr('Zoom')}
             value={settings.view.zoom}
             min={0.3}
             max={3}
@@ -268,18 +269,18 @@ export function SphereDialog({
             onChange={(zoom) => patch({ view: { ...settings.view, zoom } })}
           />
           <Select
-            label="Dirección de giro"
+            label={tr('Dirección de giro')}
             value={settings.view.spin === 1 ? 'cw' : 'ccw'}
             options={[
-              { value: 'cw', label: 'Horario' },
-              { value: 'ccw', label: 'Antihorario' },
+              { value: 'cw', label: tr('Horario') },
+              { value: 'ccw', label: tr('Antihorario') },
             ]}
             onChange={(spin) =>
               patch({ view: { ...settings.view, spin: spin === 'cw' ? 1 : -1 } })
             }
           />
           <Toggle
-            label="Girar esfera"
+            label={tr('Girar esfera')}
             checked={spinning}
             onChange={(value) => {
               setSpinning(value);
@@ -287,7 +288,7 @@ export function SphereDialog({
             }}
           />
           <Toggle
-            label="Iluminación"
+            label={tr('Iluminación')}
             checked={settings.lighting}
             onChange={(lighting) => patch({ lighting })}
           />
@@ -295,24 +296,24 @@ export function SphereDialog({
             Fondo
             <input
               type="color"
-              aria-label="Fondo de la esfera"
+              aria-label={tr('Fondo de la esfera')}
               value={settings.background}
               onChange={(e) => patch({ background: e.target.value })}
             />
           </label>
           {error && (
             <p className="disk-error" role="alert">
-              {error}
+              {translateMessage(error)}
             </p>
           )}
           <button className="primary" disabled={exporting} onClick={() => void exportPNG()}>
-            <Download size={16} /> PNG de alta calidad
+            <Download size={16} /> {tr('PNG de alta calidad')}
           </button>
         </section>
-        <section className="disk-preview" aria-label="Vista esférica no editable">
+        <section className="disk-preview" aria-label={tr('Vista esférica no editable')}>
           <p>
             {settings.mode === 'geodesic'
-              ? `Modelo geométrico: ${solids.find((x) => x.kind === settings.solid)?.label ?? ''} proyectado a la esfera y subdividido geodésicamente (nivel ${settings.level}). Proyección ortográfica derivada; no es un modelo 3D editable.`
+              ? tr('Modelo geométrico: {solid} proyectado a la esfera y subdividido geodésicamente (nivel {level}). Proyección ortográfica derivada; no es un modelo 3D editable.', { solid: tr(solids.find((x) => x.kind === settings.solid)?.label ?? ''), level: settings.level })
               : 'Deformación artística de la fuente plana sobre la esfera: no implica simetría esférica exacta.'}
           </p>
           <div className="disk-image">
@@ -320,19 +321,19 @@ export function SphereDialog({
               ref={canvasRef}
               width={PREVIEW}
               height={PREVIEW}
-              aria-label="Esfera derivada de la fuente plana"
+              aria-label={tr('Esfera derivada de la fuente plana')}
             />
           </div>
           <p className="help-text">
             {settings.mode === 'geodesic'
-              ? `${faces.length} caras proyectadas · paleta por cara base`
+              ? tr('{n} caras proyectadas · paleta por cara base', { n: faces.length })
               : 'Textura muestreada por proyección inversa, 512×512'}
           </p>
         </section>
       </div>
       <footer>
-        <button onClick={onClose}>Editar fuente plana</button>
-        <button onClick={onSave}>Guardar estudio</button>
+        <button onClick={onClose}>{tr('Editar fuente plana')}</button>
+        <button onClick={onSave}>{tr('Guardar estudio')}</button>
       </footer>
     </Modal>
   );

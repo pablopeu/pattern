@@ -29,6 +29,7 @@ export default defineConfig({
         '**/animation.spec.ts',
         '**/share.spec.ts',
         '**/experience.spec.ts',
+        '**/i18n.spec.ts',
         '**/artistic.spec.ts',
         '**/chambers.spec.ts',
         '**/feedback-study.spec.ts',

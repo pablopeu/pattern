@@ -5,6 +5,7 @@ import type { Generator } from '../app/model';
 import { seeds, compileAperiodic, type AperiodicKind } from '../aperiodic/compile';
 import { defaultAperiodic, isAperiodic } from '../aperiodic/model';
 import { Field, Select, Toggle } from './Controls';
+import { tr } from '../i18n';
 export function activateAperiodic(g: Generator, kind: 'penrose' | AperiodicKind): Generator {
   return {
     ...g,
@@ -40,7 +41,7 @@ export function AperiodicPanel({ studio: s }: { studio: Studio }) {
         </p>
       )}
       <Select
-        label="Construcción aperiódica"
+        label={tr('Construcción aperiódica')}
         value={g.kind === 'penrose' || a ? g.kind : ''}
         onChange={(kind) => {
           if (!['penrose', 'hat', 'spectre'].includes(kind)) return;
@@ -58,7 +59,7 @@ export function AperiodicPanel({ studio: s }: { studio: Studio }) {
           s.requestFit();
         }}
         options={[
-          { value: '', label: 'Elegí una construcción' },
+          { value: '', label: tr('Elegí una construcción') },
           ...['penrose', 'hat', 'spectre'].map((value) => ({
             value,
             label: {
@@ -71,7 +72,7 @@ export function AperiodicPanel({ studio: s }: { studio: Studio }) {
       />
       {(g.kind === 'penrose' || a) && (
         <>
-          <div className="context-tabs" role="tablist" aria-label="Opciones aperiódicas">
+          <div className="context-tabs" role="tablist" aria-label={tr('Opciones aperiódicas')}>
             {['patch', ...(a ? ['color', 'hierarchy'] : [])].map((id) => (
               <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)}>
                 {{ patch: 'Parche', color: 'Color', hierarchy: 'Jerarquía' }[id]}
@@ -82,7 +83,7 @@ export function AperiodicPanel({ studio: s }: { studio: Studio }) {
             <>
               <div className="two-fields">
                 <Field
-                  label="Sustituciones"
+                  label={tr('Sustituciones')}
                   value={g.frequency}
                   min={1}
                   max={a ? 4 : 7}
@@ -95,7 +96,7 @@ export function AperiodicPanel({ studio: s }: { studio: Studio }) {
                   }
                 />
                 <Field
-                  label="Radio del parche"
+                  label={tr('Radio del parche')}
                   value={g.radius}
                   min={5}
                   max={500}
@@ -110,7 +111,7 @@ export function AperiodicPanel({ studio: s }: { studio: Studio }) {
               {a && options && (
                 <>
                   <Select
-                    label="Semilla de sustitución"
+                    label={tr('Semilla de sustitución')}
                     value={options.seedTile}
                     options={seeds[g.kind as AperiodicKind].map((value) => ({
                       value,
@@ -123,7 +124,7 @@ export function AperiodicPanel({ studio: s }: { studio: Studio }) {
                     }
                   />
                   <Field
-                    label="Giro del parche"
+                    label={tr('Giro del parche')}
                     value={g.rotation}
                     min={-180}
                     max={180}
@@ -150,13 +151,13 @@ export function AperiodicPanel({ studio: s }: { studio: Studio }) {
           {a && options && tab === 'color' && (
             <>
               <Select
-                label="Colorear sustitución"
+                label={tr('Colorear sustitución')}
                 value={options.colorBy}
                 options={[
-                  { value: 'type', label: 'Tipo de tesela' },
-                  { value: 'generation', label: 'Grupo de una generación' },
+                  { value: 'type', label: tr('Tipo de tesela') },
+                  { value: 'generation', label: tr('Grupo de una generación') },
                   ...(g.kind === 'hat'
-                    ? [{ value: 'chirality', label: 'Orientación reflejada' }]
+                    ? [{ value: 'chirality', label: tr('Orientación reflejada') }]
                     : []),
                 ]}
                 onChange={(v) =>
@@ -167,7 +168,7 @@ export function AperiodicPanel({ studio: s }: { studio: Studio }) {
               />
               {options.colorBy === 'generation' && (
                 <Field
-                  label="Generación de color"
+                  label={tr('Generación de color')}
                   value={options.generation}
                   min={1}
                   max={g.frequency}
@@ -205,7 +206,7 @@ export function AperiodicPanel({ studio: s }: { studio: Studio }) {
           {a && options && tab === 'hierarchy' && (
             <>
               <Toggle
-                label="Mostrar jerarquía de sustitución"
+                label={tr('Mostrar jerarquía de sustitución')}
                 checked={options.showHierarchy}
                 onChange={(v) =>
                   change((g) => {
@@ -214,7 +215,7 @@ export function AperiodicPanel({ studio: s }: { studio: Studio }) {
                 }
               />
               <Field
-                label="Generación de jerarquía"
+                label={tr('Generación de jerarquía')}
                 value={options.generation}
                 min={1}
                 max={g.frequency}

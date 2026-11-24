@@ -15,6 +15,7 @@ import { compositionThumbnail } from '../composition/preview';
 import { compositionSource } from '../composition/source';
 import { Field, Select, Toggle } from './Controls';
 
+import { tr } from '../i18n';
 type SavedRecipe = { name: string; definition: Composition };
 const storageKey = 'pattern-composition-recipes-v1';
 function readSaved(): SavedRecipe[] {
@@ -115,9 +116,9 @@ export function CompositionPanel({
   return (
     <div className="composition-panel">
       <div className="section-caption">
-        COMPOSICIÓN <span>Fuente editable</span>
+        COMPOSICIÓN <span>{tr('Fuente editable')}</span>
       </div>
-      <div className="composition-tabs" role="tablist" aria-label="Opciones de composición">
+      <div className="composition-tabs" role="tablist" aria-label={tr('Opciones de composición')}>
         {[
           ['recipe', 'Receta'],
           ['layout', 'Geometría'],
@@ -143,7 +144,7 @@ export function CompositionPanel({
             >
               <img src={card.thumbnail} alt="" />
               <strong>{card.kind === 'recursive' ? 'Recursiva' : 'Espiral'}</strong>
-              <small>Disposición finita</small>
+              <small>{tr('Disposición finita')}</small>
             </button>
           ))}
         </div>
@@ -159,7 +160,7 @@ export function CompositionPanel({
       {c && (
         <>
           <Toggle
-            label="Composición activa"
+            label={tr('Composición activa')}
             checked={c.enabled}
             onChange={(enabled) => {
               update((c) => {
@@ -171,7 +172,7 @@ export function CompositionPanel({
           {page === 'recipe' && (
             <div className="compact-fields">
               <Select
-                label="Receta de composición"
+                label={tr('Receta de composición')}
                 value={c.recipe}
                 options={Object.entries(labels)
                   .filter(([id]) =>
@@ -191,7 +192,7 @@ export function CompositionPanel({
               />
               {c.kind === 'recursive' ? (
                 <Field
-                  label="Profundidad recursiva"
+                  label={tr('Profundidad recursiva')}
                   value={c.depth}
                   min={0}
                   max={c.recipe === 'henderson' ? 5 : 6}
@@ -204,7 +205,7 @@ export function CompositionPanel({
                 />
               ) : (
                 <Field
-                  label="Repeticiones de semejanza"
+                  label={tr('Repeticiones de semejanza')}
                   value={c.count}
                   min={1}
                   max={256}
@@ -218,7 +219,7 @@ export function CompositionPanel({
               )}
               {!(c.kind === 'recursive' && c.recipe === 'henderson') && (
                 <Toggle
-                  label="Reflejos alternados"
+                  label={tr('Reflejos alternados')}
                   checked={c.mirror}
                   onChange={(v) =>
                     update((c) => {
@@ -238,19 +239,19 @@ export function CompositionPanel({
           {page === 'layout' && (
             <div className="compact-fields">
               <Select
-                label="Grupo de parámetros de composición"
+                label={tr('Grupo de parámetros de composición')}
                 value={layout}
                 onChange={setLayout}
                 options={[
-                  { value: 'shape', label: 'Forma y escala' },
-                  { value: 'position', label: 'Centro y desplazamiento' },
-                  { value: 'detail', label: 'Detalle y dirección' },
+                  { value: 'shape', label: tr('Forma y escala') },
+                  { value: 'position', label: tr('Centro y desplazamiento') },
+                  { value: 'detail', label: tr('Detalle y dirección') },
                 ]}
               />
               {layout === 'shape' && (
                 <>
                   <Field
-                    label="Tamaño de composición"
+                    label={tr('Tamaño de composición')}
                     unit="mm"
                     min={5}
                     max={1000}
@@ -263,7 +264,7 @@ export function CompositionPanel({
                   />
                   {(c.kind === 'spiral' || !['square-limit', 'henderson'].includes(c.recipe)) && (
                     <Field
-                      label="Escala por nivel"
+                      label={tr('Escala por nivel')}
                       value={c.ratio}
                       min={c.kind === 'recursive' ? 0.2 : 0.5}
                       max={c.kind === 'recursive' ? 0.8 : 1.2}
@@ -277,7 +278,7 @@ export function CompositionPanel({
                   )}
                   {!(c.kind === 'recursive' && c.recipe === 'henderson') && (
                     <Field
-                      label="Giro por nivel"
+                      label={tr('Giro por nivel')}
                       unit="°"
                       min={-360}
                       max={360}
@@ -327,7 +328,7 @@ export function CompositionPanel({
               {layout === 'detail' && (
                 <>
                   <Field
-                    label="Detalle mínimo de composición"
+                    label={tr('Detalle mínimo de composición')}
                     unit="mm"
                     value={c.minSize}
                     min={0.02}
@@ -341,11 +342,11 @@ export function CompositionPanel({
                   />
                   {c.kind === 'spiral' && (
                     <Select
-                      label="Dirección de espiral"
+                      label={tr('Dirección de espiral')}
                       value={String(c.direction)}
                       options={[
-                        { value: '1', label: 'Horario' },
-                        { value: '-1', label: 'Antihorario' },
+                        { value: '1', label: tr('Horario') },
+                        { value: '-1', label: tr('Antihorario') },
                       ]}
                       onChange={(v) =>
                         update((c) => {
@@ -356,7 +357,7 @@ export function CompositionPanel({
                   )}
                   {c.kind === 'spiral' && c.recipe === 'rosette' && (
                     <Field
-                      label="Brazos de roseta"
+                      label={tr('Brazos de roseta')}
                       value={c.arms}
                       min={1}
                       max={12}
@@ -390,7 +391,7 @@ export function CompositionPanel({
           {page === 'color' && (
             <>
               <Toggle
-                label="Color por nivel"
+                label={tr('Color por nivel')}
                 checked={c.colorByLevel}
                 onChange={(v) =>
                   update((c) => {
@@ -424,9 +425,9 @@ export function CompositionPanel({
           {page === 'saved' && (
             <>
               <label className="text-field">
-                <span>Nombre de receta</span>
+                <span>{tr('Nombre de receta')}</span>
                 <input
-                  aria-label="Nombre de receta"
+                  aria-label={tr('Nombre de receta')}
                   value={name}
                   maxLength={80}
                   onChange={(e) => setName(e.target.value)}

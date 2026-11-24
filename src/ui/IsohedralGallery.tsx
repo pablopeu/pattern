@@ -4,6 +4,7 @@ import { Modal } from './Modal';
 import { isohedralCatalog } from '../isohedral/catalog';
 import { isohedralThumbnail } from '../isohedral/preview';
 
+import { tr } from '../i18n';
 export function IsohedralGallery({
   onClose,
   onSelect,
@@ -49,20 +50,20 @@ export function IsohedralGallery({
     [entries, current, size, curved],
   );
   return (
-    <Modal label="Catálogo isoédrico" className="isohedral-gallery" onClose={onClose}>
+    <Modal label={tr('Catálogo isoédrico')} className="isohedral-gallery" onClose={onClose}>
       <header>
         <div>
-          <h2>Teselas isoédricas</h2>
+          <h2>{tr('Teselas isoédricas')}</h2>
           <p>93 tipos verificados · 81 geométricos y 12 con marcas interiores</p>
         </div>
-        <button aria-label="Cerrar catálogo isoédrico" onClick={onClose}>
+        <button aria-label={tr('Cerrar catálogo isoédrico')} onClick={onClose}>
           <X size={20} />
         </button>
       </header>
       <div className="isohedral-filters">
         <input
-          aria-label="Buscar tipo IH"
-          placeholder="IH41, p3, [4^4]…"
+          aria-label={tr('Buscar tipo IH')}
+          placeholder={tr('IH41, p3, [4^4]…')}
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -70,7 +71,7 @@ export function IsohedralGallery({
           }}
         />
         <select
-          aria-label="Familia isoédrica"
+          aria-label={tr('Familia isoédrica')}
           value={family}
           onChange={(e) => {
             setFamily(e.target.value);
@@ -88,12 +89,12 @@ export function IsohedralGallery({
           ))}
         </select>
         <select
-          aria-label="Bordes iniciales del catálogo"
+          aria-label={tr('Bordes iniciales del catálogo')}
           value={String(curved)}
           onChange={(e) => setCurved(e.target.value === 'true')}
         >
-          <option value="false">Bordes rectos</option>
-          <option value="true">Curva suave</option>
+          <option value="false">{tr('Bordes rectos')}</option>
+          <option value="true">{tr('Curva suave')}</option>
         </select>
       </div>
       <div className="isohedral-cards">
@@ -120,10 +121,10 @@ export function IsohedralGallery({
               {row.topology} · tesela {row.tileSymmetry}
             </small>
             <div className="isohedral-badges">
-              {row.marked && <span>Marcas interiores</span>}
-              {row.reflection && <span>Reflexiones</span>}
-              {row.rotation && <span>Giros</span>}
-              {row.group === 'p1' && <span>Traslaciones</span>}
+              {row.marked && <span>{tr('Marcas interiores')}</span>}
+              {row.reflection && <span>{tr('Reflexiones')}</span>}
+              {row.rotation && <span>{tr('Giros')}</span>}
+              {row.group === 'p1' && <span>{tr('Traslaciones')}</span>}
             </div>
             <p>
               {row.implemented

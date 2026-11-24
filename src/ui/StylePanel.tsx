@@ -20,6 +20,7 @@ import {
 import { fromMM, toMM } from '../geometry/matrix';
 import { Field, Select, Toggle } from './Controls';
 
+import { tr , translateMessage } from '../i18n';
 function Paint({
   label,
   value,
@@ -68,7 +69,7 @@ function Paint({
     <div className="paint-control">
       <label>
         {label}
-        {mixed && <small> Mixto</small>}
+        {mixed && <small>{tr('Mixto')}</small>}
       </label>
       {expanded && (
         <ColorPicker value={value} onChange={onChange} onStart={onStart} onEnd={onEnd} />
@@ -105,7 +106,7 @@ function Paint({
         </button>
       </div>
       {value !== 'none' && opacity < 1 && <small>Alfa {Math.round(opacity * 100)}%</small>}
-      {error && <small role="alert">{error}</small>}
+      {error && <small role="alert">{translateMessage(error)}</small>}
     </div>
   );
 }
@@ -148,7 +149,7 @@ export function StyleControls({
         slider={slider}
         onChange={(n) => patch({ [key]: n })}
       />
-      {mixed.has(key) && <small>Mixto · editar aplica sólo este atributo</small>}
+      {mixed.has(key) && <small>{tr('Mixto · editar aplica sólo este atributo')}</small>}
     </div>
   );
   const palette = s.project.palette,
@@ -185,7 +186,7 @@ export function StyleControls({
       {s.stylePage === 'colors' && (
         <div className="compact-fields">
           <Paint
-            label="Trazo"
+            label={tr('Trazo')}
             value={v.stroke}
             opacity={v.strokeOpacity}
             mixed={mixed.has('stroke')}
@@ -194,7 +195,7 @@ export function StyleControls({
             }
           />
           <Paint
-            label="Relleno"
+            label={tr('Relleno')}
             value={v.fill}
             opacity={v.fillOpacity}
             mixed={mixed.has('fill')}
@@ -206,7 +207,7 @@ export function StyleControls({
       {s.stylePage === 'stroke' && (
         <div className="stroke-paint compact-fields">
           <Paint
-            label="Trazo"
+            label={tr('Trazo')}
             value={v.stroke}
             opacity={v.strokeOpacity}
             mixed={mixed.has('stroke')}
@@ -219,7 +220,7 @@ export function StyleControls({
       <div hidden={s.stylePage !== 'stroke'} className="compact-fields stroke-fields">
         <div className={mixed.has('strokeWidth') ? 'style-mixed' : ''}>
           <Field
-            label="Grosor de trazo"
+            label={tr('Grosor de trazo')}
             value={fromMM(v.strokeWidth, u)}
             unit={u}
             min={0}
@@ -229,43 +230,43 @@ export function StyleControls({
             slider
             onChange={(n) => patch({ strokeWidth: toMM(n, u) })}
           />
-          {mixed.has('strokeWidth') && <small>Mixto</small>}
+          {mixed.has('strokeWidth') && <small>{tr('Mixto')}</small>}
         </div>
-        {numeric('strokeOpacity', 'Opacidad de trazo', 0, 1, 0.01, true)}
+        {numeric('strokeOpacity', tr('Opacidad de trazo'), 0, 1, 0.01, true)}
         <Select
-          label="Extremos del trazo"
+          label={tr('Extremos del trazo')}
           value={mixed.has('strokeCap') ? 'mixed' : v.strokeCap}
           options={[
-            ...(mixed.has('strokeCap') ? [{ value: 'mixed', label: 'Mixto' }] : []),
-            { value: 'round', label: 'Redondos' },
-            { value: 'butt', label: 'Rectos' },
-            { value: 'square', label: 'Cuadrados' },
+            ...(mixed.has('strokeCap') ? [{ value: 'mixed', label: tr('Mixto') }] : []),
+            { value: 'round', label: tr('Redondos') },
+            { value: 'butt', label: tr('Rectos') },
+            { value: 'square', label: tr('Cuadrados') },
           ]}
           onChange={(n) => patch({ strokeCap: n as DrawingStyle['strokeCap'] })}
         />
         <Select
-          label="Uniones del trazo"
+          label={tr('Uniones del trazo')}
           value={mixed.has('strokeJoin') ? 'mixed' : v.strokeJoin}
           options={[
-            ...(mixed.has('strokeJoin') ? [{ value: 'mixed', label: 'Mixto' }] : []),
-            { value: 'round', label: 'Redondas' },
-            { value: 'miter', label: 'En inglete' },
-            { value: 'bevel', label: 'En bisel' },
+            ...(mixed.has('strokeJoin') ? [{ value: 'mixed', label: tr('Mixto') }] : []),
+            { value: 'round', label: tr('Redondas') },
+            { value: 'miter', label: tr('En inglete') },
+            { value: 'bevel', label: tr('En bisel') },
           ]}
           onChange={(n) => patch({ strokeJoin: n as DrawingStyle['strokeJoin'] })}
         />
-        {numeric('miterLimit', 'Límite de inglete', 1, 100, 0.5)}
+        {numeric('miterLimit', tr('Límite de inglete'), 1, 100, 0.5)}
         <Select
-          label="Estilo de línea"
+          label={tr('Estilo de línea')}
           value={mixed.has('strokeDash') ? 'mixed' : linePatternName(v.strokeDash)}
           options={[
-            ...(mixed.has('strokeDash') ? [{ value: 'mixed', label: 'Mixto' }] : []),
-            { value: 'solid', label: 'Continua' },
-            { value: 'dotted', label: 'Punteada' },
-            { value: 'dashed', label: 'Discontinua' },
-            { value: 'dashdot', label: 'Guion y punto' },
-            { value: 'long', label: 'Guiones largos' },
-            { value: 'custom', label: 'Personalizada' },
+            ...(mixed.has('strokeDash') ? [{ value: 'mixed', label: tr('Mixto') }] : []),
+            { value: 'solid', label: tr('Continua') },
+            { value: 'dotted', label: tr('Punteada') },
+            { value: 'dashed', label: tr('Discontinua') },
+            { value: 'dashdot', label: tr('Guion y punto') },
+            { value: 'long', label: tr('Guiones largos') },
+            { value: 'custom', label: tr('Personalizada') },
           ]}
           onChange={(n) => {
             if (n in linePatterns)
@@ -274,9 +275,9 @@ export function StyleControls({
           }}
         />
         <label className="select-field">
-          <span>Secuencia en mm</span>
+          <span>{tr('Secuencia en mm')}</span>
           <input
-            aria-label="Secuencia de guiones"
+            aria-label={tr('Secuencia de guiones')}
             value={dash}
             onChange={(e) => setDash(e.target.value)}
             onBlur={() => {
@@ -304,15 +305,15 @@ export function StyleControls({
       </div>
       <div hidden={s.stylePage !== 'profile'} className="compact-fields">
         <Select
-          label="Perfil de grosor"
+          label={tr('Perfil de grosor')}
           value={mixed.has('strokeProfile') ? 'mixed' : v.strokeProfile.kind}
           options={[
-            ...(mixed.has('strokeProfile') ? [{ value: 'mixed', label: 'Mixto' }] : []),
-            { value: 'uniform', label: 'Uniforme' },
-            { value: 'taper-start', label: 'Afinar inicio' },
-            { value: 'taper-end', label: 'Afinar final' },
-            { value: 'taper-both', label: 'Afinar extremos' },
-            { value: 'custom', label: 'Personalizado' },
+            ...(mixed.has('strokeProfile') ? [{ value: 'mixed', label: tr('Mixto') }] : []),
+            { value: 'uniform', label: tr('Uniforme') },
+            { value: 'taper-start', label: tr('Afinar inicio') },
+            { value: 'taper-end', label: tr('Afinar final') },
+            { value: 'taper-both', label: tr('Afinar extremos') },
+            { value: 'custom', label: tr('Personalizado') },
           ]}
           onChange={(n) =>
             patch({
@@ -325,7 +326,7 @@ export function StyleControls({
           className="profile-preview"
           viewBox="0 0 240 70"
           role="img"
-          aria-label="Curva del perfil de grosor"
+          aria-label={tr('Curva del perfil de grosor')}
         >
           <path
             d={
@@ -401,7 +402,7 @@ export function StyleControls({
         {v.strokeProfile.kind === 'custom' && (
           <div className="profile-points">
             <Select
-              label="Punto de perfil"
+              label={tr('Punto de perfil')}
               value={String(Math.min(profilePoint, v.strokeProfile.points.length - 1))}
               onChange={(n) => setProfilePoint(Number(n))}
               options={v.strokeProfile.points.map((_, i) => ({
@@ -472,7 +473,7 @@ export function StyleControls({
         {s.stylePage === 'fill' && (
           <>
             <Paint
-              label="Relleno"
+              label={tr('Relleno')}
               expanded
               onStart={s.beginGesture}
               onEnd={s.endGesture}
@@ -485,18 +486,17 @@ export function StyleControls({
           </>
         )}
         <details className="fill-advanced">
-          <summary>Opciones avanzadas de relleno</summary>
+          <summary>{tr('Opciones avanzadas de relleno')}</summary>
           <p>
-            La regla decide qué partes se pintan cuando un contorno se cruza o tiene agujeros. En
-            general podés dejar Par / impar.
+            {tr('La regla decide qué partes se pintan cuando un contorno se cruza o tiene agujeros. En general podés dejar Par / impar.')}
           </p>
           <Select
-            label="Regla de relleno"
+            label={tr('Regla de relleno')}
             value={mixed.has('fillRule') ? 'mixed' : v.fillRule}
             options={[
-              ...(mixed.has('fillRule') ? [{ value: 'mixed', label: 'Mixto' }] : []),
-              { value: 'evenodd', label: 'Par / impar (huecos)' },
-              { value: 'nonzero', label: 'No cero (orientación)' },
+              ...(mixed.has('fillRule') ? [{ value: 'mixed', label: tr('Mixto') }] : []),
+              { value: 'evenodd', label: tr('Par / impar (huecos)') },
+              { value: 'nonzero', label: tr('No cero (orientación)') },
             ]}
             onChange={(fillRule) => patch({ fillRule: fillRule as DrawingStyle['fillRule'] })}
           />
@@ -504,22 +504,22 @@ export function StyleControls({
       </div>
       <div hidden={s.stylePage !== 'palette'} className="compact-fields">
         <Select
-          label="Aplicar color de paleta a"
+          label={tr('Aplicar color de paleta a')}
           value={paintTarget}
           options={[
-            { value: 'stroke', label: 'Trazo' },
-            { value: 'fill', label: 'Relleno' },
+            { value: 'stroke', label: tr('Trazo') },
+            { value: 'fill', label: tr('Relleno') },
           ]}
           onChange={(n) => setPaintTarget(n as 'stroke' | 'fill')}
         />
         <Select
-          label="Paleta"
+          label={tr('Paleta')}
           value={paletteGroup}
           onChange={(v) => {
             setPaletteGroup(v);
             setPalettePage(0);
           }}
-          options={['Frecuentes', 'Recientes', 'Favoritos', 'Proyecto']}
+          options={['Frecuentes', 'Recientes', 'Favoritos', 'Proyecto'].map((v) => ({ value: v, label: tr(v) }))}
         />
         {[
           ['Frecuentes', frequent],
@@ -528,7 +528,7 @@ export function StyleControls({
           ['Proyecto', palette.colors],
         ].map(([name, colors]) => (
           <div key={name as string} className="palette-group" hidden={paletteGroup !== name}>
-            <small>{name}</small>
+            <small>{tr(name as string)}</small>
             <div className="palette-swatches">
               {(colors as string[]).slice(palettePage * 16, (palettePage + 1) * 16).map((color) => (
                 <button
@@ -571,8 +571,8 @@ export function StyleControls({
                 })
               }
             >
-              {palette[key].includes(v[paintTarget]) ? 'Quitar de' : 'Agregar a'}{' '}
-              {key === 'colors' ? 'proyecto' : 'favoritos'}
+              {palette[key].includes(v[paintTarget]) ? tr('Quitar de') : tr('Agregar a')}{' '}
+              {key === 'colors' ? tr('proyecto') : tr('favoritos')}
             </button>
           ))}
         </div>
@@ -590,9 +590,9 @@ export function StyleControls({
               })
             }
           >
-            Intercambiar trazo y relleno
+            {tr('Intercambiar trazo y relleno')}
           </button>
-          <button onClick={() => patch(defaultDrawingStyle())}>Restablecer estilo</button>
+          <button onClick={() => patch(defaultDrawingStyle())}>{tr('Restablecer estilo')}</button>
         </div>
       </div>
     </div>
@@ -603,10 +603,10 @@ export function StyleIndicator({ studio: s }: { studio: Studio }) {
   return (
     <button
       className="style-indicator"
-      aria-label="Abrir panel de estilos"
+      aria-label={tr('Abrir panel de estilos')}
       aria-expanded={s.styleOpen}
       onClick={() => s.setStyleOpen(!s.styleOpen)}
-      title="Estilo vigente o selección · abrir panel derecho"
+      title={tr('Estilo vigente o selección · abrir panel derecho')}
     >
       <SlidersHorizontal size={15} />
       <span
@@ -636,14 +636,14 @@ export function StyleIndicator({ studio: s }: { studio: Studio }) {
               : v.fill,
         }}
       />
-      <span aria-label="Patrón de línea vigente">
+      <span aria-label={tr('Patrón de línea vigente')}>
         {mixed.has('strokeDash')
           ? '?'
           : { solid: '—', dotted: '···', dashed: '– –', dashdot: '–·', long: '──', custom: '≋' }[
               linePatternName(v.strokeDash)
             ]}
       </span>
-      {mixed.size > 0 && <small>Mixto</small>}
+      {mixed.size > 0 && <small>{tr('Mixto')}</small>}
       <span className="indicator-detail">
         {mixed.size
           ? 'Mixto'
@@ -655,7 +655,7 @@ export function StyleIndicator({ studio: s }: { studio: Studio }) {
               long: 'Largos',
               custom: 'Personalizada',
             }[linePatternName(v.strokeDash)]}{' '}
-        · {s.styleTarget === 'selection' && s.styleSelection.length ? 'Selección' : 'Vigente'}
+        · {s.styleTarget === 'selection' && s.styleSelection.length ? tr('Selección') : tr('Vigente')}
       </span>
     </button>
   );
@@ -682,19 +682,19 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
   }, [s.styleSelection.length, s.stylePage, s.tool]);
   if (!s.styleOpen) return null;
   return (
-    <aside className="style-panel" aria-label="Panel de estilos">
+    <aside className="style-panel" aria-label={tr('Panel de estilos')}>
       <header>
         <strong>
           {
             {
-              colors: 'Colores',
-              stroke: 'Trazo',
-              fill: 'Rellenar región',
-              profile: 'Perfil de trazo',
-              palette: 'Paleta',
-              presets: 'Presets',
-              object: 'Objeto',
-              options: 'Opciones',
+              colors: tr('Colores'),
+              stroke: tr('Trazo'),
+              fill: tr('Rellenar región'),
+              profile: tr('Perfil de trazo'),
+              palette: tr('Paleta'),
+              presets: tr('Presets'),
+              object: tr('Objeto'),
+              options: tr('Opciones'),
             }[s.stylePage]
           }
         </strong>
@@ -702,7 +702,7 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
           <StyleIndicator studio={s} />
         </div>
         <button
-          aria-label="Fijar panel de estilos"
+          aria-label={tr('Fijar panel de estilos')}
           aria-pressed={s.project.preferences.stylePanelPinned}
           className={s.project.preferences.stylePanelPinned ? 'active' : ''}
           onClick={() =>
@@ -711,11 +711,11 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
         >
           <Pin size={17} />
         </button>
-        <button aria-label="Cerrar panel de estilos" onClick={() => s.setStyleOpen(false)}>
+        <button aria-label={tr('Cerrar panel de estilos')} onClick={() => s.setStyleOpen(false)}>
           <X size={18} />
         </button>
       </header>
-      <div className="context-tabs style-tabs" role="tablist" aria-label="Estilos y propiedades">
+      <div className="context-tabs style-tabs" role="tablist" aria-label={tr('Estilos y propiedades')}>
         {(['stroke', 'profile', 'fill', 'palette', 'presets', 'object', 'options'] as const)
           .filter((id) => id !== 'object' || !!s.styleSelection.length)
           .map((id) => (
@@ -727,13 +727,13 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
             >
               {
                 {
-                  stroke: 'Trazo',
-                  profile: 'Perfil',
+                  stroke: tr('Trazo'),
+                  profile: tr('Perfil'),
                   fill: 'Fill',
-                  palette: 'Paleta',
-                  presets: 'Presets',
-                  object: 'Objeto',
-                  options: 'Opciones',
+                  palette: tr('Paleta'),
+                  presets: tr('Presets'),
+                  object: tr('Objeto'),
+                  options: tr('Opciones'),
                 }[id]
               }
             </button>
@@ -741,16 +741,16 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
       </div>
       <div className="style-panel-body">
         <Select
-          label="Aplicar a"
+          label={tr('Aplicar a')}
           value={s.styleTarget}
           options={[
             {
               value: 'selection',
               label: s.styleSelection.length
-                ? `Selección (${s.styleSelection.length})`
+                ? tr('Selección ({n})', { n: s.styleSelection.length })
                 : 'Vigente (sin selección)',
             },
-            { value: 'current', label: 'Próximos trazos y rellenos' },
+            { value: 'current', label: tr('Próximos trazos y rellenos') },
           ]}
           onChange={(v) => s.setStyleTarget(v as 'selection' | 'current')}
         />
@@ -766,22 +766,22 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
         <div hidden={s.stylePage !== 'options'}>
           {' '}
           <Toggle
-            label="Edición de selección actualiza estilo vigente"
+            label={tr('Edición de selección actualiza estilo vigente')}
             checked={s.project.preferences.styleDefaultsFollowSelection}
             onChange={(v) => s.updateViewPreferences({ styleDefaultsFollowSelection: v })}
           />
         </div>
         <div hidden={s.stylePage !== 'fill'} className="compact-fields">
           <p className="fill-help">
-            Elegí el color y hacé clic o tocá dentro de una zona cerrada. El relleno queda aplicado.
+            {tr('Elegí el color y hacé clic o tocá dentro de una zona cerrada. El relleno queda aplicado.')}
           </p>
           <Toggle
-            label="Nuevos rellenos vinculados a sus límites"
+            label={tr('Nuevos rellenos vinculados a sus límites')}
             checked={s.project.preferences.fillLinkedDefault}
             onChange={(v) => s.updateViewPreferences({ fillLinkedDefault: v })}
           />
           <Field
-            label="Tolerancia de cierre de Fill"
+            label={tr('Tolerancia de cierre de Fill')}
             unit="mm"
             value={s.project.preferences.fillCloseTolerance}
             min={0}
@@ -792,7 +792,7 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
           <small>
             {s.project.preferences.fillCloseTolerance > 0
               ? 'Cierre aproximado explícito. No modifica los límites originales.'
-              : 'Cierre exacto: tolerancia numérica de 0,000001 mm.'}
+              : tr('Cierre exacto: tolerancia numérica de 0,000001 mm.')}
           </small>
           {s.styleSelection
             .filter((g) => g.fillRegion)
@@ -821,7 +821,7 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
                     Recalcular y vincular región
                   </button>
                   {s.recalculatingId === g.id && (
-                    <button onClick={s.cancelRecalculation}>Cancelar actualización</button>
+                    <button onClick={s.cancelRecalculation}>{tr('Cancelar actualización')}</button>
                   )}
                 </div>
                 <Toggle
@@ -846,12 +846,12 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
             ))}
         </div>
         <div hidden={s.stylePage !== 'presets'} className="compact-fields">
-          <strong>Presets de estilo</strong>
+          <strong>{tr('Presets de estilo')}</strong>
           <Select
-            label="Preset de estilo"
+            label={tr('Preset de estilo')}
             value={presetId}
             options={[
-              { value: '', label: 'Elegir preset' },
+              { value: '', label: tr('Elegir preset') },
               ...s.project.stylePresets.map((p) => ({ value: p.id, label: p.name })),
             ]}
             onChange={(id) => {
@@ -860,10 +860,10 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
             }}
           />
           <input
-            aria-label="Nombre del preset de estilo"
+            aria-label={tr('Nombre del preset de estilo')}
             value={name}
             maxLength={120}
-            placeholder="Nombre del estilo"
+            placeholder={tr('Nombre del estilo')}
             onChange={(e) => setName(e.target.value)}
           />
           <div className="button-row">
@@ -877,13 +877,13 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
                 setPresetId(id);
               }}
             >
-              Guardar nuevo
+              {tr('Guardar nuevo')}
             </button>
             <button
               disabled={!preset}
               onClick={() => preset && s.applyStyle(drawingStyle(preset.style))}
             >
-              Aplicar preset
+              {tr('Aplicar preset')}
             </button>
             <button
               disabled={!preset || !name.trim()}
@@ -912,7 +912,7 @@ export function StylePanel({ studio: s }: { studio: Studio }) {
                 setName((preset.name + ' copia').slice(0, 120));
               }}
             >
-              Duplicar preset
+              {tr('Duplicar preset')}
             </button>
             <button
               disabled={!preset || mixed.size > 0}

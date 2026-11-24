@@ -14,6 +14,7 @@ import { byteLength, gzipSize, shareDocument } from '../share/document';
 import { renderSharePreview, type SharePreview } from '../share/preview';
 import { download } from '../persistence/storage';
 
+import { tr , translateMessage } from '../i18n';
 export function ShareDialog({ studio: s, onClose }: { studio: Studio; onClose: () => void }) {
   const project = s.project,
     previous = publishedFor(project.metadata.id),
@@ -99,7 +100,7 @@ export function ShareDialog({ studio: s, onClose }: { studio: Studio; onClose: (
   const remove = async () => {
     const id = result?.id ?? previous?.id;
     if (!id || !secretFor(id)) return;
-    if (!window.confirm('¿Retirar esta publicación? El enlace dejará de funcionar.')) return;
+    if (!window.confirm(tr('¿Retirar esta publicación? El enlace dejará de funcionar.'))) return;
     setBusy('Retirando…');
     try {
       await deleteShare(id);
@@ -115,13 +116,13 @@ export function ShareDialog({ studio: s, onClose }: { studio: Studio; onClose: (
   };
 
   return (
-    <Modal label="Compartir creación" className="share-dialog" onClose={onClose}>
+    <Modal label={tr('Compartir creación')} className="share-dialog" onClose={onClose}>
       <header>
         <div>
-          <small>PUBLICACIÓN VOLUNTARIA · ENLACE PERMANENTE</small>
-          <h2>Compartir</h2>
+          <small>{tr('PUBLICACIÓN VOLUNTARIA · ENLACE PERMANENTE')}</small>
+          <h2>{tr('Compartir')}</h2>
         </div>
-        <button aria-label="Cerrar compartir" onClick={onClose}>
+        <button aria-label={tr('Cerrar compartir')} onClick={onClose}>
           <X size={18} />
         </button>
       </header>
@@ -130,28 +131,26 @@ export function ShareDialog({ studio: s, onClose }: { studio: Studio; onClose: (
           {preview ? (
             <img
               src={preview.dataUrl}
-              alt="Miniatura de la creación"
+              alt={tr('Miniatura de la creación')}
               width={preview.width}
               height={preview.height}
             />
           ) : previewReady ? (
             <p role="status">
-              Esta creación no cabe en una miniatura de 100 KiB: se publicará con la tarjeta
-              genérica de Patterns. El enlace y la creación siguen siendo válidos.
+              {tr('Esta creación no cabe en una miniatura de 100 KiB: se publicará con la tarjeta genérica de Patterns. El enlace y la creación siguen siendo válidos.')}
             </p>
           ) : (
-            <p role="status">Preparando la miniatura…</p>
+            <p role="status">{tr('Preparando la miniatura…')}</p>
           )}
         </div>
         <div className="share-info">
           <h3>{title}</h3>
           <p>
-            La publicación será <strong>pública</strong>: cualquiera con el enlace podrá ver y
-            editar una copia. Tu estudio local no se modifica y sigue funcionando sin conexión.
+            {tr('La publicación será pública: cualquiera con el enlace podrá ver y editar una copia. Tu estudio local no se modifica y sigue funcionando sin conexión.')}
           </p>
           {sizes && (
             <p className="help-text">
-              Documento ~{(sizes.json / 1024).toFixed(1)} KiB · comprimido ~
+              {tr('Documento')} ~{(sizes.json / 1024).toFixed(1)} KiB · {tr('comprimido')} ~
               {(sizes.gzip / 1024).toFixed(1)} KiB
             </p>
           )}
@@ -159,18 +158,17 @@ export function ShareDialog({ studio: s, onClose }: { studio: Studio; onClose: (
             <div className="share-previous">
               {unchanged ? (
                 <>
-                  <p>Este estudio ya está publicado con el mismo contenido.</p>
+                  <p>{tr('Este estudio ya está publicado con el mismo contenido.')}</p>
                   <button onClick={() => setShowPrevious(true)}>
-                    <Link2 size={15} /> Usar el enlace existente
+                    <Link2 size={15} /> {tr('Usar el enlace existente')}
                   </button>
                 </>
               ) : (
                 <>
                   <p>
-                    Existen cambios posteriores a la publicación anterior. Podés compartir la
-                    versión ya publicada o crear una publicación nueva.
+                    {tr('Existen cambios posteriores a la publicación anterior. Podés compartir la versión ya publicada o crear una publicación nueva.')}
                   </p>
-                  <button onClick={() => setShowPrevious(true)}>Compartir la versión anterior</button>
+                  <button onClick={() => setShowPrevious(true)}>{tr('Compartir la versión anterior')}</button>
                 </>
               )}
             </div>
@@ -181,22 +179,22 @@ export function ShareDialog({ studio: s, onClose }: { studio: Studio; onClose: (
               disabled={!!busy || !previewReady}
               onClick={() => void publish()}
             >
-              <Share2 size={16} /> {busy || 'Crear enlace público'}
+              <Share2 size={16} /> {busy || tr('Crear enlace público')}
             </button>
           )}
           {link && (
             <>
               <label className="share-link">
-                Enlace público
+                {tr('Enlace público')}
                 <span>
-                  <input readOnly value={link} aria-label="Enlace público" onFocus={(e) => e.target.select()} />
-                  <button aria-label="Copiar enlace" onClick={() => void copy()}>
-                    <Copy size={15} /> {copied ? 'Copiado' : 'Copiar'}
+                  <input readOnly value={link} aria-label={tr('Enlace público')} onFocus={(e) => e.target.select()} />
+                  <button aria-label={tr('Copiar enlace')} onClick={() => void copy()}>
+                    <Copy size={15} /> {copied ? tr('Copiado') : tr('Copiar')}
                   </button>
                 </span>
               </label>
               {shareUrls && (
-                <div className="share-networks" role="group" aria-label="Compartir en redes">
+                <div className="share-networks" role="group" aria-label={tr('Compartir en redes')}>
                   <a href={shareUrls.whatsapp} target="_blank" rel="noreferrer">
                     WhatsApp
                   </a>
@@ -215,19 +213,18 @@ export function ShareDialog({ studio: s, onClose }: { studio: Studio; onClose: (
                         void navigator.share({ title, text: `${title} · Pattern Studio`, url: link })
                       }
                     >
-                      Compartir…
+                      {tr('Compartir…')}
                     </button>
                   )}
                 </div>
               )}
               <details className="share-instagram">
-                <summary>Instagram</summary>
+                <summary>{tr('Instagram')}</summary>
                 <p>
-                  Instagram no ofrece publicar un enlace con vista previa desde la web. Copiá el
-                  enlace o descargá la miniatura y agregá el enlace en tu publicación o historia.
+                  {tr('Instagram no ofrece publicar un enlace con vista previa desde la web. Copiá el enlace o descargá la miniatura y agregá el enlace en tu publicación o historia.')}
                 </p>
                 <button onClick={() => void copy()}>
-                  <Copy size={14} /> Copiar enlace
+                  <Copy size={14} /> {tr('Copiar enlace')}
                 </button>
                 {preview && (
                   <button
@@ -239,20 +236,20 @@ export function ShareDialog({ studio: s, onClose }: { studio: Studio; onClose: (
                       )
                     }
                   >
-                    <Download size={14} /> Descargar miniatura
+                    <Download size={14} /> {tr('Descargar miniatura')}
                   </button>
                 )}
               </details>
               {secretFor(result?.id ?? previous?.id ?? '') && (
                 <button className="share-remove" onClick={() => void remove()}>
-                  <Trash2 size={14} /> Retirar publicación de este dispositivo
+                  <Trash2 size={14} /> {tr('Retirar publicación de este dispositivo')}
                 </button>
               )}
             </>
           )}
           {error && (
             <p className="disk-error" role="alert">
-              {error}
+              {translateMessage(error)}
             </p>
           )}
         </div>

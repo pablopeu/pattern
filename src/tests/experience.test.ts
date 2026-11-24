@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
+  themedBackground,
+  themedDrawingStyle,
+  themedGridDot,
   detectLanguage,
   experienceDefaults,
   parseExperience,
@@ -44,5 +47,47 @@ describe('experiencia: idioma, tema y modo', () => {
     expect(Object.keys(en).sort()).toEqual(Object.keys(es).sort());
     for (const value of Object.values(en)) expect(value.trim().length).toBeGreaterThan(0);
     for (const value of Object.values(es)) expect(value.trim().length).toBeGreaterThan(0);
+  });
+});
+
+describe('lienzo y defaults según el tema', () => {
+  const withTheme = (theme: string | undefined, run: () => void) => {
+    const prev = (globalThis as { document?: unknown }).document;
+    (globalThis as { document?: unknown }).document = theme
+      ? { documentElement: { dataset: { theme } } }
+      : undefined;
+    try {
+      run();
+    } finally {
+      (globalThis as { document?: unknown }).document = prev;
+    }
+  };
+  it('oscurece el lienzo sólo con el fondo predeterminado', () => {
+    withTheme('dark', () => {
+      expect(themedBackground('#f8faf5')).toBe('#1b211c');
+      expect(themedBackground('#ffffff')).toBe('#ffffff');
+      expect(themedBackground('#112233')).toBe('#112233');
+    });
+    withTheme('light', () => expect(themedBackground('#f8faf5')).toBe('#f8faf5'));
+  });
+  it('aclara los defaults de trazo y relleno sólo en oscuro', () => {
+    withTheme('dark', () => {
+      expect(themedDrawingStyle({ stroke: '#233b2d', fill: '#3b82f6' })).toEqual({
+        stroke: '#e7eee1',
+        fill: '#a9cfe0',
+      });
+      expect(themedDrawingStyle({ stroke: '#ff0000', fill: 'none' })).toEqual({
+        stroke: '#ff0000',
+        fill: 'none',
+      });
+      expect(themedGridDot()).toBe('#7d917d');
+    });
+    withTheme('light', () => {
+      expect(themedDrawingStyle({ stroke: '#233b2d', fill: '#3b82f6' })).toEqual({
+        stroke: '#233b2d',
+        fill: '#3b82f6',
+      });
+      expect(themedGridDot()).toBe('#000000');
+    });
   });
 });

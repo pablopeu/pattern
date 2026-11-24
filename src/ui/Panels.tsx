@@ -7,7 +7,7 @@ import { TilePanel } from './TilePanel';
 import { SymmetryGallery } from './SymmetryGallery';
 import { freezePattern } from '../symmetry/config';
 import { useState, useEffect, useRef } from 'react';
-import { categories, type Category } from './navigation';
+import { type Category } from './navigation';
 import {
   Eye,
   EyeOff,
@@ -42,7 +42,7 @@ import { generatorLabels, generatorParameters, generate } from '../generators';
 
 import { pathData } from '../geometry/paths';
 import { Field, Section, Select, Toggle } from './Controls';
-import { message, useI18n, useExperienceActions, type LanguagePreference, type ThemePreference, type UiMode } from '../i18n';
+import { tr, message, translateMessage, useI18n, useExperienceActions, type MessageKey, type LanguagePreference, type ThemePreference, type UiMode } from '../i18n';
 const paramLabels: Partial<Record<keyof Generator, string>> = {
   rows: 'Filas',
   columns: 'Columnas',
@@ -212,7 +212,7 @@ export function Panels({
   return (
     <aside
       className="context-panel"
-      aria-label="Panel contextual"
+      aria-label={tr('Panel contextual')}
       hidden={collapsed}
       onKeyDown={(e) => {
         if (e.key === 'Escape') {
@@ -223,24 +223,24 @@ export function Panels({
       }}
     >
       <header className="context-heading">
-        <span>{categories.find((c) => c.id === category)?.label}</span>
+        <span>{message(`category.${category}` as MessageKey)}</span>
         <button
-          aria-label="Cerrar panel izquierdo"
-          title="Cerrar panel izquierdo (Esc)"
+          aria-label={tr('Cerrar panel izquierdo')}
+          title={tr('Cerrar panel izquierdo (Esc)')}
           onClick={onCollapse}
         >
           ×
         </button>
       </header>
       {category === 'layers' && s.mode !== 'apply' && (
-        <div className="panel-tabs" role="tablist" aria-label="Organización">
+        <div className="panel-tabs" role="tablist" aria-label={tr('Organización')}>
           <button
             role="tab"
             aria-selected={tab === 'design'}
             className={tab === 'design' ? 'selected' : ''}
             onClick={() => setTab('design')}
           >
-            <SlidersHorizontal size={15} /> Conjuntos
+            <SlidersHorizontal size={15} /> {tr('Conjuntos')}
           </button>
           <button
             role="tab"
@@ -248,41 +248,41 @@ export function Panels({
             className={tab === 'layers' ? 'selected' : ''}
             onClick={() => setTab('layers')}
           >
-            <Layers size={15} /> Objetos <span>{s.objects.length}</span>
+            <Layers size={15} />{tr('Objetos')}<span>{s.objects.length}</span>
           </button>
         </div>
       )}
       {category === 'symmetry' && (
-        <div className="panel-tabs" role="tablist" aria-label="Opciones de simetría">
+        <div className="panel-tabs" role="tablist" aria-label={tr('Opciones de simetría')}>
           <button role="tab" aria-selected={tab === 'design'} onClick={() => setTab('design')}>
-            Grupo y red
+            {tr('Grupo y red')}
           </button>
           <button
             role="tab"
             aria-selected={tab === 'placement'}
             onClick={() => setTab('placement')}
           >
-            Colocación
+            {tr('Colocación')}
           </button>
           <button
             role="tab"
             aria-selected={tab === 'generator'}
             onClick={() => setTab('generator')}
           >
-            Generador
+            {tr('Generador')}
           </button>
           <button
             role="tab"
             aria-selected={tab === 'composition'}
             onClick={() => setTab('composition')}
           >
-            Composición
+            {tr('Composición')}
           </button>
         </div>
       )}
       <div ref={scrollRef} className={`panel-scroll context-${category}`}>
         {category === 'layers' && tab === 'design' && s.mode !== 'apply' && (
-          <div className="pattern-set-list" aria-label="Conjuntos de composición">
+          <div className="pattern-set-list" aria-label={tr('Conjuntos de composición')}>
             <p className="help-text">
               Un conjunto agrupa varios trazos y rellenos. Una zona cerrada no crea otro conjunto.
             </p>
@@ -365,15 +365,15 @@ export function Panels({
         {category === 'layers' && tab === 'layers' ? (
           <>
             <div className="section-caption">
-              {s.mode === 'apply' ? 'OBJETOS DEL PERÍMETRO' : 'OBJETOS DEL CONJUNTO'}{' '}
-              <span>{s.objects.length} objetos</span>
+              {s.mode === 'apply' ? tr('OBJETOS DEL PERÍMETRO') : tr('OBJETOS DEL CONJUNTO')}{' '}
+              <span>{tr('{n} objetos', { n: s.objects.length })}</span>
             </div>
             <div className="layer-list">
               {s.objects.length === 0 && (
-                <p className="help-text">Dibujá una forma para agregar la primera capa.</p>
+                <p className="help-text">{tr('Dibujá una forma para agregar la primera capa.')}</p>
               )}
               <p className="help-text">
-                Cada fila es un objeto. El candado evita seleccionarlo y editarlo; sigue visible.
+                {tr('Cada fila es un objeto. El candado evita seleccionarlo y editarlo; sigue visible.')}
               </p>
               {[...s.objects].reverse().map((g) => (
                 <div
@@ -383,7 +383,7 @@ export function Panels({
                   <button
                     className="layer-name"
                     disabled={g.locked}
-                    title={g.locked ? 'Desbloqueá el objeto para editarlo' : 'Seleccionar objeto'}
+                    title={g.locked ? tr('Desbloqueá el objeto para editarlo') : tr('Seleccionar objeto')}
                     onClick={(e) => {
                       s.setSelected(e.shiftKey ? [...new Set([...s.selected, g.id])] : [g.id]);
                       s.setInstance(IDENTITY);
@@ -398,11 +398,11 @@ export function Panels({
                         strokeWidth={2}
                       />
                     </svg>
-                    <span>{g.name}</span>
+                    <span>{translateMessage(g.name)}</span>
                   </button>
                   <button
-                    title={g.visible ? 'Ocultar' : 'Mostrar'}
-                    aria-label={`${g.visible ? 'Ocultar' : 'Mostrar'} ${g.name}`}
+                    title={g.visible ? tr('Ocultar') : tr('Mostrar')}
+                    aria-label={`${g.visible ? tr('Ocultar') : tr('Mostrar')} ${translateMessage(g.name)}`}
                     onClick={() =>
                       s.editObjects((gs) => {
                         const o = gs.find((x) => x.id === g.id)!;
@@ -413,8 +413,8 @@ export function Panels({
                     {g.visible ? <Eye size={14} /> : <EyeOff size={14} />}
                   </button>
                   <button
-                    title={g.locked ? 'Desbloquear para editar' : 'Bloquear para evitar cambios'}
-                    aria-label={`${g.locked ? 'Desbloquear' : 'Bloquear'} ${g.name}`}
+                    title={g.locked ? tr('Desbloquear para editar') : tr('Bloquear para evitar cambios')}
+                    aria-label={`${g.locked ? tr('Desbloquear') : tr('Bloquear')} ${translateMessage(g.name)}`}
                     aria-pressed={g.locked}
                     onClick={() => {
                       s.editObjects((gs) => {
@@ -432,7 +432,7 @@ export function Panels({
             <div className="button-row">
               <button
                 disabled={!selected.length}
-                title="Subir capa"
+                title={tr('Subir capa')}
                 onClick={() =>
                   s.editObjects((gs) => {
                     for (let i = gs.length - 2; i >= 0; i--)
@@ -444,7 +444,7 @@ export function Panels({
               </button>
               <button
                 disabled={!selected.length}
-                title="Bajar capa"
+                title={tr('Bajar capa')}
                 onClick={() =>
                   s.editObjects((gs) => {
                     for (let i = 1; i < gs.length; i++)
@@ -455,9 +455,9 @@ export function Panels({
                 <ChevronDown size={16} />
               </button>
               <button disabled={!selected.length} onClick={s.duplicate}>
-                <Copy size={16} /> Duplicar
+                <Copy size={16} /> {tr('Duplicar')}
               </button>
-              <button disabled={!selected.length} title="Eliminar" onClick={s.deleteSelected}>
+              <button disabled={!selected.length} title={tr('Eliminar')} onClick={s.deleteSelected}>
                 <Trash2 size={16} />
               </button>
             </div>
@@ -470,7 +470,7 @@ export function Panels({
                 {s.mode !== 'apply' ? (
                   <>
                     <Select
-                      label="Conjunto activo"
+                      label={tr('Conjunto activo')}
                       value={s.pattern.id}
                       onChange={(id) => {
                         s.setPatternId(id);
@@ -491,7 +491,7 @@ export function Panels({
                         <Plus size={14} /> Nuevo conjunto
                       </button>
                       <button
-                        title="Duplicar conjunto"
+                        title={tr('Duplicar conjunto')}
                         onClick={() => {
                           const p = structuredClone(s.pattern);
                           p.id = uid();
@@ -512,9 +512,9 @@ export function Panels({
                       </button>
                     </div>
                     <label className="text-field">
-                      <span>Nombre del conjunto</span>
+                      <span>{tr('Nombre del conjunto')}</span>
                       <input
-                        aria-label="Nombre del conjunto"
+                        aria-label={tr('Nombre del conjunto')}
                         value={s.pattern.name}
                         onChange={(e) =>
                           updatePattern((p) => {
@@ -529,7 +529,7 @@ export function Panels({
                     <div
                       className="context-tabs"
                       role="tablist"
-                      aria-label="Opciones de aplicación"
+                      aria-label={tr('Opciones de aplicación')}
                     >
                       {['region', 'transform', 'link']
                         .filter((id) => !!s.application || id === 'region')
@@ -546,14 +546,14 @@ export function Panels({
                     </div>
                     <div hidden={applicationPage !== 'region'} className="compact-fields">
                       <Select
-                        label="Perímetro"
+                        label={tr('Perímetro')}
                         value={s.regionId}
                         onChange={(id) => {
                           s.setRegionId(id);
                           s.setSelected([]);
                         }}
                         options={[
-                          { value: '', label: 'Seleccionar perímetro' },
+                          { value: '', label: tr('Seleccionar perímetro') },
                           ...s.project.regions.map((r) => ({ value: r.id, label: r.name })),
                         ]}
                       />
@@ -567,10 +567,10 @@ export function Panels({
                         >
                           <Plus size={14} /> Dibujar
                         </button>
-                        <button onClick={onImport}>Importar SVG</button>
+                        <button onClick={onImport}>{tr('Importar SVG')}</button>
                       </div>
                       <Select
-                        label="Patrón a aplicar"
+                        label={tr('Patrón a aplicar')}
                         value={s.pattern.id}
                         onChange={s.setPatternId}
                         options={s.project.patterns.map((p) => ({ value: p.id, label: p.name }))}
@@ -580,7 +580,7 @@ export function Panels({
                       </button>
                       {s.project.applications.length > 0 && (
                         <Select
-                          label="Aplicación activa"
+                          label={tr('Aplicación activa')}
                           value={s.applicationId}
                           onChange={(id) => {
                             s.setApplicationId(id);
@@ -591,7 +591,7 @@ export function Panels({
                             }
                           }}
                           options={[
-                            { value: '', label: 'Seleccionar aplicación' },
+                            { value: '', label: tr('Seleccionar aplicación') },
                             ...s.project.applications.map((a) => ({ value: a.id, label: a.name })),
                           ]}
                         />
@@ -601,7 +601,7 @@ export function Panels({
                       <>
                         <div hidden={applicationPage !== 'link'} className="compact-fields">
                           <Select
-                            label="Cambiar patrón vinculado"
+                            label={tr('Cambiar patrón vinculado')}
                             value={s.application.patternId}
                             onChange={(id) =>
                               changeApplication((a) => {
@@ -618,7 +618,7 @@ export function Panels({
                         </div>
                         <div hidden={applicationPage !== 'transform'} className="compact-fields">
                           <Field
-                            label="Escala uniforme"
+                            label={tr('Escala uniforme')}
                             value={Math.sqrt(
                               Math.abs(
                                 s.application.placementTransform[0] *
@@ -647,7 +647,7 @@ export function Panels({
                             }
                           />
                           <Field
-                            label="Escala X"
+                            label={tr('Escala X')}
                             value={Math.hypot(
                               s.application.placementTransform[0],
                               s.application.placementTransform[1],
@@ -671,7 +671,7 @@ export function Panels({
                             }
                           />
                           <Field
-                            label="Escala Y"
+                            label={tr('Escala Y')}
                             value={Math.hypot(
                               s.application.placementTransform[2],
                               s.application.placementTransform[3],
@@ -695,7 +695,7 @@ export function Panels({
                             }
                           />
                           <Field
-                            label="Rotación de aplicación"
+                            label={tr('Rotación de aplicación')}
                             value={
                               (Math.atan2(
                                 s.application.placementTransform[1],
@@ -744,7 +744,7 @@ export function Panels({
                         </div>
                         <div hidden={applicationPage !== 'link'} className="compact-fields">
                           <Toggle
-                            label="Ver patrón fuera del contorno"
+                            label={tr('Ver patrón fuera del contorno')}
                             checked={s.project.preferences.outside}
                             onChange={(v) =>
                               s.change((p) => {
@@ -753,7 +753,7 @@ export function Panels({
                             }
                           />
                           <Toggle
-                            label="Mostrar contorno"
+                            label={tr('Mostrar contorno')}
                             checked={s.application.showOutline}
                             onChange={(v) =>
                               changeApplication((a) => {
@@ -808,9 +808,9 @@ export function Panels({
             )}
             {category === 'symmetry' && tab === 'generator' && (
               <>
-                <Section title="GENERATOR">
+                <Section title={tr('GENERATOR')}>
                   <Select
-                    label="Familia"
+                    label={tr('Familia')}
                     value={s.pattern.generator.kind}
                     onChange={(kind) => {
                       setGeneratorPage(0);
@@ -859,7 +859,7 @@ export function Panels({
                         return (
                           <Select
                             key={key}
-                            label="Escalonar"
+                            label={tr('Escalonar')}
                             value={s.pattern.generator.staggerAxis}
                             onChange={(v) =>
                               updatePattern((p) => {
@@ -867,8 +867,8 @@ export function Panels({
                               })
                             }
                             options={[
-                              { value: 'rows', label: 'Filas' },
-                              { value: 'columns', label: 'Columnas' },
+                              { value: 'rows', label: tr('Filas') },
+                              { value: 'columns', label: tr('Columnas') },
                             ]}
                           />
                         );
@@ -876,7 +876,7 @@ export function Panels({
                         return (
                           <Select
                             key={key}
-                            label="Distribución"
+                            label={tr('Distribución')}
                             value={s.pattern.generator.distribution}
                             onChange={(v) =>
                               updatePattern((p) => {
@@ -884,9 +884,9 @@ export function Panels({
                               })
                             }
                             options={[
-                              { value: 'rectangular', label: 'Rectangular' },
-                              { value: 'circular', label: 'Circular' },
-                              { value: 'freeform', label: 'Freeform · semilla' },
+                              { value: 'rectangular', label: tr('Rectangular') },
+                              { value: 'circular', label: tr('Circular') },
+                              { value: 'freeform', label: tr('Freeform · semilla') },
                             ]}
                           />
                         );
@@ -1017,7 +1017,7 @@ export function Panels({
                             }
                           />
                           <button
-                            title="Eliminar instancia"
+                            title={tr('Eliminar instancia')}
                             onClick={() =>
                               s.requestDestructive('eliminar la instancia', () =>
                                 updatePattern((p) => {
@@ -1098,11 +1098,11 @@ export function Panels({
             {category === 'preferences' && (
               <>
                 <ExperiencePrefs />
-                <Section title="VIEW">
+                <Section title={tr('VIEW')}>
                 <details className="advanced-view">
-                  <summary>Vista avanzada</summary>
+                  <summary>{tr('Vista avanzada')}</summary>
                   <Toggle
-                    label="Fuente pura (edición avanzada)"
+                    label={tr('Fuente pura (edición avanzada)')}
                     checked={s.project.preferences.sourceView}
                     onChange={(value) =>
                       s.change((p) => {
@@ -1112,14 +1112,13 @@ export function Panels({
                     }
                   />
                   <p className="hint">
-                    Editá los originales completos, incluso fuera de la celda. Útil para curvas que
-                    cruzan varias celdas y patrones sin repetición periódica.
+                    {tr('Editá los originales completos, incluso fuera de la celda. Útil para curvas que cruzan varias celdas y patrones sin repetición periódica.')}
                   </p>
                 </details>
                 <label className="text-field">
-                  <span>Nombre del proyecto</span>
+                  <span>{tr('Nombre del proyecto')}</span>
                   <input
-                    aria-label="Nombre del documento"
+                    aria-label={tr('Nombre del documento')}
                     value={s.project.metadata.name}
                     onChange={(e) =>
                       s.change((p) => {
@@ -1130,7 +1129,7 @@ export function Panels({
                 </label>
                 <div className="toggle-grid">
                 <Toggle
-                  label="Ajustar a grilla"
+                  label={tr('Ajustar a grilla')}
                   checked={s.project.preferences.snap}
                   onChange={(v) =>
                     s.change((p) => {
@@ -1139,13 +1138,13 @@ export function Panels({
                   }
                 />
                 <Toggle
-                  label="Atracción entre nodos"
+                  label={tr('Atracción entre nodos')}
                   checked={s.project.preferences.snapNodes ?? true}
                   onChange={(value) => s.updateViewPreferences({ snapNodes: value })}
                 />
                 </div>
                 <Field
-                  label="Distancia de atracción a nodos"
+                  label={tr('Distancia de atracción a nodos')}
                   unit="px"
                   min={1}
                   max={40}
@@ -1154,7 +1153,7 @@ export function Panels({
                 />
                 <div className="toggle-grid">
                 <Toggle
-                  label="Guías detalladas"
+                  label={tr('Guías detalladas')}
                   checked={s.project.preferences.guides}
                   onChange={(v) =>
                     s.change((p) => {
@@ -1164,7 +1163,7 @@ export function Panels({
                   }
                 />
                 <Toggle
-                  label="Región fundamental"
+                  label={tr('Región fundamental')}
                   checked={s.project.preferences.fundamental}
                   onChange={(v) =>
                     s.change((p) => {
@@ -1177,7 +1176,7 @@ export function Panels({
                 </div>
                 <div className="toggle-grid">
                 <Toggle
-                  label="Ejes de reflexión y deslizamiento"
+                  label={tr('Ejes de reflexión y deslizamiento')}
                   checked={s.project.preferences.axes}
                   onChange={(v) =>
                     s.change((p) => {
@@ -1188,7 +1187,7 @@ export function Panels({
                   }
                 />
                 <Toggle
-                  label="Centros de rotación"
+                  label={tr('Centros de rotación')}
                   checked={s.project.preferences.centers}
                   onChange={(v) =>
                     s.change((p) => {
@@ -1201,7 +1200,7 @@ export function Panels({
                 </div>
                 <div className="toggle-grid">
                 <Toggle
-                  label="Inspeccionar uniones"
+                  label={tr('Inspeccionar uniones')}
                   checked={s.project.preferences.continuity}
                   onChange={(v) =>
                     s.change((p) => {
@@ -1213,7 +1212,7 @@ export function Panels({
                 />
                 </div>
                 <Select
-                  label="Unidades"
+                  label={tr('Unidades')}
                   value={u}
                   onChange={(v) =>
                     s.change((p) => {
@@ -1223,9 +1222,9 @@ export function Panels({
                   options={['mm', 'cm', 'in', 'px']}
                 />
                 <label className="color-row">
-                  Fondo del lienzo
+                  {tr('Fondo del lienzo')}
                   <input
-                    aria-label="Fondo del lienzo"
+                    aria-label={tr('Fondo del lienzo')}
                     type="color"
                     value={s.project.preferences.background}
                     onChange={(e) =>
@@ -1242,8 +1241,8 @@ export function Panels({
         )}
       </div>
       <div className="panel-foot">
-        <span>LOCAL FIRST</span>
-        <span>Todo queda en tu navegador.</span>
+        <span>{tr('LOCAL FIRST')}</span>
+        <span>{tr('Todo queda en tu navegador.')}</span>
       </div>
     </aside>
   );

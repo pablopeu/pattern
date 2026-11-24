@@ -15,6 +15,7 @@ import { rasterize } from '../export/raster';
 import { Field, Select, Toggle } from './Controls';
 import { Modal } from './Modal';
 
+import { tr , translateMessage } from '../i18n';
 export function DiskDialog({
   studio: s,
   onClose,
@@ -164,23 +165,23 @@ export function DiskDialog({
     >
       <header className="disk-header">
         <div>
-          <span className="eyebrow">VISTA DERIVADA · FUENTE PLANA EDITABLE</span>
+          <span className="eyebrow">{tr('VISTA DERIVADA · FUENTE PLANA EDITABLE')}</span>
           <h2>{artistic ? 'Disco artístico' : 'Disco de Poincaré'}</h2>
         </div>
-        <button aria-label="Volver a la fuente" onClick={onClose} autoFocus>
+        <button aria-label={tr('Volver a la fuente')} onClick={onClose} autoFocus>
           <X size={19} />
-          Volver a la fuente
+          {tr('Volver a la fuente')}
         </button>
       </header>
       <div className="disk-body">
-        <section className="disk-controls" aria-label="Opciones de visualización">
+        <section className="disk-controls" aria-label={tr('Opciones de visualización')}>
           <Select
-            label="Modalidad"
+            label={tr('Modalidad')}
             value={record.kind}
             options={[
-              { value: 'poincare', label: 'Poincaré geométrico' },
-              { value: 'artistic-disk', label: 'Disco artístico · deformación' },
-              { value: 'sphere', label: 'Esfera · sólidos y textura' },
+              { value: 'poincare', label: tr('Poincaré geométrico') },
+              { value: 'artistic-disk', label: tr('Disco artístico · deformación') },
+              { value: 'sphere', label: tr('Esfera · sólidos y textura') },
             ]}
             onChange={(kind) =>
               s.change((p) => {
@@ -190,12 +191,12 @@ export function DiskDialog({
           />
           {record.kind === 'poincare' && (
             <Select
-              label="Color de celdas"
+              label={tr('Color de celdas')}
               value={record.settings.colors?.mode ?? 'source'}
               options={[
-                { value: 'source', label: 'Colores del motivo' },
-                { value: 'cell', label: 'Una por tesela' },
-                { value: 'orientation', label: 'Por clase de orientación' },
+                { value: 'source', label: tr('Colores del motivo') },
+                { value: 'cell', label: tr('Una por tesela') },
+                { value: 'orientation', label: tr('Por clase de orientación') },
               ]}
               onChange={(value) =>
                 setRecord((r) =>
@@ -217,11 +218,11 @@ export function DiskDialog({
           )}
           {record.kind === 'poincare' && (
             <Select
-              label="Adaptación del motivo"
+              label={tr('Adaptación del motivo')}
               value={record.settings.adaptation}
               options={[
-                { value: 'inscribed', label: 'Motivo inscrito' },
-                { value: 'mirrored-chambers', label: 'Triángulos reflejados · bordes compartidos' },
+                { value: 'inscribed', label: tr('Motivo inscrito') },
+                { value: 'mirrored-chambers', label: tr('Triángulos reflejados · bordes compartidos') },
               ]}
               onChange={(value) =>
                 setRecord((r) =>
@@ -247,19 +248,19 @@ export function DiskDialog({
             />
           )}
           <Select
-            label="Conjunto fuente"
+            label={tr('Conjunto fuente')}
             value={record.source.patternId}
             options={s.project.patterns.map((p) => ({ value: p.id, label: p.name }))}
             onChange={(id) => setRecord((r) => ({ ...r, source: { ...r.source, patternId: id } }))}
           />
           <Select
-            label="Región fuente"
+            label={tr('Región fuente')}
             value={selection.target}
             options={[
-              { value: 'lattice', label: 'Una celda de red' },
-              { value: 'tile', label: 'Celda rectangular seamless' },
-              { value: 'fundamental', label: 'Dominio fundamental' },
-              { value: 'view', label: 'Ventana finita' },
+              { value: 'lattice', label: tr('Una celda de red') },
+              { value: 'tile', label: tr('Celda rectangular seamless') },
+              { value: 'fundamental', label: tr('Dominio fundamental') },
+              { value: 'view', label: tr('Ventana finita') },
             ]}
             onChange={(target) =>
               setRecord((r) => ({
@@ -309,7 +310,7 @@ export function DiskDialog({
             {record.kind === 'poincare' && (
               <>
                 <Field
-                  label="Lados p"
+                  label={tr('Lados p')}
                   value={record.settings.p}
                   min={3}
                   max={12}
@@ -317,7 +318,7 @@ export function DiskDialog({
                   onChange={(v) => setting('p', v)}
                 />
                 <Field
-                  label="Celdas por vértice q"
+                  label={tr('Celdas por vértice q')}
                   value={record.settings.q}
                   min={3}
                   max={12}
@@ -327,7 +328,7 @@ export function DiskDialog({
               </>
             )}
             <Field
-              label="Radio del disco"
+              label={tr('Radio del disco')}
               value={record.settings.radiusMm}
               min={1}
               max={2000}
@@ -335,7 +336,7 @@ export function DiskDialog({
               onChange={(v) => setting('radiusMm', v)}
             />
             <Field
-              label="Precisión de proyección"
+              label={tr('Precisión de proyección')}
               value={record.settings.toleranceMm}
               min={0.001}
               max={1}
@@ -346,7 +347,7 @@ export function DiskDialog({
             {record.kind === 'poincare' && (
               <>
                 <Field
-                  label="Profundidad"
+                  label={tr('Profundidad')}
                   value={record.settings.depth}
                   min={0}
                   max={8}
@@ -354,7 +355,7 @@ export function DiskDialog({
                   onChange={(v) => setting('depth', v)}
                 />
                 <Field
-                  label="Máximo de celdas"
+                  label={tr('Máximo de celdas')}
                   value={record.settings.maxCells}
                   min={1}
                   max={4096}
@@ -367,7 +368,7 @@ export function DiskDialog({
           </div>
           {record.kind === 'artistic-disk' && (
             <Field
-              label="Compresión radial"
+              label={tr('Compresión radial')}
               value={record.settings.compression}
               min={0.1}
               max={64}
@@ -378,7 +379,7 @@ export function DiskDialog({
             />
           )}
           <Field
-            label="Orientación del disco"
+            label={tr('Orientación del disco')}
             value={(record.settings.view.angle * 180) / Math.PI}
             min={-180}
             max={180}
@@ -389,7 +390,7 @@ export function DiskDialog({
             }
           />
           <Field
-            label="Centro horizontal"
+            label={tr('Centro horizontal')}
             value={record.settings.view.center.x}
             min={artistic ? -2 : -0.9}
             max={artistic ? 2 : 0.9}
@@ -398,7 +399,7 @@ export function DiskDialog({
             onChange={(v) => center('x', v)}
           />
           <Field
-            label="Centro vertical"
+            label={tr('Centro vertical')}
             value={record.settings.view.center.y}
             min={artistic ? -2 : -0.9}
             max={artistic ? 2 : 0.9}
@@ -408,7 +409,7 @@ export function DiskDialog({
           />
           {record.kind === 'poincare' && (
             <Toggle
-              label="Estructura geodésica"
+              label={tr('Estructura geodésica')}
               checked={record.showStructure}
               onChange={(v) =>
                 setRecord((r) => (r.kind === 'poincare' ? { ...r, showStructure: v } : r))
@@ -426,22 +427,22 @@ export function DiskDialog({
             onClick={() => void run(record)}
           >
             <RotateCcw size={16} />
-            {busy ? 'Reiniciar cálculo' : 'Actualizar vista'}
+            {busy ? tr('Reiniciar cálculo') : tr('Actualizar vista')}
           </button>
           {busy && (
             <button onClick={() => controller.current?.abort()}>
               <Square size={14} />
-              Cancelar cálculo
+              {tr('Cancelar cálculo')}
             </button>
           )}
         </section>
-        <section className="disk-preview" aria-label="Vista derivada no editable" aria-busy={busy}>
+        <section className="disk-preview" aria-label={tr('Vista derivada no editable')} aria-busy={busy}>
           <p>
             {artistic
               ? 'Deformación radial artística · ARTISTIC. Simetrías y correspondencia de bordes sin garantía.'
               : record.settings.adaptation === 'mirrored-chambers'
                 ? 'Triángulos reflejados: bordes de cámara compartidos. Motivo adaptado con simetrías adicionales; la tangente puede cambiar.'
-                : 'Teselación geométrica {p,q}. Motivo adaptado; correspondencia de bordes no garantizada.'}
+                : tr('Teselación geométrica {p,q}. Motivo adaptado; correspondencia de bordes no garantizada.')}
           </p>
           <div className="disk-image">
             {preview && (
@@ -457,7 +458,7 @@ export function DiskDialog({
             )}
             {busy && (
               <span className="disk-loading" role="status">
-                Preparando fuente y proyectando…
+                {tr('Preparando fuente y proyectando…')}
               </span>
             )}
           </div>
@@ -468,7 +469,7 @@ export function DiskDialog({
           )}
           {error && (
             <p className="disk-error" role="alert">
-              {error}
+              {translateMessage(error)}
             </p>
           )}
           {output && (
@@ -519,7 +520,7 @@ export function DiskDialog({
           )}
           <div className="disk-export">
             <Field
-              label="Resolución de imagen"
+              label={tr('Resolución de imagen')}
               value={dpi}
               min={24}
               max={1200}
@@ -545,16 +546,15 @@ export function DiskDialog({
             )}
           </div>
           <p className="disk-note">
-            Diámetro {record.settings.radiusMm * 2}mm. PNG transparente; JPEG con fondo blanco. El
-            proyecto guarda la fuente y los parámetros para regenerar.
+            {tr('Diámetro {d}mm. PNG transparente; JPEG con fondo blanco. El proyecto guarda la fuente y los parámetros para regenerar.', { d: String(record.settings.radiusMm * 2) })}
           </p>
         </section>
       </div>
       <footer className="disk-footer">
-        <button onClick={onClose}>Editar fuente plana</button>
+        <button onClick={onClose}>{tr('Editar fuente plana')}</button>
         <button disabled={dirty || !validation.success} onClick={onSave}>
           <Save size={16} />
-          Guardar estudio
+          {tr('Guardar estudio')}
         </button>
       </footer>
     </Modal>

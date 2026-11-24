@@ -3,6 +3,8 @@ import { Modal } from './Modal';
 import { exampleCatalog, catalogTitle } from '../examples/catalog';
 import { compositionThumbnail } from '../composition/preview';
 import { resolvePattern } from '../symmetry/config';
+import { tr, useI18n } from '../i18n';
+import { friendlyCategoryLabel } from '../app/ui-mode';
 export function ExampleGallery({
   onSelect,
   onClose,
@@ -10,6 +12,10 @@ export function ExampleGallery({
   onSelect: (id: string) => void;
   onClose: () => void;
 }) {
+  const experience = useI18n(),
+    simple = experience.uiMode === 'simple',
+    displayCategory = (value: string) =>
+      tr((simple && friendlyCategoryLabel(value)) || value);
   const [viewport, setViewport] = useState({ width: innerWidth, height: innerHeight });
   const narrow = viewport.width < 650;
   useEffect(() => {
@@ -26,7 +32,7 @@ export function ExampleGallery({
         const project = entry.create();
         return {
           ...entry,
-          title: catalogTitle(entry),
+          title: tr(catalogTitle(entry)),
           thumbnail:
             entry.thumbnail ??
             compositionThumbnail(
@@ -49,29 +55,29 @@ export function ExampleGallery({
     pages = Math.max(1, Math.ceil(filtered.length / pageSize)),
     current = Math.min(page, pages - 1);
   return (
-    <Modal label="Galería de ejemplos" className="example-gallery-modal" onClose={onClose}>
+    <Modal label={tr('Galería de ejemplos')} className="example-gallery-modal" onClose={onClose}>
       <header className="gallery-title">
         <div>
-          <h2>Ejemplos para explorar</h2>
-          <p>Motivos originales y construcciones editables.</p>
+          <h2>{tr('Ejemplos para explorar')}</h2>
+          <p>{tr('Motivos originales y construcciones editables.')}</p>
         </div>
-        <button onClick={onClose} aria-label="Cerrar galería de ejemplos">
+        <button onClick={onClose} aria-label={tr('Cerrar galería de ejemplos')}>
           ✕
         </button>
       </header>
       <div className="example-filters">
         <input
-          aria-label="Buscar ejemplos"
+          aria-label={tr('Buscar ejemplos')}
           type="search"
           value={query}
-          placeholder="Peces, aves, espiral…"
+          placeholder={tr('Peces, aves, espiral…')}
           onChange={(e) => {
             setQuery(e.target.value);
             setPage(0);
           }}
         />
         <select
-          aria-label="Categoría de ejemplos"
+          aria-label={tr('Categoría de ejemplos')}
           value={category}
           onChange={(e) => {
             setCategory(e.target.value);
@@ -79,7 +85,7 @@ export function ExampleGallery({
           }}
         >
           {['Todas', ...new Set(entries.map((row) => row.category))].map((value) => (
-            <option key={value}>{value}</option>
+            <option key={value}>{tr(value)}</option>
           ))}
         </select>
       </div>
@@ -92,39 +98,39 @@ export function ExampleGallery({
             key={entry.id}
             className="example-card"
             onClick={() => onSelect(entry.id)}
-            aria-label={`Abrir ejemplo ${entry.title}`}
-            aria-description={`${entry.description} ${entry.construction}`}
-            title={`${entry.description} ${entry.construction}`}
+            aria-label={`${tr('Abrir ejemplo')} ${entry.title}`}
+            aria-description={`${tr(entry.description)} ${tr(entry.construction)}`}
+            title={`${tr(entry.description)} ${tr(entry.construction)}`}
           >
-            <img src={entry.thumbnail} alt={`Vista previa de ${entry.title}`} />
+            <img src={entry.thumbnail} alt={tr('Vista previa de {title}', { title: entry.title })} />
             <span className="example-category">
-              {entry.category}
+              {displayCategory(entry.category)}
               {entry.artwork === 'original'
-                ? ' · Original'
+                ? ` · ${tr('Original')}`
                 : entry.artwork === 'licensed'
-                  ? ' · Datos acreditados'
-                  : ' · Geometría'}
+                  ? ` · ${tr('Datos acreditados')}`
+                  : ` · ${tr('Geometría')}`}
             </span>
             <strong>{entry.title}</strong>
-            <span className="example-description">{entry.description}</span>
-            <small className="example-construction">{entry.construction}</small>
+            <span className="example-description">{tr(entry.description)}</span>
+            <small className="example-construction">{tr(entry.construction)}</small>
             <small>
-              Validación:{' '}
-              {entry.validity === 'EXACT' ? 'transformaciones verificadas' : entry.validity}
+              {tr('Validación:')}{' '}
+              {entry.validity === 'EXACT' ? tr('transformaciones verificadas') : entry.validity}
             </small>
           </button>
         ))}
-        {!filtered.length && <p>No se encontraron ejemplos.</p>}
+        {!filtered.length && <p>{tr('No se encontraron ejemplos.')}</p>}
       </div>
       <div className="page-controls">
         <button disabled={!current} onClick={() => setPage(current - 1)}>
-          Ejemplos anteriores
+          {tr('Ejemplos anteriores')}
         </button>
         <span>
           {current + 1}/{pages}
         </span>
         <button disabled={current + 1 >= pages} onClick={() => setPage(current + 1)}>
-          Más ejemplos
+          {tr('Más ejemplos')}
         </button>
       </div>
     </Modal>

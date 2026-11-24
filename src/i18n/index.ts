@@ -14,6 +14,8 @@ import {
   type UiMode,
 } from '../app/experience';
 import { en } from './en';
+import { englishPhrases } from './en-phrases';
+import { englishMessages } from './en-messages';
 import { es, type MessageKey } from './es';
 
 export type { MessageKey } from './es';
@@ -30,6 +32,16 @@ export function message(key: MessageKey, params?: Record<string, string | number
   return text;
 }
 
+/** Traducción por frase (clave = texto español). Cobertura garantizada por prueba. */
+export function tr(text: string, params?: Record<string, string | number>): string {
+  const preferences = loadExperience(),
+    locale = resolveLanguage(preferences.language);
+  let out = locale === 'es' ? text : (englishPhrases[text] ?? text);
+  if (params)
+    for (const [name, value] of Object.entries(params)) out = out.replaceAll(`{${name}}`, String(value));
+  return out;
+}
+
 /** Diccionario explícito para mensajes técnicos existentes de validadores/servicios. */
 export function translateMessage(text: string): string {
   const preferences = loadExperience(),
@@ -37,8 +49,6 @@ export function translateMessage(text: string): string {
   if (locale === 'es') return text;
   return englishMessages[text] ?? text;
 }
-
-const englishMessages: Record<string, string> = {};
 
 /** Hook de UI: idioma/tema/modo + traducción con re-render inmediato. */
 export function useI18n() {
