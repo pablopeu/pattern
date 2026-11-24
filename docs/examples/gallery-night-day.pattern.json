@@ -1,0 +1,2369 @@
+{
+  "schemaVersion": 7,
+  "drawingStyle": {
+    "stroke": "#233b2d",
+    "fill": "#3b82f6",
+    "strokeWidth": 0.65,
+    "strokeCap": "round",
+    "strokeJoin": "round",
+    "miterLimit": 10,
+    "opacity": 1,
+    "fillOpacity": 1,
+    "strokeOpacity": 1,
+    "fillRule": "evenodd",
+    "strokeDash": [],
+    "strokeDashOffset": 0,
+    "strokeProfile": {
+      "version": 1,
+      "kind": "uniform",
+      "points": [
+        {
+          "at": 0,
+          "width": 1
+        },
+        {
+          "at": 1,
+          "width": 1
+        }
+      ]
+    }
+  },
+  "stylePresets": [],
+  "palette": {
+    "colors": [],
+    "recent": [],
+    "favorites": []
+  },
+  "mainSymmetry": {
+    "family": "none",
+    "group": "none",
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "orientation": 0,
+    "width": 60,
+    "height": 60,
+    "angle": 90,
+    "sectors": 8,
+    "center": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "mainSymmetryProfiles": {},
+  "metadata": {
+    "id": "de90850d-f131-4e5c-9e39-dd5eaced0582",
+    "name": "Night and Day · aves de dos motivos",
+    "createdAt": "2026-11-24T04:47:30.802Z",
+    "updatedAt": "2026-11-24T04:47:30.802Z",
+    "example": {
+      "id": "gallery-night-day",
+      "category": "Referencias",
+      "description": "Reconstrucción vectorial del mosaico de aves claro/oscuro: silueta oscura rellena con plumas interiores, ave clara trazada y pueblo inferior, todo en una celda rómbica de 209×180 mm.",
+      "construction": "Retícula rómbica 209.2×180.4 · dos motivos por celda",
+      "validity": "APPROXIMATED",
+      "artwork": "licensed",
+      "author": "donchico (dominio público) · reconstrucción Pattern Studio",
+      "references": [
+        {
+          "title": "donchico · Escher style (dominio público, Openclipart)",
+          "url": "https://openclipart.org/detail/249414/escher-style"
+        }
+      ]
+    }
+  },
+  "documentUnits": "mm",
+  "patterns": [
+    {
+      "id": "6af19020-6f83-4121-a15a-ae77e1981af8",
+      "name": "Aves Night and Day · celda de dos motivos",
+      "sourceGeometry": [
+        {
+          "id": "7823d203-6952-4ec2-96eb-56ff074b8976",
+          "name": "Ave oscura · silueta",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#20262a",
+          "fill": "#20262a",
+          "strokeWidth": 0.4,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-65.79 -28.98C-84.1 -47.56 -86.75 -63.41 -140.69 -88.19C-115.63 -89.85 -89.88 -83.77 -65.75 -82.08C-43.15 -80.5 -1.59 -86.34 0.03 -69.21C1.41 -54.77 8.94 -40.6 15.31 -39.1C27.38 -36.26 58.33 -37.59 72.67 -44.29C75.62 -45.66 82.68 -50.25 85.47 -51.07C91.03 -52.71 99.08 -54.06 103.32 -51.06C105.13 -49.78 107.4 -47.97 108.32 -44.62C116.34 -39.83 137.33 -42.78 140.69 -34.45C129.81 -30.73 117.11 -29.77 105.72 -28.18C97.16 -22.09 82.88 -20.61 71.58 -20.45C60.56 -16.78 26.3 8.63 17.35 3.06C7.28 13.77 19.02 36.66 7.89 45.26C0.95 48.72 -4.54 52.51 -12.05 55.9C-22.56 60.64 -34.57 61.68 -57.31 66.68C-71.19 75.82 -102.55 89.85 -113.88 89.74C-93.33 77.39 -74.59 59.24 -60.08 27.62C-76.27 34.35 -93.39 40.41 -125.73 35.53C-115.74 14.42 -103.58 -11.4 -65.79 -28.98C-65.79 -28.98 -65.79 -28.98 -65.79 -28.98Z"
+        },
+        {
+          "id": "6140a04c-a584-44f7-9395-9c19b0f5a0d4",
+          "name": "Ave clara · líneas",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#6d747a",
+          "fill": "none",
+          "strokeWidth": 0.55,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M109.71 -43.66C108.41 -40 105.48 -34.89 102.53 -33.1C111.2 -31.48 131.34 -36.78 136.53 -35.62"
+        },
+        {
+          "id": "ca5c039f-7ae5-431b-b442-fd3885e0b14e",
+          "name": "Pueblo · pieza 1",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#4a5157",
+          "fill": "#b9b4a8",
+          "strokeWidth": 0.35,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-31.12 -20.33C-51.04 -17.18 -61.71 5.37 -71.61 32.03C-67.99 30.81 -64.55 29.46 -61.18 28.06C-55.54 17.11 -55.4 1.94 -40.14 -8.55C-35.16 -11.97 -25 -16.39 -21.21 -15.48C-8.91 -12.5 8.27 -6.43 15.84 5C16.28 4.32 16.78 3.67 17.35 3.06C26.3 8.63 60.56 -16.79 71.58 -20.45C82.05 -20.6 95.08 -21.89 103.75 -26.93C84.98 -38.12 41.82 -10.78 20.74 -9.5C17.09 -9.28 10 -9.11 5.43 -10.65C-1.74 -13.07 -7.43 -16.75 -14.13 -18.77C-20.47 -20.69 -26.09 -21.13 -31.12 -20.33L-31.12 -20.33Z"
+        },
+        {
+          "id": "a95d1498-48e4-4a80-89f6-6ddc209045dc",
+          "name": "Ave oscura · pluma 1",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-120.29 -77.96C-102.58 -71.92 -76.87 -71.49 -57.62 -71.77"
+        },
+        {
+          "id": "9e7e68bb-808b-4d58-9991-9e01b82e64c0",
+          "name": "Ave oscura · pluma 2",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-105.43 -68.85C-90.9 -63.85 -65.41 -65.76 -54.28 -65.92"
+        },
+        {
+          "id": "222519fe-03e0-41ab-ad78-ce7f0068c166",
+          "name": "Ave oscura · pluma 3",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-72.26 -36.09C-68.59 -37.68 -59.48 -35.77 -56.64 -35.81"
+        },
+        {
+          "id": "8257dc7f-7f59-4cc0-b772-972b1cb41fa8",
+          "name": "Ave oscura · pluma 4",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-43.34 -53.57C-39.38 -51.08 -32.41 -50.42 -28.72 -50.94"
+        },
+        {
+          "id": "c2ddd2ab-1898-4498-a966-ca690de87bc7",
+          "name": "Ave oscura · pluma 5",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-37.96 -69.21C-32.31 -61.64 -20.8 -60.97 -13.23 -61.18"
+        },
+        {
+          "id": "dae13e49-6ce2-4076-ae15-4f7c4b33b0d5",
+          "name": "Ave oscura · pluma 6",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-38.92 -44.47C-36.08 -44.15 -34.85 -41.99 -34.37 -40.81"
+        },
+        {
+          "id": "1a43d449-5d7b-4c26-bae0-6642a819e476",
+          "name": "Ave oscura · pluma 7",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-66.03 -28.94C-53.29 -37.54 -28.95 -42.21 -14.84 -38.36"
+        },
+        {
+          "id": "9232710a-5a47-44c3-83dd-d36869018bfb",
+          "name": "Ave oscura · pluma 8",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-11.02 54.32C-26.39 44.81 -7.62 33.13 3.85 32.97"
+        },
+        {
+          "id": "f3fb06f6-8d99-4db7-a5e4-de600b4fd86a",
+          "name": "Ave oscura · pluma 9",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-7.23 35.41C-20.55 25.78 2.37 19.67 9.07 17.96"
+        },
+        {
+          "id": "4c6eda18-caef-4d9e-bea3-8210b4f00252",
+          "name": "Ave oscura · pluma 10",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M3.62 18.54C-16.97 7.65 20.47 -7.81 16.5 2.11"
+        },
+        {
+          "id": "4386b758-61a2-4937-ba14-ba0bfb2b82d6",
+          "name": "Ave oscura · pluma 11",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-15.96 52.15C-46.72 61.22 -26.6 40.63 -16.53 41.7"
+        },
+        {
+          "id": "b9178d9c-b1fd-4edf-bed7-80ce41f7d708",
+          "name": "Ave oscura · pluma 12",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-29.49 54.94C-32.74 57.91 -26.4 59.42 -24.31 58.85"
+        },
+        {
+          "id": "d6fd7eae-8dbf-4d35-8762-f7cc5aeab538",
+          "name": "Ave oscura · pluma 13",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-2.63 18.52C-37.87 40.32 -17.52 2.93 -3.3 8.62"
+        },
+        {
+          "id": "4bb24e52-646a-4704-ae59-e9a90b0c499e",
+          "name": "Ave oscura · pluma 14",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-10.59 7.5C-13.97 -4.83 10.82 -10.36 15.65 -5.27"
+        },
+        {
+          "id": "36f20044-d09b-42c3-b466-4b4dc36892f1",
+          "name": "Ave oscura · pluma 15",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-83.18 65.46C-71.5 65.16 -43.44 45.5 -35.71 51.34"
+        },
+        {
+          "id": "be75bbf8-40c4-4fcf-91d1-8f9a2634dbc5",
+          "name": "Ave oscura · pluma 16",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-64.58 41.45C-55.07 36.54 -36.85 28.03 -26.24 30.92"
+        },
+        {
+          "id": "8df12e08-70ff-432f-9b7d-8115aa0bca50",
+          "name": "Ave oscura · pluma 17",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-60.37 31.94C-50.75 27.02 -31.33 21.79 -22.17 24.28"
+        },
+        {
+          "id": "a2a63ad8-b155-4a1d-b78f-dcaa4e35f7e0",
+          "name": "Ave oscura · pluma 18",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-56.87 25.02C-48.52 19.68 -28.09 15.85 -21.18 18.61"
+        },
+        {
+          "id": "5f38b5a9-03a8-4aa2-8f30-dd2e279f6254",
+          "name": "Ave oscura · pluma 19",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-54.49 13.98C-43.88 9.5 -25.38 3.34 -14.1 9.24"
+        },
+        {
+          "id": "8b5d163c-32f0-479a-8e84-94bbf78db95b",
+          "name": "Ave oscura · pluma 20",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-48.33 4.38C-41.09 -1.24 -18.97 -0.54 -11.81 3.92"
+        },
+        {
+          "id": "055178fb-b769-4031-bc90-a0a19b730daf",
+          "name": "Ave oscura · pluma 21",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-35.17 -6.21C-26.84 -7.14 -13.18 -8.99 -7.36 -3.84"
+        },
+        {
+          "id": "325ed53f-8aa3-43f7-a2fe-957731873e04",
+          "name": "Ave oscura · pluma 22",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-60.08 27.61C-56.65 11.98 -46.68 -12.8 -26.85 -13.08"
+        },
+        {
+          "id": "6e2e9bbe-30b7-4d5d-bd94-08098394df59",
+          "name": "Ave oscura · pluma 23",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-129.37 47.82C-112.88 47.4 -93.72 42.84 -78.77 40.75"
+        },
+        {
+          "id": "584171fe-8a25-437b-b0dd-e77d1c053308",
+          "name": "Ave oscura · pluma 24",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-130.16 58.81C-116.96 56.41 -100.38 53.76 -86.09 53.56"
+        },
+        {
+          "id": "7b993636-edb8-48e4-8c98-80831b385837",
+          "name": "Ave oscura · pluma 25",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-125.34 67.78C-114.54 65.95 -99.55 64.72 -90.6 63.47"
+        },
+        {
+          "id": "dac91776-8033-44c4-a400-77a100becb83",
+          "name": "Ave oscura · pluma 26",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-129.94 75.74C-118.02 73.66 -103.33 72.38 -92.77 70.91"
+        },
+        {
+          "id": "9d66ad7c-b9bc-4e69-af93-dfc474d0b6b3",
+          "name": "Ave oscura · pluma 27",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-113.93 80.47C-109.82 79.62 -105.36 78.73 -101.04 78.13"
+        },
+        {
+          "id": "dc1f959b-ac68-45de-b812-67016a52b2a5",
+          "name": "Ave oscura · pluma 28",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M36.68 38.5C49.6 32.69 70.54 30.99 84.16 30.8"
+        },
+        {
+          "id": "ff4eaca4-5e08-4e35-bdb4-167b59ef8ef7",
+          "name": "Ave oscura · pluma 29",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M79.74 43.91C96.24 43.49 115.39 38.93 130.34 36.85"
+        },
+        {
+          "id": "4fa9b813-9a5a-44d2-8ffa-bfe1ed0e9b2a",
+          "name": "Ave oscura · pluma 30",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M78.96 54.91C92.16 52.5 108.73 49.85 123.02 49.65"
+        },
+        {
+          "id": "5a762bf1-d664-44ab-88b6-6c0a70f15036",
+          "name": "Ave oscura · pluma 31",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M83.78 63.87C94.57 62.04 109.57 60.81 118.52 59.56"
+        },
+        {
+          "id": "fa0fc6a2-2133-4417-8885-e888adb35896",
+          "name": "Ave oscura · pluma 32",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M79.18 71.83C91.1 69.75 105.78 68.48 116.34 67"
+        },
+        {
+          "id": "a893473b-4815-40d7-9780-d1d893cb99cc",
+          "name": "Ave oscura · pluma 33",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M95.19 76.56C99.3 75.71 103.76 74.83 108.07 74.23"
+        },
+        {
+          "id": "edd771f9-56f8-4be7-b33f-d23cc30a219b",
+          "name": "Ave oscura · pluma 34",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M34.8 73.57C65.06 54.27 83.71 91.35 95.83 87.54"
+        },
+        {
+          "id": "b52bf940-d9a6-44e7-ad9d-e5c777f2e29d",
+          "name": "Ave oscura · pluma 35",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M33.15 80.94C40.35 78.76 49.02 77.95 56.63 77.84"
+        },
+        {
+          "id": "c7cccc46-3014-47fc-92c9-bf333ee5e9ac",
+          "name": "Ave oscura · pluma 36",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M66.65 -49.7C90.55 -51.4 119.81 -49.14 138.88 -37.29"
+        },
+        {
+          "id": "d21df3aa-d6c1-4a94-b948-c31323bd8b07",
+          "name": "Ave oscura · pluma 37",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M48.55 -68.06C66.83 -69.77 90.27 -70.85 106.23 -67.9"
+        },
+        {
+          "id": "feb998f4-fc9b-464f-b6bb-9aff0eeebe82",
+          "name": "Ave oscura · pluma 38",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M35.63 -77.5C49.79 -79.39 70.51 -79.8 84.72 -80.07"
+        },
+        {
+          "id": "997ab19e-7c6f-4e77-a1c7-ff5c5502dfa1",
+          "name": "Ave oscura · pluma 39",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-8.78 -90.04C-3.41 -90.92 6.27 -87.1 8.8 -83.04"
+        },
+        {
+          "id": "45c7382c-c2dc-461a-83b9-8280c2990cf7",
+          "name": "Ave oscura · pluma 40",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M3.29 -80.3C8.45 -81.6 19.2 -76.35 19.94 -71.02"
+        },
+        {
+          "id": "2d30ec95-6619-4d39-bb50-b6a712f8b521",
+          "name": "Ave oscura · pluma 41",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M17.16 -69.21C22.92 -70.53 31.94 -67.87 33.51 -62.03"
+        },
+        {
+          "id": "45230428-e26b-4a95-ae4f-a1a90f0887f1",
+          "name": "Ave oscura · pluma 42",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M29.78 -60.62C36.74 -61.59 48.14 -60.07 50.2 -52.4"
+        },
+        {
+          "id": "89cfc51d-60f6-4c2b-9e59-7269e5b3579a",
+          "name": "Ave oscura · pluma 43",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M41.42 -50.11C45.68 -50.81 61.66 -51.54 60.84 -41.39"
+        },
+        {
+          "id": "6ab28ee8-f0fb-4042-bd9b-e000b3029b14",
+          "name": "Ave oscura · pluma 44",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-5.14 -76.81C-0.25 -79.06 6.05 -71.36 3.65 -67.5"
+        },
+        {
+          "id": "9bec327b-2785-4923-a6ce-50de87a0ce37",
+          "name": "Ave oscura · pluma 45",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M5.23 -61.3C12.99 -63.91 23.26 -57.19 25.23 -52.31"
+        },
+        {
+          "id": "2b5915f4-bd8e-47ba-93ee-4e5941d2f319",
+          "name": "Ave oscura · pluma 46",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M14.14 -47.37C22.87 -51.49 36.92 -44.3 38.41 -38.44"
+        },
+        {
+          "id": "db0ac454-1a44-40da-b39d-c4ce5a42e624",
+          "name": "Ave oscura · pluma 47",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#7d858c",
+          "fill": "none",
+          "strokeWidth": 0.9,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-141.35 -42.07C-117.45 -43.77 -88.18 -41.51 -69.11 -29.67"
+        }
+      ],
+      "generator": {
+        "kind": "motif",
+        "version": 1,
+        "seed": 42,
+        "count": 12,
+        "rows": 4,
+        "columns": 4,
+        "spacing": 22,
+        "offset": 0.5,
+        "aspectRatio": 1,
+        "staggerAxis": "rows",
+        "rotation": 0,
+        "scale": 1,
+        "scaleRatio": 0.9,
+        "amplitude": 6,
+        "frequency": 3,
+        "phase": 0,
+        "radius": 28,
+        "ratio": 0.35,
+        "distribution": "rectangular",
+        "periodicWarp": true,
+        "placements": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        ]
+      },
+      "visible": true,
+      "symmetryMode": "own",
+      "symmetryProfiles": {},
+      "placementTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "symmetry": {
+        "family": "wallpaper",
+        "group": "p1",
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "orientation": 0,
+        "width": 209.2,
+        "height": 182.4,
+        "angle": 81.5,
+        "sectors": 1,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    }
+  ],
+  "regions": [],
+  "applications": [],
+  "preferences": {
+    "styleDefaultsFollowSelection": true,
+    "stylePanelPinned": false,
+    "fillCloseTolerance": 0,
+    "fillLinkedDefault": true,
+    "structureVisible": false,
+    "structureOpacity": 0.22,
+    "grid": false,
+    "snap": false,
+    "snapRadiusPx": 8,
+    "snapNodes": true,
+    "guides": false,
+    "split": false,
+    "background": "#eeeade",
+    "fundamental": false,
+    "axes": false,
+    "centers": false,
+    "continuity": false,
+    "outside": false,
+    "sourceView": false,
+    "repetitionView": "extended"
+  }
+}

@@ -1516,3 +1516,13 @@ inicia otro incremento. Monitor conserva timer real, secundaria sólo avisa.
   explícitos a avanzado. Sin mutación de documentos.
 - tests/experience.spec.ts: 6 pruebas (detección, manual, simple, integridad,
   8 combinaciones) + 6 de i18n. qa:fast PASS 25/25 y 132/132.
+
+## Galería · incremento de referencia
+
+- 4 estudios nuevos integrados con geometría medida: Night and Day (aves
+  claro/oscuro), Peces GDJ, Lagartos en espiral y Lagarto torturado. Todos
+  APPROXIMATED, con fuente Bézier editable y procedencia por estudio.
+- reference-assets.ts guarda los trazados extraídos; reference-builders.ts los
+  convierte en estudios con redes p1 o receta de semejanza del motor.
+- Miniaturas y JSON de ejemplo por el pipeline real (capture-gallery).
+- README con inglés primero y español después, enlace en el subtítulo.

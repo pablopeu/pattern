@@ -128,8 +128,17 @@ explica fuente y marco unitario. No se renormaliza el dibujo al bounding box.
   se incorporan verbatim como perfiles de arista de los estudios ornamentales. Licencia
   MIT del proyecto de origen.
 
+- **Trazados de Openclipart (dominio público).** Los estudios de referencia
+  «Night and Day · aves de dos motivos» (249414, donchico), «Peces con ojos ·
+  mosaico GDJ» (295026–295028, GDJ), «Lagartos en espiral · reconstrucción»
+  (357838, HenryM) y «Lagarto torturado · mosaico de referencia» (340157,
+  HenryM) usan geometría medida de esos SVG publicados en dominio público. Los
+  archivos originales no se redistribuyen; sólo se incorporan coordenadas
+  convertidas a curvas editables, con la procedencia en el JSON de cada estudio
+  y en el modal Referencias.
+
 Fuentes adicionales consultadas (sin material redistribuido): einarwh/escher-workshop
 (MIT, comparación), Evin Revello · Graphic_Design (sin licencia declarada),
-Openclipart 249414 / 295026–295028 / 167216 / 357838 / 340157 (dominio público,
-descargadas para próximas iteraciones), Paulo Henrique Siqueira · tessellation
-(sólo recursos raster). Detalle completo en docs/ESCHER_VECTOR_SOURCES.md.
+Openclipart 167216 (escena submarina rasterizada, analizada sin integrar),
+Paulo Henrique Siqueira · tessellation (sólo recursos raster). Detalle completo
+en docs/ESCHER_VECTOR_SOURCES.md.

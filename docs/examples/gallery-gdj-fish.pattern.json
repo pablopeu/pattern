@@ -1,0 +1,829 @@
+{
+  "schemaVersion": 7,
+  "drawingStyle": {
+    "stroke": "#233b2d",
+    "fill": "#3b82f6",
+    "strokeWidth": 0.65,
+    "strokeCap": "round",
+    "strokeJoin": "round",
+    "miterLimit": 10,
+    "opacity": 1,
+    "fillOpacity": 1,
+    "strokeOpacity": 1,
+    "fillRule": "evenodd",
+    "strokeDash": [],
+    "strokeDashOffset": 0,
+    "strokeProfile": {
+      "version": 1,
+      "kind": "uniform",
+      "points": [
+        {
+          "at": 0,
+          "width": 1
+        },
+        {
+          "at": 1,
+          "width": 1
+        }
+      ]
+    }
+  },
+  "stylePresets": [],
+  "palette": {
+    "colors": [],
+    "recent": [],
+    "favorites": []
+  },
+  "mainSymmetry": {
+    "family": "none",
+    "group": "none",
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "orientation": 0,
+    "width": 60,
+    "height": 60,
+    "angle": 90,
+    "sectors": 8,
+    "center": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "mainSymmetryProfiles": {},
+  "metadata": {
+    "id": "4bbe705c-63dc-48d9-9fa6-05188e870169",
+    "name": "Peces con ojos · mosaico GDJ",
+    "createdAt": "2026-11-24T04:47:30.837Z",
+    "updatedAt": "2026-11-24T04:47:30.837Z",
+    "example": {
+      "id": "gallery-gdj-fish",
+      "category": "Referencias",
+      "description": "Mosaico de peces con ojos y aletas trazadas, extraído del original de GDJ: una silueta editable y sus detalles interiores repetidos sobre una retícula rómbica.",
+      "construction": "Retícula rómbica · silueta única · detalles interiores",
+      "validity": "APPROXIMATED",
+      "artwork": "licensed",
+      "author": "GDJ (dominio público) · reconstrucción Pattern Studio",
+      "references": [
+        {
+          "title": "GDJ · Seamless Lizards Tessellation (dominio público, Openclipart)",
+          "url": "https://openclipart.org/detail/295026/seamless-lizards-tessellation"
+        }
+      ]
+    }
+  },
+  "documentUnits": "mm",
+  "patterns": [
+    {
+      "id": "282c9741-1018-42a1-84dc-bb93c8fcdb5d",
+      "name": "Peces con ojos · motivo único",
+      "sourceGeometry": [
+        {
+          "id": "0502209b-77ba-4817-a211-6f8a034fca79",
+          "name": "Pez · silueta",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#2c3a35",
+          "fill": "#cfd9d2",
+          "strokeWidth": 0.45,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-96.05 -130.35C-100.65 -124.05 -105.15 -117.55 -107.75 -110.05C-110.75 -104.55 -111.25 -98.25 -112.05 -92.25C-106.75 -91.35 -101.15 -91.45 -96.15 -89.05C-91.15 -86.75 -85.85 -85.15 -81.35 -81.85C-77.05 -78.85 -72.25 -76.35 -68.65 -72.45C-64.05 -67.65 -59.15 -63.25 -54.75 -58.35C-53.15 -57.15 -54.15 -54.85 -55.85 -54.45C-60.95 -53.25 -66.25 -52.55 -71.45 -51.55C-85.05 -49.85 -95.65 -40.55 -106.05 -32.55C-111.75 -26.55 -116.65 -19.75 -122.05 -13.45C-125.75 -9.35 -128.15 -4.25 -130.95 0.45C-141.85 19.45 -152.75 38.35 -163.65 57.35C-147.35 73.65 -131.05 90.05 -114.65 106.25C-98.45 89.85 -81.95 73.55 -65.75 57.25C-69.15 51.15 -72.45 44.95 -75.85 38.75C-76.55 37.35 -77.45 35.85 -77.55 34.25C-75.65 31.45 -73.05 29.05 -70.55 26.85C-69.05 25.35 -67.05 26.65 -65.65 27.45C-56.35 32.75 -46.95 38.05 -37.65 43.35C-32.75 46.35 -26.65 43.25 -21.65 45.35C-20.25 46.35 -20.75 48.05 -21.25 49.35C-23.25 54.95 -25.35 60.45 -27.25 66.15C-28.15 68.45 -28.75 71.05 -30.65 72.85C-36.45 78.75 -42.35 84.55 -48.15 90.45C-49.85 92.15 -51.65 93.65 -53.75 94.85C-61.55 99.45 -69.25 104.15 -77.05 108.85C-64.95 111.75 -52.75 114.55 -40.65 117.45C-20.95 93.65 -1.25 69.75 18.55 46.05C20.15 43.55 23.65 45.45 23.15 48.15C23.25 74.25 23.15 100.25 23.15 126.35C31.05 127.45 38.95 128.65 46.95 129.75C49.15 130.05 51.35 130.55 53.35 131.55C61.85 135.65 70.45 139.45 78.95 143.55C80.25 133.05 81.35 122.55 82.55 111.95C71.65 110.75 60.65 109.55 49.75 108.35C48.35 108.05 46.75 108.15 45.65 107.05C44.85 105.35 45.95 103.65 46.65 102.15C50.15 94.85 53.45 87.55 56.95 80.25C58.25 77.35 59.95 74.45 60.35 71.25C61.65 62.55 62.65 53.85 64.15 45.15C64.25 42.85 66.75 42.45 68.65 42.55C92.65 42.55 116.75 42.55 140.75 42.55C118.65 24.15 96.45 5.85 74.35 -12.55C73.45 -13.45 71.95 -14.45 72.65 -15.95C75.65 -29.45 79.05 -42.85 82.15 -56.35C82.75 -58.15 82.75 -60.65 84.85 -61.45C86.75 -61.85 87.75 -59.95 88.55 -58.65C94.35 -49.05 99.95 -39.45 105.85 -29.95C110.25 -24.75 115.45 -20.25 120.25 -15.25C123.05 -12.75 125.25 -9.25 128.95 -8.15C134.45 -6.25 139.85 -4.15 145.35 -2.25C145.65 -6.15 144.45 -10.55 146.75 -14.05C152.35 -24.05 158.05 -34.05 163.65 -44.05C162.45 -45.25 161.25 -46.45 160.05 -47.65C153.85 -44.25 147.65 -40.95 141.55 -37.55C140.15 -36.85 138.65 -35.95 137.05 -35.85C134.45 -37.55 132.45 -40.05 130.25 -42.25C115.35 -57.15 100.45 -72.05 85.65 -86.85C70.25 -71.45 54.85 -56.05 39.45 -40.65C37.75 -39.05 36.15 -36.95 33.95 -35.95C32.55 -35.85 31.45 -36.75 30.25 -37.35C8.35 -50.05 -13.75 -62.65 -35.65 -75.35C-42.75 -80.55 -49.25 -86.45 -56.15 -91.85C-61.45 -95.65 -64.55 -101.55 -68.65 -106.55C-71.95 -110.45 -74.25 -114.95 -76.45 -119.45C-80.85 -126.75 -80.65 -135.45 -82.55 -143.55C-87.45 -139.05 -91.85 -134.85 -96.05 -130.35Z"
+        },
+        {
+          "id": "54e9c8d5-f794-408e-9ec9-bbf59f3582e2",
+          "name": "Pez · detalle 1",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#2c3a35",
+          "fill": "none",
+          "strokeWidth": 0.4,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M27.95 -126.35C20.05 -124.95 14.15 -116.75 15.55 -108.75C16.55 -100.75 24.45 -94.55 32.45 -95.55C40.95 -96.15 47.65 -104.55 46.35 -113.05C45.55 -121.65 36.55 -128.25 27.95 -126.35"
+        },
+        {
+          "id": "f4cb7b58-2688-4d5d-b381-c54e54c95002",
+          "name": "Pez · detalle 2",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#2c3a35",
+          "fill": "none",
+          "strokeWidth": 0.4,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M26.95 -84.35C18.35 -82.35 13.05 -72.15 16.45 -63.95C19.15 -55.95 28.85 -51.65 36.65 -54.85C44.55 -57.55 48.75 -67.25 45.65 -74.85C42.95 -82.25 34.35 -86.55 26.95 -84.35"
+        },
+        {
+          "id": "fd830c61-7ca8-49b9-af82-c8843bf00dea",
+          "name": "Pez · detalle 3",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#2c3a35",
+          "fill": "none",
+          "strokeWidth": 0.4,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-140.05 40.65C-148.45 42.85 -153.65 52.95 -150.35 61.05C-147.65 68.85 -138.25 73.25 -130.55 70.35C-122.45 67.75 -117.95 57.85 -121.25 50.05C-123.85 42.65 -132.55 38.35 -140.05 40.65"
+        },
+        {
+          "id": "d01b33a3-86ff-46c8-a25b-ad7b125f5ca9",
+          "name": "Pez · detalle 4",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#2c3a35",
+          "fill": "none",
+          "strokeWidth": 0.4,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M-98.05 40.65C-106.65 42.65 -111.95 52.85 -108.65 61.05C-105.95 69.25 -95.65 73.55 -87.85 69.95C-80.35 66.95 -76.45 57.55 -79.55 50.15C-82.05 42.75 -90.65 38.45 -98.05 40.65"
+        },
+        {
+          "id": "7e93347a-f37f-4831-bed0-662bb126be18",
+          "name": "Pez · detalle 5",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#2c3a35",
+          "fill": "none",
+          "strokeWidth": 0.4,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M136.05 -126.25C127.15 -124.65 121.35 -114.25 124.65 -105.85C127.25 -97.85 136.95 -93.25 144.75 -96.45C152.35 -99.05 156.85 -108.15 154.15 -115.75C151.95 -123.25 143.55 -128.05 136.05 -126.25"
+        },
+        {
+          "id": "084d7395-78d0-4106-b94a-d8a222120d12",
+          "name": "Pez · detalle 6",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#2c3a35",
+          "fill": "none",
+          "strokeWidth": 0.4,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M134.95 -84.35C126.55 -82.15 121.35 -72.05 124.65 -63.95C127.25 -56.45 136.05 -52.05 143.55 -54.45C151.85 -56.55 156.95 -66.35 153.95 -74.35C151.65 -82.05 142.65 -86.75 134.95 -84.35"
+        },
+        {
+          "id": "0643efe2-4147-4076-b4f1-75214d6b44aa",
+          "name": "Pez · detalle 7",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#2c3a35",
+          "fill": "none",
+          "strokeWidth": 0.4,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M27.95 -126.35C36.45 -128.25 45.55 -121.65 46.45 -113.05C47.75 -104.65 40.95 -96.15 32.55 -95.55C24.55 -94.55 16.65 -100.75 15.65 -108.75C14.15 -116.75 20.05 -124.95 27.95 -126.35"
+        },
+        {
+          "id": "06261cad-f74e-4295-920c-f0cdac5b59fe",
+          "name": "Pez · detalle 8",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#2c3a35",
+          "fill": "none",
+          "strokeWidth": 0.4,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M29.75 -118.65C24.15 -118.05 21.25 -110.55 24.95 -106.25C28.25 -101.65 36.15 -102.85 38.15 -108.05C40.55 -113.35 35.45 -119.85 29.75 -118.65"
+        },
+        {
+          "id": "a75a0f9a-e8f9-4cd9-8b72-9aaf564e73e9",
+          "name": "Pez · detalle 9",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#2c3a35",
+          "fill": "none",
+          "strokeWidth": 0.4,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M136.05 -126.25C143.65 -128.05 151.95 -123.25 154.15 -115.75C156.85 -108.15 152.35 -99.05 144.75 -96.45C136.95 -93.35 127.25 -97.85 124.65 -105.85C121.35 -114.35 127.15 -124.65 136.05 -126.25"
+        },
+        {
+          "id": "27698d6a-7e1f-47dd-8180-23c874ab0ed9",
+          "name": "Pez · detalle 10",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#2c3a35",
+          "fill": "none",
+          "strokeWidth": 0.4,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M136.85 -118.35C131.75 -116.85 129.75 -109.75 133.55 -105.95C137.15 -101.35 145.35 -103.35 146.65 -108.95C148.65 -114.55 142.45 -120.55 136.85 -118.35"
+        },
+        {
+          "id": "01083300-96ef-4f30-9c9b-84c6a45f8171",
+          "name": "Pez · detalle 11",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#2c3a35",
+          "fill": "none",
+          "strokeWidth": 0.4,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M29.75 -118.65C35.45 -119.85 40.55 -113.35 38.15 -108.05C36.15 -102.75 28.25 -101.65 24.95 -106.25C21.25 -110.55 24.15 -118.05 29.75 -118.65"
+        },
+        {
+          "id": "7950db77-3fce-4dc1-b71e-d85dbdcd8d2f",
+          "name": "Pez · detalle 12",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#2c3a35",
+          "fill": "none",
+          "strokeWidth": 0.4,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M29.75 -114.65C27.15 -113.95 26.25 -110.25 28.15 -108.35C30.25 -105.85 34.95 -107.45 34.85 -110.75C35.15 -113.45 32.15 -115.65 29.75 -114.65"
+        },
+        {
+          "id": "5a35ba1c-db8f-4fe7-8ec5-b06112efbdd7",
+          "name": "Pez · detalle 13",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#2c3a35",
+          "fill": "none",
+          "strokeWidth": 0.4,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M136.85 -118.35C142.35 -120.45 148.65 -114.55 146.65 -108.95C145.35 -103.35 137.15 -101.35 133.55 -105.95C129.75 -109.75 131.75 -116.85 136.85 -118.35"
+        },
+        {
+          "id": "3c4fe548-f50d-4784-a914-27355853389f",
+          "name": "Pez · detalle 14",
+          "kind": "compound",
+          "nodes": [],
+          "closed": true,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stroke": "#2c3a35",
+          "fill": "none",
+          "strokeWidth": 0.4,
+          "strokeCap": "round",
+          "strokeJoin": "round",
+          "miterLimit": 10,
+          "opacity": 1,
+          "fillOpacity": 1,
+          "strokeOpacity": 1,
+          "fillRule": "evenodd",
+          "strokeDash": [],
+          "strokeDashOffset": 0,
+          "strokeProfile": {
+            "version": 1,
+            "kind": "uniform",
+            "points": [
+              {
+                "at": 0,
+                "width": 1
+              },
+              {
+                "at": 1,
+                "width": 1
+              }
+            ]
+          },
+          "visible": true,
+          "locked": false,
+          "pathData": "M137.75 -114.55C134.95 -113.55 134.65 -109.05 137.35 -107.65C139.65 -106.15 143.25 -108.05 143.15 -110.85C143.55 -113.65 140.15 -115.75 137.75 -114.55"
+        }
+      ],
+      "generator": {
+        "kind": "motif",
+        "version": 1,
+        "seed": 42,
+        "count": 12,
+        "rows": 4,
+        "columns": 4,
+        "spacing": 22,
+        "offset": 0.5,
+        "aspectRatio": 1,
+        "staggerAxis": "rows",
+        "rotation": 0,
+        "scale": 1,
+        "scaleRatio": 0.9,
+        "amplitude": 6,
+        "frequency": 3,
+        "phase": 0,
+        "radius": 28,
+        "ratio": 0.35,
+        "distribution": "rectangular",
+        "periodicWarp": true,
+        "placements": [
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        ]
+      },
+      "visible": true,
+      "symmetryMode": "own",
+      "symmetryProfiles": {},
+      "placementTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "symmetry": {
+        "family": "wallpaper",
+        "group": "p1",
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "orientation": 0,
+        "width": 294.57,
+        "height": 294.57,
+        "angle": 60,
+        "sectors": 1,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    }
+  ],
+  "regions": [],
+  "applications": [],
+  "preferences": {
+    "styleDefaultsFollowSelection": true,
+    "stylePanelPinned": false,
+    "fillCloseTolerance": 0,
+    "fillLinkedDefault": true,
+    "structureVisible": false,
+    "structureOpacity": 0.22,
+    "grid": false,
+    "snap": false,
+    "snapRadiusPx": 8,
+    "snapNodes": true,
+    "guides": false,
+    "split": false,
+    "background": "#eef1ea",
+    "fundamental": false,
+    "axes": false,
+    "centers": false,
+    "continuity": false,
+    "outside": false,
+    "sourceView": false,
+    "repetitionView": "extended"
+  }
+}

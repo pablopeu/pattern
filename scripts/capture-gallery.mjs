@@ -5,13 +5,15 @@ const browser = await chromium.launch();
 try {
   const page = await browser.newPage();
   await page.goto('http://127.0.0.1:4173');
-  await expect(page.locator('.save-indicator')).toHaveText(/Guardado local/);
+  await expect(page.locator('.save-indicator')).toContainText(/Guardado local|Saved locally/);
   await mkdir('public/examples', { recursive: true });
   await mkdir('docs/examples', { recursive: true });
   const ids = await page.evaluate(async () =>
     (await import('/src/examples/catalog.ts')).exampleCatalog.map((e) => e.id),
   );
+  const only = process.env.CAPTURE_ONLY ? new Set(process.env.CAPTURE_ONLY.split(',')) : null;
   for (const id of ids) {
+    if (only && !only.has(id)) continue;
     const result = await page.evaluate(async (id) => {
       const { compositionExample } = await import('/src/examples/catalog.ts'),
         { serialize } = await import('/src/persistence/schema.ts'),

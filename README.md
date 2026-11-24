@@ -1,5 +1,617 @@
 # Pattern Studio 2D
 
+English · [Español](#español)
+
+A vector studio for drawing motifs, exploring symmetries and building editable patterns and tiles. Your drawing repeats while you work: every copy shares one canonical source, so editing one updates the whole pattern.
+
+It runs in the browser, processes all geometry locally and can be deployed as static files. No accounts, APIs or external services required.
+
+![Pattern Studio with categories, hexagonal symmetry and the style panel on the right](docs/images/studio-symmetry.png)
+
+## What you can create
+
+- Freehand motifs, lines, Bézier curves and closed shapes, with physical measurements in millimetres.
+- Patterns with the 17 wallpaper groups, seven friezes and radial symmetries. Thumbnails use your own drawing to show what each option does.
+- Continuous, dotted or custom strokes; variable-width profiles, colours, opacities, palettes and saved styles.
+- Vector fills for closed objects or regions bounded by several strokes, including from reflected or rotated copies.
+- Interlocking tiles with curved edges and patterns applied to perimeters with holes.
+- Recursive and spiral compositions from one editable motif, with per-level palettes and saved recipes.
+- Editable JSON files and SVG, PNG, JPEG and DXF exports.
+
+## Getting started
+
+1. Open **File → New project**. The study starts in **P3**, at **100 %** zoom, with a centred origin, structure visible at **50 %** and **Free draw** active. Drag to draw; you can also pick line, pen or shapes.
+2. Choose colour and width in **Stroke** (pencil icon; a **0–2 mm** slider, with numeric entry for other widths), or the fill colour in **Fill**. **Apply to** edits the selected objects or what you are about to draw.
+3. Open **Symmetries → Group and lattice** in the left bar. Hover the **Live symmetry** thumbnails to explore. Click, Enter or Space confirm a group and keep your sources. You can keep drawing from any copy.
+4. Choose **Fill region** and click inside a closed area. The colour is applied when you move the pointer away; on a touch screen a tap is enough. Undo reverts the operation. No confirmation button is needed.
+5. Use **File → Save JSON file** to keep editing later. Saving asks for a name; if you have not chosen one, it suggests **Study-YY-MM-DD-HH-MM** with your local date and time. You can also edit it in File. Use **Export** to get the final result.
+
+P3 heads the catalogue and **Free** stays at the end; the rest keep their order.
+Recovered projects keep their saved symmetry and preferences. The active tool
+starts as Free draw. On mobile, panels start collapsed to leave the canvas clear.
+
+![New study in P3 with free draw, 100 % zoom and 50 % structure](docs/images/new-study-p3.png)
+
+The **square divided in four** button shows or hides the black dot grid every
+**5 mm**. It is a visual reference, independent of the symmetry structure;
+**Snap** controls grid and node snapping separately.
+
+The pen finishes with Enter, closes with Shift+Enter or a click on the first node, and cancels with Esc. Space pans the view; Ctrl + wheel controls zoom.
+
+With **Snap** active, drawing or dragging a node attracts it to the nearest
+node: a green circle appears and positions match exactly when released. It also
+works on transformed copies and can bring both endpoints of the same path
+together. Adjust **Preferences → Node attraction distance** between **1 and
+40 px** (initially **8 px**); the visual distance is kept when zooming. Node
+snapping takes priority over the grid. **Snap** in the bar controls
+node-to-node attraction. **Preferences → Snap to grid** is independent: you can
+turn it off and keep attraction on. Snapped endpoints store a permanent joint:
+dragging one brings the other joined strokes along, even after saving and
+reopening the file. Joining the other endpoint keeps the first one. Alt at the
+start of a drag separates an endpoint; locked objects do not move.
+
+**Right click** ends the Bézier you are drawing. Outside an active path, it
+opens a menu on the curve for **Add node here** without changing its shape; on
+a node it offers **Delete node** or **Detach snap**. These actions can be undone.
+
+To fill adjacent areas, draw their shared border once and complete the other
+sides. **Fill region** detects each area separately even when its boundaries are
+independent strokes; there is no need to merge them into a single object. The
+**Fill closure tolerance**, in the right-side Fill panel, saves small gaps when
+computing the fill without moving the original nodes. It is a different setting
+from the attraction distance. Open Bézier curves are drawn without an implicit
+fill. The chosen colour is kept for when the path is closed; if it is closed by
+other strokes, use Fill on the resulting area.
+
+**Pan view** sits next to the workspace zoom controls.
+In **One cell**, the reference stays centred and can be zoomed in or out;
+**Fit content** and **Reset view** bring back the full view.
+On mobile, the footer stacks text and social links to keep them visible
+without horizontal scrolling.
+
+Working preferences —Snap, grid, attraction radius, units,
+Fill links/tolerance and panel behaviour— are stored in the
+browser and carry across projects. **New project** resets geometry,
+framing and the agreed tool while keeping those settings. Backgrounds of
+files and examples are respected; new studies use your last chosen background.
+
+## Finding tools and options
+
+The left bar opens one context at a time. Drawing tools
+remain directly available; icons show their name and shortcut on
+hover. Each panel can be collapsed. Tabs are remembered
+for the session and switching context keeps the document and selection.
+
+| Context | What it contains |
+| --- | --- |
+| Symmetries | Explorer, recent/favourites, lattice, placement, generators and composition |
+| Tiles | Visual families Interlock, Aperiodic and Girih; IH catalogue and contextual parameters |
+| Layers | Objects in the set, visibility, locking and set management |
+| Preferences | Guides, Snap, units and background |
+
+Draw and Shapes have no separate entry: their tools act directly and
+their parameters are on the right. The hexagon with **+** creates the regular polygon.
+**Apply**, at the top, opens perimeters and placement directly, with no extra
+side entry. **Design** lets you edit and split the view; **Pattern** shows a
+single full view and also allows editing. All three use the same document.
+
+In Symmetries, **Change symmetry in → This set** modifies only the active set;
+**Shared** modifies the configuration followed by sets that use it.
+**This set's repetition** chooses Own, Shared or No repetition. The star
+next to the explorer marks the current one as a favourite. **Orientation and
+origin** groups the sliders; fine adjustment in P3 is provisionally ±6°, with
+numeric entry for other values. Moving or rotating the lattice keeps the joins
+between copies.
+
+![Symmetries, favourite star and orientation/origin controls](docs/images/navigation-symmetry.png)
+
+![Tile families visible without an initial dropdown](docs/images/navigation-tiles.png)
+
+**Layers → Objects** lists strokes, shapes and fills; the padlock prevents
+selecting, editing or deleting them by accident and lets you unlock them.
+**Sets** groups many objects: another closed region stays in the same set until
+you choose **New set**. The active one shows where the next strokes go. The
+[workspace guide](docs/WORKSPACE_GUIDE.md) explains these controls and modes.
+
+On the right are **Stroke, Profile, Fill, Palette, Presets, Object and Options**.
+Fill starts with blue and shows the colour picker open; the HEX field stays
+below as an alternative. Choosing a fill colour activates **Fill region**.
+Derived fills are painted below the strokes bounding each area.
+**Fill** shows its colour and opacity directly; **Stroke** groups colour and
+line properties. The two colour squares at the foot of the bar open combined
+access to stroke and fill, with no separate Colours tab. Selecting an object shows its
+properties; with no selection, the current style is edited. **Object** separates
+shape, transformation, nodes and geometric actions. In narrow windows panels
+work as temporary overlays and alternate to leave the canvas available. An icon
+bar stays on the right edge: each icon opens its section directly; **Object**
+becomes available when a shape is selected. The bottom button collapses/expands
+the panel and remembers the tab. Opening **File** or **Export** collapses the
+right panel first, even if it was pinned, to leave the menu clear. Pressing
+**Fill region** again, even when active, reopens its controls; **F** works too.
+
+**Ctrl+K** opens search: try "polygon", "fill", "p6m symmetry",
+"tiles", "width" or "export SVG". Arrows and Enter choose an action;
+Escape closes the search. Search uses the same editor actions.
+
+**References**, next to the shortcuts help button, opens a scrollable modal with
+links to the repositories consulted and the studio's libraries.
+
+## Usage examples
+
+### Fish, birds, recursion and spirals
+
+Open **File → Example gallery**: there are **23 studies**, with
+search, categories and thumbnails of the real result. Cards are paginated
+according to screen size; the dialog fits completely with no scrollbars.
+
+![Renewed gallery with representative examples](docs/images/gallery-studio.png)
+
+**Fish · Square limit of functional geometry** uses the credited vector data
+from *Programming with Escher*. One source and 412 instances form the classic
+construction. In **Symmetries → Composition**, depth 0–5 changes the detail;
+**Edit source motif** lets you modify the fish. The data and its GPL3 licence
+are kept in the repository and in the notices; JSON and SVG carry their
+provenance. No image of the print is included.
+
+![Functional geometry in the real editor](docs/images/functional-geometry.png)
+
+[Download the editable study](docs/examples/v3-escher-square.pattern.json) ·
+[Source and attribution](https://github.com/mapio/programming-with-escher).
+
+**Fish · Self-similar rosette** lets you try rotation, scale, arms and palette.
+It is a finite artistic exercise: spaces are intentional. For continuous
+interlocks, choose the **Figurative** category or the Poincaré examples with
+shared edges.
+
+![Self-similar rosette from the new gallery](public/examples/gallery-spiral.png)
+
+[Download the rosette](docs/examples/gallery-spiral.pattern.json).
+
+Each family and recipe remembers its parameters and colours. You can switch
+between recursive, spiral and recipes, go back, and recover the previous result,
+also when reopening the JSON. The source and tile fills are kept; they are not
+replaced when exploring other layouts.
+
+You can also compose your own drawing: **Symmetries → Composition → Recursive or
+Spiral**. Recursive offers functional geometry, rings, quadrants and branching;
+Spiral offers discrete repetition, logarithmic, rosette and convergence towards
+a fixed point. **Fit composition** frames the whole result. Ctrl+K finds these functions.
+
+They are **finite** compositions with verified affine transformations; they are
+not certified as gapless tilings or as hyperbolic geometry. When enabled,
+previous symmetry and tiles are stored; when disabled they are used again. A
+tile background stays associated with that coverage. The detail limit and
+budget prevent unlimited recursion. SVG, PNG, JPEG and DXF use the stored recipe
+and physical measurements independent of zoom; DXF carries outlines
+without fill colours. Each example's provenance travels in the JSON.
+
+### Interlocking figures: fish, birds and reptiles
+
+The **Figurative** category has **IH43** fish, **IH44** birds, stylised
+**IH1** reptiles and a four-fold **IH63** ornament. They are original drawings,
+inspired by the idea of regular plane division; they are not Escher tracings.
+Each example includes its classification and references.
+
+![Blue birds with shared edges and colours by class](public/examples/gallery-bird.png)
+
+Open **Jade fish → Tiles → Edges** and drag a node: the related edge and the
+silhouette update together. Eyes, fins, feathers and scales remain independent
+objects. Invalid deformations keep the last valid shape. In **Symmetries →
+Composition**, a recursive or spiral recipe can use the figure with its linked
+silhouette, without duplicating its sources. The IH63 ornament also shows its
+interior rotation marks.
+
+In **Tiles → Shape → Colours**, enable **Alternate tile colours** and choose a
+palette of two to six colours. Fill on a figure's background changes its colour
+class across the mosaic, without duplicating the drawing. The examples already
+include palettes. The repeatable cell and its export include the full colour
+period; it may be larger than the geometric cell. Alternation keeps the
+interlock, although it may reduce the symmetries of the coloured result.
+
+![Interlocked fish with editable Bézier edges and preserved details](public/examples/gallery-fish.png)
+
+[Download IH43 fish](docs/examples/gallery-fish.pattern.json) ·
+[Download IH44 birds](docs/examples/gallery-bird.pattern.json) ·
+[Download IH1 reptiles](docs/examples/gallery-reptile.pattern.json) ·
+[Download IH63 ornament](docs/examples/gallery-abstract.pattern.json).
+
+### Aperiodic patches: Penrose, Hat and Spectre
+
+In **Tiles**, switch the category **Interlock → Aperiodic**. Choose the
+construction, its seed, substitutions, size and rotation. **Colour** paints
+by type, by generation group or by reflection in Hat. **Hierarchy** shows the
+substitution frames; they are reading aids, not tile edges.
+
+![Spectre from the new chiral garden](public/examples/gallery-spectre.png)
+
+**Edit source motif** opens a single reference tile. Draw its details and use
+**See full patch** to see them propagated. Copies use matrices;
+the file keeps a single source. **Back to saved motif** recovers the
+drawing without turning thousands of copies into objects. Fill persists below the outlines.
+
+![Hat with colours by type and botanical details](public/examples/gallery-hat.png)
+
+They are finite patches of documented aperiodic systems: they have no cell
+to repeat by translation. Hat includes the reflections its system requires;
+Spectre uses curved edges and a single chirality. Editable SVG reuses definitions;
+expanded SVG, PNG/JPEG and DXF keep the result and its physical measurements.
+
+[Editable Penrose](docs/examples/gallery-penrose.pattern.json) ·
+[Hat with hierarchy](docs/examples/gallery-hat.pattern.json) ·
+[Spectre by generation](docs/examples/gallery-spectre.pattern.json).
+
+### Girih: stars and interlaced bands
+
+In **Tiles → Girih**, enable the construction and choose a rosette, a rhombus
+net or a tile from the catalogue. The catalogue contains a decagon, pentagon,
+elongated hexagon, bowtie and 72° rhombus. **Join** adds a shape along a full
+edge; it rejects collisions and keeps the last valid patch.
+
+![Girih rhombus weave with vector bands](public/examples/gallery-girih-grid.png)
+
+In **Bands**, adjust width, crossing separation and **Invert over/under**. The
+lower pass is actually clipped: its gaps travel in SVG, raster and DXF.
+Alternation connects the strands across shared edges; rotating or translating
+the construction keeps its crossing relations.
+
+![Girih rosette with verified alternation and an editable central star](public/examples/gallery-girih-rosette.png)
+
+**Interlace motif strokes** also uses the axes you drew. **Edit source** keeps
+the original vectors; curved axes are approximated to 0.02 mm before Placement.
+If a cycle prevents alternation, the conflict is reported.
+**Allow explicit alternation cuts** accepts exceptions and identifies them as
+an artistic result. Uneven stretching or shear is also identified as artistic.
+The constructions are finite patches with verified edges and contacts, without
+claiming infinite coverage.
+
+[Editable Girih rosette](docs/examples/gallery-girih-rosette.pattern.json) ·
+[Editable interlaced net](docs/examples/gallery-girih-grid.pattern.json).
+
+### See the drawing on a Poincaré disk
+
+The **Visualise** button in the workspace opens a derived, non-editable view.
+Choose the source set and a finite cell or window, configure **p/q**, centre,
+orientation and detail, then press **Update view**. Combinations must satisfy
+`(p−2)·(q−2)>4`. You can cancel the computation and try again.
+
+**Back to source** returns to the flat editor with its nodes, strokes and Fill
+intact. Reopening the view prepares the current source again. **Save study**
+keeps drawing and configuration in JSON7; opening it regenerates the disk.
+Older files migrate, and previous versions of the application reject this
+format to avoid showing a projection as if it were flat.
+
+![Real Poincaré view with controls and editable source](docs/images/poincare-studio.png)
+
+The tiling and its geodesics use hyperbolic construction; the motif is a
+numeric adaptation. **Inscribed motif** keeps the adaptation inside each cell,
+without guaranteeing edge correspondence. **Reflected triangles** adapts the
+source to chambers with shared edges: their positions match (C0), although
+the tangent may change and additional symmetries appear. The summary shows
+detail limits and distinguishes the projection bound from the clipping and
+contouring approximations. The view does not allow drawing, editing nodes or
+applying Fill directly.
+
+**SVG** keeps the physical diameter in millimetres. **PNG/JPEG** use the chosen
+DPI; PNG allows transparency and JPEG uses a white background. These downloads
+happen inside the derived view; the editor's exporter still exports the flat
+work. DXF is not offered in this view.
+
+The **Poincaré** category includes two studies with **reflected triangles**,
+editable source and shared edges:
+
+| Interlaced rosettes · {7,3} | Floral tiles · {5,4} |
+| --- | --- |
+| ![Interlaced rosettes](public/examples/gallery-poincare-seven.png) | ![Floral tiles](public/examples/gallery-poincare-five.png) |
+| [Editable JSON](docs/examples/gallery-poincare-seven.pattern.json) | [Editable JSON](docs/examples/gallery-poincare-five.pattern.json) |
+
+The computation is finite and shows its limits. You can change the source and
+increase detail. The studies use JSON7 and Poincaré component 2; component 1
+migrates to inscribed motif. An older reader rejects component 2 explicitly.
+
+Changing the cell size within the same group makes the motif follow the new
+lattice while keeping the joins between copies. Its canonical nodes and tangents
+remain editable. **Delete/Backspace** removes the objects selected with Shift;
+**Undo** restores them. Replacing the study still asks to keep, save or discard
+the work.
+
+### Create an artistic disk
+
+In **Visualise → Mode → Artistic disk**, a finite flat mosaic is
+compressed towards a disk. **Radial compression**, centre and orientation change
+the deformation; **Update view** applies the options. It is identified as
+**ARTISTIC**: a visual composition, with no guarantee of keeping the flat
+drawing's symmetries or edge correspondence.
+
+It shares with Poincaré the return to the source, JSON7 saving, cancellation and
+SVG/PNG/JPEG exports with physical measurements. You can switch modes while
+keeping the source set, the crop and the measurements; each mode's own options
+start at their defaults. The program regenerates the view when you return from
+editing the drawing.
+
+![Real artistic disk with an editable flat source](docs/images/artistic-studio.png)
+
+In **Artistic disks**, **Bird field** compresses a complete figurative mosaic.
+Its flat source lets you keep editing the silhouettes and colours.
+
+![Bird field under radial deformation](public/examples/gallery-artistic.png)
+
+[Download the editable disk](docs/examples/gallery-artistic.pattern.json).
+
+If a computation exceeds the budget, reduce the window or the compression, or
+increase the projection tolerance. Cancelling keeps all the flat work.
+
+### Explore a motif without losing the original drawing
+
+In **File → Example gallery**, open **Blue birds · IH44** or draw your own motif. Enter **Symmetries → Explore all symmetries**. Hover p1, p4m and p6m and confirm an option. Thumbnails update with your motif; the selection, the tool and the sources stay available. [Download this example project](docs/examples/studio-symmetry.json).
+
+Design and Pattern are emphasis views of the same document. **Split view** shows one editable cell, centred on the left, and the repetition on the right. Both share the zoom, including the wheel. Opening it fits the cell to the available space. **One cell** shows it on a single canvas, also from Pattern mode. The cell stays centred both here and in split; zoom works with buttons or Ctrl + wheel. To pan, go back to the repeated pattern. Patterns without a periodic cell show the full motif. Sets can inherit the main symmetry, have their own or stay free.
+
+![Editable cell on the left and repeated pattern with the same zoom on the right](docs/images/split-cell.png)
+
+The reference cell also clips the selection outline, nodes and Fill preview. If you started drawing outside it, the full original is kept and the reference shows only the part belonging to that cell.
+
+![Scribble started outside the cell: reference clipped on the left and repetition on the right](docs/images/cell-reference-freehand.png)
+
+**Pure source** is under **Preferences → Advanced view**: it lets you edit the complete originals that cross several cells, or review fills and aperiodic patterns without clipping. The **100 %** scale equals the old **200 %**; document and export measurements keep their millimetres.
+
+
+The expanded catalogue shows the 27 options with their mathematical names,
+icons and a view of your motif. Filter by plane, frieze or radial; on mobile,
+pages keep the full catalogue accessible. Stars store local favourites. Hover previews; click confirms and can be undone.
+
+![Expanded symmetry catalogue with the 27 options and favourites](docs/images/symmetry-catalog.png)
+
+### Create and adjust a regular polygon
+
+Press the **hexagon with +** in the toolbar. In the right panel,
+**Object → Shape** shows sides, width, height, rotation, fill and stroke.
+For example, choose eight sides and 42 × 42 mm; every value changes the real shape.
+To move or reflect it use **Transform**; to convert it to paths,
+**Nodes**. The operations keep undo/redo.
+
+![Regular eight-sided polygon with its parameters on the right](docs/images/parametric-polygon.png)
+
+[Download the editable parametric polygon](docs/examples/parametric-polygon.json).
+
+### Paint a region formed by several curves
+
+Draw four segments or curves bounding an area and choose a fill colour. With **Fill region**, press inside it: an editable vector contour is created and the original strokes are kept. The image shows four independent curves and an inner circle: the hole stays empty and the fill propagates through the repetition.
+
+![Repeated vector fill, with a central hole and six source objects kept](docs/images/vector-fill.png)
+
+[Download the four-curves project](docs/examples/vector-fill.json) and open it from **File** to inspect the sources and the fill.
+
+The fill can stay **linked** to its boundaries or become **fixed**. If a topology changes and the link is no longer valid, the last contour is kept and its state is shown; **Recalculate and link region** tries to recover an equivalent face. Pressing a painted area again recolours it without creating identical copies.
+
+In patterns with symmetry, the fill is applied to the corresponding instances
+of the same motif, including rotations and reflections. In **Penrose**, a finite
+aperiodic region, you paint the chosen face: the colour sits above the
+generator's backgrounds and below the original perimeters. It is kept when
+leaving the area and when reloading, and is included in the export.
+
+![One Penrose face painted red, with its perimeters and right-panel shortcuts](docs/images/penrose-fill.png)
+
+The canvas stays free of permanent curve notices. Progress and Cancel
+computation appear only when an operation takes time; Another region is offered when
+there is more than one option under the pointer.
+
+By default, geometric closure is required within numeric epsilon. For small gaps, explicitly increase **Fill closure tolerance** in the right panel; this option does not modify the original strokes. Guides and structure mirrors do not count as material boundaries.
+
+### Build tiles with curved edges
+
+Open **Tiles → Shape** and choose a family. Enter **Edges** to edit nodes and **Tangents** to adjust the curves. Moving nodes and tangents changes the corresponding edges together to keep the interlock. Paint the inside with Fill and keep drawing on the copies.
+
+![Hexagonal tiles with a curved edge, vector background and repeated green motifs](docs/images/curved-tiles.png)
+
+[Download the curved-tiles project](docs/examples/curved-tiles.json) to explore its edges and its background separately.
+
+There are squares, rectangles, parallelograms, equilateral triangles and regular hexagons. Structural vertices stay fixed and curves are limited to safe corridors. In triangles, half a curve is edited and its partner is derived by central symmetry. Arbitrary polygons are not offered as if they could tile.
+
+The interior drawing and the tile outline are different entities. Fit to pattern frames the reference tile. To include the outline in SVG, DXF or raster, enable **Export tile outlines**. Shared edges are deduplicated. The legacy **Staggered motifs** generator and Penrose's finite aperiodic region remain available separately.
+
+### Explore isohedral tiles
+
+**Tiles → Explore catalogue IH1–IH93** opens a catalogue with IH search,
+translation/rotation/reflection filters and views of the tile and its mosaic.
+You can choose straight edges or an initial curve and keep editing nodes and
+tangents. Motif details are kept when changing construction.
+
+![Isohedral catalogue with real tile and mosaic, filters and explicit coverage](docs/images/isohedral-catalog.png)
+
+The **93 types are verified**: 81 are expressed through their geometry and 12
+require interior marks. In the latter, edges are straight and the motif
+repeats inside the tile as well to respect its group. **Shape** shows its
+parameters by pages; **Edges** and **Tangents** control the related curves.
+Adding a node keeps the curve. If an edit crosses the silhouette, inverts its
+orientation or overlaps neighbours, the last valid version is kept. Edges that
+must be mirror axes stay straight. Ctrl+K finds the catalogue.
+
+![Types with interior marks and their mosaics generated by symmetry](docs/images/isohedral-marked.png)
+
+### Adjust appearance, save styles and compose
+
+In the right panel, **Fill** offers HEX/alpha colour and fill opacity; **Stroke**, line colour, width, caps and joins; **Profile**, a width curve. The fill rule is in Fill's advanced options: it decides which parts are painted in crossing or holed contours. For normal use it can stay Even/odd. Palettes and presets have their own tabs. Save a named style to reuse its values without retroactively changing earlier objects. The compact indicator stays visible when the panel is closed; you can pin it open or let it auto-collapse when returning to the canvas.
+
+**Layers** hides, locks and orders objects; **Object → Shape** names them. In **Apply**, create or import a closed perimeter and place the set on it. A frozen application keeps its effective symmetry even when the main one changes. The exporter lets you choose the active set or the visible composition; it only offers a common cell when its periodicity is verified.
+
+The footer uses high-contrast black and bolds Patterns, ¿Te gustan los cuchillos? and PEU.NET at 13 px; «Seguime en:» keeps normal weight. It gathers the author's links in one line: **Patterns — Hecho
+con pasión por un cuchillero. ¿Te gustan los cuchillos? Seguime en:**, with
+Instagram, X, Facebook, WhatsApp, Telegram and PEU.NET. On narrow screens
+it stacks to keep all links visible, without horizontal scrolling. Tab, favicon and home-screen icons use the updated files supplied in favicon_io.zip; the manifest keeps relative paths for root and subfolders. Its URLs include a revision so that icons the browser had cached are updated too.
+
+When sharing the page, Open Graph and X/Twitter cards use the cover supplied by the author, with title, description and alt text. The image is published as `caratula.jpg`; it keeps the original JPEG of 1176 × 775, with no cropping or changes to the editor's logo. The canonical URL is `https://peu.net/pattern/`; the image links are absolute so networks can read them without running JavaScript.
+
+## Saving and privacy
+
+Transactional autosave uses IndexedDB and stores each project under its ID. Symmetry favourites are stored in this browser and recents last the session. These navigation preferences do not change the JSON or add undo. The library belongs to the browser and the HTTP origin (host and port). Another PC can review the application and its examples, but does not automatically see your browser's private projects. To exchange them, save and open JSON.
+
+Explicit saving downloads a complete file and also tries to finish the local write. If the browser rejects IndexedDB, the application reports the error and the JSON is still available. A half-drawn perimeter does not replace the last valid autosave.
+
+If there is already work, creating or opening another project, loading an example or recovering one from the library offers **Cancel**, **Save work and continue** or **Discard and continue**. Deleting a selection, application or instance is also confirmed. Cancel and Escape keep the work; cancelling the save dialog also cancels the pending operation. If local saving fails, the operation is blocked and you can retry.
+
+![Confirmation before replacing the current work](docs/images/work-protection.png)
+
+The File gallery gathers twenty-three editable examples and keeps eight quick accesses. Opening examples or creating projects keeps the previous ones in **This browser's library**. The visible logo uses the local `src/assets/icono.png` file supplied by the user.
+
+## Scope and limits
+
+Friezes repeat in one direction; rosettes and Penrose are finite constructions. An arbitrary oblique lattice is not presented as a seamless rectangular tile. Triangular groups do allow a rectangular supercell of height `sqrt(3)·width`.
+
+Wave/Guilloché/Spirograph/Rosette generators produce deterministic sampled paths; their files contain exactly that vector geometry. DXF approximates Béziers with configurable tolerance and keeps mm; it does not keep fills or parametric editing.
+
+SVG import supports paths, shapes, groups and compatible local references. It removes scripts, external resources, images, text, filters, gradients and other unsupported features, reporting their removal. Group opacity is applied per object and the possible difference in overlaps is warned about. Expanded SVG exports convert strokes to outlines by default to preserve their clipping and appearance; disabling it exports clipped centre lines.
+
+Scenes are limited to 20,000 transformations and expansions to 150,000 paths; raster images are limited to 64 million pixels. Interactive targets are reference measurements, not guarantees for any complexity.
+
+Fill limits each analysis to 1,200 entries/curves, 20,000 intersections, 40,000 half-edges and 2,000 faces. If repetitions exceed that budget in the full view, it automatically analyses the clicked region. It keeps curves, holes and sources; an already closed object can be recoloured directly even with more than 1,200 curves. A region whose local complexity exceeds those limits still requires simplifying its boundaries. Stroke contours have sample and subdivision budgets: if a combination exceeds the limits, the view offers to correct the style and the exporter reports the error. The exported result is never silently replaced by an image or a provisional axis. Physical tolerance is adjusted to affine transformations.
+
+## Installation and running
+
+Development requirements: Node.js 22.12 or later, npm; Python 3 for the LAN tools. Only npm and the included lockfile are used.
+
+```bash
+npm ci
+npm run dev
+```
+
+Open `http://localhost:4173` or `http://<IP_LOCAL>:4173` from another PC. The Debian server needs no desktop or GPU. The client browser does the geometric work.
+
+To keep and manage the local services without an open terminal:
+
+```bash
+npm run local:start
+npm run local:status
+npm run local:stop
+```
+
+`local:start` reuses its own active processes and rejects ports occupied by other services. PIDs and logs stay in `.runtime/`. To start the monitor for the first time outside the original Codex session, use `python3 scripts/local-services.py start --thread THREAD-UUID`.
+
+### Review from the local network
+
+- Live studio: `http://<IP_LOCAL>:4173`
+- Progress, commits, quota and feedback: `http://<IP_LOCAL>:4174`
+
+Replace `<IP_LOCAL>` with the address of the machine running the services. Check it locally with `hostname -I`; it may change with DHCP. Concrete addresses stay out of the repository. The development server is kept running so reviews appear as code is saved.
+
+The progress panel is an independent development tool. It is not distributed as a product requirement and does not expose session files, credentials or browser projects.
+
+### Build and deploy
+
+```bash
+npm run build
+npm run serve:dist
+```
+
+Open `http://localhost:4180`. `dist/` contains only static files and licence notices. Copy its contents by FTP or to a conventional HTTP server. Do not upload `node_modules/`, `.runtime/`, `.git/` or Codex sessions.
+
+The default relative path supports root and subdirectories. To pin a specific base:
+
+```bash
+BASE_PATH=/pattern/ npm run build
+```
+
+Copy `dist/` into the `/pattern/` subdirectory. No rewrite rules are needed: the application uses a single HTML document. HTTP over LAN works; it does not depend on service workers, HTTPS context, CDN, external fonts or an Internet connection. Files must be served over HTTP; opening the worker via `file://` is not promised.
+
+### Publish and share creations (optional)
+
+The editor works offline; publishing is a voluntary action from the **Share**
+button in the header. It generates a permanent link with an Open Graph
+thumbnail, WhatsApp/Telegram/Facebook/X buttons, native sharing and withdrawal
+from the same device. The server only stores the compressed native JSON (GZIP),
+minimal metadata and a small thumbnail: it requires PHP 8.1+ and write access to
+a private directory, with no database. Configuration, quotas, backup and Open
+Graph diagnostics: [docs/SHARE.md](docs/SHARE.md).
+
+### Automatic FTP deployment with GitHub Actions
+
+[Deploy FTP](.github/workflows/deploy-ftp.yml) runs with **every push to
+main** and also manually from Actions: quick checks (`test:deploy`, `check`), a
+build with relative paths and the FTP upload, all in about 2 minutes. In
+parallel, [QA gate](.github/workflows/qa-gate.yml) runs the full gate
+(`qa:full`, E2E and independent parsers) without blocking publication; its
+evidence is saved as artefacts and failures arrive by email. FTP credentials are
+only given to the deployment job.
+
+Configure these four **Repository secrets** in Settings → Secrets and
+variables → Actions:
+
+| Secret | Content |
+| --- | --- |
+| `FTP_HOST` | FTP host, without the `ftp://` prefix |
+| `FTP_USERNAME` | FTP account user |
+| `FTP_PASSWORD` | FTP password |
+| `FTP_FOLDER` | Application folder inside `public_html` |
+
+With `FTP_FOLDER=pattern`, the destination is **`public_html/pattern/`**. No
+trailing slash is needed: the workflow adds it. It also accepts
+`pattern/` or `public_html/pattern/` without duplicating the prefix. The path is
+relative to the FTP account's home folder, which must have access to
+`public_html`. The build uses `./` as base, regardless of that folder's name.
+
+Uploads run one at a time; a new push does not interrupt an active transfer. Application files are synchronised through the action's state, without emptying the whole folder or uploading the source code, the monitor, `.runtime/` or the credentials. The configured protocol is FTP, port 21. To see the result of a publication, open its run in **Actions**.
+
+First verified publication: [successful GitHub Actions run](https://github.com/pablopeu/pattern/actions/runs/44744523772).
+
+Local validation of the destination normalisation: `npm run test:deploy`.
+Reference: [FTP Deploy Action settings](https://github.com/SamKirkland/FTP-Deploy-Action#settings).
+
+## Development and work tracking
+
+### Verification
+
+The [QA runner](docs/QA.md) executes suites with a compact summary and complete
+evidence in `.runtime/qa/`: `npm run qa:fast` during development,
+`npm run qa:integration` when integrating and `npm run qa:full` when closing
+phases or releases. It does not repeat approved results for equivalent inputs.
+`qa:status` and `qa:failures` show a summary or the localised failures.
+
+
+```bash
+npm run check
+npm run test:monitor
+npx playwright install chromium
+npm run test:e2e
+npm run benchmark
+```
+
+v3.0 progress: **1136 unit/TypeScript tests**, **200 E2E flows** and **16 static tests** verified. Phases 0–3 include 93 IH, composition, Hat/Spectre and Girih. Phase 4 already has the Poincaré geometric view and artistic disk, finite source, JSON7 and SVG/PNG/JPEG export; adaptation with shared edges is already available; colour by class and other criteria remain pending. Detailed state: [current report](docs/STATUS.md) and [v3.0 acceptance](docs/ACCEPTANCE_V30.md).
+
+Historical v2.3 baseline: **203 unit tests, 94 E2E flows, 9 monitor tests and 6 static tests**. The 75 earlier journeys are kept. Root/subdirectory builds and independent export validation are correct.
+
+The benchmark needs the development server. Static tests and independent file validation are explained in [TESTING.md](docs/TESTING.md). Earlier results: [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md). UX audit: [docs/ACCEPTANCE_V23.md](docs/ACCEPTANCE_V23.md) and the [feature inventory](docs/UX_V23_INVENTORY.md).
+
+Navigation screenshots are regenerated with `node scripts/capture-navigation-feedback.mjs` and the confirmation with `node scripts/capture-work-protection.mjs`. To regenerate the five screenshots and the four basic JSON files with the local server running: `node scripts/capture-readme.mjs`. An isolated browser is used; the user's browser projects are not modified.
+
+### Quota and feedback monitor
+
+```bash
+npm run monitor
+python3 scripts/work_monitor.py --status
+```
+
+It reads only the `rate_limits` events of the local thread identified by `CODEX_THREAD_ID`, `--thread` or the ID stored in `.runtime/thread-id`. It publishes percentages, observation and reset timestamps, local Git history and documentation.
+
+With 10 % or less available in the primary 5-hour window, it asks to close the increment and stores a timer. After the real primary reset +60 seconds it asks to resume **the same thread** through `codex queue --resume`. The secondary/weekly quota only sends a notice: Pablo decides whether to use a banked reset; it does not pause work or delay the timer to the weekly reset. It does not change limits or invent a new quota when the clock expires. The agent checks the telemetry on continuing. Resuming needs the machine and the local Codex daemon to stay available; any failure is recorded in `.runtime/monitor-events.jsonl`.
+
+The monitor shows feedback first and then documented progress, both newest to oldest. Commits keep their order and stay at the end.
+
+Panel feedback is stored in `.runtime/feedback.jsonl` and sent to this conversation through a queue independent of the quota, even while the agent is working or waiting for the reset. The dashboard distinguishes **Pending delivery**, **In conversation** and **Reviewed**. Failures are retried; the local delivery record prevents normal resends after a restart. "In conversation" confirms queuing, not that the agent has already read it. The `.runtime/STOP` file disables the monitor cycle; `.runtime/PROJECT_COMPLETE` indicates that the PRD was verified and cancels pending resumptions. Review processes stay on the LAN. Authorised code remote: [pablopeu/pattern](https://github.com/pablopeu/pattern), branch `main`.
+
+### Technical documentation
+
+- [ARCHITECTURE.md](docs/ARCHITECTURE.md): modules, data flow and rendering.
+- [GEOMETRY.md](docs/GEOMETRY.md): groups, lattices, precision and mathematical limits.
+- [PROJECT_FORMAT.md](docs/PROJECT_FORMAT.md): format, recovery and migrations.
+- [TESTING.md](docs/TESTING.md): tests, benchmark and external validators.
+- [THIRD_PARTY_NOTICES.md](docs/THIRD_PARTY_NOTICES.md): dependencies and references inspected.
+- [docs/PROGRESS.md](docs/PROGRESS.md): progress and correction log.
+
+---
+
+# Español
+
+[English](#pattern-studio-2d)
+
 Estudio vectorial para dibujar motivos, explorar simetrías y construir patrones y teselas editables. El dibujo se repite mientras trabajás: las copias comparten una fuente canónica, de modo que editar una actualiza el patrón completo.
 
 Funciona en el navegador, procesa toda la geometría localmente y se puede desplegar como archivos estáticos. No requiere cuentas, APIs ni conexión a servicios externos.
@@ -140,7 +752,7 @@ enlaces a los repositorios consultados y las bibliotecas del estudio.
 
 ### Peces, aves, recursión y espirales
 
-Abrí **Archivo → Galería de ejemplos**: hay **15 estudios renovados**, con
+Abrí **Archivo → Galería de ejemplos**: hay **23 estudios**, con
 búsqueda, categorías y miniaturas del resultado real. Las tarjetas se paginan
 según el tamaño de pantalla; el diálogo entra completo sin barras de scroll.
 
@@ -459,7 +1071,7 @@ Si ya hay trabajo, crear o abrir otro proyecto, cargar un ejemplo o recuperar un
 
 ![Confirmación antes de reemplazar el trabajo actual](docs/images/work-protection.png)
 
-La galería de Archivo reúne veinticinco ejemplos editables y conserva ocho accesos rápidos. Abrir ejemplos o crear proyectos conserva los anteriores en **Biblioteca de este navegador**. El logo visible usa el archivo local `src/assets/icono.png` aportado por el usuario.
+La galería de Archivo reúne veintitrés ejemplos editables y conserva ocho accesos rápidos. Abrir ejemplos o crear proyectos conserva los anteriores en **Biblioteca de este navegador**. El logo visible usa el archivo local `src/assets/icono.png` aportado por el usuario.
 
 ## Alcances y límites
 

@@ -1,10 +1,9 @@
 # Estado actual de Patterns
 
-Actualizado:24 de noviembre de2026 (UTC). **PRD v4.0 verificado:** idioma ES/EN,
-tema claro/oscuro con lienzo oscuro y trazos claros, modo simple por defecto con
-escapes a avanzado, sin tocar documentos. Criterios en
-[ACCEPTANCE_V40.md](ACCEPTANCE_V40.md).
-
+Actualizado:24 de noviembre de2026 (UTC). **v4.0 verificada y publicada; galería
+de referencia con 4 estudios nuevos** (Night and Day, peces GDJ, espiral y
+lagarto torturado), catálogo de 23 obras. Criterios en
+[ACCEPTANCE_V40.md](ACCEPTANCE_V40.md) y [ACCEPTANCE_GALLERY.md](ACCEPTANCE_GALLERY.md).
 
 ## QA y siguiente prioridad
 

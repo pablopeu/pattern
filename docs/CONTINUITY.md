@@ -1,3 +1,19 @@
+# Galería de referencia · 4 estudios nuevos integrados
+
+Continuación de v4.0 (publicada: e884b99 en main). Este incremento cierra el
+grueso del PRD de galería con cuatro estudios medidos de fuentes públicas CC0:
+«Night and Day · aves de dos motivos» (249414), «Peces con ojos · mosaico GDJ»
+(295026), «Lagartos en espiral · reconstrucción» (357838) y «Lagarto torturado ·
+mosaico de referencia» (340157). Datos en reference-assets.ts; constructores en
+reference-builders.ts; 5 pruebas nuevas en reference-works.test.ts; catálogo de
+19 a 23 (test actualizado). qa:fast PASS 34 infra / 1185 unit / 230 E2E.
+README reestructurado a pedido de Pablo: inglés primero, español después, con
+enlace en el subtítulo. 167216 se analizó y descartó (escena rasterizada).
+Pendientes honestos: encastres de los originales a mano son APPROXIMATED; la
+espiral usa la receta de semejanza del motor con las reglas medidas.
+
+---
+
 # v4.0 Experiencia · Cerrado con FULL, pendiente de push final
 
 Base f39a2e8 (v4.0 dark+traducción) local, no publicada aún. Este incremento

@@ -9,6 +9,12 @@ import { defaultSphereVisualization } from '../visualization/model';
 import { createTileFill } from '../fill/service';
 import { drawingStyle } from '../app/styles';
 import type { CatalogExample } from './archive';
+import {
+  gdjFishTessellation,
+  nightDayBirds,
+  spiralLizards,
+  torturedLizards,
+} from './reference-builders';
 
 /**
  * Silueta del lagarto de M. C. Escher reconstruida por reox
@@ -342,6 +348,21 @@ function sphereProject(): Project {
 
 export const referenceExamplesAll: CatalogExample[] = [
   ...referenceExamples,
+  ...[
+    spiralLizards,
+    nightDayBirds,
+    torturedLizards,
+    gdjFishTessellation,
+  ].map((create) => {
+    const draft = create(),
+      example = draft.metadata.example!;
+    return {
+      ...example,
+      title: draft.metadata.name,
+      featured: true,
+      create,
+    } satisfies CatalogExample;
+  }),
   {
     id: 'gallery-sphere-icosa',
     category: 'Esféricas',
