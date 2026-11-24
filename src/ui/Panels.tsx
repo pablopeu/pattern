@@ -42,6 +42,7 @@ import { generatorLabels, generatorParameters, generate } from '../generators';
 
 import { pathData } from '../geometry/paths';
 import { Field, Section, Select, Toggle } from './Controls';
+import { message, useI18n, useExperienceActions, type LanguagePreference, type ThemePreference, type UiMode } from '../i18n';
 const paramLabels: Partial<Record<keyof Generator, string>> = {
   rows: 'Filas',
   columns: 'Columnas',
@@ -76,6 +77,53 @@ const ranges: Partial<Record<keyof Generator, [number, number, number]>> = {
   seed: [0, 2147483647, 1],
   aspectRatio: [0.1, 3, 0.05],
 };
+function ExperiencePrefs() {
+  const experience = useI18n(),
+    actions = useExperienceActions();
+  return (
+    <div className="experience-inline" role="group" aria-label={message('prefs.experience')}>
+      <strong>{message('prefs.experience')}</strong>
+      <div className="experience-row">
+      <label className="text-field">
+        <span>{message('prefs.language')}</span>
+        <select
+          aria-label={message('prefs.language')}
+          value={experience.language}
+          onChange={(e) => actions.setLanguage(e.target.value as LanguagePreference)}
+        >
+          <option value="auto">{message('prefs.language.auto')}</option>
+          <option value="es">{message('prefs.language.es')}</option>
+          <option value="en">{message('prefs.language.en')}</option>
+        </select>
+      </label>
+      <label className="text-field">
+        <span>{message('prefs.appearance')}</span>
+        <select
+          aria-label={message('prefs.appearance')}
+          value={experience.theme}
+          onChange={(e) => actions.setTheme(e.target.value as ThemePreference)}
+        >
+          <option value="auto">{message('prefs.appearance.auto')}</option>
+          <option value="light">{message('prefs.appearance.light')}</option>
+          <option value="dark">{message('prefs.appearance.dark')}</option>
+        </select>
+      </label>
+      <label className="text-field">
+        <span>{message('prefs.uiMode')}</span>
+        <select
+          aria-label={message('prefs.uiMode')}
+          value={experience.uiMode}
+          onChange={(e) => actions.setUiMode(e.target.value as UiMode)}
+        >
+          <option value="simple">{message('prefs.uiMode.simple')}</option>
+          <option value="advanced">{message('prefs.uiMode.advanced')}</option>
+        </select>
+      </label>
+      </div>
+    </div>
+  );
+}
+
 export function Panels({
   studio: s,
   onImport,
@@ -1048,7 +1096,9 @@ export function Panels({
             )}
 
             {category === 'preferences' && (
-              <Section title="VIEW">
+              <>
+                <ExperiencePrefs />
+                <Section title="VIEW">
                 <details className="advanced-view">
                   <summary>Vista avanzada</summary>
                   <Toggle
@@ -1078,6 +1128,7 @@ export function Panels({
                     }
                   />
                 </label>
+                <div className="toggle-grid">
                 <Toggle
                   label="Ajustar a grilla"
                   checked={s.project.preferences.snap}
@@ -1092,6 +1143,7 @@ export function Panels({
                   checked={s.project.preferences.snapNodes ?? true}
                   onChange={(value) => s.updateViewPreferences({ snapNodes: value })}
                 />
+                </div>
                 <Field
                   label="Distancia de atracción a nodos"
                   unit="px"
@@ -1100,6 +1152,7 @@ export function Panels({
                   value={s.project.preferences.snapRadiusPx ?? 8}
                   onChange={(value) => s.updateViewPreferences({ snapRadiusPx: value })}
                 />
+                <div className="toggle-grid">
                 <Toggle
                   label="Guías detalladas"
                   checked={s.project.preferences.guides}
@@ -1121,6 +1174,8 @@ export function Panels({
                     })
                   }
                 />
+                </div>
+                <div className="toggle-grid">
                 <Toggle
                   label="Ejes de reflexión y deslizamiento"
                   checked={s.project.preferences.axes}
@@ -1143,6 +1198,8 @@ export function Panels({
                     })
                   }
                 />
+                </div>
+                <div className="toggle-grid">
                 <Toggle
                   label="Inspeccionar uniones"
                   checked={s.project.preferences.continuity}
@@ -1154,6 +1211,7 @@ export function Panels({
                     })
                   }
                 />
+                </div>
                 <Select
                   label="Unidades"
                   value={u}
@@ -1178,6 +1236,7 @@ export function Panels({
                   />
                 </label>
               </Section>
+              </>
             )}
           </>
         )}

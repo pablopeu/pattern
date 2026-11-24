@@ -40,29 +40,34 @@ import { Canvas } from '../editor/Canvas';
 import { Panels } from '../ui/Panels';
 import { ExportDialog } from '../ui/ExportDialog';
 import { buildScene } from '../patterns/engine';
-const stylePages: { id: StylePage; label: string; icon: typeof Palette }[] = [
-  { id: 'stroke', label: 'Trazo', icon: PenLine },
-  { id: 'profile', label: 'Perfil', icon: Activity },
-  { id: 'fill', label: 'Fill', icon: PaintBucket },
-  { id: 'palette', label: 'Paleta', icon: SwatchBook },
-  { id: 'presets', label: 'Presets', icon: Bookmark },
-  { id: 'object', label: 'Objeto', icon: Shapes },
-  { id: 'options', label: 'Opciones', icon: Settings2 },
+import { message, useI18n, useExperienceActions, type LanguagePreference, type MessageKey, type ThemePreference, type UiMode } from '../i18n';
+import { isToolVisible } from './ui-mode';
+const stylePages: { id: StylePage; key: MessageKey; icon: typeof Palette }[] = [
+  { id: 'stroke', key: 'style.stroke', icon: PenLine },
+  { id: 'profile', key: 'style.profile', icon: Activity },
+  { id: 'fill', key: 'style.fill', icon: PaintBucket },
+  { id: 'palette', key: 'style.palette', icon: SwatchBook },
+  { id: 'presets', key: 'style.presets', icon: Bookmark },
+  { id: 'object', key: 'style.object', icon: Shapes },
+  { id: 'options', key: 'style.options', icon: Settings2 },
 ];
-const tools: { id: Tool; label: string; shortcut?: string; icon: typeof MousePointer2 }[] = [
-  { id: 'select', label: 'Seleccionar', shortcut: 'V', icon: MousePointer2 },
-  { id: 'nodes', label: 'Editar nodos', shortcut: 'A', icon: Waypoints },
-  { id: 'pen', label: 'Pluma Bézier', shortcut: 'P', icon: PenTool },
-  { id: 'pencil', label: 'Dibujo libre', shortcut: 'B', icon: Pencil },
-  { id: 'line', label: 'Línea', shortcut: 'L', icon: Minus },
-  { id: 'rectangle', label: 'Rectángulo', shortcut: 'R', icon: Square },
-  { id: 'ellipse', label: 'Elipse', shortcut: 'E', icon: Circle },
-  { id: 'polygon', label: 'Polígono libre', icon: Hexagon },
-  { id: 'fill', label: 'Rellenar región', shortcut: 'F', icon: PaintBucket },
-  { id: 'pan', label: 'Desplazar vista', shortcut: 'H', icon: Move },
+const tools: { id: Tool; key: MessageKey; shortcut?: string; icon: typeof MousePointer2 }[] = [
+  { id: 'select', key: 'tool.select', shortcut: 'V', icon: MousePointer2 },
+  { id: 'nodes', key: 'tool.nodes', shortcut: 'A', icon: Waypoints },
+  { id: 'pen', key: 'tool.pen', shortcut: 'P', icon: PenTool },
+  { id: 'pencil', key: 'tool.pencil', shortcut: 'B', icon: Pencil },
+  { id: 'line', key: 'tool.line', shortcut: 'L', icon: Minus },
+  { id: 'rectangle', key: 'tool.rectangle', shortcut: 'R', icon: Square },
+  { id: 'ellipse', key: 'tool.ellipse', shortcut: 'E', icon: Circle },
+  { id: 'polygon', key: 'tool.polygon', icon: Hexagon },
+  { id: 'fill', key: 'tool.fill', shortcut: 'F', icon: PaintBucket },
+  { id: 'pan', key: 'tool.pan', shortcut: 'H', icon: Move },
 ];
 export default function App() {
   const s = useStudio(),
+    experience = useI18n(),
+    actions = useExperienceActions(),
+    [allTools, setAllTools] = useState(false),
     [exportOpen, setExportOpen] = useState(false),
     [saveOpen, setSaveOpen] = useState(false),
     [saving, setSaving] = useState(false),
@@ -368,15 +373,16 @@ export default function App() {
     },
     ...tools.map((t) => ({
       id: `tool-${t.id}`,
-      label: t.label,
-      keywords: t.id === 'fill' ? 'rellenar fill color' : t.shortcut,
+      label: message(t.key),
+      keywords: `${t.id} ${t.shortcut ?? ''} ${message(t.key)}`,
       run: () => {
         activateTool(t.id);
       },
     })),
     ...railCategories.map((c) => ({
       id: `category-${c.id}`,
-      label: `Abrir ${c.label}`,
+      label: message('rail.open', { name: message(`category.${c.id}` as MessageKey) }),
+      keywords: `${c.id} ${message(`category.${c.id}` as MessageKey)}`,
       run: () => openCategory(c.id),
     })),
     ...symmetryCatalog.map((choice) => ({
@@ -496,27 +502,15 @@ export default function App() {
         </a>
         <div className="app-title">
           <strong>Patterns</strong>
-          <small>Patrones Geométricos</small>
+          <small>{message('app.tagline')}</small>
         </div>
-        <div className="mode-switch" role="tablist" aria-label="Contexto de trabajo">
-          {(
-            [
-              ['edit', 'Diseño'],
-              ['pattern', 'Patrón'],
-              ['apply', 'Aplicar'],
-            ] as const
-          ).map(([mode, label]) => (
+        <div className="mode-switch" role="tablist" aria-label={message('work.context')}>
+          {(['edit', 'pattern', 'apply'] as const).map((mode) => (
             <button
               key={mode}
               role="tab"
               aria-selected={s.mode === mode}
-              title={
-                mode === 'edit'
-                  ? 'Editar el motivo y usar vista dividida'
-                  : mode === 'pattern'
-                    ? 'Ver y editar el patrón en una vista completa'
-                    : 'Recortar el patrón dentro de un perímetro cerrado'
-              }
+              title={message(`mode.${mode}.title` as MessageKey)}
               className={s.mode === mode ? 'active' : ''}
               onClick={() => {
                 s.setMode(mode);
@@ -532,15 +526,57 @@ export default function App() {
                 s.setSymmetryPreview(null);
               }}
             >
-              {label}
+              {message(`mode.${mode}` as MessageKey)}
             </button>
           ))}
         </div>
         <div className="top-actions">
+          <details className="experience-menu">
+            <summary title={message('experience.quick')} aria-label={message('experience.quick')}>
+              <Settings2 size={17} />
+            </summary>
+            <div className="menu-popover experience-popover">
+              <label>
+                {message('prefs.language')}
+                <select
+                  aria-label={message('prefs.language')}
+                  value={experience.language}
+                  onChange={(e) => actions.setLanguage(e.target.value as LanguagePreference)}
+                >
+                  <option value="auto">{message('prefs.language.auto')}</option>
+                  <option value="es">{message('prefs.language.es')}</option>
+                  <option value="en">{message('prefs.language.en')}</option>
+                </select>
+              </label>
+              <label>
+                {message('prefs.appearance')}
+                <select
+                  aria-label={message('prefs.appearance')}
+                  value={experience.theme}
+                  onChange={(e) => actions.setTheme(e.target.value as ThemePreference)}
+                >
+                  <option value="auto">{message('prefs.appearance.auto')}</option>
+                  <option value="light">{message('prefs.appearance.light')}</option>
+                  <option value="dark">{message('prefs.appearance.dark')}</option>
+                </select>
+              </label>
+              <label>
+                {message('prefs.uiMode')}
+                <select
+                  aria-label={message('prefs.uiMode')}
+                  value={experience.uiMode}
+                  onChange={(e) => actions.setUiMode(e.target.value as UiMode)}
+                >
+                  <option value="simple">{message('prefs.uiMode.simple')}</option>
+                  <option value="advanced">{message('prefs.uiMode.advanced')}</option>
+                </select>
+              </label>
+            </div>
+          </details>
           <button
             className="command-trigger icon-button"
-            title="Buscar comandos (Ctrl+K)"
-            aria-label="Buscar comandos"
+            title={message('header.search.title')}
+            aria-label={message('header.search')}
             onClick={() => setCommandOpen(true)}
           >
             <Search size={18} />
@@ -551,8 +587,8 @@ export default function App() {
           </span>
           <button
             className="icon-button"
-            title="Guardar proyecto JSON"
-            aria-label="Guardar proyecto"
+            title={message('header.save.title')}
+            aria-label={message('header.save')}
             onClick={save}
           >
             <Save size={18} />
@@ -565,19 +601,19 @@ export default function App() {
             }}
           >
             <summary
-              title="Archivo y ejemplos"
+              title={message('header.file.title')}
               onClick={() => s.setStyleOpen(false)}
               onKeyDown={(event) => {
                 if (event.key === 'Enter' || event.key === ' ') event.stopPropagation();
               }}
             >
-              Archivo <ChevronDown size={13} />
+              {message('header.file')} <ChevronDown size={13} />
             </summary>
             <div className="menu-popover">
               <label className="file-project-name">
-                Nombre del proyecto
+                {message('header.projectName')}
                 <input
-                  aria-label="Nombre del proyecto"
+                  aria-label={message('header.projectName')}
                   value={s.project.metadata.name}
                   onChange={(e) =>
                     s.change((p) => {
@@ -600,13 +636,13 @@ export default function App() {
                   );
                 }}
               >
-                <Plus size={15} /> Nuevo proyecto
+                <Plus size={15} /> {message('menu.new')}
               </button>
               <button onClick={() => openRef.current?.click()}>
-                <FolderOpen size={15} /> Abrir proyecto JSON
+                <FolderOpen size={15} /> {message('menu.open')}
               </button>
               <button onClick={save}>
-                <Save size={15} /> Guardar archivo JSON
+                <Save size={15} /> {message('menu.save')}
               </button>
               <button
                 onClick={() => {
@@ -616,7 +652,7 @@ export default function App() {
                   replaceProject(p, 'duplicar el proyecto');
                 }}
               >
-                <Copy size={15} /> Duplicar proyecto
+                <Copy size={15} /> {message('menu.duplicate')}
               </button>
               <button
                 onClick={async () => {
@@ -628,11 +664,11 @@ export default function App() {
                   }
                 }}
               >
-                <FolderOpen size={15} /> Biblioteca de este navegador
+                <FolderOpen size={15} /> {message('menu.library')}
               </button>
               <hr />
               <button onClick={openExamples}>
-                <LayoutGrid size={15} /> Galería de ejemplos
+                <LayoutGrid size={15} /> {message('menu.examples')}
               </button>
               <hr />
               <button
@@ -650,29 +686,29 @@ export default function App() {
                   );
                 }}
               >
-                Exportar preset del patrón
+                {message('menu.exportPreset')}
               </button>
-              <button onClick={() => presetRef.current?.click()}>Importar preset del patrón</button>
+              <button onClick={() => presetRef.current?.click()}>{message('menu.importPreset')}</button>
               <button onClick={() => setHelp(true)}>
-                <HelpCircle size={15} /> Atajos y ayuda
+                <HelpCircle size={15} /> {message('menu.help')}
               </button>
               {import.meta.env.DEV && (
                 <a href={`http://${location.hostname}:4174`} target="_blank" rel="noreferrer">
-                  <ExternalLink size={15} /> Avances y feedback
+                  <ExternalLink size={15} /> {message('menu.dev')}
                 </a>
               )}
             </div>
           </details>
           <button
             className="share-trigger"
-            aria-label="Compartir"
-            title="Publicar la creación y obtener un enlace permanente"
+            aria-label={message('header.share')}
+            title={message('header.share.title')}
             onClick={() => setShareOpen(true)}
           >
-            <Share2 size={16} /> <span className="share-label">Compartir</span>
+            <Share2 size={16} /> <span className="share-label">{message('header.share')}</span>
           </button>
           <button className="primary-button export-trigger" onClick={openExport}>
-            <Download size={16} /> Exportar
+            <Download size={16} /> {message('header.export')}
           </button>
         </div>
       </header>
@@ -688,31 +724,47 @@ export default function App() {
                 className={!collapsed && category === id ? 'active' : ''}
                 onClick={() => openCategory(id)}
               >
-                {label}
+                {message(`category.${id}` as MessageKey)}
               </button>
             ))}
           </div>
-          <div className="rail-tools" role="group" aria-label="Herramientas de dibujo">
+          <div className="rail-tools" role="group" aria-label={message('rail.tools')}>
             {tools
-              .filter((t) => t.id !== 'pan')
-              .map(({ id, label, shortcut, icon: Icon }, i) => (
-                <button
-                  key={id}
-                  className={`${s.tool === id ? 'active' : ''} ${i === 2 || i === 8 ? 'tool-gap' : ''}`}
-                  title={`${label}${shortcut ? ' (' + shortcut + ')' : ''}`}
-                  aria-label={label}
-                  aria-pressed={s.tool === id}
-                  onClick={() => {
-                    activateTool(id);
-                  }}
-                >
-                  <Icon size={20} strokeWidth={1.6} />
-                </button>
-              ))}
+              .filter(
+                (t) =>
+                  t.id !== 'pan' &&
+                  (allTools || s.tool === t.id || isToolVisible(t.id, experience.uiMode)),
+              )
+              .map(({ id, key, shortcut, icon: Icon }, i) => {
+                const label = message(key);
+                return (
+                  <button
+                    key={id}
+                    className={`${s.tool === id ? 'active' : ''} ${i === 2 || i === 8 ? 'tool-gap' : ''}`}
+                    title={`${label}${shortcut ? ' (' + shortcut + ')' : ''}`}
+                    aria-label={label}
+                    aria-pressed={s.tool === id}
+                    onClick={() => {
+                      activateTool(id);
+                    }}
+                  >
+                    <Icon size={20} strokeWidth={1.6} />
+                  </button>
+                );
+              })}
+            {experience.uiMode === 'simple' && !allTools && (
+              <button
+                title={message('tool.more.title')}
+                aria-label={message('tool.more')}
+                onClick={() => setAllTools(true)}
+              >
+                <Plus size={18} />
+              </button>
+            )}
             <div className="rail-divider" />
             <button
-              title="Polígono regular paramétrico"
-              aria-label="Crear polígono regular"
+              title={message('tool.regular.title')}
+              aria-label={message('tool.regular')}
               onClick={() => {
                 createRegular();
               }}
@@ -799,7 +851,10 @@ export default function App() {
                       ? 'Motivo fuente · composición enlazada'
                       : 'Composición finita'
                     : 'Simetría confirmada'}{' '}
-                · {tools.find((t) => t.id === s.tool)?.label ?? s.tool}
+                · {(() => {
+                  const found = tools.find((t) => t.id === s.tool);
+                  return found ? message(found.key) : s.tool;
+                })()}
               </span>
             </div>
           )}
@@ -939,15 +994,17 @@ export default function App() {
         <div className="style-dock">
           <StylePanel studio={s} />
           <nav className="style-panel-rail" aria-label="Accesos del panel derecho">
-            {stylePages.map(({ id, label, icon: Icon }) => (
+            {stylePages.map(({ id, key, icon: Icon }) => {
+              const label = message(key);
+              return (
               <button
                 key={id}
                 title={
                   id === 'object' && !s.styleSelection.length
-                    ? 'Objeto · seleccioná una figura'
+                    ? `${message('style.object')} · ${message('common.select')}`
                     : label
                 }
-                aria-label={`Panel derecho: ${label}`}
+                aria-label={`${message('rail.stylePanel')}: ${label}`}
                 aria-pressed={s.styleOpen && s.stylePage === id}
                 disabled={id === 'object' && !s.styleSelection.length}
                 onClick={() => {
@@ -957,7 +1014,8 @@ export default function App() {
               >
                 <Icon size={18} strokeWidth={1.6} />
               </button>
-            ))}
+              );
+            })}
             <button
               className="quick-colors"
               title="Colores de trazo y relleno"
@@ -1300,7 +1358,7 @@ export default function App() {
                 .filter((t) => t.shortcut)
                 .map((t) => (
                   <div key={t.id}>
-                    <span>{t.label}</span>
+                    <span>{message(t.key)}</span>
                     <kbd>{t.shortcut}</kbd>
                   </div>
                 ))}

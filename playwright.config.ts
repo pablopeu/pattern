@@ -28,6 +28,7 @@ export default defineConfig({
         '**/sphere.spec.ts',
         '**/animation.spec.ts',
         '**/share.spec.ts',
+        '**/experience.spec.ts',
         '**/artistic.spec.ts',
         '**/chambers.spec.ts',
         '**/feedback-study.spec.ts',
@@ -40,6 +41,22 @@ export default defineConfig({
   fullyParallel: false,
   use: {
     baseURL: process.env.TEST_BASE_URL || 'http://127.0.0.1:4173',
+    locale: 'es-ES',
+    // Las suites históricas validan la UI completa: estado semilla avanzado/es.
+    storageState: {
+      cookies: [],
+      origins: [
+        {
+          origin: process.env.TEST_BASE_URL || 'http://127.0.0.1:4173',
+          localStorage: [
+            {
+              name: 'pattern.experience.v1',
+              value: JSON.stringify({ language: 'es', theme: 'auto', uiMode: 'advanced' }),
+            },
+          ],
+        },
+      ],
+    },
     viewport: { width: 1440, height: 900 },
     headless: true,
     screenshot: 'only-on-failure',
